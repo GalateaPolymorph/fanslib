@@ -1,28 +1,10 @@
-import {
-  BlueSkyIcon,
-  FanslyIcon,
-  InstagramIcon,
-  ManyVidsIcon,
-  OnlyFansIcon,
-  RedditIcon,
-  XIcon,
-} from "@renderer/components/icons";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@radix-ui/react-select";
+import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
 import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
-import { cn } from "@renderer/lib/utils";
 import { useState } from "react";
 import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
-
-const CHANNEL_ICONS: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  crown: OnlyFansIcon,
-  heart: FanslyIcon,
-  play: ManyVidsIcon,
-  camera: InstagramIcon,
-  cloud: BlueSkyIcon,
-  twitter: XIcon,
-  "message-circle": RedditIcon,
-};
 
 interface CreateChannelFormProps {
   onSubmit: (data: {
@@ -50,38 +32,36 @@ export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFor
     <form onSubmit={handleSubmit} className={className}>
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {Object.entries(CHANNEL_TYPES).map(([key, type]) => {
-              const Icon = CHANNEL_ICONS[type.icon];
-              const isSelected = formData.typeId === type.id;
-              return (
-                <button
-                  key={type.id}
-                  type="button"
-                  className="w-full"
+          <Select>
+            <SelectTrigger>
+              <Badge
+                variant="outline"
+                className="w-full gap-2 py-1.5 border transition-colors hover:opacity-90 cursor-pointer font-normal"
+              >
+                <ChannelTypeIcon typeId={formData.typeId} className="w-5 h-5" />
+                <span>{CHANNEL_TYPES[formData.typeId].name}</span>
+              </Badge>
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(CHANNEL_TYPES).map(([id, type]) => (
+                <SelectItem
+                  key={id}
+                  value={id}
                   onClick={() =>
-                    setFormData((prev) => ({ ...prev, typeId: key as keyof typeof CHANNEL_TYPES }))
+                    setFormData((prev) => ({ ...prev, typeId: id as keyof typeof CHANNEL_TYPES }))
                   }
                 >
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "w-full gap-2 py-1.5 border transition-colors hover:opacity-90 cursor-pointer font-normal",
-                      isSelected ? "text-white" : "bg-transparent"
-                    )}
-                    style={{
-                      backgroundColor: isSelected ? type.color : "transparent",
-                      borderColor: type.color,
-                      color: isSelected && type.color === "#000000" ? "white" : undefined,
-                    }}
-                  >
-                    <Icon className="h-4 w-4" />
+                  <div className="flex items-center gap-2">
+                    <ChannelTypeIcon
+                      typeId={id as keyof typeof CHANNEL_TYPES}
+                      className="w-5 h-5"
+                    />
                     <span>{type.name}</span>
-                  </Badge>
-                </button>
-              );
-            })}
-          </div>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="grid gap-2">
           <Input

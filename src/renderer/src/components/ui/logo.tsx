@@ -9,7 +9,7 @@ export const Logo: React.FC<LogoProps> = ({ isOpen = true }) => {
   return (
     <div
       className={cn(
-        "flex items-center font-bold text-2xl gap-1",
+        "flex items-center font-bold text-2xl cursor-default pointer-events-none select-none",
         isOpen ? "text-2xl" : "text-lg gap-0"
       )}
     >
