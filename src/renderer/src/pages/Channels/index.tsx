@@ -42,7 +42,7 @@ export const ChannelsPage = () => {
         <h1 className="text-2xl font-bold">Channels</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button variant="secondary">
               <PlusCircle className="h-4 w-4 mr-2" />
               Add Channel
             </Button>

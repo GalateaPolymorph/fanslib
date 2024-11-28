@@ -22,15 +22,16 @@ const CHANNEL_ICONS: Record<string, React.ComponentType<React.SVGProps<SVGSVGEle
 
 interface ChannelTypeIconProps {
   typeId: keyof typeof CHANNEL_TYPES;
+  color?: string;
   className?: string;
 }
 
-export const ChannelTypeIcon = ({ typeId, className }: ChannelTypeIconProps) => {
+export const ChannelTypeIcon = ({ typeId, color, className }: ChannelTypeIconProps) => {
   const channelType = CHANNEL_TYPES[typeId];
   const Icon = CHANNEL_ICONS[channelType.id];
 
   return (
-    <div className={cn("w-8 h-8", className)} style={{ color: channelType.color }}>
+    <div className={cn("w-8 h-8", className)} style={{ color: color ?? channelType.color }}>
       <Icon className="w-full h-full" />
     </div>
   );

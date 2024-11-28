@@ -1,4 +1,3 @@
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@radix-ui/react-select";
 import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
 import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
@@ -19,49 +18,45 @@ export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFor
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    typeId: "" as keyof typeof CHANNEL_TYPES,
+    typeId: "onlyfans" as keyof typeof CHANNEL_TYPES,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({ name: "", description: "", typeId: "" as keyof typeof CHANNEL_TYPES });
+    setFormData({
+      name: "",
+      description: "",
+      typeId: "onlyfans" as keyof typeof CHANNEL_TYPES,
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className={className}>
       <div className="grid gap-4">
-        <div className="grid gap-2">
-          <Select>
-            <SelectTrigger>
-              <Badge
-                variant="outline"
-                className="w-full gap-2 py-1.5 border transition-colors hover:opacity-90 cursor-pointer font-normal"
-              >
-                <ChannelTypeIcon typeId={formData.typeId} className="w-5 h-5" />
-                <span>{CHANNEL_TYPES[formData.typeId].name}</span>
-              </Badge>
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(CHANNEL_TYPES).map(([id, type]) => (
-                <SelectItem
-                  key={id}
-                  value={id}
-                  onClick={() =>
-                    setFormData((prev) => ({ ...prev, typeId: id as keyof typeof CHANNEL_TYPES }))
-                  }
-                >
-                  <div className="flex items-center gap-2">
-                    <ChannelTypeIcon
-                      typeId={id as keyof typeof CHANNEL_TYPES}
-                      className="w-5 h-5"
-                    />
-                    <span>{type.name}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-2 gap-2">
+          {Object.entries(CHANNEL_TYPES).map(([id, type]) => (
+            <Badge
+              key={id}
+              variant="outline"
+              className="gap-2 py-1.5 transition-colors hover:opacity-90 cursor-pointer"
+              style={{
+                backgroundColor: formData.typeId === id ? type.color : "transparent",
+                borderColor: type.color,
+                color: formData.typeId === id ? "white" : type.color,
+              }}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, typeId: id as keyof typeof CHANNEL_TYPES }))
+              }
+            >
+              <ChannelTypeIcon
+                typeId={id as keyof typeof CHANNEL_TYPES}
+                color={formData.typeId === id ? "white" : type.color}
+                className="w-5 h-5"
+              />
+              <span>{type.name}</span>
+            </Badge>
+          ))}
         </div>
         <div className="grid gap-2">
           <Input
@@ -69,18 +64,16 @@ export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFor
             value={formData.name}
             onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           />
-        </div>
-        <div className="grid gap-2">
           <Input
             placeholder="Description (optional)"
             value={formData.description}
             onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
           />
         </div>
+        <Button type="submit" disabled={!formData.name || !formData.typeId}>
+          Create Channel
+        </Button>
       </div>
-      <Button type="submit" className="mt-4" disabled={!formData.name || !formData.typeId}>
-        Create Channel
-      </Button>
     </form>
   );
 };
