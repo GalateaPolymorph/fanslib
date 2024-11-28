@@ -10,6 +10,7 @@ import { Skeleton } from "@renderer/components/ui/skeleton";
 import { TooltipProvider } from "@renderer/components/ui/tooltip";
 import { useIsMobile } from "@renderer/hooks/useMobile";
 import { cn } from "@renderer/lib/utils";
+import { Logo } from "./logo";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -175,9 +176,13 @@ const Sidebar = React.forwardRef<
         )}
         {...props}
       >
-        <div className="flex h-14 items-center justify-between border-b px-4">
+        <div
+          className={cn("flex py-4 items-center justify-between border-b px-4", {
+            "flex-col gap-2": !open,
+          })}
+        >
           <div className="flex items-center gap-2">
-            {open && <h2 className="text-lg font-semibold">Fanslib</h2>}
+            <Logo isOpen={open} />
           </div>
           <SidebarTrigger className="bg-background/80 hover:bg-background/90 transition-all duration-200 ease-out hover:ring-1 hover:ring-border cursor-pointer" />
         </div>

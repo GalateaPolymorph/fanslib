@@ -1,8 +1,10 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
 
 @variant dark (&:is(.dark *));
+
+@import url("https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap");
 
 @theme {
   --color-border: hsl(var(--border));
