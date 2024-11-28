@@ -2,8 +2,9 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
     "src/renderer/src/**/*",
+    "src/features/*/shared/**/*.{ts,tsx}",
     "src/features/**/renderer/**/*.{ts,tsx}",
-    "src/features/**/shared/**/*.{ts,tsx}",
+    "src/features/**/renderer/*.{ts,tsx}",
     "src/features/**/renderer.ts",
     "src/preload/*.d.ts"
   ],

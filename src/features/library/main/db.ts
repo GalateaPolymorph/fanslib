@@ -7,7 +7,6 @@ import type { MediaData, MediaFile } from "../shared/types";
 
 let mediaDb: Datastore | null;
 const dbPath = join(app.getPath("userData"), "library.db");
-console.log(dbPath);
 
 const db = async () => {
   if (mediaDb) return mediaDb;

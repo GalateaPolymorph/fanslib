@@ -1,7 +1,8 @@
 import { app, BrowserWindow, net, protocol, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
-import { setupLibraryHandlers } from "../features/library/main/handlers";
+import { registerLibraryHandlers } from "../features/library/main/handlers";
+import { registerOsHandlers } from "../features/os/main";
 import { registerSettingsHandlers } from "../features/settings/main/index";
 protocol.registerSchemesAsPrivileged([
   {
@@ -16,7 +17,8 @@ protocol.registerSchemesAsPrivileged([
 
 const registerHandlers = () => {
   registerSettingsHandlers();
-  setupLibraryHandlers();
+  registerLibraryHandlers();
+  registerOsHandlers();
 };
 
 const createWindow = () => {

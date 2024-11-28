@@ -1,11 +1,11 @@
 import chokidar, { FSWatcher } from "chokidar";
 import { BrowserWindow, ipcMain } from "electron";
-import { getMediaFileByPath, upsertMediaFile, resetDatabase } from "./db";
+import { getMediaFileByPath, resetDatabase, upsertMediaFile } from "./db";
 import { getMediaFiles } from "./getMediaFiles";
 
 let watcher: FSWatcher | null = null;
 
-export function setupLibraryHandlers() {
+export function registerLibraryHandlers() {
   ipcMain.handle("library:scan", async (_event, libraryPath: string) => {
     // Stop any existing watcher
     if (watcher) {

@@ -22,8 +22,8 @@ export const ContentPage = () => {
   }
 
   return (
-    <div className="h-full">
-      <PanelGroup direction="horizontal">
+    <div className="h-full w-full">
+      <PanelGroup direction="horizontal" className="w-full">
         <ResizablePanel defaultSize={70} minSize={30}>
           <Gallery
             mediaFiles={mediaFiles}

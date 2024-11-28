@@ -1,7 +1,7 @@
 import { Loader2, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { MediaFile } from "../../../features/library/main/getMediaFiles";
+import { MediaFile } from "../../../features/library/shared/types";
 import { formatFileSize } from "../lib/utils";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -62,7 +62,7 @@ export const WelcomeScreen = () => {
         !error && (
           <ScrollArea className="flex-1 rounded-md border">
             <div className="p-4">
-              <div className="grid grid-cols-[1fr,100px,150px,150px] gap-4 font-medium p-2">
+              <div className="grid grid-cols-[1fr_100px_150px_150px] gap-4 font-medium p-2">
                 <div>Name</div>
                 <div>Size</div>
                 <div>Type</div>
@@ -71,7 +71,7 @@ export const WelcomeScreen = () => {
               {mediaFiles.map((file) => (
                 <div
                   key={file.path}
-                  className="grid grid-cols-[1fr,100px,150px,150px] gap-4 p-2 hover:bg-muted/50 rounded-sm"
+                  className="grid grid-cols-[1fr_100px_150px_150px] gap-4 p-2 hover:bg-muted/50 rounded-sm"
                 >
                   <div className="truncate" title={file.name}>
                     {file.name}

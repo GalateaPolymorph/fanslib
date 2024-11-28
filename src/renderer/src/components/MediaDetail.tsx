@@ -1,15 +1,19 @@
+import { Button } from "@renderer/components/ui/button";
+import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import { cn, formatFileSize } from "@renderer/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { MediaFile } from "../../../features/library/shared/types";
-import { cn, formatFileSize } from "../lib/utils";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
 
 interface MediaDetailProps {
   media: MediaFile;
   onClose: () => void;
   className?: string;
 }
+
+const revealInFinder = (mediaPath: string) => {
+  window.api.os.revealInFinder(mediaPath);
+};
 
 export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => {
   const prefersReducedMotion = useReducedMotion();
@@ -23,7 +27,7 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
         duration: prefersReducedMotion ? 0 : 0.3,
         ease: "easeInOut",
       }}
-      className={cn("flex flex-col bg-background h-full", className)}
+      className={cn("flex flex-col bg-background h-full w-full", className)}
     >
       <div className="p-4 border-b flex justify-between items-center">
         <h2 className="text-lg font-semibold">Media Details</h2>
@@ -31,8 +35,8 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
           <X className="h-4 w-4" />
         </Button>
       </div>
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+      <ScrollArea className="flex-1 @container p-4">
+        <div className="grid grid-cols-1 @[800px]:grid-cols-2 gap-4">
           <div className="aspect-square bg-muted rounded-lg overflow-hidden">
             {media.type === "image" ? (
               <img src={media.path} alt={media.name} className="w-full h-full object-cover" />
@@ -47,12 +51,17 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
             <p>
               <span className="font-medium">Size:</span> {formatFileSize(media.size)}
             </p>
-            <p>
-              <span className="font-medium">Type:</span> {media.type}
-            </p>
             <p className="break-all">
               <span className="font-medium">Path:</span> {media.path}
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => revealInFinder(media.path)}
+              className="cursor-pointer"
+            >
+              Reveal in Finder
+            </Button>
           </div>
         </div>
       </ScrollArea>
