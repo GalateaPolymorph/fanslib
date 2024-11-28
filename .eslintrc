@@ -3,7 +3,7 @@
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true
+    "node": true,
   },
   "extends": [
     "eslint:recommended",
@@ -11,15 +11,15 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:functional/recommended",
-    "prettier"
+    "prettier",
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
     },
     "ecmaVersion": "latest",
-    "sourceType": "module"
+    "sourceType": "module",
   },
   "plugins": ["react", "@typescript-eslint", "functional"],
   "rules": {
@@ -34,11 +34,11 @@
     "functional/functional-parameters": "off",
     "functional/no-this-expression": "off",
     "functional/no-classes": "off",
-    "functional/prefer-readonly-type": "error"
+    "functional/prefer-readonly-type": "error",
   },
   "settings": {
     "react": {
-      "version": "detect"
-    }
-  }
+      "version": "detect",
+    },
+  },
 }

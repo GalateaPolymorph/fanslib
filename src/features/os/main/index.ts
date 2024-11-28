@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 export function registerOsHandlers() {
-  ipcMain.handle("os:reveal-in-finder", async (event, filePath: string) => {
+  ipcMain.handle("os:reveal-in-finder", async (_event, filePath: string) => {
     try {
       // Ensure the file exists before trying to reveal it
       if (fs.existsSync(filePath)) {

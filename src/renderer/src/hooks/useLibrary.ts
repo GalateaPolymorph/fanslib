@@ -17,8 +17,8 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
       try {
         setScanning(true);
         setError(null);
-        const files = await window.api.library.scan(libraryPath);
-        setMedia(files);
+        const media = await window.api.library.scan(libraryPath);
+        setMedia(media);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
       } finally {

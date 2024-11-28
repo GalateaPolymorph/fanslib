@@ -9,15 +9,12 @@ const ensureSettingsFile = async (): Promise<void> => {
     await fs.access(getSettingsFilePath());
   } catch (error) {
     await fs.mkdir(path.dirname(getSettingsFilePath()), { recursive: true });
-    await fs.writeFile(
-      getSettingsFilePath(),
-      JSON.stringify(DEFAULT_SETTINGS, null, 2)
-    );
+    await fs.writeFile(getSettingsFilePath(), JSON.stringify(DEFAULT_SETTINGS, null, 2));
   }
 };
 
 export const registerLoadHandler = () => {
-  ipcMain.handle("settings:load", async (event) => {
+  ipcMain.handle("settings:load", async () => {
     try {
       await ensureSettingsFile();
       const data = await fs.readFile(getSettingsFilePath(), "utf8");

@@ -12,14 +12,14 @@ export const CategorySettings: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    window.api.library.getAllCategories().then(setCategories);
+    window.api.category.getAllCategories().then(setCategories);
   }, []);
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) return;
 
     try {
-      const newCategory = await window.api.library.createCategory(categoryName);
+      const newCategory = await window.api.category.createCategory(categoryName);
       setCategories((prev) => [...prev, newCategory]);
       setCategoryName("");
     } catch (error) {
@@ -29,7 +29,7 @@ export const CategorySettings: React.FC = () => {
 
   const handleDeleteCategory = async (slug: string) => {
     try {
-      await window.api.library.deleteCategory(slug);
+      await window.api.category.deleteCategory(slug);
       setCategories((prev) => prev.filter((cat) => cat.slug !== slug));
     } catch (error) {
       console.error("Failed to delete category", error);
@@ -38,7 +38,7 @@ export const CategorySettings: React.FC = () => {
 
   const handleUpdateColor = async (slug: string, color: string) => {
     try {
-      await window.api.library.updateCategory(slug, { color });
+      await window.api.category.updateCategory(slug, { color });
       setCategories((prev) => prev.map((cat) => (cat.slug === slug ? { ...cat, color } : cat)));
     } catch (error) {
       console.error("Failed to update category color", error);

@@ -3,7 +3,7 @@ import { ResetDatabaseButton } from "@renderer/components/ResetDatabaseButton";
 import { SettingsSection } from "@renderer/components/SettingsSection";
 import { ThemeSwitch } from "@renderer/components/ThemeSwitch";
 import { Separator } from "@renderer/components/ui/separator";
-import { CategorySettings } from "./Settings/CategorySettings";
+import { CategorySettings } from "./CategorySettings";
 
 export const SettingsPage = () => {
   return (

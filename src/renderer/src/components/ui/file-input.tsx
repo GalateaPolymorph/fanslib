@@ -56,11 +56,7 @@ export const FileInput = ({
   return (
     <div className={cn("flex gap-2 items-center", className)}>
       <div className="flex-1">
-        <Input
-          value={value}
-          onChange={handleTextChange}
-          placeholder={placeholder}
-        />
+        <Input value={value} onChange={handleTextChange} placeholder={placeholder} />
       </div>
       <input
         ref={fileInputRef}

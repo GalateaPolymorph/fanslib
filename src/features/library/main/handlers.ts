@@ -4,7 +4,6 @@ import { resetDatabase } from "../../../lib/database/media/base";
 import { createNewMediaData } from "../../../lib/database/media/create";
 import { fetchMediaDataByPath } from "../../../lib/database/media/fetch";
 import { MediaFile } from "../shared/types";
-import { registerCategoryHandlers } from "./categoryHandlers";
 import { scanLibraryForMediaFiles } from "./scan";
 
 let watcher: FSWatcher | null = null;
@@ -65,6 +64,4 @@ export const registerLibraryHandlers = () => {
     }
     await resetDatabase();
   });
-
-  registerCategoryHandlers();
 };
