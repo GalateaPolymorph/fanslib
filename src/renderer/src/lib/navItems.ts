@@ -1,4 +1,4 @@
-import { Calendar, LayoutGrid, Settings } from "lucide-react";
+import { Calendar, LayoutGrid, Settings, Share2 } from "lucide-react";
 
 interface NavItem {
   title: string;
@@ -11,6 +11,11 @@ export const navItems: NavItem[] = [
     title: "Content",
     url: "/",
     icon: LayoutGrid,
+  },
+  {
+    title: "Channels",
+    url: "/channels",
+    icon: Share2,
   },
   {
     title: "Calendar",
