@@ -2,6 +2,9 @@ import { Loader2 } from "lucide-react";
 import { useLibrary } from "../hooks/useLibrary";
 import { formatFileSize } from "../lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
+import { useState } from "react";
+import { MediaSidebar } from "./MediaSidebar";
+import { useIsMobile } from "../hooks/useMobile";
 
 interface GalleryProps {
   libraryPath: string;
@@ -9,6 +12,19 @@ interface GalleryProps {
 
 export const Gallery = ({ libraryPath }: GalleryProps) => {
   const { mediaFiles, scanning, error } = useLibrary(libraryPath);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const isMobile = useIsMobile();
+
+  const handleMediaClick = (file) => {
+    setSelectedMedia(file);
+    setSidebarVisible(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setSidebarVisible(false);
+    setSelectedMedia(null);
+  };
 
   return (
     <div className="p-8 h-full flex flex-col">
@@ -34,6 +50,7 @@ export const Gallery = ({ libraryPath }: GalleryProps) => {
                   <div
                     key={file.path}
                     className="group relative aspect-square rounded-lg overflow-hidden border bg-muted hover:border-primary transition-colors"
+                    onClick={() => handleMediaClick(file)}
                   >
                     {file.type === "image" ? (
                       <img
@@ -68,6 +85,15 @@ export const Gallery = ({ libraryPath }: GalleryProps) => {
             </div>
           </ScrollArea>
         )
+      )}
+
+      {selectedMedia && (
+        <MediaSidebar
+          media={selectedMedia}
+          visible={sidebarVisible}
+          onClose={handleCloseSidebar}
+          isMobile={isMobile}
+        />
       )}
     </div>
   );
