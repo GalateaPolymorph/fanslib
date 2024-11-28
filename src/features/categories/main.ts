@@ -5,20 +5,20 @@ import { fetchAllCategories } from "../../lib/database/categories/fetch";
 import { updateCategory } from "../../lib/database/categories/update";
 
 export const registerCategoryHandlers = () => {
-  ipcMain.handle("library:create-category", async (_event, name: string) => {
+  ipcMain.handle("category:create-category", async (_event, name: string) => {
     return createCategory(name);
   });
 
-  ipcMain.handle("library:get-categories", async () => {
+  ipcMain.handle("category:get-categories", async () => {
     return fetchAllCategories();
   });
 
-  ipcMain.handle("library:delete-category", async (_event, slug: string) => {
+  ipcMain.handle("category:delete-category", async (_event, slug: string) => {
     return deleteCategory(slug);
   });
 
   ipcMain.handle(
-    "library:update-category",
+    "category:update-category",
     async (_event, slug: string, updates: { color?: string }) => {
       return updateCategory(slug, updates);
     }

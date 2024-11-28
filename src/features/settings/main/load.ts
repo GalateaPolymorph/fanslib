@@ -13,15 +13,19 @@ const ensureSettingsFile = async (): Promise<void> => {
   }
 };
 
+export const loadSettings = async (): Promise<Settings> => {
+  try {
+    await ensureSettingsFile();
+    const data = await fs.readFile(getSettingsFilePath(), "utf8");
+    return JSON.parse(data) as Settings;
+  } catch (error) {
+    console.error("Error loading settings:", error);
+    return DEFAULT_SETTINGS;
+  }
+};
+
 export const registerLoadHandler = () => {
   ipcMain.handle("settings:load", async () => {
-    try {
-      await ensureSettingsFile();
-      const data = await fs.readFile(getSettingsFilePath(), "utf8");
-      return JSON.parse(data) as Settings;
-    } catch (error) {
-      console.error("Error loading settings:", error);
-      return DEFAULT_SETTINGS;
-    }
+    return loadSettings();
   });
 };

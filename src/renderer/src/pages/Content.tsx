@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import { Gallery } from "../components/Gallery";
+import { LibraryFilters } from "../components/LibraryFilters";
 import { MediaDetail } from "../components/MediaDetail";
 import { WelcomeScreen } from "../components/WelcomeScreen";
 import { ResizableHandle, ResizablePanel } from "../components/ui/resizable";
@@ -10,7 +11,8 @@ import { useLibrary } from "../hooks/useLibrary";
 
 export const ContentPage = () => {
   const { settings, loading } = useSettings();
-  const { media, scanning, error } = useLibrary(settings?.libraryPath ?? "");
+  const [filters, setFilters] = useState<{ isNew?: boolean; categories?: string[] }>({});
+  const { media, scanning, error } = useLibrary(settings?.libraryPath ?? "", filters);
   const [selectedMedia, setSelectedMedia] = useState<(typeof media)[number] | null>(null);
 
   if (loading) {
@@ -25,12 +27,15 @@ export const ContentPage = () => {
     <div className="h-full w-full">
       <PanelGroup direction="horizontal" className="w-full">
         <ResizablePanel defaultSize={70} minSize={30}>
-          <Gallery
-            media={media}
-            scanning={scanning}
-            error={error ?? undefined}
-            onMediaSelect={setSelectedMedia}
-          />
+          <div className="flex flex-col p-8">
+            <LibraryFilters onFilterChange={setFilters} />
+            <Gallery
+              media={media}
+              scanning={scanning}
+              error={error ?? undefined}
+              onMediaSelect={setSelectedMedia}
+            />
+          </div>
         </ResizablePanel>
         <AnimatePresence mode="sync">
           {selectedMedia && (

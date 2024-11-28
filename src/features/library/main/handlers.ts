@@ -3,6 +3,9 @@ import { BrowserWindow, ipcMain } from "electron";
 import { resetDatabase } from "../../../lib/database/media/base";
 import { createNewMediaData } from "../../../lib/database/media/create";
 import { fetchMediaDataByPath } from "../../../lib/database/media/fetch";
+import { MediaData } from "../../../lib/database/media/type";
+import { updateMediaData } from "../../../lib/database/media/update";
+import { loadSettings } from "../../settings/main/load";
 import { MediaFile } from "../shared/types";
 import { scanLibraryForMediaFiles } from "./scan";
 
@@ -63,5 +66,18 @@ export const registerLibraryHandlers = () => {
       watcher = null;
     }
     await resetDatabase();
+  });
+
+  ipcMain.handle("library:update-media", async (_event, path: string, data: Partial<MediaData>) => {
+    const updatedMedia = await updateMediaData(path, data);
+    if (!updatedMedia) return;
+
+    const win = BrowserWindow.getAllWindows()[0];
+    if (!win) return;
+
+    const libraryPath = await loadSettings().then((settings) => settings.libraryPath);
+    win.webContents.send("library:changed", await fetchAllMediaInPath(libraryPath));
+
+    return updatedMedia;
   });
 };

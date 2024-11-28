@@ -45,7 +45,8 @@ export const updateMediaData = async (
   path: string,
   updates: Partial<MediaData>
 ): Promise<MediaData | null> => {
-  const mediaData = await updateRawMediaData(path, updates);
+  const mediaData = await updateRawMediaData(path, { ...updates, isNew: false });
+
   if (!mediaData) return null;
 
   if ("categoryIds" in updates && updates.categoryIds) {

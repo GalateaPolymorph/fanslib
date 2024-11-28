@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Media } from "../../../features/library/shared/types";
 
 interface UseLibraryResult {
@@ -7,18 +7,43 @@ interface UseLibraryResult {
   error: string | null;
 }
 
-export function useLibrary(libraryPath: string): UseLibraryResult {
+interface LibraryFilters {
+  isNew?: boolean;
+  categories?: string[]; // Array of category slugs to filter by
+}
+
+export function useLibrary(libraryPath: string, filters?: LibraryFilters): UseLibraryResult {
+  const mounted = useRef(false);
   const [media, setMedia] = useState<Media[]>([]);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const filterMedia = (allMedia: Media[]) => {
+    let filteredMedia = allMedia;
+
+    // Filter by isNew if specified
+    if (filters?.isNew !== undefined) {
+      filteredMedia = filteredMedia.filter((item) => item.isNew === filters.isNew);
+    }
+
+    // Filter by categories if specified
+    if (filters?.categories?.length) {
+      filteredMedia = filteredMedia.filter((item) =>
+        // Check if the media has at least one category from the filter
+        item.categories?.some((category) => filters.categories?.includes(category.slug))
+      );
+    }
+
+    return filteredMedia;
+  };
 
   useEffect(() => {
     const scanLibrary = async () => {
       try {
         setScanning(true);
         setError(null);
-        const media = await window.api.library.scan(libraryPath);
-        setMedia(media);
+        const allMedia = await window.api.library.scan(libraryPath);
+        setMedia(allMedia);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
       } finally {
@@ -28,16 +53,21 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
 
     scanLibrary();
 
-    const handleLibraryChange = (_event: any, media: Media[]) => {
-      setMedia(media);
+    const handleLibraryChange = (_event: any, allMedia: Media[]) => {
+      setMedia(filterMedia(allMedia));
     };
 
-    window.api.library.onLibraryChanged(handleLibraryChange);
+    if (!mounted.current) {
+      mounted.current = true;
+      window.api.library.onLibraryChanged(handleLibraryChange);
+      return;
+    }
 
     return () => {
+      mounted.current = false;
       window.api.library.removeLibraryChangeListener(handleLibraryChange);
     };
-  }, [libraryPath]);
+  }, [libraryPath, filters?.isNew, filters?.categories]);
 
-  return { media, scanning, error };
+  return { media: filterMedia(media), scanning, error };
 }

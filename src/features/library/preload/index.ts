@@ -14,4 +14,7 @@ export const libraryBridge = {
   resetDatabase: (): Promise<void> => {
     return ipcRenderer.invoke("library:resetDatabase");
   },
+  updateMedia: (path: string, data: Partial<Media>): Promise<Media> => {
+    return ipcRenderer.invoke("library:update-media", path, data);
+  },
 };

@@ -3,7 +3,9 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { cn, formatFileSize } from "@renderer/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Media } from "../../../features/library/shared/types";
+import { CategorySelect } from "./CategorySelect";
 import { MediaDisplay } from "./MediaDisplay";
 
 interface MediaDetailProps {
@@ -18,6 +20,18 @@ const revealInFinder = (mediaPath: string) => {
 
 export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => {
   const prefersReducedMotion = useReducedMotion();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    media.categories?.map((c) => c.slug) || []
+  );
+
+  useEffect(() => {
+    setSelectedCategories(media.categories?.map((c) => c.slug) || []);
+  }, [media]);
+
+  const handleCategoryChange = async (categorySlugs: string[]) => {
+    setSelectedCategories(categorySlugs);
+    return window.api.library.updateMedia(media.path, { categoryIds: categorySlugs });
+  };
 
   return (
     <motion.div
@@ -36,21 +50,28 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
           <X className="h-4 w-4" />
         </Button>
       </div>
-      <ScrollArea className="flex-1 @container p-4">
+      <ScrollArea className="flex-1 @container p-4 ">
         <div className="grid grid-cols-1 @[800px]:grid-cols-2 gap-4">
           <div className="aspect-square bg-muted rounded-lg overflow-hidden">
             <MediaDisplay media={media} />
           </div>
-          <div className="space-y-2">
-            <p>
-              <span className="font-medium">Name:</span> {media.name}
-            </p>
-            <p>
-              <span className="font-medium">Size:</span> {formatFileSize(media.size)}
-            </p>
-            <p className="break-all">
-              <span className="font-medium">Path:</span> {media.path}
-            </p>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <CategorySelect value={selectedCategories} onChange={handleCategoryChange} />
+            </div>
+
+            <div className="space-y-2">
+              <p>
+                <span className="font-medium">Name:</span> {media.name}
+              </p>
+              <p>
+                <span className="font-medium">Size:</span> {formatFileSize(media.size)}
+              </p>
+              <p className="break-all">
+                <span className="font-medium">Path:</span> {media.path}
+              </p>
+            </div>
+
             <Button
               variant="outline"
               size="sm"

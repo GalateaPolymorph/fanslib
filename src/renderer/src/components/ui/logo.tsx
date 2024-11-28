@@ -16,7 +16,7 @@ export const Logo: React.FC<LogoProps> = ({ isOpen = true }) => {
       {isOpen ? (
         <>
           <span className="text-foreground">Fans</span>
-          <span className="text-background bg-primary/70 rounded px-1">LIB</span>
+          <span className="text-background bg-primary/70 rounded px-1">Lib</span>
         </>
       ) : (
         <>
