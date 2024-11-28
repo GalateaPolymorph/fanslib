@@ -43,6 +43,8 @@
     "electron-settings": "^4.0.4",
     "electron-updater": "^6.1.7",
     "lucide-react": "^0.461.0",
+    "nedb": "^1.8.0",
+    "nestdb": "^2.0.0",
     "react-router-dom": "^7.0.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

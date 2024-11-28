@@ -1,6 +1,6 @@
 import chokidar, { FSWatcher } from "chokidar";
 import { BrowserWindow, ipcMain } from "electron";
-import { getMediaFileByPath, upsertMediaFile } from "./db";
+import { getMediaFileByPath, upsertMediaFile, resetDatabase } from "./db";
 import { getMediaFiles } from "./getMediaFiles";
 
 let watcher: FSWatcher | null = null;
@@ -54,5 +54,13 @@ export function setupLibraryHandlers() {
       await watcher.close();
       watcher = null;
     }
+  });
+
+  ipcMain.handle("library:resetDatabase", async () => {
+    if (watcher) {
+      await watcher.close();
+      watcher = null;
+    }
+    await resetDatabase();
   });
 }

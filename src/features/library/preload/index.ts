@@ -11,4 +11,7 @@ export const libraryBridge = {
   removeLibraryChangeListener: (callback: (event: any, files: MediaFile[]) => void) => {
     ipcRenderer.removeListener("library:changed", callback);
   },
+  resetDatabase: (): Promise<void> => {
+    return ipcRenderer.invoke("library:resetDatabase");
+  },
 };

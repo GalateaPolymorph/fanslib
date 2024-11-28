@@ -8,21 +8,22 @@ export const LibraryPathInput = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    window.api.settingsLoad().then((settings) => {
+    window.api.settings.settingsLoad().then((settings) => {
       setPath(settings.libraryPath || "");
     });
   }, []);
 
   const handlePathChange = async (newPath: string) => {
     setPath(newPath);
-    await window.api.settingsSave({ libraryPath: newPath });
-    
+    await window.api.settings.settingsSave({ libraryPath: newPath });
+
     toast({
-      headline: (<>
-        <div className="flex items-center gap-2">
-          <Check className="h-4 w-4" />
-          Library Path Updated
-        </div>
+      headline: (
+        <>
+          <div className="flex items-center gap-2">
+            <Check className="h-4 w-4" />
+            Library Path Updated
+          </div>
         </>
       ),
       description: "Your library path has been successfully updated.",

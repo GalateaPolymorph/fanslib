@@ -1,67 +1,96 @@
-import Database from "better-sqlite3";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
 import { app } from "electron";
+import { existsSync } from "fs";
+import { unlink, writeFile } from "fs/promises";
+import Datastore from "nedb";
 import { join } from "path";
 import type { MediaData, MediaFile } from "../shared/types";
-import { mediaFiles } from "./schema";
 
-// Initialize database in the user's app data directory
+let mediaDb: Datastore | null;
 const dbPath = join(app.getPath("userData"), "library.db");
-const sqlite = new Database(dbPath);
-export const db = drizzle(sqlite);
+console.log(dbPath);
 
-export type MediaDbRecord = {
-  id: number;
-  path: string;
-  name: string;
-} & MediaData;
+const db = async () => {
+  if (mediaDb) return mediaDb;
+  mediaDb = new Datastore({ filename: dbPath, autoload: true });
+  mediaDb.ensureIndex({ fieldName: "path", unique: true });
+  return mediaDb;
+};
 
-export function upsertMediaFile(
+export async function upsertMediaFile(
   file: MediaFile,
-  record: Partial<MediaDbRecord> = {}
-): MediaDbRecord {
-  return db
-    .insert(mediaFiles)
-    .values({
-      path: file.path,
-      name: file.name,
-      ...record,
-    })
-    .onConflictDoUpdate({
-      target: mediaFiles.path,
-      set: {
-        name: file.name,
-        ...record,
-      },
-    })
-    .returning()
-    .get();
+  record: Partial<MediaData> = {}
+): Promise<MediaData> {
+  const database = await db();
+  return new Promise((resolve, reject) => {
+    database.update(
+      { path: file.path },
+      { $set: { ...file, ...record } },
+      { upsert: true, returnUpdatedDocs: true },
+      (err, numAffected, affectedDocuments) => {
+        if (err) reject(err);
+        else resolve(affectedDocuments);
+      }
+    );
+  });
 }
 
-export function getMediaFileByPath(path: string): MediaDbRecord | undefined {
-  return db.select().from(mediaFiles).where(eq(mediaFiles.path, path)).get();
+export async function getMediaFileByPath(path: string): Promise<MediaData | null> {
+  const database = await db();
+  return new Promise((resolve, reject) => {
+    database.findOne({ path }, (err: Error | null, doc: MediaData | null) => {
+      if (err) reject(err);
+      else resolve(doc);
+    });
+  });
 }
 
-export function updateMediaFile(
+export async function updateMediaFile(
   path: string,
-  updates: Partial<Omit<MediaDbRecord, "id" | "path">>
-): MediaDbRecord | undefined {
-  return db
-    .update(mediaFiles)
-    .set({
-      ...updates,
-    })
-    .where(eq(mediaFiles.path, path))
-    .returning()
-    .get();
+  updates: Partial<MediaData>
+): Promise<MediaData | null> {
+  const database = await db();
+  return new Promise((resolve, reject) => {
+    database.update(
+      { path },
+      { $set: updates },
+      { returnUpdatedDocs: true },
+      (err, numAffected, affectedDocuments) => {
+        if (err) reject(err);
+        else resolve(affectedDocuments);
+      }
+    );
+  });
 }
 
-export function deleteMediaFile(path: string): void {
-  db.delete(mediaFiles).where(eq(mediaFiles.path, path)).run();
+export async function getAllMediaFiles(): Promise<MediaData[]> {
+  const database = await db();
+  return new Promise((resolve, reject) => {
+    database.find({}, (err: Error | null, docs: MediaData[]) => {
+      if (err) reject(err);
+      else resolve(docs);
+    });
+  });
 }
 
-// Clean up database connection when app exits
-app.on("before-quit", () => {
-  sqlite.close();
-});
+export async function deleteMediaFile(path: string): Promise<void> {
+  const database = await db();
+  return new Promise((resolve, reject) => {
+    database.remove({ path }, {}, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
+export async function resetDatabase(): Promise<void> {
+  mediaDb = null;
+
+  if (existsSync(dbPath)) {
+    await unlink(dbPath);
+  }
+
+  await writeFile(dbPath, "", { flag: "w" });
+
+  mediaDb = new Datastore({ filename: dbPath, autoload: true });
+  mediaDb.ensureIndex({ fieldName: "path", unique: true });
+}

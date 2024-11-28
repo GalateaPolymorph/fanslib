@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { MediaFile } from "../../../features/library/shared/types";
+import { MediaFile } from "../../../features/library/shared/types";
 
 interface UseLibraryResult {
   mediaFiles: MediaFile[];
@@ -17,7 +17,7 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
       try {
         setScanning(true);
         setError(null);
-        const files = await window.api.scan(libraryPath);
+        const files = await window.api.library.scan(libraryPath);
         setMediaFiles(files);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
@@ -32,10 +32,10 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
       setMediaFiles(files);
     };
 
-    window.api.onLibraryChanged(handleLibraryChange);
+    window.api.library.onLibraryChanged(handleLibraryChange);
 
     return () => {
-      window.api.removeLibraryChangeListener(handleLibraryChange);
+      window.api.library.removeLibraryChangeListener(handleLibraryChange);
     };
   }, [libraryPath]);
 

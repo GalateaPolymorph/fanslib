@@ -2,7 +2,6 @@ import { app, BrowserWindow, net, protocol, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
 import { setupLibraryHandlers } from "../features/library/main/handlers";
-import { runMigrations } from "../features/library/main/migrations";
 import { registerSettingsHandlers } from "../features/settings/main/index";
 protocol.registerSchemesAsPrivileged([
   {
@@ -66,9 +65,6 @@ app.whenReady().then(() => {
 
   // Register IPC handlers
   registerHandlers();
-
-  // Run database migrations
-  runMigrations();
 
   // Create the main window
   createWindow();
