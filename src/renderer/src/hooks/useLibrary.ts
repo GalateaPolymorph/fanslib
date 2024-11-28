@@ -41,3 +41,13 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
 
   return { mediaFiles, scanning, error };
 }
+
+export async function fetchMediaDetails(filePath: string): Promise<MediaFile> {
+  try {
+    const mediaDetails = await window.api.getMediaDetails(filePath);
+    return mediaDetails;
+  } catch (error) {
+    console.error("Failed to fetch media details:", error);
+    throw error;
+  }
+}
