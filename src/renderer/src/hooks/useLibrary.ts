@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { MediaFile } from "../../../features/library/shared/types";
+import { Media } from "../../../features/library/shared/types";
 
 interface UseLibraryResult {
-  mediaFiles: MediaFile[];
+  media: Media[];
   scanning: boolean;
   error: string | null;
 }
 
 export function useLibrary(libraryPath: string): UseLibraryResult {
-  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
+  const [media, setMedia] = useState<Media[]>([]);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +18,7 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
         setScanning(true);
         setError(null);
         const files = await window.api.library.scan(libraryPath);
-        setMediaFiles(files);
+        setMedia(files);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
       } finally {
@@ -28,8 +28,8 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
 
     scanLibrary();
 
-    const handleLibraryChange = (_event: any, files: MediaFile[]) => {
-      setMediaFiles(files);
+    const handleLibraryChange = (_event: any, media: Media[]) => {
+      setMedia(media);
     };
 
     window.api.library.onLibraryChanged(handleLibraryChange);
@@ -39,5 +39,5 @@ export function useLibrary(libraryPath: string): UseLibraryResult {
     };
   }, [libraryPath]);
 
-  return { mediaFiles, scanning, error };
+  return { media, scanning, error };
 }

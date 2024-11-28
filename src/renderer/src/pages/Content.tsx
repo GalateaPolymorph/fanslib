@@ -10,8 +10,8 @@ import { useLibrary } from "../hooks/useLibrary";
 
 export const ContentPage = () => {
   const { settings, loading } = useSettings();
-  const { mediaFiles, scanning, error } = useLibrary(settings?.libraryPath ?? "");
-  const [selectedMedia, setSelectedMedia] = useState<(typeof mediaFiles)[number] | null>(null);
+  const { media, scanning, error } = useLibrary(settings?.libraryPath ?? "");
+  const [selectedMedia, setSelectedMedia] = useState<(typeof media)[number] | null>(null);
 
   if (loading) {
     return null;
@@ -26,7 +26,7 @@ export const ContentPage = () => {
       <PanelGroup direction="horizontal" className="w-full">
         <ResizablePanel defaultSize={70} minSize={30}>
           <Gallery
-            mediaFiles={mediaFiles}
+            media={media}
             scanning={scanning}
             error={error ?? undefined}
             onMediaSelect={setSelectedMedia}

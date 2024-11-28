@@ -1,3 +1,5 @@
+import { MediaData } from "src/lib/database/media/type";
+
 export type MediaFile = {
   path: string;
   type: "image" | "video";
@@ -5,10 +7,6 @@ export type MediaFile = {
   size: number;
   created: Date;
   modified: Date;
-};
-
-export type MediaData = {
-  isNew: boolean;
 };
 
 export type Media = MediaFile & MediaData;

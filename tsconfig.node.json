@@ -6,7 +6,9 @@
     "src/preload/**/*",
     "src/features/**/*.ts",
     "!src/features/**/renderer.ts",
-    "!src/features/**/renderer/**/*.ts"
+    "!src/features/**/renderer/**/*.ts",
+    "src/lib/database/**/*",
+    "src/lib/**/*"
   ],
   "compilerOptions": {
     "composite": true,

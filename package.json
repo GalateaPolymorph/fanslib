@@ -28,6 +28,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-scroll-area": "^1.2.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
@@ -48,16 +49,14 @@
     "nestdb": "^2.0.0",
     "react-resizable-panels": "^2.1.7",
     "react-router-dom": "^7.0.1",
-    "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7",
-    "zustand": "^5.0.1",
-    "zutron": "^0.5.1-0"
+    "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@tailwindcss/postcss": "^4.0.0-beta.3",
+    "@types/nedb": "^1.8.16",
     "@types/node": "^20.14.8",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

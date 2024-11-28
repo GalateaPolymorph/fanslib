@@ -1,10 +1,7 @@
 @import "tailwindcss";
-
-@plugin 'tailwindcss-animate';
+@import url("https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap");
 
 @variant dark (&:is(.dark *));
-
-@import url("https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap");
 
 @theme {
   --color-border: hsl(var(--border));
@@ -78,7 +75,7 @@
     --input: 214.3 31.8% 91.4%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 270 100% 50%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;

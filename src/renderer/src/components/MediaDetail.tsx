@@ -3,11 +3,11 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { cn, formatFileSize } from "@renderer/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
-import { MediaFile } from "../../../features/library/shared/types";
-import { Media } from "./Media";
+import { Media } from "../../../features/library/shared/types";
+import { MediaDisplay } from "./MediaDisplay";
 
 interface MediaDetailProps {
-  media: MediaFile;
+  media: Media;
   onClose: () => void;
   className?: string;
 }
@@ -39,7 +39,7 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
       <ScrollArea className="flex-1 @container p-4">
         <div className="grid grid-cols-1 @[800px]:grid-cols-2 gap-4">
           <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-            <Media file={media} />
+            <MediaDisplay media={media} />
           </div>
           <div className="space-y-2">
             <p>

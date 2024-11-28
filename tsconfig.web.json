@@ -6,7 +6,10 @@
     "src/features/**/renderer/**/*.{ts,tsx}",
     "src/features/**/renderer/*.{ts,tsx}",
     "src/features/**/renderer.ts",
-    "src/preload/*.d.ts"
+    "src/preload/*.d.ts",
+    "src/lib/database/*/type.ts",
+    "src/features/library/shared/types.ts",
+    "src/lib/database/categories/colors.ts"
   ],
   "compilerOptions": {
     "composite": true,

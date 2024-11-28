@@ -1,23 +1,23 @@
-import { MediaFile } from "../../../features/library/shared/types";
+import { Media } from "../../../features/library/shared/types";
 
-type Media = {
-  file: MediaFile;
+type MediaDisplayProps = {
+  media: Media;
 };
-export const Media = ({ file }: Media) => {
-  if (file.type === "image") {
+export const MediaDisplay = ({ media }: MediaDisplayProps) => {
+  if (media.type === "image") {
     return (
       <img
-        src={`media://${file.path}`}
-        alt={file.name}
+        src={`media://${media.path}`}
+        alt={media.name}
         className="w-full h-full object-cover rounded-lg overflow-hidden"
       />
     );
   }
 
-  if (file.type === "video") {
+  if (media.type === "video") {
     return (
       <video
-        src={`media://${file.path}`}
+        src={`media://${media.path}`}
         className="w-full h-full object-cover rounded-lg overflow-hidden"
       />
     );
