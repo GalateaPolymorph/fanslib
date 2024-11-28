@@ -4,6 +4,7 @@ import { cn, formatFileSize } from "@renderer/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { MediaFile } from "../../../features/library/shared/types";
+import { Media } from "./Media";
 
 interface MediaDetailProps {
   media: MediaFile;
@@ -30,7 +31,7 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
       className={cn("flex flex-col bg-background h-full w-full", className)}
     >
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Media Details</h2>
+        <h2 className="text-lg font-semibold">{media.name}</h2>
         <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
           <X className="h-4 w-4" />
         </Button>
@@ -38,11 +39,7 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
       <ScrollArea className="flex-1 @container p-4">
         <div className="grid grid-cols-1 @[800px]:grid-cols-2 gap-4">
           <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-            {media.type === "image" ? (
-              <img src={media.path} alt={media.name} className="w-full h-full object-cover" />
-            ) : (
-              <video src={media.path} controls className="w-full h-full object-cover" />
-            )}
+            <Media file={media} />
           </div>
           <div className="space-y-2">
             <p>

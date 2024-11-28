@@ -38,7 +38,11 @@ const createWindow = () => {
   });
 
   mainWindow.on("ready-to-show", () => {
-    mainWindow.show();
+    if (process.env.DEVELOPMENT) {
+      mainWindow.showInactive();
+    } else {
+      mainWindow.show();
+    }
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

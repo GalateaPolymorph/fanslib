@@ -1,6 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { MediaFile } from "../../../features/library/shared/types";
 import { formatFileSize } from "../lib/utils";
+import { Media } from "./Media";
 import { ScrollArea } from "./ui/scroll-area";
 
 interface GalleryProps {
@@ -36,22 +37,7 @@ export const Gallery = ({ mediaFiles, scanning, error, onMediaSelect }: GalleryP
                   className="group relative aspect-square rounded-lg overflow-hidden border bg-muted hover:border-primary transition-colors cursor-pointer"
                   onClick={() => onMediaSelect(file)}
                 >
-                  {file.type === "image" ? (
-                    <img
-                      src={`media://${file.path}`}
-                      alt={file.name}
-                      className="w-full h-full object-cover rounded-lg overflow-hidden"
-                    />
-                  ) : file.type === "video" ? (
-                    <video
-                      src={`media://${file.path}`}
-                      className="w-full h-full object-cover rounded-lg overflow-hidden"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground rounded-lg">
-                      Unsupported media type
-                    </div>
-                  )}
+                  <Media file={file} />
                   <div className="absolute bottom-0 left-0 right-0 bg-background/90 p-2 translate-y-full group-hover:translate-y-0 transition-transform">
                     <p className="text-sm font-medium truncate" title={file.name}>
                       {file.name}
