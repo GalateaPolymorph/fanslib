@@ -1,9 +1,9 @@
 import { channelsDb } from "./base";
-import { RawChannel } from "./type";
+import { Channel, RawChannel } from "./type";
 
 export const updateChannel = async (
   id: string,
-  updates: Partial<Omit<RawChannel, "id">>
+  updates: Partial<Omit<Channel, "id">>
 ): Promise<RawChannel | null> => {
   const db = await channelsDb();
   return new Promise((resolve, reject) => {

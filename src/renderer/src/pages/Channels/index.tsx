@@ -1,21 +1,15 @@
 import { ChannelView } from "@renderer/components/ChannelView";
 import { Button } from "@renderer/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@renderer/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
 import { Channel } from "../../../../lib/database/channels/type";
 import { CreateChannelForm } from "./CreateChannelForm";
 
 export const ChannelsPage = () => {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingChannelId, setEditingChannelId] = useState<string | null>(null);
 
   useEffect(() => {
     loadChannels();
@@ -26,14 +20,22 @@ export const ChannelsPage = () => {
     setChannels(channels);
   };
 
-  const handleCreateChannel = async (data: {
-    name: string;
-    description: string;
-    typeId: keyof typeof CHANNEL_TYPES;
-  }) => {
-    await window.api.channel.createChannel(data);
-    loadChannels();
+  const handleNewChannel = (channel: Channel) => {
+    setChannels((prev) => [...prev, channel]);
     setIsCreateDialogOpen(false);
+    setEditingChannelId(channel.id);
+  };
+
+  const handleChannelUpdate = (updatedChannel: Channel) => {
+    setChannels((prev) => prev.map((ch) => (ch.id === updatedChannel.id ? updatedChannel : ch)));
+  };
+
+  const handleChannelDelete = async (channel: Channel) => {
+    await window.api.channel.deleteChannel(channel.id);
+    setChannels((prev) => prev.filter((ch) => ch.id !== channel.id));
+    if (editingChannelId === channel.id) {
+      setEditingChannelId(null);
+    }
   };
 
   return (
@@ -48,10 +50,7 @@ export const ChannelsPage = () => {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create Channel</DialogTitle>
-            </DialogHeader>
-            <CreateChannelForm onSubmit={handleCreateChannel} />
+            <CreateChannelForm onSubmit={handleNewChannel} />
           </DialogContent>
         </Dialog>
       </div>
@@ -61,11 +60,10 @@ export const ChannelsPage = () => {
           <div key={channel.id} className="p-6">
             <ChannelView
               channel={channel}
-              onUpdate={(updatedChannel) => {
-                setChannels((prevChannels) =>
-                  prevChannels.map((ch) => (ch.id === updatedChannel.id ? updatedChannel : ch))
-                );
-              }}
+              onUpdate={handleChannelUpdate}
+              onDelete={handleChannelDelete}
+              isEditing={channel.id === editingChannelId}
+              onEditingChange={(editing) => setEditingChannelId(editing ? channel.id : null)}
             />
           </div>
         ))}

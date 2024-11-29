@@ -2,19 +2,15 @@ import { ipcMain } from "electron";
 import { CHANNEL_TYPES } from "../../lib/database/channels/channelTypes";
 import { createChannel } from "../../lib/database/channels/create";
 import { deleteChannel } from "../../lib/database/channels/delete";
+import { enrichChannel } from "../../lib/database/channels/enrich";
 import { fetchAllChannels, fetchChannelById } from "../../lib/database/channels/fetch";
+import { RawChannel } from "../../lib/database/channels/type";
 import { updateChannel } from "../../lib/database/channels/update";
 
 export const registerChannelHandlers = () => {
-  ipcMain.handle(
-    "channel:create-channel",
-    async (
-      _event,
-      data: { name: string; description?: string; typeId: keyof typeof CHANNEL_TYPES }
-    ) => {
-      return createChannel(data);
-    }
-  );
+  ipcMain.handle("channel:create-channel", async (_event, data: RawChannel) => {
+    return createChannel(data);
+  });
 
   ipcMain.handle("channel:get-channels", async () => {
     return fetchAllChannels();
@@ -30,12 +26,10 @@ export const registerChannelHandlers = () => {
 
   ipcMain.handle(
     "channel:update-channel",
-    async (
-      _event,
-      id: string,
-      updates: { name?: string; description?: string; typeId?: keyof typeof CHANNEL_TYPES }
-    ) => {
-      return updateChannel(id, updates);
+    async (_event, id: string, updates: Partial<Omit<RawChannel, "id">>) => {
+      return updateChannel(id, updates).then(
+        (updatedChannel) => updatedChannel && enrichChannel(updatedChannel)
+      );
     }
   );
 
