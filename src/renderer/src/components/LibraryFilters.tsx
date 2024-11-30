@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
-import { Category } from "../../../lib/database/categories/type";
-import { Badge } from "./ui/badge";
+import { useState } from "react";
+import { CategorySelect } from "./CategorySelect";
 import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 import { Switch } from "./ui/switch";
 
@@ -11,24 +9,14 @@ interface LibraryFiltersProps {
 }
 
 export const LibraryFilters = ({ onFilterChange }: LibraryFiltersProps) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showNewOnly, setShowNewOnly] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  useEffect(() => {
-    window.api.category.getAllCategories().then(setCategories);
-  }, []);
-
-  const handleCategoryToggle = (slug: string) => {
-    setSelectedCategories((prev) => {
-      const newSelection = prev.includes(slug) ? prev.filter((id) => id !== slug) : [...prev, slug];
-
-      onFilterChange({
-        isNew: showNewOnly || undefined,
-        categories: newSelection.length > 0 ? newSelection : undefined,
-      });
-
-      return newSelection;
+  const handleCategoryChange = (slugs: string[]) => {
+    setSelectedCategories(slugs);
+    onFilterChange({
+      isNew: showNewOnly || undefined,
+      categories: slugs.length > 0 ? slugs : undefined,
     });
   };
 
@@ -41,8 +29,8 @@ export const LibraryFilters = ({ onFilterChange }: LibraryFiltersProps) => {
   };
 
   const clearFilters = () => {
-    setSelectedCategories([]);
     setShowNewOnly(false);
+    setSelectedCategories([]);
     onFilterChange({});
   };
 
@@ -57,43 +45,9 @@ export const LibraryFilters = ({ onFilterChange }: LibraryFiltersProps) => {
         </label>
       </div>
 
-      {categories.length > 0 && (
-        <>
-          <Separator orientation="vertical" className="h-6" />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm">
-                Categories
-                {selectedCategories.length > 0 && (
-                  <Badge variant="secondary" className="ml-2 rounded-sm px-1 font-normal">
-                    {selectedCategories.length}
-                  </Badge>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56" align="start">
-              <div className="space-y-2">
-                {categories.map((category) => (
-                  <div
-                    key={category.slug}
-                    className="flex items-center gap-2"
-                    style={{ color: category.color }}
-                  >
-                    <Switch
-                      checked={selectedCategories.includes(category.slug)}
-                      onCheckedChange={() => handleCategoryToggle(category.slug)}
-                      id={`category-${category.slug}`}
-                    />
-                    <label htmlFor={`category-${category.slug}`} className="text-sm cursor-pointer">
-                      {category.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </>
-      )}
+      <Separator orientation="vertical" className="h-6" />
+
+      <CategorySelect value={selectedCategories} onChange={handleCategoryChange} multiple={true} />
 
       {hasActiveFilters && (
         <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">

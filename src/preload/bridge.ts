@@ -1,6 +1,7 @@
 import { contextBridge } from "electron";
 import { categoryBridge } from "../features/categories/preload";
 import { channelBridge } from "../features/channels/preload";
+import { contentScheduleBridge } from "../features/content-schedules/preload";
 import { libraryBridge } from "../features/library/preload";
 import { osBridge } from "../features/os/preload";
 import { settingsBridge } from "../features/settings/preload";
@@ -11,6 +12,7 @@ const bridge = {
   os: osBridge,
   category: categoryBridge,
   channel: channelBridge,
+  contentSchedule: contentScheduleBridge,
 };
 
 export type AppAPI = typeof bridge;

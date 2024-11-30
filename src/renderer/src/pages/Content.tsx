@@ -1,7 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { PanelGroup } from "react-resizable-panels";
-import { Gallery } from "../components/Gallery";
+import { Gallery, GridSizeContext, GridSizeToggle, type GridSize } from "../components/Gallery";
 import { LibraryFilters } from "../components/LibraryFilters";
 import { MediaDetail } from "../components/MediaDetail";
 import { WelcomeScreen } from "../components/WelcomeScreen";
@@ -14,6 +14,7 @@ export const ContentPage = () => {
   const [filters, setFilters] = useState<{ isNew?: boolean; categories?: string[] }>({});
   const { media, scanning, error } = useLibrary(settings?.libraryPath ?? "", filters);
   const [selectedMedia, setSelectedMedia] = useState<(typeof media)[number] | null>(null);
+  const [gridSize, setGridSize] = useState<GridSize>("large");
 
   if (loading) {
     return null;
@@ -26,22 +27,30 @@ export const ContentPage = () => {
   return (
     <div className="h-full w-full">
       <PanelGroup direction="horizontal" className="w-full">
-        <ResizablePanel defaultSize={70} minSize={30}>
-          <div className="flex flex-col p-8">
-            <LibraryFilters onFilterChange={setFilters} />
-            <Gallery
-              media={media}
-              scanning={scanning}
-              error={error ?? undefined}
-              onMediaSelect={setSelectedMedia}
-            />
+        <ResizablePanel defaultSize={50} minSize={30} className="flex flex-col">
+          <h1 className="text-2xl font-bold py-6 pl-6">Library</h1>
+          <div className="container mx-auto">
+            <div className="flex flex-col p-6">
+              <GridSizeContext.Provider value={{ gridSize, setGridSize }}>
+                <div className="flex justify-between items-center mb-4">
+                  <LibraryFilters onFilterChange={setFilters} />
+                  <GridSizeToggle />
+                </div>
+                <Gallery
+                  media={media}
+                  scanning={scanning}
+                  error={error ?? undefined}
+                  onMediaSelect={setSelectedMedia}
+                />
+              </GridSizeContext.Provider>
+            </div>
           </div>
         </ResizablePanel>
         <AnimatePresence mode="sync">
           {selectedMedia && (
             <>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
+              <ResizablePanel defaultSize={50} minSize={20} maxSize={50}>
                 <MediaDetail media={selectedMedia} onClose={() => setSelectedMedia(null)} />
               </ResizablePanel>
             </>

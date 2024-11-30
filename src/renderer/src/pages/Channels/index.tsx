@@ -1,9 +1,9 @@
-import { ChannelView } from "@renderer/components/ChannelView";
 import { Button } from "@renderer/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Channel } from "../../../../lib/database/channels/type";
+import { ChannelView } from "./ChannelView";
 import { CreateChannelForm } from "./CreateChannelForm";
 
 export const ChannelsPage = () => {

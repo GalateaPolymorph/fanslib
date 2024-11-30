@@ -6,6 +6,7 @@ import { registerLibraryHandlers } from "../features/library/main/handlers";
 import { registerOsHandlers } from "../features/os/main";
 import { registerSettingsHandlers } from "../features/settings/main/index";
 import { registerChannelHandlers } from "../features/channels/main";
+import { registerContentScheduleHandlers } from "../features/content-schedules/main";
 protocol.registerSchemesAsPrivileged([
   {
     scheme: "media",
@@ -23,6 +24,7 @@ const registerHandlers = () => {
   registerOsHandlers();
   registerCategoryHandlers();
   registerChannelHandlers();
+  registerContentScheduleHandlers();
 };
 
 const createWindow = () => {

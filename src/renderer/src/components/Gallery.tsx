@@ -1,7 +1,10 @@
-import { Loader2 } from "lucide-react";
+import { cn } from "@renderer/lib/utils";
+import { Grid2X2, Grid3X3, Loader2 } from "lucide-react";
+import { createContext, useContext } from "react";
 import { Media } from "../../../features/library/shared/types";
 import { MediaDisplay } from "./MediaDisplay";
 import { ScrollArea } from "./ui/scroll-area";
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 interface GalleryProps {
   media: Media[];
@@ -10,7 +13,37 @@ interface GalleryProps {
   onMediaSelect: (media: Media) => void;
 }
 
+export type GridSize = "large" | "small";
+export const GridSizeContext = createContext<{
+  gridSize: GridSize;
+  setGridSize: (size: GridSize) => void;
+}>({
+  gridSize: "large",
+  setGridSize: () => {},
+});
+
+export const GridSizeToggle = () => {
+  const { gridSize, setGridSize } = useContext(GridSizeContext);
+
+  return (
+    <ToggleGroup
+      type="single"
+      value={gridSize}
+      onValueChange={(value) => value && setGridSize(value as GridSize)}
+    >
+      <ToggleGroupItem value="small" aria-label="Small grid">
+        <Grid3X3 className="h-4 w-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="large" aria-label="Large grid">
+        <Grid2X2 className="h-4 w-4" />
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+};
+
 export const Gallery = ({ media, scanning, error, onMediaSelect }: GalleryProps) => {
+  const { gridSize } = useContext(GridSizeContext);
+
   if (scanning) {
     return (
       <div className="flex items-center justify-center flex-1">
@@ -29,7 +62,14 @@ export const Gallery = ({ media, scanning, error, onMediaSelect }: GalleryProps)
 
   return (
     <ScrollArea className="w-full pr-4">
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 py-1 pr-1">
+      <div
+        className={cn(
+          "grid gap-4 py-1 pr-1",
+          gridSize === "large"
+            ? "grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+            : "grid-cols-[repeat(auto-fill,minmax(120px,1fr))]"
+        )}
+      >
         {media.map((media) => (
           <div className="relative" key={media.path}>
             {media.isNew && (
@@ -50,7 +90,8 @@ export const Gallery = ({ media, scanning, error, onMediaSelect }: GalleryProps)
                 }
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "transparent";
+                const element = e.currentTarget as HTMLElement;
+                element.style.borderColor = "transparent";
               }}
             >
               <MediaDisplay media={media} />

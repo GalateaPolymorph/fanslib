@@ -4,6 +4,7 @@
 @variant dark (&:is(.dark *));
 
 @theme {
+  --text-2xs: 0.625rem;
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));

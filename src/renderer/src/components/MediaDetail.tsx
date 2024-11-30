@@ -56,30 +56,37 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
             <MediaDisplay media={media} />
           </div>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <CategorySelect value={selectedCategories} onChange={handleCategoryChange} />
+            <div className="flex justify-between">
+              <div className="space-y-2">
+                <CategorySelect value={selectedCategories} onChange={handleCategoryChange} />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => revealInFinder(media.path)}
+                className="cursor-pointer"
+              >
+                Reveal in Finder
+              </Button>
             </div>
 
             <div className="space-y-2">
-              <p>
-                <span className="font-medium">Name:</span> {media.name}
-              </p>
-              <p>
-                <span className="font-medium">Size:</span> {formatFileSize(media.size)}
-              </p>
-              <p className="break-all">
-                <span className="font-medium">Path:</span> {media.path}
-              </p>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-2">File Information</h3>
+              <div className="space-y-2 text-sm divide-y">
+                <div className="flex items-center py-1.5 ">
+                  <span className="font-medium w-16">Name</span>
+                  <span className="text-muted-foreground">{media.name}</span>
+                </div>
+                <div className="flex items-center py-1.5 ">
+                  <span className="font-medium w-16">Size</span>
+                  <span className="text-muted-foreground">{formatFileSize(media.size)}</span>
+                </div>
+                <div className="flex py-1.5 ">
+                  <span className="font-medium w-16 shrink-0">Path</span>
+                  <span className="text-muted-foreground break-all">{media.path}</span>
+                </div>
+              </div>
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => revealInFinder(media.path)}
-              className="cursor-pointer"
-            >
-              Reveal in Finder
-            </Button>
           </div>
         </div>
       </ScrollArea>
