@@ -1,19 +1,19 @@
 import { Loader2, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MediaFile } from "../../../features/library/shared/types";
+import { Media } from "../../../lib/database/media/type";
 import { formatFileSize } from "../lib/utils";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 
-export const WelcomeScreen = () => {
+export function WelcomeScreen() {
   const navigate = useNavigate();
-  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(false);
+  const [mediaItems, setMediaItems] = useState<Media[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const scanLibrary = async () => {
+    const loadMedia = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -26,8 +26,8 @@ export const WelcomeScreen = () => {
         }
 
         // Scan for media files
-        const files = await window.api.library.scan(settings.libraryPath);
-        setMediaFiles(files);
+        const files = await window.api.library.getAllMedia();
+        setMediaItems(files);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
       } finally {
@@ -35,7 +35,7 @@ export const WelcomeScreen = () => {
       }
     };
 
-    scanLibrary();
+    loadMedia();
   }, []);
 
   return (
@@ -68,7 +68,7 @@ export const WelcomeScreen = () => {
                 <div>Type</div>
                 <div>Modified</div>
               </div>
-              {mediaFiles.map((file) => (
+              {mediaItems.map((file) => (
                 <div
                   key={file.path}
                   className="grid grid-cols-[1fr_100px_150px_150px] gap-4 p-2 hover:bg-muted/50 rounded-sm"
@@ -78,10 +78,10 @@ export const WelcomeScreen = () => {
                   </div>
                   <div>{formatFileSize(file.size)}</div>
                   <div className="capitalize">{file.type}</div>
-                  <div>{file.modified.toLocaleDateString()}</div>
+                  <div>{new Date(file.modified).toLocaleDateString()}</div>
                 </div>
               ))}
-              {mediaFiles.length === 0 && !loading && (
+              {mediaItems.length === 0 && !loading && (
                 <div className="text-center text-muted-foreground p-4">
                   No media files found in the library
                 </div>
@@ -92,4 +92,4 @@ export const WelcomeScreen = () => {
       )}
     </div>
   );
-};
+}

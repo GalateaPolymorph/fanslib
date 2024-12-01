@@ -1,35 +1,16 @@
 import { mediaDb } from "./base";
-import { enrichMediaData } from "./enrich";
-import { MediaData, RawMediaData } from "./type";
+import { enrichMedia } from "./enrich";
+import { Media } from "./type";
 
-const fetchRawMediaDataByPath = async (path: string): Promise<RawMediaData | null> => {
+export const fetchAllMedia = async (): Promise<Media[]> => {
   const database = await mediaDb();
-  return new Promise((resolve, reject) => {
-    database.findOne({ path }, (err: Error | null, doc: RawMediaData | null) => {
-      if (err) reject(err);
-      else resolve(doc);
+  return new Promise<Media[]>((resolve) => {
+    database.find({}, (err: Error | null, docs: Media[]) => {
+      if (err) {
+        console.error("Error fetching all media:", err);
+        resolve([]);
+      }
+      resolve(docs);
     });
-  });
-};
-
-export const fetchMediaDataByPath = async (path: string): Promise<MediaData | null> => {
-  const rawMediaData = await fetchRawMediaDataByPath(path);
-  return rawMediaData ? enrichMediaData(rawMediaData) : null;
-};
-
-const fetchAllRawMediaData = async (): Promise<RawMediaData[]> => {
-  const database = await mediaDb();
-  return new Promise((resolve, reject) => {
-    database.find({}, (err: Error | null, docs: RawMediaData[]) => {
-      if (err) reject(err);
-      else resolve(docs);
-    });
-  });
-};
-
-export const fetchAllMediaData = async (): Promise<MediaData[]> => {
-  const rawMediaData = await fetchAllRawMediaData();
-  return Promise.all(rawMediaData.map(enrichMediaData)).then(
-    (mediaData) => mediaData.filter(Boolean) as MediaData[]
-  );
+  }).then((media) => Promise.all(media.map(enrichMedia)));
 };

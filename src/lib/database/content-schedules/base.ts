@@ -16,9 +16,17 @@ export const contentSchedulesDb = async () => {
 };
 
 export const resetContentSchedulesDatabase = async (): Promise<void> => {
-  contentSchedulesDatastore = null;
+  console.log("🗑️ Resetting content schedules database...");
+  try {
+    contentSchedulesDatastore = null;
 
-  if (existsSync(contentSchedulesDbPath)) {
-    await unlink(contentSchedulesDbPath);
+    if (existsSync(contentSchedulesDbPath)) {
+      await unlink(contentSchedulesDbPath);
+    }
+
+    console.log("✅ Content schedules database reset successfully");
+  } catch (error) {
+    console.error("❌ Error resetting content schedules database:", error);
+    throw error;
   }
 };

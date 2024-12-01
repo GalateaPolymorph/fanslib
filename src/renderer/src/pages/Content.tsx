@@ -25,23 +25,27 @@ export const ContentPage = () => {
   }
 
   return (
-    <div className="h-full w-full">
-      <PanelGroup direction="horizontal" className="w-full">
-        <ResizablePanel defaultSize={50} minSize={30} className="flex flex-col">
-          <h1 className="text-2xl font-bold py-6 pl-6">Library</h1>
-          <div className="container mx-auto">
-            <div className="flex flex-col p-6">
+    <div className="h-full w-full overflow-hidden">
+      <PanelGroup direction="horizontal" className="h-full w-full">
+        <ResizablePanel id="gallery" defaultSize={50} minSize={30} className="flex flex-col h-full">
+          <h1 className="text-2xl font-bold py-6 pl-6 flex-none">Library</h1>
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full p-6">
               <GridSizeContext.Provider value={{ gridSize, setGridSize }}>
-                <div className="flex justify-between items-center mb-4">
-                  <LibraryFilters onFilterChange={setFilters} />
-                  <GridSizeToggle />
+                <div className="flex flex-col h-full">
+                  <div className="flex justify-between items-center mb-4 flex-none">
+                    <LibraryFilters onFilterChange={setFilters} />
+                    <GridSizeToggle />
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <Gallery
+                      media={media}
+                      scanning={scanning}
+                      error={error ?? undefined}
+                      onMediaSelect={setSelectedMedia}
+                    />
+                  </div>
                 </div>
-                <Gallery
-                  media={media}
-                  scanning={scanning}
-                  error={error ?? undefined}
-                  onMediaSelect={setSelectedMedia}
-                />
               </GridSizeContext.Provider>
             </div>
           </div>
@@ -50,7 +54,7 @@ export const ContentPage = () => {
           {selectedMedia && (
             <>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={50} minSize={20} maxSize={50}>
+              <ResizablePanel id="detail" defaultSize={50} minSize={20} maxSize={50}>
                 <MediaDetail media={selectedMedia} onClose={() => setSelectedMedia(null)} />
               </ResizablePanel>
             </>

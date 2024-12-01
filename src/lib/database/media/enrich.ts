@@ -1,16 +1,16 @@
+import { isNotNil } from "ramda";
 import { fetchCategoryBySlug } from "../categories/fetch";
-import { Category } from "../categories/type";
-import { RawMediaData, MediaData } from "./type";
+import { Media } from "./type";
 
-export const enrichMediaData = async (rawMediaData: RawMediaData): Promise<MediaData | null> => {
-  const categories = rawMediaData.categoryIds
-    ? await Promise.all(rawMediaData.categoryIds.map((slug) => fetchCategoryBySlug(slug))).then(
-        (cats) => cats.filter(Boolean) as Category[]
+export const enrichMedia = async (media: Media): Promise<Media> => {
+  const categories = media.categoryIds
+    ? await Promise.all(media.categoryIds.map((slug) => fetchCategoryBySlug(slug))).then(
+        (categories) => categories.filter(isNotNil)
       )
     : [];
 
   return {
-    ...rawMediaData,
+    ...media,
     categories,
   };
 };

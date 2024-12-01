@@ -4,6 +4,7 @@ import { channelBridge } from "../features/channels/preload";
 import { contentScheduleBridge } from "../features/content-schedules/preload";
 import { libraryBridge } from "../features/library/preload";
 import { osBridge } from "../features/os/preload";
+import { postsBridge } from "../features/posts/preload/index";
 import { settingsBridge } from "../features/settings/preload";
 
 const bridge = {
@@ -13,6 +14,7 @@ const bridge = {
   category: categoryBridge,
   channel: channelBridge,
   contentSchedule: contentScheduleBridge,
+  posts: postsBridge,
 };
 
 export type AppAPI = typeof bridge;

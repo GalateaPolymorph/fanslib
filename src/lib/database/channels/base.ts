@@ -16,14 +16,22 @@ export const channelsDb = async () => {
 };
 
 export const resetChannelsDatabase = async (): Promise<void> => {
-  channelsDatastore = null;
+  console.log("🗑️ Resetting channels database...");
+  try {
+    channelsDatastore = null;
 
-  if (existsSync(channelsDbPath)) {
-    await unlink(channelsDbPath);
+    if (existsSync(channelsDbPath)) {
+      await unlink(channelsDbPath);
+    }
+
+    await writeFile(channelsDbPath, "", { flag: "w" });
+
+    channelsDatastore = new Datastore({ filename: channelsDbPath, autoload: true });
+    channelsDatastore.ensureIndex({ fieldName: "id", unique: true });
+
+    console.log("✅ Channels database reset successfully");
+  } catch (error) {
+    console.error("❌ Error resetting channels database:", error);
+    throw error;
   }
-
-  await writeFile(channelsDbPath, "", { flag: "w" });
-
-  channelsDatastore = new Datastore({ filename: channelsDbPath, autoload: true });
-  channelsDatastore.ensureIndex({ fieldName: "id", unique: true });
 };

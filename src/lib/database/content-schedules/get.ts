@@ -22,3 +22,15 @@ export const getContentSchedulesForChannel = async (
     });
   });
 };
+
+export const getAllContentSchedules = async () => {
+  const db = await contentSchedulesDb();
+  return new Promise<ContentSchedule[]>((resolve, reject) => {
+    db.find({})
+      .sort({ updatedAt: -1 })
+      .exec((err, docs) => {
+        if (err) reject(err);
+        else resolve(docs as ContentSchedule[]);
+      });
+  });
+};

@@ -76,7 +76,9 @@ export const ChannelView = ({
     onEditingChange?.(false);
   };
 
-  const handleAddSchedule = async (schedule: Omit<ContentSchedule, "id" | "channelId">) => {
+  const handleAddSchedule = async (
+    schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
+  ) => {
     await window.api.contentSchedule.createContentSchedule({ ...schedule, channelId: channel.id });
     await loadSchedules();
     setIsAddingSchedule(false);
@@ -84,7 +86,7 @@ export const ChannelView = ({
 
   const handleUpdateSchedule = async (
     scheduleId: string,
-    schedule: Omit<ContentSchedule, "id" | "channelId">
+    schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
   ) => {
     await window.api.contentSchedule.updateContentSchedule(scheduleId, {
       ...schedule,

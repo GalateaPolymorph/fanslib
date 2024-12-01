@@ -1,31 +1,13 @@
 import chokidar, { FSWatcher } from "chokidar";
 import { BrowserWindow, ipcMain } from "electron";
-import { resetDatabase } from "../../../lib/database/media/base";
-import { createNewMediaData } from "../../../lib/database/media/create";
-import { fetchMediaDataByPath } from "../../../lib/database/media/fetch";
-import { MediaData } from "../../../lib/database/media/type";
-import { updateMediaData } from "../../../lib/database/media/update";
+import { Media } from "../../../lib/database/media/type";
+import { updateMedia } from "../../../lib/database/media/update";
+import { resetAllDatabases } from "../../../lib/database/reset";
 import { loadSettings } from "../../settings/main/load";
-import { MediaFile } from "../shared/types";
 import { scanLibraryForMediaFiles } from "./scan";
+import { fetchAllMedia } from "../../../lib/database/media/fetch";
 
 let watcher: FSWatcher | null = null;
-
-const initializeMediaFile = async (file: MediaFile) => {
-  const mediaData = await fetchMediaDataByPath(file.path).then((data) =>
-    data ? data : createNewMediaData(file)
-  );
-  return {
-    ...file,
-    ...mediaData,
-  };
-};
-
-const fetchAllMediaInPath = async (libraryPath: string) => {
-  return scanLibraryForMediaFiles(libraryPath).then((files) => {
-    return Promise.all(files.map(initializeMediaFile));
-  });
-};
 
 export const registerLibraryHandlers = () => {
   ipcMain.handle("library:scan", async (_event, libraryPath: string) => {
@@ -44,40 +26,36 @@ export const registerLibraryHandlers = () => {
     const notifyChange = async () => {
       const win = BrowserWindow.getAllWindows()[0];
       if (!win) return;
-      win.webContents.send("library:changed", await fetchAllMediaInPath(libraryPath));
+      win.webContents.send("library:changed", await scanLibraryForMediaFiles(libraryPath));
     };
 
     // Watch for file changes
     watcher.on("add", notifyChange).on("unlink", notifyChange).on("unlinkDir", notifyChange);
 
-    return fetchAllMediaInPath(libraryPath);
+    // Initial scan
+    return scanLibraryForMediaFiles(libraryPath);
   });
 
-  ipcMain.handle("library:stop-watch", async () => {
-    if (watcher) {
-      await watcher.close();
-      watcher = null;
+  ipcMain.handle("library:get-all", async () => {
+    const settings = await loadSettings();
+    if (!settings?.libraryPath) {
+      return [];
     }
+    return fetchAllMedia();
   });
 
-  ipcMain.handle("library:resetDatabase", async () => {
-    if (watcher) {
-      await watcher.close();
-      watcher = null;
-    }
-    await resetDatabase();
-  });
-
-  ipcMain.handle("library:update-media", async (_event, path: string, data: Partial<MediaData>) => {
-    const updatedMedia = await updateMediaData(path, data);
-    if (!updatedMedia) return;
-
+  ipcMain.handle("library:update-media", async (_event, path: string, updates: Partial<Media>) => {
+    await updateMedia(path, updates);
+    
+    // Notify all windows about the change
     const win = BrowserWindow.getAllWindows()[0];
-    if (!win) return;
+    if (win) {
+      const allMedia = await fetchAllMedia();
+      win.webContents.send("library:changed", allMedia);
+    }
+  });
 
-    const libraryPath = await loadSettings().then((settings) => settings.libraryPath);
-    win.webContents.send("library:changed", await fetchAllMediaInPath(libraryPath));
-
-    return updatedMedia;
+  ipcMain.handle("library:reset", async () => {
+    await resetAllDatabases();
   });
 };

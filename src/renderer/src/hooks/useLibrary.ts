@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Media } from "../../../features/library/shared/types";
+import { Media } from "../../../lib/database/media/type";
 
 interface UseLibraryResult {
   media: Media[];
@@ -42,7 +42,9 @@ export function useLibrary(libraryPath: string, filters?: LibraryFilters): UseLi
       try {
         setScanning(true);
         setError(null);
+        console.log("Scanning library...");
         const allMedia = await window.api.library.scan(libraryPath);
+        console.log(allMedia);
         setMedia(allMedia);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
@@ -64,8 +66,7 @@ export function useLibrary(libraryPath: string, filters?: LibraryFilters): UseLi
     }
 
     return () => {
-      mounted.current = false;
-      window.api.library.removeLibraryChangeListener(handleLibraryChange);
+      window.api.library.offLibraryChanged(handleLibraryChange);
     };
   }, [libraryPath, filters?.isNew, filters?.categories]);
 

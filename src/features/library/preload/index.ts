@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { Media } from "../shared/types";
+import { Media } from "../../../lib/database/media/type";
 
 export const libraryBridge = {
   scan: (libraryPath: string): Promise<Media[]> => {
@@ -8,7 +8,7 @@ export const libraryBridge = {
   onLibraryChanged: (callback: (event: any, files: Media[]) => void) => {
     ipcRenderer.on("library:changed", callback);
   },
-  removeLibraryChangeListener: (callback: (event: any, files: Media[]) => void) => {
+  offLibraryChanged: (callback: (event: any, files: Media[]) => void) => {
     ipcRenderer.removeListener("library:changed", callback);
   },
   resetDatabase: (): Promise<void> => {
@@ -16,5 +16,8 @@ export const libraryBridge = {
   },
   updateMedia: (path: string, data: Partial<Media>): Promise<Media> => {
     return ipcRenderer.invoke("library:update-media", path, data);
+  },
+  getAllMedia: (): Promise<Media[]> => {
+    return ipcRenderer.invoke("library:get-all-media");
   },
 };

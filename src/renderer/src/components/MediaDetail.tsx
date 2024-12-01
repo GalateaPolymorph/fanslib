@@ -4,7 +4,7 @@ import { cn, formatFileSize } from "@renderer/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Media } from "../../../features/library/shared/types";
+import { Media } from "../../../lib/database/media/type";
 import { CategorySelect } from "./CategorySelect";
 import { MediaDisplay } from "./MediaDisplay";
 
@@ -30,7 +30,9 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
 
   const handleCategoryChange = async (categorySlugs: string[]) => {
     setSelectedCategories(categorySlugs);
-    return window.api.library.updateMedia(media.path, { categoryIds: categorySlugs });
+    return window.api.library.updateMedia(media.path, {
+      categoryIds: categorySlugs,
+    });
   };
 
   return (

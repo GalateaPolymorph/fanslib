@@ -3,16 +3,20 @@ import { contentSchedulesDb } from "./base";
 import { ContentSchedule } from "./type";
 
 export const createContentSchedule = async (
-  schedule: Omit<ContentSchedule, "id">
+  data: Omit<ContentSchedule, "id" | "updatedAt" | "createdAt">
 ): Promise<ContentSchedule> => {
   const db = await contentSchedulesDb();
-  const newSchedule = {
-    ...schedule,
+  const now = new Date().toISOString();
+
+  const schedule: ContentSchedule = {
+    ...data,
     id: nanoid(),
+    updatedAt: now,
+    createdAt: now,
   };
 
   return new Promise((resolve, reject) => {
-    db.insert(newSchedule, (err, doc) => {
+    db.insert(schedule, (err, doc) => {
       if (err) reject(err);
       else resolve(doc as ContentSchedule);
     });

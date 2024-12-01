@@ -1,4 +1,4 @@
-import { Media } from "../../../features/library/shared/types";
+import { Media } from "../../../lib/database/media/type";
 
 type MediaDisplayProps = {
   media: Media;

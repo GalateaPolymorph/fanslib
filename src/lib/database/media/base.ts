@@ -16,13 +16,21 @@ export const mediaDb = async () => {
   return mediaDatastore;
 };
 
-export const resetDatabase = async (): Promise<void> => {
-  mediaDatastore = null;
+export const resetMediaDatabase = async (): Promise<void> => {
+  console.log("🗑️ Resetting media database...");
+  try {
+    mediaDatastore = null;
 
-  if (existsSync(dbPath)) {
-    await unlink(dbPath);
+    if (existsSync(dbPath)) {
+      await unlink(dbPath);
+    }
+
+    await writeFile(dbPath, "", { flag: "w" });
+    await mediaDb();
+
+    console.log("✅ Media database reset successfully");
+  } catch (error) {
+    console.error("❌ Error resetting media database:", error);
+    throw error;
   }
-
-  await writeFile(dbPath, "", { flag: "w" });
-  await mediaDb();
 };

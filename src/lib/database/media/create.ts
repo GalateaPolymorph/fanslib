@@ -1,19 +1,15 @@
-import { MediaFile } from "../../../features/library/shared/types";
+import { Media } from "./type";
 import { mediaDb } from "./base";
-import { RawMediaData } from "./type";
 
-export const defaultMediaData = (file: MediaFile): RawMediaData => ({
-  path: file.path,
-  isNew: true,
-  categoryIds: [],
-});
-
-export const createNewMediaData = async (file: MediaFile): Promise<RawMediaData> => {
+export const createMedia = async (media: Media): Promise<Media> => {
   const database = await mediaDb();
   return new Promise((resolve, reject) => {
-    database.insert(defaultMediaData(file), (err, doc) => {
-      if (err) reject(err);
-      else resolve(doc);
+    database.insert(media, (err, doc) => {
+      if (err) {
+        console.error("Error creating media:", err);
+        reject(err);
+      }
+      resolve(doc);
     });
   });
 };

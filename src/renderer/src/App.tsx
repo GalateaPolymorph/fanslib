@@ -1,12 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
+import { TooltipProvider } from "./components/ui/tooltip";
 import { CategoryProvider } from "./contexts/CategoryContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { Layout } from "./Layout";
-import { CalendarPage } from "./pages/Calendar";
 import { ChannelsPage } from "./pages/Channels";
 import { ContentPage } from "./pages/Content";
+import { PostsPage } from "./pages/Posts";
+import { PostDetail } from "./pages/PostDetail";
 import { SettingsPage } from "./pages/Settings";
 
 const App = () => {
@@ -14,17 +16,20 @@ const App = () => {
     <ThemeProvider>
       <SettingsProvider>
         <CategoryProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<ContentPage />} />
-                <Route path="channels" element={<ChannelsPage />} />
-                <Route path="calendar" element={<CalendarPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-          <Toaster />
+          <TooltipProvider delayDuration={0}>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<ContentPage />} />
+                  <Route path="posts" element={<PostsPage />} />
+                  <Route path="posts/:postId" element={<PostDetail />} />
+                  <Route path="channels" element={<ChannelsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+            <Toaster />
+          </TooltipProvider>
         </CategoryProvider>
       </SettingsProvider>
     </ThemeProvider>
