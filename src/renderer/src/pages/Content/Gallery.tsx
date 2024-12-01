@@ -1,10 +1,10 @@
 import { cn } from "@renderer/lib/utils";
 import { Grid2X2, Grid3X3, Loader2 } from "lucide-react";
 import { createContext, useContext } from "react";
-import { Media } from "../../../lib/database/media/type";
-import { MediaDisplay } from "./MediaDisplay";
-import { ScrollArea } from "./ui/scroll-area";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
+import { Media } from "../../../../lib/database/media/type";
+import { MediaDisplay } from "../../components/MediaDisplay";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
 
 interface GalleryProps {
   media: Media[];

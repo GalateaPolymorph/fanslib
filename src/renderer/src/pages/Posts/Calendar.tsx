@@ -15,12 +15,12 @@ import { de } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CHANNEL_TYPES } from "../../../lib/database/channels/channelTypes";
-import { Post } from "../../../lib/database/posts/type";
-import { cn } from "../lib/utils";
-import { ChannelTypeIcon } from "./ChannelTypeIcon";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
+import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
+import { Post } from "../../../../lib/database/posts/type";
+import { ChannelTypeIcon } from "../../components/ChannelTypeIcon";
+import { Button } from "../../components/ui/button";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { cn } from "../../lib/utils";
 
 interface CalendarProps {
   className?: string;
@@ -93,7 +93,10 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
           return (
             <div
               key={day.toString()}
-              className={cn(dayIdx === 0 && colStartClasses[getDayOffset(day)], "py-2 px-1 flex flex-col min-h-0")}
+              className={cn(
+                dayIdx === 0 && colStartClasses[getDayOffset(day)],
+                "py-2 px-1 flex flex-col min-h-0"
+              )}
             >
               <button
                 type="button"

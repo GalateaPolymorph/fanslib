@@ -4,14 +4,14 @@ import { format, formatDistanceToNow } from "date-fns";
 import { Calendar, Loader2, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Media } from "../../../lib/database/media/type";
-import { Post } from "../../../lib/database/posts/type";
-import { MediaDisplay } from "./MediaDisplay";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { ScrollArea } from "./ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Media } from "../../../../lib/database/media/type";
+import { Post } from "../../../../lib/database/posts/type";
+import { MediaDisplay } from "../../components/MediaDisplay";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 
 interface MediaSelectDialogProps {
   open: boolean;

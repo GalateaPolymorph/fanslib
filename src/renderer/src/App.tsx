@@ -7,8 +7,8 @@ import { SettingsProvider } from "./contexts/SettingsContext";
 import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
 import { ContentPage } from "./pages/Content";
-import { PostsPage } from "./pages/Posts";
 import { PostDetail } from "./pages/PostDetail";
+import { PostsPage } from "./pages/Posts";
 import { SettingsPage } from "./pages/Settings";
 
 const App = () => {

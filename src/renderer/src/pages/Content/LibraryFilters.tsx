@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { CategorySelect } from "./CategorySelect";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { Switch } from "./ui/switch";
+import { CategorySelect } from "../../components/CategorySelect";
+import { Button } from "../../components/ui/button";
+import { Separator } from "../../components/ui/separator";
+import { Switch } from "../../components/ui/switch";
 
 interface LibraryFiltersProps {
   onFilterChange: (filters: { isNew?: boolean; categories?: string[] }) => void;

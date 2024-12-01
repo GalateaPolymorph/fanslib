@@ -1,13 +1,13 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { PanelGroup } from "react-resizable-panels";
-import { Gallery, GridSizeContext, GridSizeToggle, type GridSize } from "../components/Gallery";
-import { LibraryFilters } from "../components/LibraryFilters";
-import { MediaDetail } from "../components/MediaDetail";
-import { WelcomeScreen } from "../components/WelcomeScreen";
-import { ResizableHandle, ResizablePanel } from "../components/ui/resizable";
-import { useSettings } from "../contexts/SettingsContext";
-import { useLibrary } from "../hooks/useLibrary";
+import { WelcomeScreen } from "../../components/WelcomeScreen";
+import { ResizableHandle, ResizablePanel } from "../../components/ui/resizable";
+import { useSettings } from "../../contexts/SettingsContext";
+import { useLibrary } from "../../hooks/useLibrary";
+import { Gallery, GridSizeContext, GridSizeToggle, type GridSize } from "./Gallery";
+import { LibraryFilters } from "./LibraryFilters";
+import { MediaDetail } from "./MediaDetail";
 
 export const ContentPage = () => {
   const { settings, loading } = useSettings();

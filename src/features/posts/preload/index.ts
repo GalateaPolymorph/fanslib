@@ -1,35 +1,25 @@
 import { ipcRenderer } from "electron";
-import { Post, RawPost } from "../../../lib/database/posts/type";
+import { PostsAPI } from "../types";
 
-export const postsBridge = {
-  createPost: (data: Omit<RawPost, "id" | "createdAt" | "updatedAt">) =>
-    ipcRenderer.invoke("post:create", data) as Promise<Post>,
+export const postsBridge: PostsAPI = {
+  createPost: (data) => ipcRenderer.invoke("post:create", data),
+  getAllPosts: () => ipcRenderer.invoke("post:get-all"),
+  getPostsBySchedule: (scheduleId) => ipcRenderer.invoke("post:get-by-schedule", scheduleId),
+  getPostsByChannel: (channelId) => ipcRenderer.invoke("post:get-by-channel", channelId),
+  getScheduledPosts: () => ipcRenderer.invoke("post:get-scheduled"),
+  updatePost: (id, updates) => ipcRenderer.invoke("post:update", id, updates),
 
-  getAllPosts: () => ipcRenderer.invoke("post:get-all") as Promise<Post[]>,
+  markPostAsPosted: (id) => ipcRenderer.invoke("post:mark-posted", id),
 
-  getPostsBySchedule: (scheduleId: string) =>
-    ipcRenderer.invoke("post:get-by-schedule", scheduleId) as Promise<Post[]>,
-
-  getPostsByChannel: (channelId: string) =>
-    ipcRenderer.invoke("post:get-by-channel", channelId) as Promise<Post[]>,
-
-  getScheduledPosts: () => ipcRenderer.invoke("post:get-scheduled") as Promise<Post[]>,
-
-  updatePost: (id: string, updates: Partial<RawPost>) =>
-    ipcRenderer.invoke("post:update", id, updates) as Promise<Post>,
-
-  markPostAsPosted: (id: string) => ipcRenderer.invoke("post:mark-posted", id) as Promise<Post>,
-
-  deletePost: (id: string) => ipcRenderer.invoke("post:delete", id),
+  deletePost: (id) => ipcRenderer.invoke("post:delete", id),
 
   // Media management methods
-  addMediaToPost: (postId: string, paths: string[]) =>
-    ipcRenderer.invoke("post:add-media", postId, paths) as Promise<Post>,
+  addMediaToPost: (postId, mediaPaths) => ipcRenderer.invoke("post:add-media", postId, mediaPaths),
 
-  removeMediaFromPost: (postId: string, paths: string[]) =>
-    ipcRenderer.invoke("post:remove-media", postId, paths) as Promise<Post>,
+  removeMediaFromPost: (postId, mediaPaths) =>
+    ipcRenderer.invoke("post:remove-media", postId, mediaPaths),
 
-  reorderPostMedia: (postId: string, mediaOrder: { path: string; order: number }[]) =>
-    ipcRenderer.invoke("post:reorder-media", postId, mediaOrder) as Promise<Post>,
-  getByMediaPath: (mediaPath: string) => ipcRenderer.invoke("posts:get-by-media-path", mediaPath),
+  reorderPostMedia: (postId, mediaOrder) =>
+    ipcRenderer.invoke("post:reorder-media", postId, mediaOrder),
+  getByMediaPath: (mediaPath) => ipcRenderer.invoke("posts:get-by-media-path", mediaPath),
 };

@@ -2,8 +2,6 @@ import { addMonths, isSameDay, startOfMonth } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Post } from "../../../../lib/database/posts/type";
-import { Calendar } from "../../components/Calendar";
-import { DayDetail } from "../../components/DayDetail";
 import { Button } from "../../components/ui/button";
 import {
   ResizableHandle,
@@ -11,6 +9,8 @@ import {
   ResizablePanelGroup,
 } from "../../components/ui/resizable";
 import { useToast } from "../../components/ui/use-toast";
+import { Calendar } from "./Calendar";
+import { DayDetail } from "./DayDetail";
 
 export const PostsPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);

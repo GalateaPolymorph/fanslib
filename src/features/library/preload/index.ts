@@ -1,23 +1,9 @@
 import { ipcRenderer } from "electron";
-import { Media } from "../../../lib/database/media/type";
+import { LibraryAPI } from "../types";
 
-export const libraryBridge = {
-  scan: (libraryPath: string): Promise<Media[]> => {
-    return ipcRenderer.invoke("library:scan", libraryPath);
-  },
-  onLibraryChanged: (callback: (event: any, files: Media[]) => void) => {
-    ipcRenderer.on("library:changed", callback);
-  },
-  offLibraryChanged: (callback: (event: any, files: Media[]) => void) => {
-    ipcRenderer.removeListener("library:changed", callback);
-  },
-  resetDatabase: (): Promise<void> => {
-    return ipcRenderer.invoke("library:reset");
-  },
-  updateMedia: (path: string, data: Partial<Media>): Promise<Media> => {
-    return ipcRenderer.invoke("library:update-media", path, data);
-  },
-  getAllMedia: (): Promise<Media[]> => {
-    return ipcRenderer.invoke("library:get-all");
-  },
+export const libraryBridge: LibraryAPI = {
+  scan: (libraryPath) => ipcRenderer.invoke("library:scan", libraryPath),
+  getAllMedia: () => ipcRenderer.invoke("library:get-all"),
+  updateMedia: (path, updates) => ipcRenderer.invoke("library:update-media", path, updates),
+  resetDatabase: () => ipcRenderer.invoke("library:reset"),
 };

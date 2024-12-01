@@ -1,9 +1,9 @@
-import { LibraryPathInput } from "@renderer/components/LibraryPathInput";
-import { ResetDatabaseButton } from "@renderer/components/ResetDatabaseButton";
-import { SettingsSection } from "@renderer/components/SettingsSection";
 import { ThemeSwitch } from "@renderer/components/ThemeSwitch";
 import { Separator } from "@renderer/components/ui/separator";
+import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButton";
+import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { CategorySettings } from "./CategorySettings";
+import { LibraryPathInput } from "./LibraryPathInput";
 
 export const SettingsPage = () => {
   return (

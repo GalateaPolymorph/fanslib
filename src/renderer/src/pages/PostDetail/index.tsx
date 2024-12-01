@@ -1,9 +1,9 @@
 import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
-import { MediaSelectDialog } from "@renderer/components/MediaSelectDialog";
 import { Button } from "@renderer/components/ui/button";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { MediaSelectDialog } from "@renderer/pages/PostDetail/MediaSelectDialog";
 import { format } from "date-fns";
 import { ChevronLeft, Loader2, Plus } from "lucide-react";
 import { useEffect, useState } from "react";

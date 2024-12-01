@@ -1,12 +1,12 @@
 import { format } from "date-fns";
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CHANNEL_TYPES } from "../../../lib/database/channels/channelTypes";
-import { Post } from "../../../lib/database/posts/type";
-import { cn } from "../lib/utils";
-import { ChannelTypeIcon } from "./ChannelTypeIcon";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
+import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
+import { Post } from "../../../../lib/database/posts/type";
+import { ChannelTypeIcon } from "../../components/ChannelTypeIcon";
+import { Button } from "../../components/ui/button";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { cn } from "../../lib/utils";
 
 interface DayDetailProps {
   date: Date;
