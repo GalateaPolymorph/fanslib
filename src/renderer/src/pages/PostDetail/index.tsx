@@ -12,6 +12,7 @@ import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
 import { Media } from "../../../../lib/database/media/type";
 import { Post } from "../../../../lib/database/posts/type";
 import { MediaDisplay } from "../../components/MediaDisplay";
+import { cn } from "../../lib/utils";
 
 export const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -129,7 +130,7 @@ export const PostDetail = () => {
             <div className="space-y-4">
               {post.media.length > 0 ? (
                 <>
-                  <div className="grid gap-4">
+                  <div className={cn("grid gap-4", post.media.length > 1 ? "grid-cols-2" : "")}>
                     {post.media.map((media) => (
                       <div
                         key={media.path}

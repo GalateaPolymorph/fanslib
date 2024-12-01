@@ -68,8 +68,8 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
   };
 
   return (
-    <div className={cn("w-full", className)}>
-      <div className="flex items-center justify-between">
+    <div className={cn("w-full flex flex-col", className)}>
+      <div className="flex items-center justify-between flex-none">
         <h2 className="font-semibold">{format(firstDayCurrentMonth, "MMMM yyyy")}</h2>
         <div className="space-x-2">
           <Button variant="outline" size="icon" onClick={previousMonth}>
@@ -81,25 +81,25 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
         </div>
       </div>
 
-      <div className="grid grid-cols-7 mt-6 text-xs leading-6 text-center text-gray-500">
+      <div className="grid grid-cols-7 mt-6 text-xs leading-6 text-center text-gray-500 flex-none">
         {weekDays.map((day, i) => (
           <div key={i}>{day}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 mt-2 text-sm">
+      <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0">
         {days.map((day, dayIdx) => {
           const dayPosts = posts.filter((post) => isSameDay(new Date(post.scheduledDate), day));
 
           return (
             <div
               key={day.toString()}
-              className={cn(dayIdx === 0 && colStartClasses[getDayOffset(day)], "py-2 px-1")}
+              className={cn(dayIdx === 0 && colStartClasses[getDayOffset(day)], "py-2 px-1 flex flex-col min-h-0")}
             >
               <button
                 type="button"
                 onClick={() => onSelectDate?.(day)}
                 className={cn(
-                  "mx-auto flex h-8 w-8 items-center justify-center rounded-full",
+                  "mx-auto flex h-8 w-8 items-center justify-center rounded-full flex-none",
                   isToday(day) && "text-white bg-primary",
                   selectedDate && isSameDay(day, selectedDate) && "bg-primary/20",
                   !isToday(day) && !selectedDate && "hover:bg-primary/10",
@@ -109,7 +109,7 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
                 <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, "d")}</time>
               </button>
               {dayPosts.length > 0 && (
-                <ScrollArea className="min-h-24 max-h-72 mt-1">
+                <ScrollArea className="flex-1 mt-1 min-h-0">
                   {dayPosts.map((post) => (
                     <div
                       key={post.id}

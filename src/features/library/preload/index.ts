@@ -12,12 +12,12 @@ export const libraryBridge = {
     ipcRenderer.removeListener("library:changed", callback);
   },
   resetDatabase: (): Promise<void> => {
-    return ipcRenderer.invoke("library:resetDatabase");
+    return ipcRenderer.invoke("library:reset");
   },
   updateMedia: (path: string, data: Partial<Media>): Promise<Media> => {
     return ipcRenderer.invoke("library:update-media", path, data);
   },
   getAllMedia: (): Promise<Media[]> => {
-    return ipcRenderer.invoke("library:get-all-media");
+    return ipcRenderer.invoke("library:get-all");
   },
 };

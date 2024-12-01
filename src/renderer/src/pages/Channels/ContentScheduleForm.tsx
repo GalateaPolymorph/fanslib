@@ -103,11 +103,15 @@ export const ContentScheduleForm = ({
   return (
     <div className="space-y-4">
       <div className="grid gap-4">
-        <CategorySelect
-          value={categorySlug}
-          onChange={setCategorySlug}
-          disabledCategories={disabledCategories}
-        />
+        <div className="space-y-2">
+          <h4 className="text-sm">Category</h4>
+          <CategorySelect
+            value={categorySlug}
+            onChange={setCategorySlug}
+            multiple={false}
+            disabledCategories={disabledCategories}
+          />
+        </div>
 
         <div className="space-y-2">
           <h4 className="text-sm">Schedule Type</h4>

@@ -1,11 +1,11 @@
 import chokidar, { FSWatcher } from "chokidar";
 import { BrowserWindow, ipcMain } from "electron";
+import { fetchAllMedia } from "../../../lib/database/media/fetch";
 import { Media } from "../../../lib/database/media/type";
 import { updateMedia } from "../../../lib/database/media/update";
 import { resetAllDatabases } from "../../../lib/database/reset";
 import { loadSettings } from "../../settings/main/load";
 import { scanLibraryForMediaFiles } from "./scan";
-import { fetchAllMedia } from "../../../lib/database/media/fetch";
 
 let watcher: FSWatcher | null = null;
 
@@ -38,15 +38,17 @@ export const registerLibraryHandlers = () => {
 
   ipcMain.handle("library:get-all", async () => {
     const settings = await loadSettings();
+
     if (!settings?.libraryPath) {
       return [];
     }
+
     return fetchAllMedia();
   });
 
   ipcMain.handle("library:update-media", async (_event, path: string, updates: Partial<Media>) => {
     await updateMedia(path, updates);
-    
+
     // Notify all windows about the change
     const win = BrowserWindow.getAllWindows()[0];
     if (win) {

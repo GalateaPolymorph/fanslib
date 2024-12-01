@@ -45,6 +45,7 @@ export function MediaSelectDialog({
     try {
       setLoading(true);
       const allMedia = await window.api.library.getAllMedia();
+
       const filteredMedia = categoryId
         ? allMedia.filter((media) => media.categoryIds?.includes(categoryId))
         : allMedia;
@@ -88,8 +89,10 @@ export function MediaSelectDialog({
   };
 
   useEffect(() => {
-    loadMedia();
-  }, [settings?.libraryPath]);
+    if (open) {
+      loadMedia();
+    }
+  }, [open, settings?.libraryPath]);
 
   // Render no library path state
   if (!settings?.libraryPath) {

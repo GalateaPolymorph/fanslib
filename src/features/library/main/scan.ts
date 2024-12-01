@@ -141,6 +141,7 @@ export async function scanLibraryForMediaFiles(libraryPath: string): Promise<Med
 
         if (needsUpdate) {
           await updateMedia(existingMedia.path, {
+            ...existingMedia,
             path: filePath,
             name: media.name,
             modified: media.modified,
@@ -150,7 +151,9 @@ export async function scanLibraryForMediaFiles(libraryPath: string): Promise<Med
         }
       }
 
-      mediaFiles.push(media);
+      // Enrich media with categories before adding to results
+      const enrichedMedia = await enrichMedia(media);
+      mediaFiles.push(enrichedMedia);
       processedPaths.add(filePath);
     }
 
@@ -181,7 +184,7 @@ export async function scanLibraryForMediaFiles(libraryPath: string): Promise<Med
       });
     });
 
-    return Promise.all(mediaFiles.map(enrichMedia));
+    return mediaFiles;
   } catch (error) {
     console.error("Error scanning library:", error);
     return [];

@@ -72,9 +72,16 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 app.whenReady().then(async () => {
   protocol.handle("media", (req) => {
-    const pathToMedia = new URL(req.url).pathname;
-    return net.fetch(`file://${pathToMedia}`);
+    try {
+      const pathToMedia = decodeURIComponent(new URL(req.url).pathname);
+      console.log("Loading media from path:", pathToMedia);
+      return net.fetch(`file://${pathToMedia}`);
+    } catch (error) {
+      console.error("Error loading media:", error);
+      return new Response("Error loading media", { status: 500 });
+    }
   });
+
   // Set app user model id for windows
   app.setAppUserModelId("com.electron");
 

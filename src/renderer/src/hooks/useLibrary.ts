@@ -42,9 +42,7 @@ export function useLibrary(libraryPath: string, filters?: LibraryFilters): UseLi
       try {
         setScanning(true);
         setError(null);
-        console.log("Scanning library...");
         const allMedia = await window.api.library.scan(libraryPath);
-        console.log(allMedia);
         setMedia(allMedia);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");

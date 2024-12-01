@@ -72,19 +72,18 @@ export const PostsPage = () => {
     : [];
 
   return (
-    <div className="h-full w-full">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={75} minSize={30}>
-          <div className="container mx-auto">
-            <div className="flex items-center justify-between py-6 pl-6 pr-4">
-              <h1 className="text-2xl font-bold">Posts</h1>
-              <Button variant="outline" onClick={handleSync} disabled={syncing}>
-                {syncing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sync Schedules
-              </Button>
-            </div>
+    <div className="h-full w-full overflow-hidden">
+      <ResizablePanelGroup direction="horizontal" className="h-full">
+        <ResizablePanel defaultSize={75} minSize={30} className="flex flex-col h-full">
+          <div className="flex items-center justify-between py-6 pl-6 pr-4 flex-none">
+            <h1 className="text-2xl font-bold">Posts</h1>
+            <Button variant="outline" onClick={handleSync} disabled={syncing}>
+              {syncing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sync Schedules
+            </Button>
+          </div>
+          <div className="flex-1 overflow-auto px-6">
             <Calendar
-              className="px-6"
               posts={posts}
               loading={loading}
               selectedDate={selectedDate}
@@ -96,7 +95,7 @@ export const PostsPage = () => {
         {selectedDate && (
           <>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={25} minSize={20}>
+            <ResizablePanel defaultSize={25} minSize={20} className="flex flex-col h-full">
               <DayDetail
                 date={selectedDate}
                 posts={selectedDayPosts}

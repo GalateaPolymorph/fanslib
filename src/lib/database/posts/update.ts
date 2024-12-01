@@ -1,11 +1,12 @@
 import { addMetadataToPost, postsDb } from "./base";
-import { RawPost } from "./type";
+import { enrichPost } from "./enrich";
+import { Post, RawPost } from "./type";
 
-export const updatePost = async (id: string, updates: Partial<RawPost>) => {
+export const updatePost = async (id: string, updates: Partial<RawPost>): Promise<Post> => {
   const db = await postsDb();
   const enrichedUpdates = addMetadataToPost(updates);
 
-  return new Promise<RawPost>((resolve, reject) => {
+  const rawPost = await new Promise<RawPost>((resolve, reject) => {
     db.update(
       { id },
       { $set: enrichedUpdates },
@@ -17,6 +18,8 @@ export const updatePost = async (id: string, updates: Partial<RawPost>) => {
       }
     );
   });
+
+  return enrichPost(rawPost);
 };
 
 export const markPostAsPosted = async (id: string) => {
