@@ -52,21 +52,17 @@ export const ChannelView = ({
   }, [channel]);
 
   const loadSchedules = async () => {
-    const schedules = await window.api.contentSchedule.getContentSchedulesForChannel(channel.id);
+    const schedules = await window.api.contentSchedule.getSchedulesByChannel(channel.id);
     setSchedules(schedules);
   };
 
   const handleSave = async () => {
-    await window.api.channel.updateChannel(channel.id, {
+    const updatedChannel = await window.api.channel.updateChannel(channel.id, {
       name,
       description,
     });
 
-    const updatedChannel = await window.api.channel.getChannel(channel.id);
-    if (updatedChannel) {
-      onUpdate?.(updatedChannel);
-    }
-
+    onUpdate?.(updatedChannel);
     onEditingChange?.(false);
   };
 
@@ -79,7 +75,7 @@ export const ChannelView = ({
   const handleAddSchedule = async (
     schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
   ) => {
-    await window.api.contentSchedule.createContentSchedule({ ...schedule, channelId: channel.id });
+    await window.api.contentSchedule.createSchedule({ ...schedule, channelId: channel.id });
     await loadSchedules();
     setIsAddingSchedule(false);
   };
@@ -88,7 +84,7 @@ export const ChannelView = ({
     scheduleId: string,
     schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
   ) => {
-    await window.api.contentSchedule.updateContentSchedule(scheduleId, {
+    await window.api.contentSchedule.updateSchedule(scheduleId, {
       ...schedule,
       channelId: channel.id,
     });
@@ -97,7 +93,7 @@ export const ChannelView = ({
   };
 
   const handleDeleteSchedule = async (schedule: ContentSchedule) => {
-    await window.api.contentSchedule.deleteContentSchedule(schedule.id);
+    await window.api.contentSchedule.deleteSchedule(schedule.id);
     await loadSchedules();
   };
 

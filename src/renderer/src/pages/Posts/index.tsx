@@ -26,7 +26,7 @@ export const PostsPage = () => {
       const endDate = addMonths(startDate, 3);
 
       // Posts are already enriched with channel and category data
-      const allPosts = await window.api.posts.getScheduledPosts();
+      const allPosts = await window.api.posts.getAllPosts();
 
       // Filter posts within the date range
       const filteredPosts = allPosts.filter((post) => {

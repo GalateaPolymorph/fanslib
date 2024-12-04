@@ -8,4 +8,5 @@ export const contentSchedulesBridge: ContentSchedulesAPI = {
   createSchedule: (data) => ipcRenderer.invoke("content-schedule:create", data),
   updateSchedule: (id, updates) => ipcRenderer.invoke("content-schedule:update", id, updates),
   deleteSchedule: (id) => ipcRenderer.invoke("content-schedule:delete", id),
+  syncAllSchedules: () => ipcRenderer.invoke("content-schedule:sync-all"),
 };

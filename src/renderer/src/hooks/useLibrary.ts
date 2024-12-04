@@ -53,7 +53,7 @@ export function useLibrary(libraryPath: string, filters?: LibraryFilters): UseLi
 
     scanLibrary();
 
-    const handleLibraryChange = (_event: any, allMedia: Media[]) => {
+    const handleLibraryChange = (allMedia: Media[]) => {
       setMedia(filterMedia(allMedia));
     };
 

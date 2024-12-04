@@ -10,14 +10,14 @@ export interface CategoriesAPI {
    * Create a new category
    * @param data Category data
    */
-  createCategory: (data: Pick<Category, "name" | "slug">) => Promise<Category>;
+  createCategory: (data: Category["name"]) => Promise<Category>;
 
   /**
    * Update a category
    * @param slug Category slug
    * @param updates Updates to apply
    */
-  updateCategory: (slug: string, updates: Partial<Pick<Category, "name">>) => Promise<Category>;
+  updateCategory: (slug: string, updates: Partial<Pick<Category, "color">>) => Promise<Category>;
 
   /**
    * Delete a category

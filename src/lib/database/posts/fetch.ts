@@ -41,19 +41,6 @@ export const getPostsByChannel = async (channelId: string): Promise<Post[]> => {
   return enrichPosts(posts);
 };
 
-export const getScheduledPosts = async (): Promise<Post[]> => {
-  const db = await postsDb();
-  const posts = await new Promise<RawPost[]>((resolve, reject) => {
-    db.find({ status: "scheduled" })
-      .sort({ scheduledDate: 1 })
-      .exec((err, docs) => {
-        if (err) reject(err);
-        else resolve(docs as RawPost[]);
-      });
-  });
-  return enrichPosts(posts);
-};
-
 export const getPostsByMediaPath = async (mediaPath: string): Promise<Post[]> => {
   const db = await postsDb();
   const posts = await new Promise<RawPost[]>((resolve, reject) => {

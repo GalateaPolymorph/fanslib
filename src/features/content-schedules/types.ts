@@ -35,4 +35,9 @@ export interface ContentSchedulesAPI {
    * @param id Schedule ID
    */
   deleteSchedule: (id: string) => Promise<void>;
+
+  /**
+   * Synchronize all content schedules
+   */
+  syncAllSchedules: () => Promise<void>;
 }

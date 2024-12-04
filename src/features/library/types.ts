@@ -23,4 +23,16 @@ export interface LibraryAPI {
    * Reset the media database
    */
   resetDatabase: () => Promise<void>;
+
+  /**
+   * Subscribe to library changes
+   * @param callback Function to call when library changes
+   */
+  onLibraryChanged: (callback: (media: Media[]) => void) => void;
+
+  /**
+   * Unsubscribe from library changes
+   * @param callback Function to remove from subscribers
+   */
+  offLibraryChanged: (callback: (media: Media[]) => void) => void;
 }

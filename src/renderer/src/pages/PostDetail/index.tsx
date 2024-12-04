@@ -12,7 +12,6 @@ import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
 import { Media } from "../../../../lib/database/media/type";
 import { Post } from "../../../../lib/database/posts/type";
 import { MediaDisplay } from "../../components/MediaDisplay";
-import { cn } from "../../lib/utils";
 
 export const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -75,12 +74,20 @@ export const PostDetail = () => {
 
     try {
       setSaving(true);
-      const updatedPost = await window.api.posts.updatePost(post.id, {
+      await window.api.posts.updatePost(post.id, {
         mediaIds: selectedMedia.map((media, index) => ({
           path: media.path,
           order: index,
         })),
       });
+
+      // Refetch the post to get the latest enriched data
+      const posts = await window.api.posts.getAllPosts();
+      const updatedPost = posts.find((p) => p.id === post.id);
+      if (!updatedPost) {
+        throw new Error("Failed to refetch post");
+      }
+
       setPost(updatedPost);
       toast({
         title: "Media updated",
@@ -128,16 +135,11 @@ export const PostDetail = () => {
           <div className="grid grid-cols-[2fr_3fr] gap-8">
             {/* Media Section */}
             <div className="space-y-4">
-              {post.media.length > 0 ? (
+              {post.media && post.media.length > 0 ? (
                 <>
-                  <div className={cn("grid gap-4", post.media.length > 1 ? "grid-cols-2" : "")}>
+                  <div className="grid grid-cols-2 gap-4">
                     {post.media.map((media) => (
-                      <div
-                        key={media.path}
-                        className="aspect-square rounded-lg overflow-hidden bg-muted"
-                      >
-                        <MediaDisplay media={media} />
-                      </div>
+                      <MediaDisplay key={media.path} media={media} className="aspect-square" />
                     ))}
                   </div>
                   <Button
@@ -196,9 +198,99 @@ export const PostDetail = () => {
               </div>
 
               {/* Status and Schedule */}
-              <div className="space-y-1">
-                <p className="capitalize font-medium">{post.status}</p>
-                <p className="text-lg">{format(new Date(post.scheduledDate), "PPP 'at' p")}</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="capitalize font-medium">{post.status}</p>
+                    <p className="text-lg">{format(new Date(post.scheduledDate), "PPP 'at' p")}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {post.status === "planned" && (
+                      <Button
+                        onClick={async () => {
+                          try {
+                            setSaving(true);
+                            const updatedPost = await window.api.posts.markAsScheduled(post.id);
+                            setPost(updatedPost);
+                            toast({
+                              title: "Post scheduled",
+                              description: "The post has been marked as scheduled.",
+                            });
+                          } catch (err) {
+                            toast({
+                              title: "Failed to schedule post",
+                              description: err instanceof Error ? err.message : "An error occurred",
+                              variant: "destructive",
+                            });
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={!post.media || post.media.length === 0 || saving}
+                      >
+                        {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                        Schedule
+                      </Button>
+                    )}
+                    {post.status === "scheduled" && (
+                      <>
+                        <Button
+                          onClick={async () => {
+                            try {
+                              setSaving(true);
+                              const updatedPost = await window.api.posts.markAsPosted(post.id);
+                              setPost(updatedPost);
+                              toast({
+                                title: "Post marked as posted",
+                                description: "The post has been marked as posted.",
+                              });
+                            } catch (err) {
+                              toast({
+                                title: "Failed to mark post as posted",
+                                description:
+                                  err instanceof Error ? err.message : "An error occurred",
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setSaving(false);
+                            }
+                          }}
+                          disabled={saving}
+                        >
+                          {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                          Mark as Posted
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={async () => {
+                            try {
+                              setSaving(true);
+                              const updatedPost = await window.api.posts.markAsPlanned(post.id);
+                              setPost(updatedPost);
+                              toast({
+                                title: "Post unscheduled",
+                                description: "The post has been marked as planned.",
+                              });
+                            } catch (err) {
+                              toast({
+                                title: "Failed to unschedule post",
+                                description:
+                                  err instanceof Error ? err.message : "An error occurred",
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setSaving(false);
+                            }
+                          }}
+                          disabled={saving}
+                        >
+                          {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                          Unschedule
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Caption */}

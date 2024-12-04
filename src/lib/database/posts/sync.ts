@@ -148,7 +148,7 @@ export const syncSchedulePosts = async (schedule: ContentSchedule) => {
           categorySlug: schedule.categorySlug,
           caption: "",
           scheduledDate: dateTime.toISOString(),
-          status: "scheduled",
+          status: "planned",
           mediaIds: [],
         })
       );

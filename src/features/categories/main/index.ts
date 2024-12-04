@@ -1,8 +1,8 @@
 import { ipcMain } from "electron";
-import { createCategory } from "../../lib/database/categories/create";
-import { deleteCategory } from "../../lib/database/categories/delete";
-import { fetchAllCategories } from "../../lib/database/categories/fetch";
-import { updateCategory } from "../../lib/database/categories/update";
+import { createCategory } from "../../../lib/database/categories/create";
+import { deleteCategory } from "../../../lib/database/categories/delete";
+import { fetchAllCategories } from "../../../lib/database/categories/fetch";
+import { updateCategory } from "../../../lib/database/categories/update";
 
 export const registerCategoryHandlers = () => {
   ipcMain.handle("category:create-category", async (_event, name: string) => {

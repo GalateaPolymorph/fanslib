@@ -1,7 +1,7 @@
 import { contextBridge } from "electron";
-import { categoryBridge } from "../features/categories/preload";
-import { channelBridge } from "../features/channels/preload";
-import { contentScheduleBridge } from "../features/content-schedules/preload";
+import { categoriesBridge } from "../features/categories/preload";
+import { channelsBridge } from "../features/channels/preload";
+import { contentSchedulesBridge } from "../features/content-schedules/preload";
 import { libraryBridge } from "../features/library/preload";
 import { osBridge } from "../features/os/preload";
 import { postsBridge } from "../features/posts/preload/index";
@@ -11,9 +11,9 @@ const bridge = {
   settings: settingsBridge,
   library: libraryBridge,
   os: osBridge,
-  category: categoryBridge,
-  channel: channelBridge,
-  contentSchedule: contentScheduleBridge,
+  category: categoriesBridge,
+  channel: channelsBridge,
+  contentSchedule: contentSchedulesBridge,
   posts: postsBridge,
 };
 

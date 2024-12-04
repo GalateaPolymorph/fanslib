@@ -2,7 +2,7 @@ import { Category } from "../categories/type";
 import { Channel } from "../channels/type";
 import { Media } from "../media/type";
 
-export type PostStatus = "scheduled" | "posted";
+export type PostStatus = "planned" | "scheduled" | "posted";
 
 export type MediaId = {
   path: string;

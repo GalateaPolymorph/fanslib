@@ -1,15 +1,17 @@
 import { Media } from "../../../lib/database/media/type";
+import { cn } from "../lib/utils";
 
 type MediaDisplayProps = {
   media: Media;
+  className?: string;
 };
-export const MediaDisplay = ({ media }: MediaDisplayProps) => {
+export const MediaDisplay = ({ media, className }: MediaDisplayProps) => {
   if (media.type === "image") {
     return (
       <img
         src={`media://${media.path}`}
         alt={media.name}
-        className="w-full h-full object-cover rounded-lg overflow-hidden"
+        className={cn("w-full h-full object-cover rounded-lg overflow-hidden", className)}
       />
     );
   }
@@ -18,13 +20,18 @@ export const MediaDisplay = ({ media }: MediaDisplayProps) => {
     return (
       <video
         src={`media://${media.path}`}
-        className="w-full h-full object-cover rounded-lg overflow-hidden"
+        className={cn("w-full h-full object-cover rounded-lg overflow-hidden", className)}
       />
     );
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center text-muted-foreground rounded-lg">
+    <div
+      className={cn(
+        "w-full h-full flex items-center justify-center text-muted-foreground rounded-lg",
+        className
+      )}
+    >
       Unsupported media type
     </div>
   );

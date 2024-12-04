@@ -30,7 +30,7 @@ export const enrichPost = async (post: RawPost): Promise<Post> => {
       });
     }),
     Promise.all(
-      post.mediaIds.map((mediaId) =>
+      (post.mediaIds || []).map((mediaId) =>
         new Promise<Media | undefined>((resolve) => {
           mediaDatabase.findOne({ path: mediaId.path }, (err: Error | null, doc: Media | null) => {
             if (err || !doc) resolve(undefined);
@@ -47,7 +47,7 @@ export const enrichPost = async (post: RawPost): Promise<Post> => {
     ...post,
     channel: channel || undefined,
     category,
-    media: enrichedMedia,
+    media: enrichedMedia || [],
   };
 };
 

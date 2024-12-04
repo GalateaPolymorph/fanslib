@@ -62,7 +62,7 @@ export const removeMediaFromPost = async (postId: string, paths: string[]): Prom
         { id: postId },
         {
           $set: {
-            media: updatedMedia,
+            mediaIds: updatedMedia,
             updatedAt: new Date().toISOString(),
           },
         },
@@ -97,20 +97,20 @@ export const reorderPostMedia = async (
       // Create a map of path to new order
       const orderMap = new Map(mediaOrder.map((m) => [m.path, m.order]));
 
-      // Update orders while preserving media not in the orderMap
+      // Update orders of existing media
       const updatedMedia = post.mediaIds.map((m) => ({
         ...m,
-        order: orderMap.has(m.path) ? orderMap.get(m.path)! : m.order,
+        order: orderMap.get(m.path) ?? m.order,
       }));
 
-      // Sort by order
+      // Sort by order to ensure consistency
       updatedMedia.sort((a, b) => a.order - b.order);
 
       db.update(
         { id: postId },
         {
           $set: {
-            media: updatedMedia,
+            mediaIds: updatedMedia,
             updatedAt: new Date().toISOString(),
           },
         },

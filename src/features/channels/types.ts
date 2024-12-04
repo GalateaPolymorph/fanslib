@@ -1,4 +1,4 @@
-import { Channel } from "../../lib/database/channels/type";
+import { Channel, RawChannel } from "../../lib/database/channels/type";
 
 export interface ChannelsAPI {
   /**
@@ -10,7 +10,7 @@ export interface ChannelsAPI {
    * Create a new channel
    * @param data Channel data
    */
-  createChannel: (data: Omit<Channel, "id" | "createdAt" | "updatedAt">) => Promise<Channel>;
+  createChannel: (data: Omit<RawChannel, "id" | "createdAt" | "updatedAt">) => Promise<Channel>;
 
   /**
    * Update a channel

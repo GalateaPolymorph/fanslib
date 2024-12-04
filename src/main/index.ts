@@ -74,7 +74,6 @@ app.whenReady().then(async () => {
   protocol.handle("media", (req) => {
     try {
       const pathToMedia = decodeURIComponent(new URL(req.url).pathname);
-      console.log("Loading media from path:", pathToMedia);
       return net.fetch(`file://${pathToMedia}`);
     } catch (error) {
       console.error("Error loading media:", error);

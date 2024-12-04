@@ -2,24 +2,19 @@ import { ipcRenderer } from "electron";
 import { PostsAPI } from "../types";
 
 export const postsBridge: PostsAPI = {
-  createPost: (data) => ipcRenderer.invoke("post:create", data),
-  getAllPosts: () => ipcRenderer.invoke("post:get-all"),
-  getPostsBySchedule: (scheduleId) => ipcRenderer.invoke("post:get-by-schedule", scheduleId),
-  getPostsByChannel: (channelId) => ipcRenderer.invoke("post:get-by-channel", channelId),
-  getScheduledPosts: () => ipcRenderer.invoke("post:get-scheduled"),
-  updatePost: (id, updates) => ipcRenderer.invoke("post:update", id, updates),
-
-  markPostAsPosted: (id) => ipcRenderer.invoke("post:mark-posted", id),
-
-  deletePost: (id) => ipcRenderer.invoke("post:delete", id),
-
-  // Media management methods
-  addMediaToPost: (postId, mediaPaths) => ipcRenderer.invoke("post:add-media", postId, mediaPaths),
-
-  removeMediaFromPost: (postId, mediaPaths) =>
-    ipcRenderer.invoke("post:remove-media", postId, mediaPaths),
-
-  reorderPostMedia: (postId, mediaOrder) =>
-    ipcRenderer.invoke("post:reorder-media", postId, mediaOrder),
+  createPost: (data) => ipcRenderer.invoke("posts:create", data),
+  getAllPosts: () => ipcRenderer.invoke("posts:get-all"),
+  getPostsBySchedule: (scheduleId) => ipcRenderer.invoke("posts:get-by-schedule", scheduleId),
+  getPostsByChannel: (channelId) => ipcRenderer.invoke("posts:get-by-channel", channelId),
   getByMediaPath: (mediaPath) => ipcRenderer.invoke("posts:get-by-media-path", mediaPath),
+  updatePost: (id, updates) => ipcRenderer.invoke("posts:update", id, updates),
+  markAsPosted: (id) => ipcRenderer.invoke("posts:mark-as-posted", id),
+  markAsPlanned: (id) => ipcRenderer.invoke("posts:mark-as-planned", id),
+  markAsScheduled: (id) => ipcRenderer.invoke("posts:mark-as-scheduled", id),
+  deletePost: (id) => ipcRenderer.invoke("posts:delete", id),
+  addMediaToPost: (postId, mediaPaths) => ipcRenderer.invoke("posts:add-media", postId, mediaPaths),
+  removeMediaFromPost: (postId, mediaPaths) =>
+    ipcRenderer.invoke("posts:remove-media", postId, mediaPaths),
+  reorderPostMedia: (postId, mediaPath, newOrder) =>
+    ipcRenderer.invoke("posts:reorder-media", postId, mediaPath, newOrder),
 };

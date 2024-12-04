@@ -12,7 +12,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { de } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
@@ -20,6 +20,7 @@ import { Post } from "../../../../lib/database/posts/type";
 import { ChannelTypeIcon } from "../../components/ChannelTypeIcon";
 import { Button } from "../../components/ui/button";
 import { ScrollArea } from "../../components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { cn } from "../../lib/utils";
 
 interface CalendarProps {
@@ -119,8 +120,30 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
                       onClick={() => navigate(`/posts/${post.id}`)}
                       className="px-2 py-1.5 mx-1 mb-1 text-xs rounded bg-accent/50 hover:bg-accent/70 cursor-pointer"
                     >
-                      <div className="font-medium">
-                        {format(new Date(post.scheduledDate), "h:mm a")}
+                      <div className="font-medium flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          {format(new Date(post.scheduledDate), "h:mm a")}
+                          <span
+                            className={cn(
+                              "px-1 py-0.5 rounded-sm text-[10px] capitalize",
+                              post.status === "planned" && "bg-yellow-500/20 text-yellow-700",
+                              post.status === "scheduled" && "bg-blue-500/20 text-blue-700",
+                              post.status === "posted" && "bg-green-500/20 text-green-700"
+                            )}
+                          >
+                            {post.status}
+                          </span>
+                        </div>
+                        {(!post.media || post.media.length === 0) && (
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <AlertCircle className="w-3 h-3 text-destructive" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>No media assigned</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-1 mt-1">
                         {post.channel && (

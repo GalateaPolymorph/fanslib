@@ -25,22 +25,35 @@ export interface PostsAPI {
   getPostsByChannel: (channelId: string) => Promise<Post[]>;
 
   /**
-   * Get all scheduled posts
+   * Get posts by media path
+   * @param mediaPath Path to the media file
    */
-  getScheduledPosts: () => Promise<Post[]>;
+  getByMediaPath: (mediaPath: string) => Promise<Post[]>;
 
   /**
    * Update a post
    * @param id Post ID
-   * @param updates Partial updates to apply
+   * @param updates Partial post data to update
    */
   updatePost: (id: string, updates: Partial<RawPost>) => Promise<Post>;
+
+  /**
+   * Mark a post as scheduled
+   * @param id Post ID
+   */
+  markAsScheduled: (id: string) => Promise<Post>;
 
   /**
    * Mark a post as posted
    * @param id Post ID
    */
-  markPostAsPosted: (id: string) => Promise<Post>;
+  markAsPosted: (id: string) => Promise<Post>;
+
+  /**
+   * Mark a post as planned (unschedule)
+   * @param id Post ID
+   */
+  markAsPlanned: (id: string) => Promise<Post>;
 
   /**
    * Delete a post
@@ -69,10 +82,4 @@ export interface PostsAPI {
    * @param newOrder New order index
    */
   reorderPostMedia: (postId: string, mediaPath: string, newOrder: number) => Promise<Post>;
-
-  /**
-   * Get a post by media path
-   * @param mediaPath Path to media file
-   */
-  getByMediaPath: (mediaPath: string) => Promise<Post | null>;
 }
