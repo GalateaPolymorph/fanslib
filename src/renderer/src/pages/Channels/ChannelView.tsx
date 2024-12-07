@@ -16,9 +16,10 @@ import { Textarea } from "@renderer/components/ui/textarea";
 import { cn } from "@renderer/lib/utils";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
-import { Channel } from "../../../../lib/database/channels/type";
-import { ContentSchedule } from "../../../../lib/database/content-schedules/type";
+import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
+import { Channel } from "../../../../features/channels/entity";
+import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
+import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { ContentScheduleForm } from "./ContentScheduleForm";
 import { ContentScheduleList } from "./ContentScheduleList";
 
@@ -52,12 +53,12 @@ export const ChannelView = ({
   }, [channel]);
 
   const loadSchedules = async () => {
-    const schedules = await window.api.contentSchedule.getSchedulesByChannel(channel.id);
+    const schedules = await window.api["content-schedule:getByChannel"](channel.id);
     setSchedules(schedules);
   };
 
   const handleSave = async () => {
-    const updatedChannel = await window.api.channel.updateChannel(channel.id, {
+    const updatedChannel = await window.api["channel:update"](channel.id, {
       name,
       description,
     });
@@ -72,28 +73,20 @@ export const ChannelView = ({
     onEditingChange?.(false);
   };
 
-  const handleAddSchedule = async (
-    schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
-  ) => {
-    await window.api.contentSchedule.createSchedule({ ...schedule, channelId: channel.id });
+  const handleAddSchedule = async (schedule: ContentScheduleCreateData) => {
+    await window.api["content-schedule:create"]({ ...schedule, channelId: channel.id });
     await loadSchedules();
     setIsAddingSchedule(false);
   };
 
-  const handleUpdateSchedule = async (
-    scheduleId: string,
-    schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
-  ) => {
-    await window.api.contentSchedule.updateSchedule(scheduleId, {
-      ...schedule,
-      channelId: channel.id,
-    });
+  const handleUpdateSchedule = async (scheduleId: string, schedule: ContentScheduleCreateData) => {
+    await window.api["content-schedule:update"](scheduleId, schedule);
     await loadSchedules();
     setEditingSchedule(null);
   };
 
   const handleDeleteSchedule = async (schedule: ContentSchedule) => {
-    await window.api.contentSchedule.deleteSchedule(schedule.id);
+    await window.api["content-schedule:delete"](schedule.id);
     await loadSchedules();
   };
 
@@ -179,6 +172,7 @@ export const ChannelView = ({
               <div className="flex flex-col gap-4 justify-between">
                 {isAddingSchedule && (
                   <ContentScheduleForm
+                    channelId={channel.id}
                     existingSchedules={schedules}
                     onSubmit={handleAddSchedule}
                     onCancel={() => setIsAddingSchedule(false)}
@@ -187,6 +181,7 @@ export const ChannelView = ({
 
                 {editingSchedule && (
                   <ContentScheduleForm
+                    channelId={channel.id}
                     schedule={editingSchedule}
                     existingSchedules={schedules}
                     onSubmit={(schedule) => handleUpdateSchedule(editingSchedule.id, schedule)}

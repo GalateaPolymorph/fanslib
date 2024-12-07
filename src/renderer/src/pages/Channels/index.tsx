@@ -2,7 +2,7 @@ import { Button } from "@renderer/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Channel } from "../../../../lib/database/channels/type";
+import { Channel } from "../../../../features/channels/entity";
 import { ChannelView } from "./ChannelView";
 import { CreateChannelForm } from "./CreateChannelForm";
 
@@ -16,7 +16,7 @@ export const ChannelsPage = () => {
   }, []);
 
   const loadChannels = async () => {
-    const channels = await window.api.channel.getAllChannels();
+    const channels = await window.api["channel:getAll"]();
     setChannels(channels);
   };
 
@@ -31,7 +31,7 @@ export const ChannelsPage = () => {
   };
 
   const handleChannelDelete = async (channel: Channel) => {
-    await window.api.channel.deleteChannel(channel.id);
+    await window.api["channel:delete"](channel.id);
     setChannels((prev) => prev.filter((ch) => ch.id !== channel.id));
     if (editingChannelId === channel.id) {
       setEditingChannelId(null);

@@ -15,13 +15,13 @@ import { de } from "date-fns/locale";
 import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
-import { Post } from "../../../../lib/database/posts/type";
+import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { ChannelTypeIcon } from "../../components/ChannelTypeIcon";
 import { Button } from "../../components/ui/button";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { cn } from "../../lib/utils";
+import { Post } from "../../../../features/posts/entity";
 
 interface CalendarProps {
   className?: string;

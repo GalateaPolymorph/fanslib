@@ -1,5 +1,5 @@
 import { Edit, Trash2 } from "lucide-react";
-import { ContentSchedule } from "../../../../lib/database/content-schedules/type";
+import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import {
   AlertDialog,
   AlertDialogAction,

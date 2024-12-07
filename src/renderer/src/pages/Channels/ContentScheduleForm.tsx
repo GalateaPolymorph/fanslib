@@ -10,20 +10,21 @@ import { Stepper } from "@renderer/components/ui/stepper";
 import cn from "classnames";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
-import { ContentSchedule } from "../../../../lib/database/content-schedules/type";
+import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
+import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { CategorySelect } from "../../components/CategorySelect";
 
 interface ContentScheduleFormProps {
   schedule?: ContentSchedule;
+  channelId: string;
   existingSchedules: ContentSchedule[];
-  onSubmit: (
-    schedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt">
-  ) => void;
+  onSubmit: (schedule: ContentScheduleCreateData) => void;
   onCancel: () => void;
 }
 
 export const ContentScheduleForm = ({
   schedule,
+  channelId,
   existingSchedules,
   onSubmit,
   onCancel,
@@ -58,16 +59,15 @@ export const ContentScheduleForm = ({
   const handleSubmit = () => {
     if (categorySlug.length === 0) return;
 
-    const newSchedule: Omit<ContentSchedule, "id" | "channelId" | "createdAt" | "updatedAt"> = {
+    onSubmit({
+      channelId,
       categorySlug: categorySlug[0],
       type,
       postsPerTimeframe,
       preferredTimes,
       ...(type !== "daily" ? { preferredDays } : {}),
       ...(schedule?.lastSynced ? { lastSynced: schedule.lastSynced } : {}),
-    };
-
-    onSubmit(newSchedule);
+    });
   };
 
   const handleDayToggle = (dayIndex: number) => {

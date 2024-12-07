@@ -7,7 +7,7 @@ import {
   RedditIcon,
   XIcon,
 } from "@renderer/components/icons";
-import { CHANNEL_TYPES } from "../../../lib/database/channels/channelTypes";
+import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
 import { cn } from "../lib/utils";
 
 const CHANNEL_ICONS: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {

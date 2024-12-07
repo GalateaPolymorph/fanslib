@@ -1,7 +1,7 @@
 import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
 import { Badge } from "@renderer/components/ui/badge";
-import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
-import { Channel } from "../../../../lib/database/channels/type";
+import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
+import { Channel } from "../../../../features/channels/entity";
 
 interface CreateChannelFormProps {
   onSubmit: (channel: Channel) => void;
@@ -10,7 +10,7 @@ interface CreateChannelFormProps {
 
 export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFormProps) => {
   const handleTypeSelect = async (typeId: keyof typeof CHANNEL_TYPES) => {
-    const channel = await window.api.channel.createChannel({
+    const channel = await window.api["channel:create"]({
       name: "New Channel",
       description: "",
       typeId,

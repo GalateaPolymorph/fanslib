@@ -14,7 +14,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Load initial theme from settings
-    window.api.settings.settingsLoad().then((settings) => {
+    window.api["settings:load"]().then((settings) => {
       setTheme(settings.theme as Theme);
     });
   }, []);

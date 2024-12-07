@@ -8,9 +8,9 @@ import { format } from "date-fns";
 import { ChevronLeft, Loader2, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { CHANNEL_TYPES } from "../../../../lib/database/channels/channelTypes";
-import { Media } from "../../../../lib/database/media/type";
-import { Post } from "../../../../lib/database/posts/type";
+import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
+import { Media } from "../../../../features/library/entity";
+import { Post } from "../../../../features/posts/entity";
 import { MediaDisplay } from "../../components/MediaDisplay";
 
 export const PostDetail = () => {
@@ -29,7 +29,7 @@ export const PostDetail = () => {
       try {
         setLoading(true);
         setError(null);
-        const posts = await window.api.posts.getAllPosts();
+        const posts = await window.api["post:getAll"]();
         const foundPost = posts.find((p) => p.id === postId);
         if (!foundPost) {
           setError("Post not found");
@@ -52,7 +52,7 @@ export const PostDetail = () => {
 
     try {
       setSaving(true);
-      const updatedPost = await window.api.posts.updatePost(post.id, { caption });
+      const updatedPost = await window.api["post:update"](post.id, { caption });
       setPost(updatedPost);
       toast({
         title: "Caption updated",
@@ -74,15 +74,14 @@ export const PostDetail = () => {
 
     try {
       setSaving(true);
-      await window.api.posts.updatePost(post.id, {
-        mediaIds: selectedMedia.map((media, index) => ({
-          path: media.path,
-          order: index,
-        })),
-      });
+      await window.api["post:update"](
+        post.id,
+        {},
+        selectedMedia.map((media) => media.path)
+      );
 
       // Refetch the post to get the latest enriched data
-      const posts = await window.api.posts.getAllPosts();
+      const posts = await window.api["post:getAll"]();
       const updatedPost = posts.find((p) => p.id === post.id);
       if (!updatedPost) {
         throw new Error("Failed to refetch post");
@@ -139,7 +138,11 @@ export const PostDetail = () => {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     {post.media.map((media) => (
-                      <MediaDisplay key={media.path} media={media} className="aspect-square" />
+                      <MediaDisplay
+                        key={media.path}
+                        media={media.media}
+                        className="aspect-square"
+                      />
                     ))}
                   </div>
                   <Button
@@ -210,7 +213,7 @@ export const PostDetail = () => {
                         onClick={async () => {
                           try {
                             setSaving(true);
-                            const updatedPost = await window.api.posts.markAsScheduled(post.id);
+                            const updatedPost = await window.api["post:markAsScheduled"](post.id);
                             setPost(updatedPost);
                             toast({
                               title: "Post scheduled",
@@ -238,7 +241,7 @@ export const PostDetail = () => {
                           onClick={async () => {
                             try {
                               setSaving(true);
-                              const updatedPost = await window.api.posts.markAsPosted(post.id);
+                              const updatedPost = await window.api["post:markAsPosted"](post.id);
                               setPost(updatedPost);
                               toast({
                                 title: "Post marked as posted",
@@ -265,7 +268,7 @@ export const PostDetail = () => {
                           onClick={async () => {
                             try {
                               setSaving(true);
-                              const updatedPost = await window.api.posts.markAsPlanned(post.id);
+                              const updatedPost = await window.api["post:markAsPlanned"](post.id);
                               setPost(updatedPost);
                               toast({
                                 title: "Post unscheduled",
@@ -331,7 +334,7 @@ export const PostDetail = () => {
         open={mediaDialogOpen}
         onOpenChange={setMediaDialogOpen}
         onSelect={handleMediaSelect}
-        initialSelectedMedia={post.media}
+        initialSelectedMedia={post.media.map((m) => m.media)}
         categoryId={post.category?.slug}
       />
     </div>

@@ -4,7 +4,7 @@ import { cn, formatFileSize } from "@renderer/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Media } from "../../../../lib/database/media/type";
+import { Media } from "../../../../features/library/entity";
 import { CategorySelect } from "../../components/CategorySelect";
 import { MediaDisplay } from "../../components/MediaDisplay";
 
@@ -15,7 +15,7 @@ interface MediaDetailProps {
 }
 
 const revealInFinder = (mediaPath: string) => {
-  window.api.os.revealInFinder(mediaPath);
+  window.api["os:revealInFinder"](mediaPath);
 };
 
 export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => {
@@ -30,7 +30,7 @@ export const MediaDetail = ({ media, onClose, className }: MediaDetailProps) => 
 
   const handleCategoryChange = async (categorySlugs: string[]) => {
     setSelectedCategories(categorySlugs);
-    return window.api.library.updateMedia(media.path, {
+    return window.api["library:update"](media.path, {
       categoryIds: categorySlugs,
     });
   };

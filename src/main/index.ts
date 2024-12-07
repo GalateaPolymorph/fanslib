@@ -1,13 +1,9 @@
+import "reflect-metadata";
+
 import { app, BrowserWindow, net, protocol, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
-import { registerCategoryHandlers } from "../features/categories/main";
-import { registerChannelHandlers } from "../features/channels/main";
-import { registerContentScheduleHandlers } from "../features/content-schedules/main";
-import { registerLibraryHandlers } from "../features/library/main/handlers";
-import { registerOsHandlers } from "../features/os/main";
-import { registerPostsHandlers } from "../features/posts/main/handlers";
-import { registerSettingsHandlers } from "../features/settings/main/index";
+import { IpcRegistry } from "./IpcRegistry";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -19,16 +15,6 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ]);
-
-const registerHandlers = () => {
-  registerSettingsHandlers();
-  registerLibraryHandlers();
-  registerPostsHandlers();
-  registerOsHandlers();
-  registerCategoryHandlers();
-  registerChannelHandlers();
-  registerContentScheduleHandlers();
-};
 
 const createWindow = () => {
   // Create the browser window.
@@ -85,14 +71,15 @@ app.whenReady().then(async () => {
   app.setAppUserModelId("com.electron");
 
   // Register IPC handlers
-  registerHandlers();
+  const ipcRegistry = new IpcRegistry();
+  ipcRegistry.registerAll();
 
   // Create window
   createWindow();
 
   // Sync schedules with posts
   try {
-    const { syncSchedulesWithPosts } = await import("../lib/database/sync-manager");
+    const { syncSchedulesWithPosts } = await import("../features/posts/sync-manager");
     const syncedCount = await syncSchedulesWithPosts();
     console.log(`Synced ${syncedCount} schedules with posts`);
   } catch (error) {

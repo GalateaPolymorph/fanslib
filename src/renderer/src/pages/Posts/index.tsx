@@ -1,7 +1,7 @@
 import { addMonths, isSameDay, startOfMonth } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Post } from "../../../../lib/database/posts/type";
+import { Post } from "../../../../features/posts/entity";
 import { Button } from "../../components/ui/button";
 import {
   ResizableHandle,
@@ -26,7 +26,7 @@ export const PostsPage = () => {
       const endDate = addMonths(startDate, 3);
 
       // Posts are already enriched with channel and category data
-      const allPosts = await window.api.posts.getAllPosts();
+      const allPosts = await window.api["post:getAll"]();
 
       // Filter posts within the date range
       const filteredPosts = allPosts.filter((post) => {
@@ -49,7 +49,7 @@ export const PostsPage = () => {
   const handleSync = async () => {
     try {
       setSyncing(true);
-      await window.api.contentSchedule.syncAllSchedules();
+      await window.api["content-schedule:syncAll"]();
       await fetchPosts();
       toast({
         title: "Success",

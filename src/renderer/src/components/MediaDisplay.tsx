@@ -1,4 +1,4 @@
-import { Media } from "../../../lib/database/media/type";
+import { Media } from "../../../features/library/entity";
 import { cn } from "../lib/utils";
 
 type MediaDisplayProps = {

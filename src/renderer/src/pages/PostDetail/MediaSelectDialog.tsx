@@ -4,8 +4,8 @@ import { format, formatDistanceToNow } from "date-fns";
 import { Calendar, Loader2, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Media } from "../../../../lib/database/media/type";
-import { Post } from "../../../../lib/database/posts/type";
+import { Media } from "../../../../features/library/entity";
+import { Post } from "../../../../features/posts/entity";
 import { MediaDisplay } from "../../components/MediaDisplay";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -44,7 +44,7 @@ export function MediaSelectDialog({
 
     try {
       setLoading(true);
-      const allMedia = await window.api.library.getAllMedia();
+      const allMedia = await window.api["library:getAll"]();
 
       const filteredMedia = categoryId
         ? allMedia.filter((media) => media.categoryIds?.includes(categoryId))
@@ -56,7 +56,7 @@ export function MediaSelectDialog({
       const postsMap: Record<string, Post[]> = {};
       await Promise.all(
         filteredMedia.map(async (media) => {
-          const posts = await window.api.posts.getByMediaPath(media.path);
+          const posts = await window.api["post:byMediaPath"](media.path);
           if (posts.length > 0) {
             postsMap[media.path] = posts;
           }

@@ -8,14 +8,14 @@ export const LibraryPathInput = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    window.api.settings.settingsLoad().then((settings) => {
+    window.api["settings:load"]().then((settings) => {
       setPath(settings.libraryPath || "");
     });
   }, []);
 
   const handlePathChange = async (newPath: string) => {
     setPath(newPath);
-    await window.api.settings.settingsSave({ libraryPath: newPath });
+    await window.api["settings:save"]({ libraryPath: newPath });
 
     toast({
       headline: (

@@ -1,6 +1,32 @@
 import { electronAPI } from "@electron-toolkit/preload";
-import { contextBridge } from "electron";
-import { exposeBridge } from "./bridge";
+import { contextBridge, ipcRenderer } from "electron";
+import { IpcHandlers, ipcMethods } from "../features/index-renderer";
+import { stripNamespace } from "../lib/namespace";
+import { Tail } from "../lib/tail";
+
+const appApi = () =>
+  Object.fromEntries(
+    ipcMethods.map((channel) => [
+      channel,
+      async (...args: Tail<Parameters<IpcHandlers[typeof channel]>>) => {
+        const handlerName = stripNamespace(channel);
+        if (handlerName.startsWith("on")) {
+          // @ts-expect-error
+          return ipcRenderer.on(channel, ...args);
+        }
+        if (handlerName.startsWith("off")) {
+          // @ts-expect-error
+          return ipcRenderer.removeListener(channel, ...args);
+        }
+
+        return ipcRenderer.invoke(channel, ...args);
+      },
+    ])
+  ) as unknown as {
+    [K in keyof IpcHandlers]: (
+      ...args: Tail<Parameters<IpcHandlers[K]>>
+    ) => ReturnType<IpcHandlers[K]>;
+  };
 
 if (process.contextIsolated) {
   try {
@@ -9,10 +35,8 @@ if (process.contextIsolated) {
     console.error(error);
   }
 } else {
-  // @ts-ignore (define in dts)
   window.electron = electronAPI;
-  // @ts-ignore (define in dts)
-  window.api = api;
+  window.api = appApi();
 }
 
-exposeBridge();
+contextBridge.exposeInMainWorld("api", appApi());

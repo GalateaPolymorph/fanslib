@@ -1,7 +1,7 @@
 import { Loader2, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Media } from "../../../lib/database/media/type";
+import { Media } from "../../../features/library/entity";
 import { formatFileSize } from "../lib/utils";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -19,14 +19,14 @@ export function WelcomeScreen() {
         setError(null);
 
         // Get library path from settings
-        const settings = await window.api.settings.settingsLoad();
+        const settings = await window.api["settings:load"]();
         if (!settings.libraryPath) {
           setError("Library path not set. Please configure it in settings.");
           return;
         }
 
         // Scan for media files
-        const files = await window.api.library.getAllMedia();
+        const files = await window.api["library:getAll"]();
         setMediaItems(files);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");

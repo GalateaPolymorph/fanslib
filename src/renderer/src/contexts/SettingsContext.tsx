@@ -28,7 +28,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    window.api.settings.settingsLoad().then((loadedSettings) => {
+    window.api["settings:load"]().then((loadedSettings) => {
       setSettings(loadedSettings);
       setLoading(false);
     });

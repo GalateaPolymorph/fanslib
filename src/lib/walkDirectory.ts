@@ -9,12 +9,12 @@ export async function* walkDirectory(dir: string): AsyncGenerator<string> {
   try {
     const normalizedPath = path.resolve(dir);
 
-    // Check if directory exists and is accessible
-    const accessible = await fs.access(normalizedPath).catch(() => {
-      console.warn(`Cannot access directory: ${normalizedPath}`);
-      return false;
-    });
-    if (!accessible) {
+    console.log(normalizedPath);
+
+    try {
+      await fs.access(normalizedPath, fs.constants.R_OK);
+    } catch (error) {
+      console.warn(`Cannot access directory: ${normalizedPath}`, error);
       return;
     }
 

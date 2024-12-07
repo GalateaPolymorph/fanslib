@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Category } from "../../../lib/database/categories/type";
+import { Category } from "../../../features/categories/entity";
 
 interface CategoryContextType {
   categories: Category[];
@@ -19,7 +19,7 @@ export function CategoryProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
-      const fetchedCategories = await window.api.category.getAllCategories();
+      const fetchedCategories = await window.api["category:getAll"]();
       setCategories(fetchedCategories);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch categories"));

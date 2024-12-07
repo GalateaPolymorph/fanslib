@@ -8,7 +8,7 @@ export const ThemeSwitch = () => {
   const handleThemeChange = (checked: boolean) => {
     const newTheme = checked ? "dark" : "light";
     setTheme(newTheme);
-    window.api.settings.settingsSave({ theme: newTheme });
+    window.api["settings:save"]({ theme: newTheme });
   };
 
   return (

@@ -3,23 +3,23 @@ import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/popover";
 import { Palette, X } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { CATEGORY_COLORS } from "../../../../lib/database/categories/colors";
-import { Category } from "../../../../lib/database/categories/type";
+import { useEffect, useState } from "react";
+import { CATEGORY_COLORS } from "../../../../features/categories/colors";
+import { Category } from "../../../../features/categories/entity";
 
-export const CategorySettings: React.FC = () => {
+export const CategorySettings = () => {
   const [categoryName, setCategoryName] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    window.api.category.getAllCategories().then(setCategories);
+    window.api["category:getAll"]().then(setCategories);
   }, []);
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) return;
 
     try {
-      const newCategory = await window.api.category.createCategory(categoryName);
+      const newCategory = await window.api["category:create"](categoryName);
       setCategories((prev) => [...prev, newCategory]);
       setCategoryName("");
     } catch (error) {
@@ -29,7 +29,7 @@ export const CategorySettings: React.FC = () => {
 
   const handleDeleteCategory = async (slug: string) => {
     try {
-      await window.api.category.deleteCategory(slug);
+      await window.api["category:delete"](slug);
       setCategories((prev) => prev.filter((cat) => cat.slug !== slug));
     } catch (error) {
       console.error("Failed to delete category", error);
@@ -38,7 +38,7 @@ export const CategorySettings: React.FC = () => {
 
   const handleUpdateColor = async (slug: string, color: string) => {
     try {
-      await window.api.category.updateCategory(slug, { color });
+      await window.api["category:update"](slug, { color });
       setCategories((prev) => prev.map((cat) => (cat.slug === slug ? { ...cat, color } : cat)));
     } catch (error) {
       console.error("Failed to update category color", error);

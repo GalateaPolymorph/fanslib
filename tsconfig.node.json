@@ -12,10 +12,13 @@
   ],
   "compilerOptions": {
     "composite": true,
+    "strict": false,
     "types": ["electron-vite/node"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/renderer/src/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }
