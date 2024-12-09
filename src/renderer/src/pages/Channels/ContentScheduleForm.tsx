@@ -31,7 +31,7 @@ export const ContentScheduleForm = ({
 }: ContentScheduleFormProps) => {
   const [type, setType] = useState<ContentSchedule["type"]>(schedule?.type || "daily");
   const [categorySlug, setCategorySlug] = useState<string[]>(
-    schedule?.categorySlug ? [schedule.categorySlug] : []
+    schedule?.categoryId ? [schedule.categoryId] : []
   );
   const [postsPerTimeframe, setPostsPerTimeframe] = useState(schedule?.postsPerTimeframe || 1);
   const [preferredDays, setPreferredDays] = useState<number[]>(schedule?.preferredDays || []);
@@ -54,7 +54,7 @@ export const ContentScheduleForm = ({
 
   const disabledCategories = existingSchedules
     .filter((s) => s.id !== schedule?.id)
-    .map((s) => s.categorySlug);
+    .map((s) => s.categoryId);
 
   const handleSubmit = () => {
     if (categorySlug.length === 0) return;

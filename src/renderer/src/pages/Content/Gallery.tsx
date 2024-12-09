@@ -1,16 +1,18 @@
 import { cn } from "@renderer/lib/utils";
-import { Grid2X2, Grid3X3, Loader2 } from "lucide-react";
+import { Grid2X2, Grid3X3 } from "lucide-react";
 import { createContext, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
 import { MediaDisplay } from "../../components/MediaDisplay";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
+import { GalleryEmpty } from "./GalleryEmpty";
 
 interface GalleryProps {
   media: Media[];
-  scanning: boolean;
   error?: string;
-  onMediaSelect: (media: Media) => void;
+  libraryPath?: string;
+  onScan?: () => void;
 }
 
 export type GridSize = "large" | "small";
@@ -41,21 +43,14 @@ export const GridSizeToggle = () => {
   );
 };
 
-export const Gallery = ({ media, scanning, error, onMediaSelect }: GalleryProps) => {
+export const Gallery = ({ media, error, libraryPath, onScan }: GalleryProps) => {
   const { gridSize } = useContext(GridSizeContext);
-
-  if (scanning) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    );
-  }
+  const navigate = useNavigate();
 
   if (error) {
     return (
       <div className="h-full flex items-center justify-center">
-        <p className="text-muted-foreground">{error}</p>
+        <p className="text-destructive">{error}</p>
       </div>
     );
   }
@@ -65,23 +60,17 @@ export const Gallery = ({ media, scanning, error, onMediaSelect }: GalleryProps)
       <ScrollArea className="h-full absolute inset-0">
         <div
           className={cn(
-            "grid gap-4 py-1",
+            "grid gap-4 p-4",
             gridSize === "large"
-              ? "grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
-              : "grid-cols-[repeat(auto-fill,minmax(120px,1fr))]"
+              ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
           )}
         >
           {media.map((media) => (
-            <div className="relative" key={media.path}>
-              {media.isNew && (
-                <div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full z-10"
-                  title="New Media"
-                />
-              )}
+            <div key={media.path} className="relative">
               <div
-                className="group relative aspect-square rounded-xl overflow-hidden border-3 border-transparent transition-colors cursor-pointer"
-                onClick={() => onMediaSelect(media)}
+                className="group relative aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer"
+                onClick={() => navigate(`/content/${encodeURIComponent(media.id)}`)}
                 onMouseEnter={(e) => {
                   const element = e.currentTarget as HTMLElement;
                   if (media.categories && media.categories.length > 0) {
@@ -95,27 +84,25 @@ export const Gallery = ({ media, scanning, error, onMediaSelect }: GalleryProps)
                   element.style.borderColor = "transparent";
                 }}
               >
-                <MediaDisplay media={media} />
-                {media.categories && media.categories.length > 0 && (
-                  <div className="absolute bottom-2 left-2 flex gap-1">
-                    {media.categories.map((category) => (
-                      <div
-                        key={category.slug}
-                        className="w-4 h-2 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                        title={category.name}
-                      />
-                    ))}
-                  </div>
-                )}
+                <div className="absolute inset-0">
+                  <MediaDisplay media={media} preview={true} />
+                  {media.categories && media.categories.length > 0 && (
+                    <div className="absolute bottom-2 left-2 flex gap-1">
+                      {media.categories.map((category) => (
+                        <div
+                          key={category.slug}
+                          className="w-4 h-2 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                          title={category.name}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}
-          {media.length === 0 && !scanning && (
-            <div className="col-span-full text-center text-muted-foreground p-4">
-              No media files found in the library matching the selected filters.
-            </div>
-          )}
+          {media.length === 0 && <GalleryEmpty libraryPath={libraryPath} onScan={onScan} />}
         </div>
       </ScrollArea>
     </div>

@@ -63,13 +63,13 @@ export const fetchContentSchedulesByChannel = async (
 };
 
 export const fetchContentSchedulesByCategory = async (
-  categorySlug: string
+  categoryId: string
 ): Promise<ContentSchedule[]> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(ContentSchedule);
 
   return repository.find({
-    where: { categorySlug },
+    where: { categoryId },
     relations: {
       channel: true,
       category: true,
@@ -102,14 +102,26 @@ export const updateContentSchedule = async (
   const dataSource = await db();
   const repository = dataSource.getRepository(ContentSchedule);
 
-  await repository.update(
-    { id },
-    {
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    }
-  );
+  const schedule = await repository.findOne({
+    where: { id },
+    relations: {
+      channel: true,
+      category: true,
+    },
+  });
 
+  if (!schedule) return null;
+
+  // Apply updates with timestamp
+  Object.assign(schedule, {
+    ...updates,
+    updatedAt: new Date().toISOString(),
+  });
+
+  // Save the entity
+  await repository.save(schedule);
+
+  // Return with relations
   return repository.findOne({
     where: { id },
     relations: {

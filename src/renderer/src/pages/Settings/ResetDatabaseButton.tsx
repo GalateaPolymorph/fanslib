@@ -15,7 +15,7 @@ export const ResetDatabaseButton = () => {
 
   const handleReset = async () => {
     try {
-      await window.api["library:resetDatabase"]();
+      await window.api["settings:resetDatabase"]();
       setOpen(false);
     } catch (error) {
       console.error("Failed to reset database:", error);

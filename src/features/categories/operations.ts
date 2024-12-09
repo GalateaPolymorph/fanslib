@@ -28,18 +28,24 @@ export const fetchAllCategories = async (): Promise<Category[]> => {
 };
 
 export const updateCategory = async (
-  slug: string,
+  id: string,
   updates: Partial<Category>
 ): Promise<Category | null> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Category);
 
-  await repository.update({ slug }, updates);
-  return repository.findOneBy({ slug });
+  const category = await repository.findOneBy({ id });
+  if (!category) return null;
+
+  // Apply updates
+  Object.assign(category, updates);
+
+  // Save the entity
+  return repository.save(category);
 };
 
-export const deleteCategory = async (slug: string): Promise<void> => {
+export const deleteCategory = async (id: string): Promise<void> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Category);
-  await repository.delete({ slug });
+  await repository.delete({ id });
 };

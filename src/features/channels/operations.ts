@@ -74,7 +74,20 @@ export const updateChannel = async (
   const dataSource = await db();
   const repository = dataSource.getRepository(Channel);
 
-  await repository.update({ id }, updates);
+  const channel = await repository.findOne({
+    where: { id },
+    relations: { type: true },
+  });
+  
+  if (!channel) return null;
+
+  // Apply updates
+  Object.assign(channel, updates);
+
+  // Save the entity
+  await repository.save(channel);
+
+  // Return with relations
   return repository.findOne({
     where: { id },
     relations: { type: true },

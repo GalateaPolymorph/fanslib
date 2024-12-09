@@ -1,31 +1,84 @@
 import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { Category } from "../categories/entity";
-import { Media, MediaWithoutRelations } from "./entity";
+import { GetAllMediaParams, PaginatedResponse } from "./api-type";
+import { Media } from "./entity";
 
 export const createMedia = async ({
   path,
-  type,
   name,
+  type,
   size,
-  createdAt,
-  modifiedAt,
-  categoryIds,
-}: Omit<MediaWithoutRelations, "id">): Promise<Media> => {
+  duration,
+  fileCreationDate,
+  fileModificationDate,
+}: {
+  path: string;
+  name: string;
+  type: "image" | "video";
+  size: number;
+  duration?: number;
+  fileCreationDate: Date;
+  fileModificationDate: Date;
+}) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
-  const media = new Media();
-  media.path = path;
-  media.type = type;
-  media.name = name;
-  media.size = size;
-  media.createdAt = createdAt;
-  media.modifiedAt = modifiedAt;
-  media.isNew = true;
-  media.categoryIds = categoryIds;
+  const media = repository.create({
+    path,
+    name,
+    type,
+    size,
+    duration,
+    fileCreationDate,
+    fileModificationDate,
+  });
 
   return repository.save(media);
+};
+
+export const getMediaById = async (id: string): Promise<Media | null> => {
+  const database = await db();
+  return database.manager.findOne(Media, {
+    where: { id },
+    relations: ["categories", "postMedia"],
+  });
+};
+
+export const fetchAllMedia = async ({
+  page = 1,
+  limit = 50,
+  filters,
+}: GetAllMediaParams): Promise<PaginatedResponse<Media>> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Media);
+
+  const query = repository
+    .createQueryBuilder("media")
+    .leftJoinAndSelect("media.categories", "category")
+    .leftJoinAndSelect("media.postMedia", "postMedia")
+    .leftJoinAndSelect("postMedia.post", "post")
+    .leftJoinAndSelect("post.channel", "channel");
+
+  if (filters?.categories?.length) {
+    query.andWhere("category.slug IN (:...categories)", { categories: filters.categories });
+  }
+
+  const [items, total] = await Promise.all([
+    query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany(),
+    query.getCount(),
+  ]);
+
+  return {
+    items,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 export const fetchMediaByPath = async (path: string): Promise<Media | null> => {
@@ -34,57 +87,107 @@ export const fetchMediaByPath = async (path: string): Promise<Media | null> => {
 
   return repository.findOne({
     where: { path },
-    relations: { categories: true },
+    relations: {
+      categories: true,
+      postMedia: {
+        post: {
+          channel: true,
+        },
+      },
+    },
   });
 };
 
-export const fetchAllMedia = async (): Promise<Media[]> => {
+export const fetchMediaByPaths = async (paths: string[]): Promise<Media[]> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
   return repository.find({
-    relations: { categories: true },
+    where: { path: In(paths) },
+    relations: {
+      categories: true,
+      postMedia: {
+        post: {
+          channel: true,
+        },
+      },
+    },
   });
 };
 
-export const fetchMediaByCategory = async (categorySlug: string): Promise<Media[]> => {
+export const updateMedia = async (path: string, updates: Partial<Omit<Media, "id" | "posts">>) => {
   const dataSource = await db();
-  return dataSource
-    .createQueryBuilder(Media, "media")
-    .leftJoinAndSelect("media.categories", "category")
-    .where("category.slug = :slug", { slug: categorySlug })
-    .getMany();
-};
+  const repository = dataSource.getRepository(Media);
 
-export const updateMediaCategories = async (
-  path: string,
-  categoryIds: string[]
-): Promise<Media | null> => {
-  const dataSource = await db();
-  const mediaRepo = dataSource.getRepository(Media);
-  const categoryRepo = dataSource.getRepository(Category);
-
-  const media = await mediaRepo.findOne({
+  const media = await repository.findOne({
     where: { path },
-    relations: { categories: true },
+    relations: {
+      categories: true,
+      postMedia: {
+        post: {
+          channel: true,
+        },
+      },
+    },
   });
 
   if (!media) return null;
 
-  media.categoryIds = categoryIds;
-  media.categories = await categoryRepo.findBy({ slug: In(categoryIds) });
+  Object.assign(media, updates);
 
-  return mediaRepo.save(media);
+  // Update categories if provided
+  if (updates.categories) {
+    await addCategoriesToMedia(media, updates.categories);
+  }
+
+  await repository.save(media);
+
+  return media;
 };
 
-export const updateMedia = async (path: string, updates: Partial<Media>): Promise<void> => {
+export const deleteMedia = async (path: string) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
-  await repository.update({ path }, updates);
-};
 
-export const deleteMedia = async (path: string): Promise<void> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Media);
   await repository.delete({ path });
+};
+
+export const addCategoriesToMediaByPath = async (path: string, categories: Category[]) => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Media);
+
+  const media = await repository.findOne({
+    where: { path },
+    relations: ["categories"],
+  });
+
+  if (!media) return null;
+
+  return addCategoriesToMedia(media, categories);
+};
+
+const addCategoriesToMedia = async (media: Media, categories: Category[]) => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Media);
+
+  media.categories = [...(media.categories || []), ...categories];
+
+  return repository.save(media);
+};
+
+export const removeCategoriesFromMedia = async (path: string, categoryIds: string[]) => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Media);
+
+  const media = await repository.findOne({
+    where: { path },
+    relations: ["categories"],
+  });
+
+  if (!media) {
+    throw new Error("Media not found");
+  }
+
+  media.categories = media.categories.filter((cat) => !categoryIds.includes(cat.id));
+  return repository.save(media);
 };

@@ -1,4 +1,6 @@
+import { In } from "typeorm";
 import { db } from "../../lib/db";
+import { Media } from "../library/entity";
 import { PostCreateData } from "./api-type";
 import { Post, PostMedia, PostStatus } from "./entity";
 
@@ -7,176 +9,209 @@ export const createPost = async (
   mediaPathsInOrder: string[]
 ): Promise<Post> => {
   const dataSource = await db();
+  const postRepo = dataSource.getRepository(Post);
+  const mediaRepo = dataSource.getRepository(Media);
+  const postMediaRepo = dataSource.getRepository(PostMedia);
 
-  return dataSource.transaction(async (manager) => {
-    // Create post
-    const post = new Post();
-    Object.assign(post, {
-      ...postData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-    await manager.save(post);
-
-    // Create media orders
-    if (mediaPathsInOrder.length > 0) {
-      const mediaOrders = mediaPathsInOrder.map((path, index) => {
-        const mediaOrder = new PostMedia();
-        mediaOrder.postId = post.id;
-        mediaOrder.path = path;
-        mediaOrder.order = index;
-        return mediaOrder;
-      });
-      await manager.save(PostMedia, mediaOrders);
-    }
-
-    // Load and return complete post
-    return manager
-      .createQueryBuilder(Post, "post")
-      .leftJoinAndSelect("post.media", "postMedia")
-      .leftJoinAndSelect("postMedia.media", "media")
-      .leftJoinAndSelect("post.channel", "channel")
-      .leftJoinAndSelect("post.category", "category")
-      .where("post.id = :id", { id: post.id })
-      .orderBy("postMedia.order", "ASC")
-      .getOne() as Promise<Post>;
+  // Create post
+  const post = postRepo.create({
+    ...postData,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
+
+  await postRepo.save(post);
+
+  // Add media if provided
+  if (mediaPathsInOrder.length) {
+    const media = await mediaRepo.findBy({ path: In(mediaPathsInOrder) });
+    const postMedia = media.map((m, index) =>
+      postMediaRepo.create({
+        post,
+        media: m,
+        order: index,
+      })
+    );
+    await postMediaRepo.save(postMedia);
+  }
+
+  return getPostById(post.id);
 };
 
 export const fetchAllPosts = async (): Promise<Post[]> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  return dataSource
-    .createQueryBuilder(Post, "post")
-    .leftJoinAndSelect("post.media", "postMedia")
-    .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.category", "category")
-    .orderBy("post.scheduledDate", "DESC")
-    .addOrderBy("postMedia.order", "ASC")
-    .getMany();
+  return repository.find({
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      scheduledDate: "DESC",
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
 };
 
 export const fetchPostById = async (id: string): Promise<Post | null> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  return dataSource
-    .createQueryBuilder(Post, "post")
-    .leftJoinAndSelect("post.media", "postMedia")
-    .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.category", "category")
-    .where("post.id = :id", { id })
-    .orderBy("postMedia.order", "ASC")
-    .getOne();
+  return repository.findOne({
+    where: { id },
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
 };
 
 export const fetchPostsByMediaPath = async (mediaPath: string): Promise<Post[]> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  return dataSource
-    .createQueryBuilder(Post, "post")
-    .leftJoinAndSelect("post.media", "postMedia")
-    .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.category", "category")
-    .where("media.path = :mediaPath", { mediaPath })
-    .orderBy("postMedia.order", "ASC")
-    .getMany();
+  return repository.find({
+    where: { postMedia: { media: { path: mediaPath } } },
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
 };
 
 export const fetchPostsByChannel = async (channelId: string): Promise<Post[]> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  return dataSource
-    .createQueryBuilder(Post, "post")
-    .leftJoinAndSelect("post.media", "postMedia")
-    .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.category", "category")
-    .where("post.channelId = :channelId", { channelId })
-    .orderBy("post.scheduledDate", "DESC")
-    .addOrderBy("postMedia.order", "ASC")
-    .getMany();
+  return repository.find({
+    where: { channelId },
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      scheduledDate: "DESC",
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
 };
 
 export const fetchPostsBySchedule = async (scheduleId: string): Promise<Post[]> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  return dataSource
-    .createQueryBuilder(Post, "post")
-    .leftJoinAndSelect("post.media", "postMedia")
-    .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.category", "category")
-    .where("post.scheduleId = :scheduleId", { scheduleId })
-    .orderBy("post.scheduledDate", "DESC")
-    .addOrderBy("postMedia.order", "ASC")
-    .getMany();
+  return repository.find({
+    where: { scheduleId },
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      scheduledDate: "DESC",
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
 };
 
 export const fetchScheduledPosts = async (): Promise<Post[]> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  return dataSource
-    .createQueryBuilder(Post, "post")
-    .leftJoinAndSelect("post.media", "postMedia")
-    .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.category", "category")
-    .where("post.status = :status", { status: "scheduled" })
-    .orderBy("post.scheduledDate", "ASC")
-    .addOrderBy("postMedia.order", "ASC")
-    .getMany();
+  return repository.find({
+    where: { status: "scheduled" },
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      scheduledDate: "ASC",
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
 };
 
 export const updatePost = async (
   id: string,
-  updates: Partial<Omit<Post, "id" | "mediaOrders" | "channel" | "category">>,
+  updates: Partial<Omit<Post, "id" | "media" | "channel" | "category">>,
   newMediaPathsInOrder?: string[]
 ): Promise<Post | null> => {
   const dataSource = await db();
+  const postRepo = dataSource.getRepository(Post);
+  const mediaRepo = dataSource.getRepository(Media);
+  const postMediaRepo = dataSource.getRepository(PostMedia);
 
-  return dataSource.transaction(async (manager) => {
-    // Update post
-    await manager.update(
-      Post,
-      { id },
-      {
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      }
-    );
-
-    // If new media paths provided, update media orders
-    if (newMediaPathsInOrder !== undefined) {
-      // Delete existing media orders
-      await manager.delete(PostMedia, { postId: id });
-
-      // Create new media orders if there are any
-      if (newMediaPathsInOrder.length > 0) {
-        const postMedias = newMediaPathsInOrder.map((path, index) => {
-          const postMedia = new PostMedia();
-          postMedia.postId = id;
-          postMedia.path = path;
-          postMedia.order = index;
-          return postMedia;
-        });
-        await manager.save(PostMedia, postMedias);
-      }
-    }
-
-    // Load and return updated post
-    return manager
-      .createQueryBuilder(Post, "post")
-      .leftJoinAndSelect("post.media", "postMedia")
-      .leftJoinAndSelect("postMedia.media", "media")
-      .leftJoinAndSelect("post.channel", "channel")
-      .leftJoinAndSelect("post.category", "category")
-      .where("post.id = :id", { id })
-      .orderBy("postMedia.order", "ASC")
-      .getOne();
+  const post = await postRepo.findOne({
+    where: { id },
+    relations: ["media"],
   });
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  // Update basic post data
+  Object.assign(post, {
+    ...updates,
+    updatedAt: new Date().toISOString(),
+  });
+
+  await postRepo.save(post);
+
+  // Update media if provided
+  if (newMediaPathsInOrder) {
+    // Remove existing media
+    await postMediaRepo.delete({ post: { id: post.id } });
+
+    // Add new media
+    const media = await mediaRepo.findBy({ path: In(newMediaPathsInOrder) });
+    const postMedia = media.map((m, index) =>
+      postMediaRepo.create({
+        post,
+        media: m,
+        order: index,
+      })
+    );
+    await postMediaRepo.save(postMedia);
+  }
+
+  return getPostById(id);
 };
 
 export const updatePostStatus = async (id: string, status: PostStatus): Promise<Post | null> => {
@@ -185,11 +220,49 @@ export const updatePostStatus = async (id: string, status: PostStatus): Promise<
 
 export const deletePost = async (id: string): Promise<void> => {
   const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
 
-  await dataSource.transaction(async (manager) => {
-    // Delete media orders first (due to foreign key constraint)
-    await manager.delete(PostMedia, { postId: id });
-    // Delete post
-    await manager.delete(Post, { id });
+  await repository.delete(id);
+};
+
+export const getPostById = async (id: string) => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
+
+  return repository.findOne({
+    where: { id },
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
+};
+
+export const getAllPosts = async () => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
+
+  return repository.find({
+    relations: {
+      postMedia: {
+        media: true,
+      },
+      channel: true,
+      category: true,
+    },
+    order: {
+      scheduledDate: "DESC",
+      postMedia: {
+        order: "ASC",
+      },
+    },
   });
 };

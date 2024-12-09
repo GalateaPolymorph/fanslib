@@ -1,72 +1,74 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { GetAllMediaParams, PaginatedResponse } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
+import { useSettings } from "../contexts/SettingsContext";
 
 interface UseLibraryResult {
   media: Media[];
-  scanning: boolean;
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
   error: string | null;
+  isLoading: boolean;
+  refetch: () => Promise<void>;
 }
 
 interface LibraryFilters {
-  isNew?: boolean;
-  categories?: string[]; // Array of category slugs to filter by
+  categories?: string[];
+  page?: number;
+  limit?: number;
 }
 
-export function useLibrary(libraryPath: string, filters?: LibraryFilters): UseLibraryResult {
-  const mounted = useRef(false);
-  const [media, setMedia] = useState<Media[]>([]);
-  const [scanning, setScanning] = useState(false);
+export function useLibrary(filters?: LibraryFilters): UseLibraryResult {
+  const { settings } = useSettings();
+  const libraryPath = settings?.libraryPath;
+  const [mediaData, setMediaData] = useState<PaginatedResponse<Media>>({
+    items: [],
+    total: 0,
+    page: 1,
+    limit: 50,
+    totalPages: 1,
+  });
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filterMedia = (allMedia: Media[]) => {
-    let filteredMedia = allMedia;
+  const fetchLibrary = async () => {
+    if (!libraryPath) return;
 
-    // Filter by isNew if specified
-    if (filters?.isNew !== undefined) {
-      filteredMedia = filteredMedia.filter((item) => item.isNew === filters.isNew);
+    setIsLoading(true);
+    try {
+      setError(null);
+      const params: GetAllMediaParams = {
+        page: filters?.page ?? 1,
+        limit: filters?.limit ?? 50,
+      };
+
+      if (filters?.categories?.length) {
+        params.filters = {
+          categories: filters.categories,
+        };
+      }
+
+      const response = await window.api["library:getAll"](params);
+      setMediaData(response);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load media");
+    } finally {
+      setIsLoading(false);
     }
-
-    // Filter by categories if specified
-    if (filters?.categories?.length) {
-      filteredMedia = filteredMedia.filter((item) =>
-        // Check if the media has at least one category from the filter
-        item.categories?.some((category) => filters.categories?.includes(category.slug))
-      );
-    }
-
-    return filteredMedia;
   };
 
   useEffect(() => {
-    const scanLibrary = async () => {
-      try {
-        setScanning(true);
-        setError(null);
-        const allMedia = await window.api["library:scan"]();
-        setMedia(allMedia);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to scan library");
-      } finally {
-        setScanning(false);
-      }
-    };
+    fetchLibrary();
+  }, [libraryPath, filters?.categories, filters?.page, filters?.limit]);
 
-    scanLibrary();
-
-    const handleLibraryChange = (allMedia: Media[]) => {
-      setMedia(filterMedia(allMedia));
-    };
-
-    if (!mounted.current) {
-      mounted.current = true;
-      window.api["library:onLibraryChanged"](handleLibraryChange);
-      return () => {};
-    }
-
-    return () => {
-      window.api["library:offLibraryChanged"](handleLibraryChange);
-    };
-  }, [libraryPath, filters?.isNew, filters?.categories]);
-
-  return { media: filterMedia(media), scanning, error };
+  return {
+    media: mediaData.items,
+    totalItems: mediaData.total,
+    currentPage: mediaData.page,
+    totalPages: mediaData.totalPages,
+    error,
+    isLoading,
+    refetch: fetchLibrary,
+  };
 }

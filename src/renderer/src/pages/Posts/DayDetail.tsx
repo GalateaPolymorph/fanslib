@@ -80,18 +80,18 @@ export const DayDetail = ({ date, posts, onClose }: DayDetailProps) => {
               <p className="text-sm line-clamp-3">{post.caption}</p>
 
               {/* Media Preview */}
-              {post.media.length > 0 && (
+              {post.postMedia.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-2">
-                  {post.media.slice(0, 4).map((media, index) => (
+                  {post.postMedia.slice(0, 4).map((media, index) => (
                     <div
-                      key={media.path}
+                      key={media.media.path}
                       className={cn(
                         "aspect-square rounded-md overflow-hidden bg-muted",
-                        post.media.length === 3 && index === 2 && "col-span-2"
+                        post.postMedia.length === 3 && index === 2 && "col-span-2"
                       )}
                     >
                       <img
-                        src={`file://${media.path}`}
+                        src={`file://${media.media.path}`}
                         alt={`Media ${index + 1}`}
                         className="w-full h-full object-cover"
                       />

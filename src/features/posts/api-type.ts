@@ -4,7 +4,7 @@ import { Post, PostStatus } from "./entity";
 export type PostCreateData = {
   scheduleId: string;
   channelId: string;
-  categorySlug?: string;
+  categoryId?: string;
   caption: string;
   scheduledDate: string;
   status: PostStatus;

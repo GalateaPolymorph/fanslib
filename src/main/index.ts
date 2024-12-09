@@ -12,6 +12,9 @@ protocol.registerSchemesAsPrivileged([
       secure: true,
       supportFetchAPI: true,
       bypassCSP: true,
+      stream: true,
+      standard: true,
+      corsEnabled: true,
     },
   },
 ]);
@@ -58,13 +61,13 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 app.whenReady().then(async () => {
   protocol.handle("media", (req) => {
-    try {
-      const pathToMedia = decodeURIComponent(new URL(req.url).pathname);
-      return net.fetch(`file://${pathToMedia}`);
-    } catch (error) {
-      console.error("Error loading media:", error);
-      return new Response("Error loading media", { status: 500 });
-    }
+    const pathToMedia = decodeURIComponent(new URL(req.url).href.replace("media:/", ""));
+    const fileUrl = `file://${pathToMedia}`;
+
+    return net.fetch(fileUrl).catch((error) => {
+      console.error("Error fetching media:", error);
+      return new Response("Error fetching media", { status: 500 });
+    });
   });
 
   // Set app user model id for windows

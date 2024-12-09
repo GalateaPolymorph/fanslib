@@ -1,22 +1,33 @@
 import { electronAPI } from "@electron-toolkit/preload";
 import { contextBridge, ipcRenderer } from "electron";
 import { IpcHandlers, ipcMethods } from "../features/index-renderer";
-import { stripNamespace } from "../lib/namespace";
+import { onlyNamespace, stripNamespace } from "../lib/namespace";
 import { Tail } from "../lib/tail";
 
-const appApi = () =>
-  Object.fromEntries(
+// e.g. library:onChanged -> library:changed
+const channelToEventName = (channel: string) => {
+  const handlerName = stripNamespace(channel);
+  if (!handlerName.startsWith("on") && !handlerName.startsWith("off")) {
+    return channel;
+  }
+  const eventName = handlerName.replace("on", "").replace("off", "").toLowerCase();
+  const namespace = onlyNamespace(channel);
+  return `${namespace}:${eventName}`;
+};
+
+const appApi = () => {
+  const listeners = Object.fromEntries(
     ipcMethods.map((channel) => [
       channel,
       async (...args: Tail<Parameters<IpcHandlers[typeof channel]>>) => {
         const handlerName = stripNamespace(channel);
         if (handlerName.startsWith("on")) {
           // @ts-expect-error
-          return ipcRenderer.on(channel, ...args);
+          return ipcRenderer.on(channelToEventName(channel), ...args.slice(1));
         }
         if (handlerName.startsWith("off")) {
           // @ts-expect-error
-          return ipcRenderer.removeListener(channel, ...args);
+          return ipcRenderer.removeListener(channelToEventName(channel), ...args.slice(1));
         }
 
         return ipcRenderer.invoke(channel, ...args);
@@ -27,6 +38,9 @@ const appApi = () =>
       ...args: Tail<Parameters<IpcHandlers[K]>>
     ) => ReturnType<IpcHandlers[K]>;
   };
+
+  return listeners;
+};
 
 if (process.contextIsolated) {
   try {

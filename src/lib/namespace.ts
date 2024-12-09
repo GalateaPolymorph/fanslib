@@ -4,6 +4,7 @@ export type StripNamespace<
 > = T extends `${Namespace}:${infer U}` ? U : never;
 
 export const stripNamespace = (namespacedValue: string) => namespacedValue.split(":")[1];
+export const onlyNamespace = (namespacedValue: string) => namespacedValue.split(":")[0];
 
 export type PrefixNamespace<T extends { [K: string]: any }, Namespace extends string> = {
   [K in `${Namespace}:${keyof T & string}`]: T[keyof T & string];

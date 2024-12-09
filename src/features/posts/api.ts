@@ -31,7 +31,7 @@ export const handlers: PostHandlers = {
     return updatePost(
       postId,
       {},
-      post?.media.filter((m) => !mediaToRemove.includes(m.path)).map((m) => m.path)
+      post?.postMedia.filter((m) => !mediaToRemove.includes(m.id)).map((m) => m.id)
     );
   },
 };

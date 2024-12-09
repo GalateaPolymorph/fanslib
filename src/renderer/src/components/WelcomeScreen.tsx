@@ -27,7 +27,7 @@ export function WelcomeScreen() {
 
         // Scan for media files
         const files = await window.api["library:getAll"]();
-        setMediaItems(files);
+        setMediaItems(files.items);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to scan library");
       } finally {
@@ -78,7 +78,7 @@ export function WelcomeScreen() {
                   </div>
                   <div>{formatFileSize(file.size)}</div>
                   <div className="capitalize">{file.type}</div>
-                  <div>{new Date(file.modified).toLocaleDateString()}</div>
+                  <div>{new Date(file.fileModificationDate).toLocaleDateString()}</div>
                 </div>
               ))}
               {mediaItems.length === 0 && !loading && (

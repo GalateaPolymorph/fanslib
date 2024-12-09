@@ -134,12 +134,12 @@ export const PostDetail = () => {
           <div className="grid grid-cols-[2fr_3fr] gap-8">
             {/* Media Section */}
             <div className="space-y-4">
-              {post.media && post.media.length > 0 ? (
+              {post.postMedia && post.postMedia.length > 0 ? (
                 <>
                   <div className="grid grid-cols-2 gap-4">
-                    {post.media.map((media) => (
+                    {post.postMedia.map((media) => (
                       <MediaDisplay
-                        key={media.path}
+                        key={media.media.path}
                         media={media.media}
                         className="aspect-square"
                       />
@@ -229,7 +229,7 @@ export const PostDetail = () => {
                             setSaving(false);
                           }
                         }}
-                        disabled={!post.media || post.media.length === 0 || saving}
+                        disabled={!post.postMedia || post.postMedia.length === 0 || saving}
                       >
                         {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                         Schedule
@@ -334,7 +334,7 @@ export const PostDetail = () => {
         open={mediaDialogOpen}
         onOpenChange={setMediaDialogOpen}
         onSelect={handleMediaSelect}
-        initialSelectedMedia={post.media.map((m) => m.media)}
+        initialSelectedMedia={post.postMedia.map((m) => m.media)}
         categoryId={post.category?.slug}
       />
     </div>

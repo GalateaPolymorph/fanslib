@@ -41,7 +41,7 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
   return (
     <div className="flex flex-col gap-2 divide-y">
       {schedules.map((schedule) => {
-        const category = categories.find((c) => c.slug === schedule.categorySlug);
+        const category = categories.find((c) => c.slug === schedule.categoryId);
         return (
           <div key={schedule.id} className="pb-3">
             <div className="flex items-center justify-between">

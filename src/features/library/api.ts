@@ -1,55 +1,33 @@
-import chokidar, { FSWatcher } from "chokidar";
-import { BrowserWindow } from "electron";
 import { prefixNamespaceObject } from "../../lib/namespace";
 import { loadSettings } from "../settings/load";
 import { LibraryHandlers, namespace } from "./api-type";
-import { fetchAllMedia, updateMedia } from "./operations";
-import { scanLibraryForMediaFiles } from "./scan";
-
-let watcher: FSWatcher | null = null;
+import { fetchAllMedia, getMediaById, updateMedia } from "./operations";
+import { scanFile, scanLibrary } from "./scan";
 
 export const handlers: LibraryHandlers = {
   scan: async () => {
-    const { libraryPath } = await loadSettings();
-
-    if (!libraryPath) return [];
-    // Stop any existing watcher
-    if (watcher) {
-      await watcher.close();
+    const settings = await loadSettings();
+    if (!settings?.libraryPath) {
+      throw new Error("Library path not set");
     }
-
-    // Set up new watcher
-    watcher = chokidar.watch(libraryPath, {
-      ignored: /(^|[\/\\])\../, // ignore dotfiles
-      persistent: true,
-    });
-
-    // Notify renderer of changes
-    const notifyChange = async () => {
-      const win = BrowserWindow.getAllWindows()[0];
-      if (!win) return;
-      win.webContents.send("library:changed", await scanLibraryForMediaFiles(libraryPath));
-    };
-
-    // Watch for file changes
-    watcher.on("add", notifyChange).on("unlink", notifyChange).on("unlinkDir", notifyChange);
-
-    // Initial scan
-    return scanLibraryForMediaFiles(libraryPath);
+    return scanLibrary(settings.libraryPath);
   },
-  getAll: () => fetchAllMedia(),
-  update: async (_, path, updates) => {
-    await updateMedia(path, updates);
 
-    // Notify all windows about the change
-    const win = BrowserWindow.getAllWindows()[0];
-    if (win) {
-      const allMedia = await fetchAllMedia();
-      win.webContents.send("library:changed", allMedia);
-    }
+  scanFile: async (_, path: string) => {
+    return scanFile(path);
   },
-  onLibraryChanged: (_) => {}, // Stub for preload event listener
-  offLibraryChanged: (_) => {}, // Stub for preload event listener
+
+  getAll: async (_, params) => {
+    const page = params?.page ?? 1;
+    const limit = params?.limit ?? 50;
+    return fetchAllMedia({ page, limit, filters: params?.filters });
+  },
+  get: async (_, id: string) => {
+    return getMediaById(id);
+  },
+  update: async (_, id: string, updates) => {
+    return updateMedia(id, updates);
+  },
 };
 
 export const libraryHandlers = prefixNamespaceObject(namespace, handlers);

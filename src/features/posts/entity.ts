@@ -1,4 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
 import { Media } from "../library/entity";
@@ -7,22 +17,25 @@ export type PostStatus = "planned" | "scheduled" | "posted";
 
 @Entity()
 export class PostMedia {
-  @PrimaryColumn("varchar")
-  postId!: string;
-
-  @PrimaryColumn("varchar")
-  path!: string;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column("int")
-  order!: number;
+  order: number;
 
-  @ManyToOne(() => Media)
-  @JoinColumn({ name: "path", referencedColumnName: "path" })
-  media!: Media;
+  @ManyToOne(() => Post, (post) => post.postMedia, { onDelete: "CASCADE" })
+  @JoinColumn()
+  post: Post;
 
-  @ManyToOne(() => Post, (post) => post.media)
-  @JoinColumn({ name: "postId" })
-  post!: Post;
+  @ManyToOne(() => Media, (media) => media.postMedia, { onDelete: "CASCADE" })
+  @JoinColumn()
+  media: Media;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
 
 @Entity()
@@ -55,18 +68,18 @@ export class Post {
   channelId!: string;
 
   @Column("varchar", { nullable: true })
-  categorySlug?: string;
+  categoryId?: string;
 
   @ManyToOne(() => Channel)
   @JoinColumn({ name: "channelId" })
   channel!: Channel;
 
   @ManyToOne(() => Category)
-  @JoinColumn({ name: "categorySlug", referencedColumnName: "slug" })
+  @JoinColumn({ name: "categoryId", referencedColumnName: "id" })
   category?: Category;
 
   @OneToMany(() => PostMedia, (mediaOrder) => mediaOrder.post)
-  media!: PostMedia[];
+  postMedia!: PostMedia[];
 }
 
 export type PostWithoutRelations = Omit<Post, "channel" | "category" | "media">;

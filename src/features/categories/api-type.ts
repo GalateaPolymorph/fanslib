@@ -5,8 +5,8 @@ export const methods = ["create", "getAll", "update", "delete"] as const;
 export type CategoryHandlers = {
   create: (_: any, name: Category["name"]) => Promise<Category>;
   getAll: (_: any) => Promise<Category[]>;
-  update: (_: any, slug: string, updates: Partial<Category>) => Promise<Category | null>;
-  delete: (_: any, slug: string) => Promise<void>;
+  update: (_: any, id: string, updates: Partial<Category>) => Promise<Category | null>;
+  delete: (_: any, id: string) => Promise<void>;
 };
 
 export const namespace = "category" as const;

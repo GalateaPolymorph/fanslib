@@ -1,12 +1,25 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { Category } from "../categories/entity";
+import { PostMedia } from "../posts/entity";
 
 export type MediaType = "image" | "video";
 
 @Entity()
 export class Media {
-  @PrimaryColumn("varchar")
-  path!: string;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column({ type: "varchar", unique: true })
+  path: string;
 
   @Column("varchar")
   type!: MediaType;
@@ -14,28 +27,34 @@ export class Media {
   @Column("varchar")
   name!: string;
 
-  @Column("int")
+  @Column("bigint")
   size!: number;
 
-  @Column("varchar") // ISO String
-  createdAt!: string;
+  @Column("float", { nullable: true })
+  duration?: number;
 
-  @Column("varchar") // ISO String
-  modifiedAt!: string;
+  @CreateDateColumn({ type: "datetime" })
+  createdAt!: Date;
 
-  @Column("boolean")
-  isNew!: boolean;
+  @UpdateDateColumn({ type: "datetime" })
+  updatedAt!: Date;
 
-  @Column("simple-array")
-  categoryIds!: string[];
+  @Column("datetime")
+  fileCreationDate!: Date;
 
-  @ManyToMany(() => Category)
+  @Column("datetime")
+  fileModificationDate!: Date;
+
+  @ManyToMany(() => Category, { cascade: true })
   @JoinTable({
     name: "media_categories",
-    joinColumn: { name: "media_path", referencedColumnName: "path" },
-    inverseJoinColumn: { name: "category_slug", referencedColumnName: "slug" },
+    joinColumn: { name: "media_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "category_id", referencedColumnName: "id" },
   })
   categories!: Category[];
+
+  @OneToMany(() => PostMedia, (postMedia) => postMedia.media)
+  postMedia: PostMedia[];
 }
 
-export type MediaWithoutRelations = Omit<Media, "categories">;
+export type MediaWithoutRelations = Omit<Media, "id" | "categories">;

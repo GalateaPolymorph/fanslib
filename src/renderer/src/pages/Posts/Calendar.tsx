@@ -16,12 +16,12 @@ import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
+import { Post } from "../../../../features/posts/entity";
 import { ChannelTypeIcon } from "../../components/ChannelTypeIcon";
 import { Button } from "../../components/ui/button";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { cn } from "../../lib/utils";
-import { Post } from "../../../../features/posts/entity";
 
 interface CalendarProps {
   className?: string;
@@ -134,7 +134,7 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
                             {post.status}
                           </span>
                         </div>
-                        {(!post.media || post.media.length === 0) && (
+                        {(!post.postMedia || post.postMedia.length === 0) && (
                           <Tooltip>
                             <TooltipTrigger>
                               <AlertCircle className="w-3 h-3 text-destructive" />

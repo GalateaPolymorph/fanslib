@@ -9,8 +9,6 @@ export async function* walkDirectory(dir: string): AsyncGenerator<string> {
   try {
     const normalizedPath = path.resolve(dir);
 
-    console.log(normalizedPath);
-
     try {
       await fs.access(normalizedPath, fs.constants.R_OK);
     } catch (error) {

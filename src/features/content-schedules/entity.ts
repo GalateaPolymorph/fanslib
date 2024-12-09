@@ -11,7 +11,7 @@ export class ContentSchedule {
   channelId!: string;
 
   @Column("varchar")
-  categorySlug!: string;
+  categoryId!: string;
 
   @Column({
     type: "varchar",
@@ -42,7 +42,7 @@ export class ContentSchedule {
   channel!: Channel;
 
   @ManyToOne(() => Category)
-  @JoinColumn({ name: "categorySlug", referencedColumnName: "slug" })
+  @JoinColumn({ name: "categoryId", referencedColumnName: "id" })
   category!: Category;
 }
 

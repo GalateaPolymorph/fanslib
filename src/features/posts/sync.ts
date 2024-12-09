@@ -132,7 +132,7 @@ export const syncPostsForSchedule = async (schedule: ContentSchedule) => {
         updatePost(existingPost.id, {
           scheduleId: schedule.id,
           channelId: schedule.channelId,
-          categorySlug: schedule.categorySlug,
+          categoryId: schedule.categoryId,
           scheduledDate: dateTime.toISOString(),
         })
       );
@@ -143,7 +143,7 @@ export const syncPostsForSchedule = async (schedule: ContentSchedule) => {
           {
             scheduleId: schedule.id,
             channelId: schedule.channelId,
-            categorySlug: schedule.categorySlug,
+            categoryId: schedule.categoryId,
             caption: "",
             scheduledDate: dateTime.toISOString(),
             status: "planned",
