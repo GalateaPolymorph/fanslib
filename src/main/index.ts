@@ -1,23 +1,13 @@
 import "reflect-metadata";
 
-import { app, BrowserWindow, net, protocol, shell } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
+import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
+import { registerMediaProtocolHandler, registerMediaSchemeAsPrivileged } from "./media-protocol";
 
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: "media",
-    privileges: {
-      secure: true,
-      supportFetchAPI: true,
-      bypassCSP: true,
-      stream: true,
-      standard: true,
-      corsEnabled: true,
-    },
-  },
-]);
+registerMediaSchemeAsPrivileged();
 
 const createWindow = () => {
   // Create the browser window.
@@ -60,15 +50,8 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.whenReady().then(async () => {
-  protocol.handle("media", (req) => {
-    const pathToMedia = decodeURIComponent(new URL(req.url).href.replace("media:/", ""));
-    const fileUrl = `file://${pathToMedia}`;
-
-    return net.fetch(fileUrl).catch((error) => {
-      console.error("Error fetching media:", error);
-      return new Response("Error fetching media", { status: 500 });
-    });
-  });
+  await db();
+  registerMediaProtocolHandler();
 
   // Set app user model id for windows
   app.setAppUserModelId("com.electron");
@@ -79,15 +62,6 @@ app.whenReady().then(async () => {
 
   // Create window
   createWindow();
-
-  // Sync schedules with posts
-  try {
-    const { syncSchedulesWithPosts } = await import("../features/posts/sync-manager");
-    const syncedCount = await syncSchedulesWithPosts();
-    console.log(`Synced ${syncedCount} schedules with posts`);
-  } catch (error) {
-    console.error("Failed to sync schedules with posts:", error);
-  }
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
