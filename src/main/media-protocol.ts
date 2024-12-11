@@ -74,7 +74,7 @@ export const registerMediaProtocolHandler = () => {
       headers.set("Content-Length", fileSize.toString());
 
       // If it's a video file, set appropriate content type and handle range requests
-      if (pathToMedia.toLowerCase().match(/\.(mp4|webm|ogg)$/)) {
+      if (pathToMedia.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/)) {
         headers.set("Content-Type", "video/mp4");
 
         const range = req.headers.get("Range");
