@@ -8,11 +8,10 @@ export interface PaginationParams {
 
 export interface MediaFilters {
   categories?: string[]; // category slugs
+  unposted?: boolean;
 }
 
-export interface GetAllMediaParams extends Partial<PaginationParams> {
-  filters?: MediaFilters;
-}
+export type GetAllMediaParams = Partial<PaginationParams & MediaFilters>;
 
 export interface PaginatedResponse<T> {
   items: T[];

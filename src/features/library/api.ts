@@ -20,7 +20,7 @@ export const handlers: LibraryHandlers = {
   getAll: async (_, params) => {
     const page = params?.page ?? 1;
     const limit = params?.limit ?? 50;
-    return fetchAllMedia({ page, limit, filters: params?.filters });
+    return fetchAllMedia({ page, limit, ...params });
   },
   get: async (_, id: string) => {
     return getMediaById(id);

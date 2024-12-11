@@ -13,13 +13,7 @@ interface UseLibraryResult {
   refetch: () => Promise<void>;
 }
 
-interface LibraryFilters {
-  categories?: string[];
-  page?: number;
-  limit?: number;
-}
-
-export function useLibrary(filters?: LibraryFilters): UseLibraryResult {
+export function useLibrary(filters?: GetAllMediaParams): UseLibraryResult {
   const { settings } = useSettings();
   const libraryPath = settings?.libraryPath;
   const [mediaData, setMediaData] = useState<PaginatedResponse<Media>>({
@@ -38,18 +32,8 @@ export function useLibrary(filters?: LibraryFilters): UseLibraryResult {
     setIsLoading(true);
     try {
       setError(null);
-      const params: GetAllMediaParams = {
-        page: filters?.page ?? 1,
-        limit: filters?.limit ?? 50,
-      };
+      const response = await window.api["library:getAll"](filters);
 
-      if (filters?.categories?.length) {
-        params.filters = {
-          categories: filters.categories,
-        };
-      }
-
-      const response = await window.api["library:getAll"](params);
       setMediaData(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load media");
@@ -60,7 +44,7 @@ export function useLibrary(filters?: LibraryFilters): UseLibraryResult {
 
   useEffect(() => {
     fetchLibrary();
-  }, [libraryPath, filters?.categories, filters?.page, filters?.limit]);
+  }, [libraryPath, filters]);
 
   return {
     media: mediaData.items,

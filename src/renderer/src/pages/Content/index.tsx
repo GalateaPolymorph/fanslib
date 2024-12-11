@@ -11,6 +11,7 @@ export const ContentPage = () => {
   const [gridSize, setGridSize] = useState<GridSize>("large");
   const [filters, setFilters] = useState<{
     categories?: string[];
+    unposted?: boolean;
     page?: number;
     limit?: number;
   }>({
@@ -46,7 +47,15 @@ export const ContentPage = () => {
       <div className="flex-1 min-h-0 p-6 flex flex-col">
         <GridSizeContext.Provider value={{ gridSize, setGridSize }}>
           <div className="flex justify-between items-center mb-4 flex-none">
-            <LibraryFilters onFilterChange={setFilters} />
+            <LibraryFilters
+              onFilterChange={(newFilters) => {
+                setFilters((prev) => ({
+                  ...prev,
+                  ...newFilters,
+                  page: 1, // Reset to first page when filters change
+                }));
+              }}
+            />
             <GridSizeToggle />
           </div>
           <div className="flex-1 min-h-0 overflow-auto">

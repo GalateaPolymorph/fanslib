@@ -45,32 +45,32 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
   });
 };
 
-export const fetchAllMedia = async ({
-  page = 1,
-  limit = 50,
-  filters,
-}: GetAllMediaParams): Promise<PaginatedResponse<Media>> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Media);
+export const fetchAllMedia = async (
+  params?: GetAllMediaParams
+): Promise<PaginatedResponse<Media>> => {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 50;
+  const skip = (page - 1) * limit;
 
-  const query = repository
+  const repository = (await db()).getRepository(Media);
+  const queryBuilder = repository
     .createQueryBuilder("media")
-    .leftJoinAndSelect("media.categories", "category")
-    .leftJoinAndSelect("media.postMedia", "postMedia")
-    .leftJoinAndSelect("postMedia.post", "post")
-    .leftJoinAndSelect("post.channel", "channel");
+    .leftJoinAndSelect("media.categories", "categories")
+    .leftJoinAndSelect("media.postMedia", "postMedia");
 
-  if (filters?.categories?.length) {
-    query.andWhere("category.slug IN (:...categories)", { categories: filters.categories });
+  // Apply category filter
+  if (params?.categories?.length) {
+    queryBuilder
+      .andWhere("categories.slug IN (:...categories)")
+      .setParameter("categories", params.categories);
   }
 
-  const [items, total] = await Promise.all([
-    query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getMany(),
-    query.getCount(),
-  ]);
+  // Apply unposted filter
+  if (params?.unposted) {
+    queryBuilder.andWhere("postMedia.id IS NULL");
+  }
+
+  const [items, total] = await queryBuilder.skip(skip).take(limit).getManyAndCount();
 
   return {
     items,
