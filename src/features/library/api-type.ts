@@ -6,12 +6,20 @@ export interface PaginationParams {
   limit: number;
 }
 
+export type SortField = "fileModificationDate" | "fileCreationDate" | "lastPosted";
+export type SortDirection = "ASC" | "DESC";
+
+export interface MediaSort {
+  field: SortField;
+  direction: SortDirection;
+}
+
 export interface MediaFilters {
   categories?: string[]; // category slugs
   unposted?: boolean;
 }
 
-export type GetAllMediaParams = Partial<PaginationParams & MediaFilters>;
+export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
 
 export interface PaginatedResponse<T> {
   items: T[];
@@ -33,17 +41,17 @@ export interface FileScanResult {
   media: Media;
 }
 
+export type UpdateMediaPayload = Partial<
+  Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia">
+> & { categoryIds?: string[] };
+
 const methods = ["scan", "scanFile", "getAll", "update", "get"] as const;
 export type LibraryHandlers = {
   scan: (_: unknown) => Promise<LibraryScanResult>;
   scanFile: (_: unknown, path: string) => Promise<FileScanResult>;
   get: (_: unknown, id: string) => Promise<Media | null>;
   getAll: (_: unknown, params?: GetAllMediaParams) => Promise<PaginatedResponse<Media>>;
-  update: (
-    _: unknown,
-    id: string,
-    updates: Partial<Media> & { categoryIds?: string[] }
-  ) => Promise<Media | null>;
+  update: (_: unknown, id: string, updates: UpdateMediaPayload) => Promise<Media | null>;
 };
 
 export const namespace = "library" as const;

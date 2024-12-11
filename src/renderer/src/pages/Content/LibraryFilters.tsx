@@ -1,59 +1,54 @@
-import { useState } from "react";
 import { CategorySelect } from "../../components/CategorySelect";
 import { Button } from "../../components/ui/button";
-import { Switch } from "../../components/ui/switch";
 import { Label } from "../../components/ui/label";
+import { Switch } from "../../components/ui/switch";
 
-interface LibraryFiltersProps {
+interface Props {
+  value: {
+    categories?: string[];
+    unposted?: boolean;
+  };
   onFilterChange: (filters: { categories?: string[]; unposted?: boolean }) => void;
 }
 
-export const LibraryFilters = ({ onFilterChange }: LibraryFiltersProps) => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [showUnposted, setShowUnposted] = useState(false);
-
-  const handleCategoryChange = (slugs: string[]) => {
-    setSelectedCategories(slugs);
-    onFilterChange({
-      categories: slugs.length > 0 ? slugs : undefined,
-      unposted: showUnposted,
-    });
-  };
-
-  const handleUnpostedChange = (checked: boolean) => {
-    setShowUnposted(checked);
-    onFilterChange({
-      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
-      unposted: checked,
-    });
-  };
-
-  const clearFilters = () => {
-    setSelectedCategories([]);
-    setShowUnposted(false);
-    onFilterChange({});
-  };
-
-  const hasActiveFilters = selectedCategories.length > 0 || showUnposted;
-
+export function LibraryFilters({ value, onFilterChange }: Props) {
   return (
-    <div className="flex items-center gap-4 py-2 min-h-14">
-      <CategorySelect value={selectedCategories} onChange={handleCategoryChange} multiple={true} />
+    <div className="flex items-center gap-4">
+      <CategorySelect
+        value={value.categories ?? []}
+        onChange={(categories) => {
+          onFilterChange({
+            ...value,
+            categories: categories.length > 0 ? categories : undefined,
+          });
+        }}
+        multiple={true}
+      />
 
       <div className="flex items-center gap-2">
         <Switch
           id="unposted"
-          checked={showUnposted}
-          onCheckedChange={handleUnpostedChange}
+          checked={value.unposted ?? false}
+          onCheckedChange={(checked) => {
+            onFilterChange({
+              ...value,
+              unposted: checked,
+            });
+          }}
         />
-        <Label htmlFor="unposted">Show unposted only</Label>
+        <Label htmlFor="unposted">Unposted</Label>
       </div>
 
-      {hasActiveFilters && (
-        <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
+      {(value.categories?.length > 0 || value.unposted) && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onFilterChange({})}
+          className="text-muted-foreground"
+        >
           Clear Filters
         </Button>
       )}
     </div>
   );
-};
+}

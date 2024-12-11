@@ -21,6 +21,12 @@ export const AppDataSource = new DataSource({
 
 let initialized = false;
 
+export const uninitialize = async () => {
+  if (initialized) {
+    await AppDataSource.destroy();
+    initialized = false;
+  }
+};
 export const db = async () => {
   if (!initialized) {
     await AppDataSource.initialize();

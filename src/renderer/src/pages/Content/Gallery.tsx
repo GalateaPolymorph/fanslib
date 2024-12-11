@@ -1,6 +1,5 @@
 import { cn } from "@renderer/lib/utils";
 import { Grid2X2, Grid3X3 } from "lucide-react";
-import { createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
 import { MediaDisplay } from "../../components/MediaDisplay";
@@ -8,43 +7,35 @@ import { ScrollArea } from "../../components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
 import { GalleryEmpty } from "./GalleryEmpty";
 
-interface GalleryProps {
+type GridSize = "small" | "large";
+
+type GridSizeToggleProps = {
+  gridSize: GridSize;
+  setGridSize: (size: GridSize) => void;
+};
+export const GridSizeToggle = ({ gridSize, setGridSize }: GridSizeToggleProps) => (
+  <ToggleGroup
+    type="single"
+    value={gridSize}
+    onValueChange={(value) => value && setGridSize(value as GridSize)}
+  >
+    <ToggleGroupItem value="small" aria-label="Small grid">
+      <Grid3X3 className="h-4 w-4" />
+    </ToggleGroupItem>
+    <ToggleGroupItem value="large" aria-label="Large grid">
+      <Grid2X2 className="h-4 w-4" />
+    </ToggleGroupItem>
+  </ToggleGroup>
+);
+
+type GalleryProps = {
   media: Media[];
   error?: string;
   libraryPath?: string;
   onScan?: () => void;
-}
-
-export type GridSize = "large" | "small";
-export const GridSizeContext = createContext<{
   gridSize: GridSize;
-  setGridSize: (size: GridSize) => void;
-}>({
-  gridSize: "large",
-  setGridSize: () => {},
-});
-
-export const GridSizeToggle = () => {
-  const { gridSize, setGridSize } = useContext(GridSizeContext);
-
-  return (
-    <ToggleGroup
-      type="single"
-      value={gridSize}
-      onValueChange={(value) => value && setGridSize(value as GridSize)}
-    >
-      <ToggleGroupItem value="small" aria-label="Small grid">
-        <Grid3X3 className="h-4 w-4" />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="large" aria-label="Large grid">
-        <Grid2X2 className="h-4 w-4" />
-      </ToggleGroupItem>
-    </ToggleGroup>
-  );
 };
-
-export const Gallery = ({ media, error, libraryPath, onScan }: GalleryProps) => {
-  const { gridSize } = useContext(GridSizeContext);
+export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: GalleryProps) => {
   const navigate = useNavigate();
 
   if (error) {
@@ -69,7 +60,7 @@ export const Gallery = ({ media, error, libraryPath, onScan }: GalleryProps) => 
           {media.map((media) => (
             <div key={media.path} className="relative">
               <div
-                className="group relative aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer"
+                className="group relative border-2 border-transparent aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => navigate(`/content/${encodeURIComponent(media.id)}`)}
                 onMouseEnter={(e) => {
                   const element = e.currentTarget as HTMLElement;
@@ -87,7 +78,7 @@ export const Gallery = ({ media, error, libraryPath, onScan }: GalleryProps) => 
                 <div className="absolute inset-0">
                   <MediaDisplay media={media} preview={true} />
                   {media.categories && media.categories.length > 0 && (
-                    <div className="absolute bottom-2 left-2 flex gap-1">
+                    <div className="absolute bottom-2 right-2 flex gap-1">
                       {media.categories.map((category) => (
                         <div
                           key={category.slug}

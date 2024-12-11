@@ -4,7 +4,7 @@ import { cn } from "../lib/utils";
 
 interface CategorySelectProps {
   value?: string[];
-  onChange: (categorySlugs: string[]) => void;
+  onChange: (categoryIds: string[]) => void;
   multiple?: boolean;
   disabledCategories?: string[];
 }
@@ -17,16 +17,16 @@ export const CategorySelect = ({
 }: CategorySelectProps) => {
   const { categories, isLoading } = useCategories();
 
-  const handleToggleCategory = (slug: string) => {
-    if (disabledCategories.includes(slug)) return;
+  const handleToggleCategory = (id: string) => {
+    if (disabledCategories.includes(id)) return;
 
-    if (value.includes(slug)) {
-      onChange(value.filter((s) => s !== slug));
+    if (value.includes(id)) {
+      onChange(value.filter((s) => s !== id));
     } else {
       if (multiple) {
-        onChange([...value, slug]);
+        onChange([...value, id]);
       } else {
-        onChange([slug]);
+        onChange([id]);
       }
     }
   };
@@ -38,12 +38,12 @@ export const CategorySelect = ({
   return (
     <div className="flex flex-wrap gap-2">
       {categories.map((category) => {
-        const isDisabled = disabledCategories.includes(category.slug);
-        const isSelected = value.includes(category.slug);
+        const isDisabled = disabledCategories.includes(category.id);
+        const isSelected = value.includes(category.id);
 
         return (
           <Badge
-            key={category.slug}
+            key={category.id}
             variant={isSelected ? "default" : "outline"}
             className={cn(
               "transition-colors cursor-pointer",
@@ -55,7 +55,7 @@ export const CategorySelect = ({
               borderColor: category.color,
               color: isSelected ? "white" : category.color,
             }}
-            onClick={() => handleToggleCategory(category.slug)}
+            onClick={() => handleToggleCategory(category.id)}
             title={isDisabled ? "This category already has a schedule" : undefined}
           >
             {category.name}

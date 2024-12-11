@@ -18,7 +18,7 @@ export const MediaDetail = () => {
   const [createPostDialogOpen, setCreatePostDialogOpen] = useState(false);
 
   useEffect(() => {
-    setCategories((media?.categories ?? []).map((cat) => cat.slug));
+    setCategories((media?.categories ?? []).map((cat) => cat.id));
   }, [media]);
 
   const handleChangeCategory = async (newCategories: string[]) => {
@@ -71,7 +71,7 @@ export const MediaDetail = () => {
       />
       <div className="container mx-auto p-6 flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
+          <Button variant="ghost" onClick={() => navigate("/")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to gallery
           </Button>

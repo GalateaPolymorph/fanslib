@@ -1,7 +1,7 @@
 import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { Category } from "../categories/entity";
-import { GetAllMediaParams, PaginatedResponse } from "./api-type";
+import { GetAllMediaParams, PaginatedResponse, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 
 export const createMedia = async ({
@@ -57,6 +57,7 @@ export const fetchAllMedia = async (
     .createQueryBuilder("media")
     .leftJoinAndSelect("media.categories", "categories")
     .leftJoinAndSelect("media.postMedia", "postMedia");
+  // .leftJoinAndSelect("postMedia.post", "post");
 
   // Apply category filter
   if (params?.categories?.length) {
@@ -68,6 +69,33 @@ export const fetchAllMedia = async (
   // Apply unposted filter
   if (params?.unposted) {
     queryBuilder.andWhere("postMedia.id IS NULL");
+  }
+
+  // Apply sorting
+  if (params?.sort) {
+    const { field, direction } = params.sort;
+    switch (field) {
+      case "fileModificationDate":
+      case "fileCreationDate":
+        queryBuilder.orderBy(`media.${field}`, direction);
+        break;
+      case "lastPosted":
+        queryBuilder
+          .addSelect(
+            (subQuery) =>
+              subQuery
+                .select("MAX(post.date)")
+                .from("post", "post")
+                .innerJoin("post.postMedia", "pm")
+                .where("pm.mediaId = media.id"),
+            "lastPostDate"
+          )
+          .orderBy("lastPostDate", direction, "NULLS LAST");
+        break;
+    }
+  } else {
+    // Default sort by modification date, newest first
+    queryBuilder.orderBy("media.fileModificationDate", "DESC");
   }
 
   const [items, total] = await queryBuilder.skip(skip).take(limit).getManyAndCount();
@@ -115,12 +143,12 @@ export const fetchMediaByPaths = async (paths: string[]): Promise<Media[]> => {
   });
 };
 
-export const updateMedia = async (path: string, updates: Partial<Omit<Media, "id" | "posts">>) => {
+export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
   const media = await repository.findOne({
-    where: { path },
+    where: { id },
     relations: {
       categories: true,
       postMedia: {
@@ -136,8 +164,13 @@ export const updateMedia = async (path: string, updates: Partial<Omit<Media, "id
   Object.assign(media, updates);
 
   // Update categories if provided
-  if (updates.categories) {
-    await addCategoriesToMedia(media, updates.categories);
+  if (updates.categoryIds) {
+    const categoryRepo = dataSource.getRepository(Category);
+    const categories = await categoryRepo.find({
+      where: { id: In(updates.categoryIds) },
+    });
+
+    media.categories = [...(media.categories || []), ...categories];
   }
 
   await repository.save(media);
@@ -150,29 +183,6 @@ export const deleteMedia = async (path: string) => {
   const repository = dataSource.getRepository(Media);
 
   await repository.delete({ path });
-};
-
-export const addCategoriesToMediaByPath = async (path: string, categories: Category[]) => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Media);
-
-  const media = await repository.findOne({
-    where: { path },
-    relations: ["categories"],
-  });
-
-  if (!media) return null;
-
-  return addCategoriesToMedia(media, categories);
-};
-
-const addCategoriesToMedia = async (media: Media, categories: Category[]) => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Media);
-
-  media.categories = [...(media.categories || []), ...categories];
-
-  return repository.save(media);
 };
 
 export const removeCategoriesFromMedia = async (path: string, categoryIds: string[]) => {

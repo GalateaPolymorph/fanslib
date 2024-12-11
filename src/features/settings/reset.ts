@@ -1,9 +1,9 @@
-import { db } from "../../lib/db";
+import { db, uninitialize } from "../../lib/db";
 
 export const resetDatabase = async () => {
   const database = await db();
   // Drop database and reinitialize
   await database.dropDatabase();
-  await database.destroy();
+  await uninitialize();
   await db();
 };
