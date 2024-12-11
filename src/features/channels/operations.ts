@@ -20,7 +20,7 @@ export const createChannel = async ({
   return repository.findOne({
     where: { id },
     relations: { type: true },
-  }) as Promise<Channel>;
+  });
 };
 
 export const createChannelType = async (
@@ -78,7 +78,7 @@ export const updateChannel = async (
     where: { id },
     relations: { type: true },
   });
-  
+
   if (!channel) return null;
 
   // Apply updates

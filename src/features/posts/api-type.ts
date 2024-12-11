@@ -2,20 +2,20 @@ import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/name
 import { Post, PostStatus } from "./entity";
 
 export type PostCreateData = {
-  scheduleId: string;
+  date: string;
   channelId: string;
   categoryId?: string;
-  caption: string;
-  scheduledDate: string;
+  caption?: string;
   status: PostStatus;
 };
 
 export const methods = [
   "create",
   "getAll",
+  "byId",
   "bySchedule",
   "byChannel",
-  "byMediaPath",
+  "byMediaId",
   "update",
   "markAsScheduled",
   "markAsPosted",
@@ -25,11 +25,12 @@ export const methods = [
   "removeMedia",
 ] as const;
 export type PostHandlers = {
-  create: (_: any, data: PostCreateData) => Promise<Post>;
+  create: (_: any, data: PostCreateData, mediaIds: string[]) => Promise<Post>;
   getAll: (_: any) => Promise<Post[]>;
+  byId: (_: any, id: string) => Promise<Post | null>;
   bySchedule: (_: any, scheduleId: string) => Promise<Post[]>;
   byChannel: (_: any, channelId: string) => Promise<Post[]>;
-  byMediaPath: (_: any, mediaPath: string) => Promise<Post[]>;
+  byMediaId: (_: any, mediaPath: string) => Promise<Post[]>;
   update: (
     _: any,
     id: string,

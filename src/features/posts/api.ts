@@ -7,22 +7,23 @@ import {
   fetchAllPosts,
   fetchPostById,
   fetchPostsByChannel,
-  fetchPostsByMediaPath,
+  fetchPostsByMediaId,
   fetchPostsBySchedule,
   updatePost,
 } from "./operations";
 
 export const handlers: PostHandlers = {
-  create: (_, data) => createPost(data, []),
+  create: (_, data, mediaIds) => createPost(data, mediaIds),
   getAll: (_) => fetchAllPosts(),
+  byId: (_, id: string) => fetchPostById(id),
   bySchedule: (_, scheduleId: string) => fetchPostsBySchedule(scheduleId),
   byChannel: (_, channelId: string) => fetchPostsByChannel(channelId),
-  byMediaPath: (_, mediaPath: string) => fetchPostsByMediaPath(mediaPath),
+  byMediaId: (_, mediaId: string) => fetchPostsByMediaId(mediaId),
   update: (_, id: string, updates: Partial<Post>, newMediaPathsInOrder?: string[]) =>
     updatePost(id, updates, newMediaPathsInOrder),
   markAsScheduled: (_, id: string) => updatePost(id, { status: "scheduled" }),
-  markAsPosted: (_, id: string) => updatePost(id, { status: "planned" }),
-  markAsPlanned: (_, id: string) => updatePost(id, { status: "posted" }),
+  markAsPosted: (_, id: string) => updatePost(id, { status: "posted" }),
+  markAsPlanned: (_, id: string) => updatePost(id, { status: "planned" }),
   delete: (_, id) => deletePost(id),
   addMedia: (_, postId: string, mediaPaths: string[]) => updatePost(postId, {}, mediaPaths),
   removeMedia: async (_, postId: string, mediaToRemove: string[]) => {

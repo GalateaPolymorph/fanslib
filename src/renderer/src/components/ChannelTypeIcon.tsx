@@ -20,11 +20,12 @@ const CHANNEL_ICONS: Record<string, React.ComponentType<React.SVGProps<SVGSVGEle
   reddit: RedditIcon,
 };
 
-interface ChannelTypeIconProps {
-  typeId: keyof typeof CHANNEL_TYPES;
+export type ChannelTypeId = keyof typeof CHANNEL_TYPES;
+export type ChannelTypeIconProps = {
+  typeId: ChannelTypeId;
   color?: string;
   className?: string;
-}
+};
 
 export const ChannelTypeIcon = ({ typeId, color, className }: ChannelTypeIconProps) => {
   const channelType = CHANNEL_TYPES[typeId];

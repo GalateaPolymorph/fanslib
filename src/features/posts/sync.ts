@@ -102,7 +102,7 @@ const generateScheduleDates = (
 export const syncPostsForSchedule = async (schedule: ContentSchedule) => {
   // 1. Get all existing posts for this schedule in chronological order
   const existingPosts = (await fetchPostsBySchedule(schedule.id)).sort(
-    (a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   // 2. Generate all schedule dates and times
@@ -133,7 +133,7 @@ export const syncPostsForSchedule = async (schedule: ContentSchedule) => {
           scheduleId: schedule.id,
           channelId: schedule.channelId,
           categoryId: schedule.categoryId,
-          scheduledDate: dateTime.toISOString(),
+          date: dateTime.toISOString(),
         })
       );
     } else {
@@ -145,7 +145,7 @@ export const syncPostsForSchedule = async (schedule: ContentSchedule) => {
             channelId: schedule.channelId,
             categoryId: schedule.categoryId,
             caption: "",
-            scheduledDate: dateTime.toISOString(),
+            date: dateTime.toISOString(),
             status: "planned",
           },
           []

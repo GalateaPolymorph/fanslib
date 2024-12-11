@@ -89,7 +89,7 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
       </div>
       <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0">
         {days.map((day, dayIdx) => {
-          const dayPosts = posts.filter((post) => isSameDay(new Date(post.scheduledDate), day));
+          const dayPosts = posts.filter((post) => isSameDay(new Date(post.date), day));
 
           return (
             <div
@@ -122,7 +122,7 @@ export const Calendar = ({ className, posts, selectedDate, onSelectDate }: Calen
                     >
                       <div className="font-medium flex items-center justify-between">
                         <div className="flex items-center gap-1">
-                          {format(new Date(post.scheduledDate), "h:mm a")}
+                          {format(new Date(post.date), "h:mm a")}
                           <span
                             className={cn(
                               "px-1 py-0.5 rounded-sm text-[10px] capitalize",

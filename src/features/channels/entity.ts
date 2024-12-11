@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity()
 export class ChannelType {
@@ -14,7 +21,7 @@ export class ChannelType {
 
 @Entity()
 export class Channel {
-  @PrimaryColumn("varchar")
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column("varchar")

@@ -73,7 +73,7 @@ export const DayDetail = ({ date, posts, onClose }: DayDetailProps) => {
 
               {/* Time */}
               <p className="text-sm text-muted-foreground mb-2">
-                {format(new Date(post.scheduledDate), "p")}
+                {format(new Date(post.date), "p")}
               </p>
 
               {/* Caption */}

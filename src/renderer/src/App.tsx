@@ -3,6 +3,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { CategoryProvider } from "./contexts/CategoryContext";
+import { ChannelProvider } from "./contexts/ChannelContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
@@ -17,21 +18,23 @@ const App = () => {
     <ThemeProvider>
       <SettingsProvider>
         <CategoryProvider>
-          <TooltipProvider delayDuration={0}>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<ContentPage />} />
-                  <Route path="content/:mediaId" element={<MediaDetail />} />
-                  <Route path="posts" element={<PostsPage />} />
-                  <Route path="posts/:postId" element={<PostDetail />} />
-                  <Route path="channels" element={<ChannelsPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-            <Toaster />
-          </TooltipProvider>
+          <ChannelProvider>
+            <TooltipProvider delayDuration={0}>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Layout />}>
+                    <Route index element={<ContentPage />} />
+                    <Route path="content/:mediaId" element={<MediaDetail />} />
+                    <Route path="posts" element={<PostsPage />} />
+                    <Route path="posts/:postId" element={<PostDetail />} />
+                    <Route path="channels" element={<ChannelsPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+              <Toaster />
+            </TooltipProvider>
+          </ChannelProvider>
         </CategoryProvider>
       </SettingsProvider>
     </ThemeProvider>

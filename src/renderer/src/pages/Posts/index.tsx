@@ -30,7 +30,7 @@ export const PostsPage = () => {
 
       // Filter posts within the date range
       const filteredPosts = allPosts.filter((post) => {
-        const postDate = new Date(post.scheduledDate);
+        const postDate = new Date(post.date);
         return postDate >= startDate && postDate <= endDate;
       });
 
@@ -68,7 +68,7 @@ export const PostsPage = () => {
   };
 
   const selectedDayPosts = selectedDate
-    ? posts.filter((post) => isSameDay(new Date(post.scheduledDate), selectedDate))
+    ? posts.filter((post) => isSameDay(new Date(post.date), selectedDate))
     : [];
 
   return (

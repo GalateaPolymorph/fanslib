@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
+import { loadChannelTypeFixtures } from "../features/channels/fixtures";
 import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
 import { registerMediaProtocolHandler, registerMediaSchemeAsPrivileged } from "./media-protocol";
@@ -51,6 +52,7 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 app.whenReady().then(async () => {
   await db();
+  await loadChannelTypeFixtures();
   registerMediaProtocolHandler();
 
   // Set app user model id for windows

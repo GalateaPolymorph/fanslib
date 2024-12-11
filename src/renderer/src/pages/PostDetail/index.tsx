@@ -26,17 +26,21 @@ export const PostDetail = () => {
 
   useEffect(() => {
     const loadPost = async () => {
+      if (!postId) {
+        setError("No post ID provided");
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        const posts = await window.api["post:getAll"]();
-        const foundPost = posts.find((p) => p.id === postId);
-        if (!foundPost) {
+        const post = await window.api["post:byId"](postId);
+        if (!post) {
           setError("Post not found");
           return;
         }
-        setPost(foundPost);
-        setCaption(foundPost.caption);
+        setPost(post);
+        setCaption(post.caption);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load post");
       } finally {
@@ -205,7 +209,7 @@ export const PostDetail = () => {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="capitalize font-medium">{post.status}</p>
-                    <p className="text-lg">{format(new Date(post.scheduledDate), "PPP 'at' p")}</p>
+                    <p className="text-lg">{format(new Date(post.date), "PPP 'at' p")}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     {post.status === "planned" && (

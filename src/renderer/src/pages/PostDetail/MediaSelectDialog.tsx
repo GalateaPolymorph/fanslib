@@ -113,8 +113,8 @@ export const MediaSelectDialog = ({
                           <div key={post.id} className="text-sm">
                             <p className="text-muted-foreground">
                               {post.status === "scheduled"
-                                ? `Scheduled for ${format(new Date(post.scheduledDate), "MMM d, h:mm a")}`
-                                : `Posted ${formatDistanceToNow(new Date(post.scheduledDate))} ago`}
+                                ? `Scheduled for ${format(new Date(post.date), "MMM d, h:mm a")}`
+                                : `Posted ${formatDistanceToNow(new Date(post.date))} ago`}
                               {post.channel && ` • ${post.channel.name}`}
                             </p>
                           </div>

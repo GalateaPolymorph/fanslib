@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -40,23 +39,8 @@ export class PostMedia {
 
 @Entity()
 export class Post {
-  @PrimaryColumn("varchar")
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
-
-  @Column("varchar")
-  scheduleId!: string;
-
-  @Column("varchar")
-  caption!: string;
-
-  @Column("varchar")
-  scheduledDate!: string;
-
-  @Column({
-    type: "varchar",
-    enum: ["planned", "scheduled", "posted"],
-  })
-  status!: PostStatus;
 
   @Column("varchar")
   createdAt!: string;
@@ -64,19 +48,32 @@ export class Post {
   @Column("varchar")
   updatedAt!: string;
 
-  @Column("varchar")
-  channelId!: string;
-
   @Column("varchar", { nullable: true })
-  categoryId?: string;
+  scheduleId?: string;
+
+  @Column("varchar")
+  caption!: string;
+
+  @Column("varchar")
+  date!: string;
+
+  @Column({
+    type: "varchar",
+    enum: ["planned", "scheduled", "posted"],
+  })
+  status!: PostStatus;
 
   @ManyToOne(() => Channel)
   @JoinColumn({ name: "channelId" })
   channel!: Channel;
+  @Column("varchar")
+  channelId!: string;
 
   @ManyToOne(() => Category)
   @JoinColumn({ name: "categoryId", referencedColumnName: "id" })
   category?: Category;
+  @Column("varchar", { nullable: true })
+  categoryId?: string;
 
   @OneToMany(() => PostMedia, (mediaOrder) => mediaOrder.post)
   postMedia!: PostMedia[];

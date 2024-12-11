@@ -4,10 +4,7 @@ import { Media } from "../library/entity";
 import { PostCreateData } from "./api-type";
 import { Post, PostMedia, PostStatus } from "./entity";
 
-export const createPost = async (
-  postData: PostCreateData,
-  mediaPathsInOrder: string[]
-): Promise<Post> => {
+export const createPost = async (postData: PostCreateData, mediaIds: string[]): Promise<Post> => {
   const dataSource = await db();
   const postRepo = dataSource.getRepository(Post);
   const mediaRepo = dataSource.getRepository(Media);
@@ -23,8 +20,8 @@ export const createPost = async (
   await postRepo.save(post);
 
   // Add media if provided
-  if (mediaPathsInOrder.length) {
-    const media = await mediaRepo.findBy({ path: In(mediaPathsInOrder) });
+  if (mediaIds.length) {
+    const media = await mediaRepo.findBy({ id: In(mediaIds) });
     const postMedia = media.map((m, index) =>
       postMediaRepo.create({
         post,
@@ -51,7 +48,7 @@ export const fetchAllPosts = async (): Promise<Post[]> => {
       category: true,
     },
     order: {
-      scheduledDate: "DESC",
+      date: "DESC",
       postMedia: {
         order: "ASC",
       },
@@ -69,7 +66,9 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
       postMedia: {
         media: true,
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
@@ -80,12 +79,12 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
   });
 };
 
-export const fetchPostsByMediaPath = async (mediaPath: string): Promise<Post[]> => {
+export const fetchPostsByMediaId = async (mediaId: string): Promise<Post[]> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Post);
 
   return repository.find({
-    where: { postMedia: { media: { path: mediaPath } } },
+    where: { postMedia: { media: { id: mediaId } } },
     relations: {
       postMedia: {
         media: true,
@@ -115,7 +114,7 @@ export const fetchPostsByChannel = async (channelId: string): Promise<Post[]> =>
       category: true,
     },
     order: {
-      scheduledDate: "DESC",
+      date: "DESC",
       postMedia: {
         order: "ASC",
       },
@@ -137,7 +136,7 @@ export const fetchPostsBySchedule = async (scheduleId: string): Promise<Post[]> 
       category: true,
     },
     order: {
-      scheduledDate: "DESC",
+      date: "DESC",
       postMedia: {
         order: "ASC",
       },
@@ -159,7 +158,7 @@ export const fetchScheduledPosts = async (): Promise<Post[]> => {
       category: true,
     },
     order: {
-      scheduledDate: "ASC",
+      date: "ASC",
       postMedia: {
         order: "ASC",
       },
@@ -259,7 +258,7 @@ export const getAllPosts = async () => {
       category: true,
     },
     order: {
-      scheduledDate: "DESC",
+      date: "DESC",
       postMedia: {
         order: "ASC",
       },
