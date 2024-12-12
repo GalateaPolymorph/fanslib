@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { MediaSort } from "../../../features/library/api-type";
-import { GridSize } from "../pages/Content/Gallery";
 
 interface LibraryPreferences {
   categories?: string[];
   unposted?: boolean;
   sort: MediaSort;
-  gridSize: GridSize;
+  gridSize: "large" | "small";
   page: number;
   limit: number;
 }

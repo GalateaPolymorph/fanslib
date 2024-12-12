@@ -32,6 +32,7 @@ export function useLibrary(filters?: GetAllMediaParams): UseLibraryResult {
     setIsLoading(true);
     try {
       setError(null);
+
       const response = await window.api["library:getAll"](filters);
 
       setMediaData(response);
@@ -44,7 +45,7 @@ export function useLibrary(filters?: GetAllMediaParams): UseLibraryResult {
 
   useEffect(() => {
     fetchLibrary();
-  }, [libraryPath, filters]);
+  }, [libraryPath, JSON.stringify(filters)]);
 
   return {
     media: mediaData.items,

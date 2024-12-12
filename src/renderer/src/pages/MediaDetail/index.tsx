@@ -3,7 +3,6 @@ import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CategorySelect } from "../../components/CategorySelect";
-import { MediaDisplay } from "../../components/MediaDisplay";
 import { Button } from "../../components/ui/button";
 import { useMedia } from "../../hooks/useMedia";
 import { CreatePostDialog } from "./CreatePostDialog";
@@ -82,8 +81,20 @@ export const MediaDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="aspect-square">
-            <MediaDisplay media={media} />
+          <div className="aspect-square overflow-hidden rounded-lg">
+            {media.type === "image" ? (
+              <img
+                src={"media://" + media.path}
+                alt={media.name}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <video
+                src={"media://" + media.path}
+                controls
+                className="object-contain bg-muted w-full h-full"
+              />
+            )}
           </div>
 
           <div className="space-y-6">

@@ -2,7 +2,7 @@ import { cn } from "@renderer/lib/utils";
 import { Grid2X2, Grid3X3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
-import { MediaDisplay } from "../../components/MediaDisplay";
+import { MediaTile } from "../../components/MediaTile";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
 import { GalleryEmpty } from "./GalleryEmpty";
@@ -76,7 +76,7 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
                 }}
               >
                 <div className="absolute inset-0">
-                  <MediaDisplay media={media} preview={true} />
+                  <MediaTile media={media} preview={true} />
                   {media.categories && media.categories.length > 0 && (
                     <div className="absolute bottom-2 right-2 flex gap-1">
                       {media.categories.map((category) => (

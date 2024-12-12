@@ -56,14 +56,12 @@ export const fetchAllMedia = async (
   const queryBuilder = repository
     .createQueryBuilder("media")
     .leftJoinAndSelect("media.categories", "categories")
-    .leftJoinAndSelect("media.postMedia", "postMedia");
-  // .leftJoinAndSelect("postMedia.post", "post");
+    .leftJoinAndSelect("media.postMedia", "postMedia")
+    .leftJoinAndSelect("postMedia.post", "post");
 
   // Apply category filter
   if (params?.categories?.length) {
-    queryBuilder
-      .andWhere("categories.slug IN (:...categories)")
-      .setParameter("categories", params.categories);
+    queryBuilder.andWhere("categories.id IN (:...categories)", { categories: params.categories });
   }
 
   // Apply unposted filter

@@ -7,8 +7,13 @@ import { loadChannelTypeFixtures } from "../features/channels/fixtures";
 import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
 import { registerMediaProtocolHandler, registerMediaSchemeAsPrivileged } from "./media-protocol";
+import {
+  registerThumbnailProtocolHandler,
+  registerThumbnailSchemeAsPrivileged,
+} from "./thumbnail-protocol";
 
 registerMediaSchemeAsPrivileged();
+registerThumbnailSchemeAsPrivileged();
 
 const createWindow = () => {
   // Create the browser window.
@@ -54,6 +59,7 @@ app.whenReady().then(async () => {
   await db();
   await loadChannelTypeFixtures();
   registerMediaProtocolHandler();
+  registerThumbnailProtocolHandler();
 
   // Set app user model id for windows
   app.setAppUserModelId("com.electron");

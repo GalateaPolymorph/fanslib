@@ -11,7 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Media } from "../../../../features/library/entity";
 import { Post } from "../../../../features/posts/entity";
-import { MediaDisplay } from "../../components/MediaDisplay";
+import { MediaTile } from "../../components/MediaTile";
 
 export const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -142,7 +142,7 @@ export const PostDetail = () => {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     {post.postMedia.map((media) => (
-                      <MediaDisplay
+                      <MediaTile
                         key={media.media.path}
                         media={media.media}
                         className="aspect-square"

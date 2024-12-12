@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
 import { Switch } from "../../components/ui/switch";
 
-interface Props {
+interface LibraryFiltersProps {
   value: {
     categories?: string[];
     unposted?: boolean;
@@ -11,7 +11,7 @@ interface Props {
   onFilterChange: (filters: { categories?: string[]; unposted?: boolean }) => void;
 }
 
-export function LibraryFilters({ value, onFilterChange }: Props) {
+export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
   return (
     <div className="flex items-center gap-4">
       <CategorySelect

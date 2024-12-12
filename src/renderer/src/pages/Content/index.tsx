@@ -15,20 +15,13 @@ import { LibrarySortOptions } from "./LibrarySortOptions";
 export const ContentPage = () => {
   const { settings, loading } = useSettings();
   const { preferences, updatePreferences } = useLibraryPreferences();
-  const { media, totalItems, currentPage, totalPages, error, refetch } = useLibrary({
-    categories: undefined,
-    unposted: undefined,
-    sort: undefined,
-    page: 1,
-    limit: 20,
-  });
+  const { media, totalItems, currentPage, totalPages, error, refetch } = useLibrary(preferences);
 
   const [scanProgress, setScanProgress] = useState<LibraryScanProgress | null>(null);
   const [scanResult, setScanResult] = useState<LibraryScanResult | null>(null);
 
   useEffect(() => {
     window.api["library:onScanProgress"]((_event, progress) => {
-      console.log("Scan progress:", progress);
       setScanProgress(progress);
     });
 

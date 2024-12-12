@@ -8,6 +8,7 @@ import { walkDirectory } from "../../lib/walkDirectory";
 import { FileScanResult, LibraryScanProgress, LibraryScanResult } from "./api-type";
 import { Media } from "./entity";
 import { createMedia, deleteMedia, fetchMediaByPath, updateMedia } from "./operations";
+import { generateThumbnail, thumbnailExists } from "./thumbnail";
 
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov", ".avi", ".mkv"]);
@@ -68,13 +69,20 @@ export async function scanFile(filePath: string): Promise<FileScanResult> {
       duration: type === "video" ? await getVideoDuration(filePath) : undefined,
     };
     const newMedia = await createMedia(media);
+    // Generate thumbnail for new media
+    try {
+      await generateThumbnail(filePath, newMedia.id, type);
+    } catch (error) {
+      console.error(`Failed to generate thumbnail for ${filePath}:`, error);
+    }
     return { action: "added", media: newMedia };
   }
 
   const needsUpdate =
     existingMedia.path !== filePath ||
     !isSameSecond(stats.mtime, existingMedia.fileModificationDate) ||
-    existingMedia.size !== stats.size;
+    existingMedia.size !== stats.size ||
+    !(await thumbnailExists(existingMedia.id));
 
   if (!needsUpdate) {
     return { action: "unchanged", media: existingMedia };
@@ -88,6 +96,14 @@ export async function scanFile(filePath: string): Promise<FileScanResult> {
     size: stats.size,
     duration: type === "video" ? await getVideoDuration(filePath) : undefined,
   });
+
+  // Generate or update thumbnail if needed
+  try {
+    await generateThumbnail(filePath, updatedMedia.id, type);
+  } catch (error) {
+    console.error(`Failed to generate thumbnail for ${filePath}:`, error);
+  }
+
   return { action: "updated", media: updatedMedia };
 }
 

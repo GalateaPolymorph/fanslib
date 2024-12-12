@@ -3,7 +3,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
-import { MediaDisplay } from "../../components/MediaDisplay";
+import { MediaTile } from "../../components/MediaTile";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Dialog, DialogHeader } from "../../components/ui/dialog";
@@ -85,7 +85,7 @@ export const MediaSelectDialog = ({
                       )}
                       onClick={() => toggleMediaSelection(item)}
                     >
-                      <MediaDisplay media={item} preview />
+                      <MediaTile media={item} preview />
                       {(isScheduled || isPosted) && (
                         <div className="absolute top-2 right-2 flex gap-1">
                           {isScheduled && (
