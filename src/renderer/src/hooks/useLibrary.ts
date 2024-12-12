@@ -3,7 +3,7 @@ import { GetAllMediaParams, PaginatedResponse } from "../../../features/library/
 import { Media } from "../../../features/library/entity";
 import { useSettings } from "../contexts/SettingsContext";
 
-interface UseLibraryResult {
+type UseLibraryResult = {
   media: Media[];
   totalItems: number;
   currentPage: number;
@@ -11,9 +11,9 @@ interface UseLibraryResult {
   error: string | null;
   isLoading: boolean;
   refetch: () => Promise<void>;
-}
+};
 
-export function useLibrary(filters?: GetAllMediaParams): UseLibraryResult {
+export const useLibrary = (filters?: GetAllMediaParams): UseLibraryResult => {
   const { settings } = useSettings();
   const libraryPath = settings?.libraryPath;
   const [mediaData, setMediaData] = useState<PaginatedResponse<Media>>({
@@ -56,4 +56,4 @@ export function useLibrary(filters?: GetAllMediaParams): UseLibraryResult {
     isLoading,
     refetch: fetchLibrary,
   };
-}
+};

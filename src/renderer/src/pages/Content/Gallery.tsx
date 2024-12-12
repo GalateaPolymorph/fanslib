@@ -76,19 +76,7 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
                 }}
               >
                 <div className="absolute inset-0">
-                  <MediaTile media={media} preview={true} />
-                  {media.categories && media.categories.length > 0 && (
-                    <div className="absolute bottom-2 right-2 flex gap-1">
-                      {media.categories.map((category) => (
-                        <div
-                          key={category.slug}
-                          className="w-4 h-2 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                          title={category.name}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <MediaTile media={media} />
                 </div>
               </div>
             </div>
