@@ -23,11 +23,11 @@ const appApi = () => {
         const handlerName = stripNamespace(channel);
         if (handlerName.startsWith("on")) {
           // @ts-expect-error
-          return ipcRenderer.on(channelToEventName(channel), ...args.slice(1));
+          return ipcRenderer.on(channelToEventName(channel), ...args);
         }
         if (handlerName.startsWith("off")) {
           // @ts-expect-error
-          return ipcRenderer.removeListener(channelToEventName(channel), ...args.slice(1));
+          return ipcRenderer.removeListener(channelToEventName(channel), ...args);
         }
 
         return ipcRenderer.invoke(channel, ...args);

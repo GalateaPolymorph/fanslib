@@ -36,6 +36,11 @@ export interface LibraryScanResult {
   total: number;
 }
 
+export type LibraryScanProgress = {
+  current: number;
+  total: number;
+};
+
 export interface FileScanResult {
   action: "added" | "updated" | "unchanged";
   media: Media;
@@ -45,13 +50,26 @@ export type UpdateMediaPayload = Partial<
   Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia">
 > & { categoryIds?: string[] };
 
-const methods = ["scan", "scanFile", "getAll", "update", "get"] as const;
+const methods = [
+  "scan",
+  "scanFile",
+  "getAll",
+  "update",
+  "get",
+  "onScanProgress",
+  "onScanComplete",
+] as const;
 export type LibraryHandlers = {
   scan: (_: unknown) => Promise<LibraryScanResult>;
   scanFile: (_: unknown, path: string) => Promise<FileScanResult>;
   get: (_: unknown, id: string) => Promise<Media | null>;
   getAll: (_: unknown, params?: GetAllMediaParams) => Promise<PaginatedResponse<Media>>;
   update: (_: unknown, id: string, updates: UpdateMediaPayload) => Promise<Media | null>;
+  onScanProgress: (
+    _: unknown,
+    listener: (_: unknown, progress: LibraryScanProgress) => void
+  ) => void;
+  onScanComplete: (_: unknown, listener: (_: unknown, result: LibraryScanResult) => void) => void;
 };
 
 export const namespace = "library" as const;

@@ -1,8 +1,13 @@
+import { RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
+import { LibraryScanProgress, LibraryScanResult } from "../../../../features/library/api-type";
 import { WelcomeScreen } from "../../components/WelcomeScreen";
 import { Button } from "../../components/ui/button";
+import { Progress } from "../../components/ui/progress";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useLibrary } from "../../hooks/useLibrary";
 import { useLibraryPreferences } from "../../hooks/useLibraryPreferences";
+import { cn } from "../../lib/utils";
 import { Gallery } from "./Gallery";
 import { LibraryFilters } from "./LibraryFilters";
 import { LibrarySortOptions } from "./LibrarySortOptions";
@@ -18,14 +23,31 @@ export const ContentPage = () => {
     limit: 20,
   });
 
+  const [scanProgress, setScanProgress] = useState<LibraryScanProgress | null>(null);
+  const [scanResult, setScanResult] = useState<LibraryScanResult | null>(null);
+
+  useEffect(() => {
+    window.api["library:onScanProgress"]((_event, progress) => {
+      console.log("Scan progress:", progress);
+      setScanProgress(progress);
+    });
+
+    window.api["library:onScanComplete"]((_event, result) => {
+      setScanProgress(null);
+      setScanResult(result);
+      refetch();
+    });
+  }, []);
+
   const handlePageChange = (newPage: number) => {
     updatePreferences({ page: newPage });
   };
 
   const handleScan = async () => {
+    setScanProgress(null);
+    setScanResult(null);
     try {
       await window.api["library:scan"]();
-      await refetch();
     } catch (error) {
       console.error("Failed to scan library:", error);
     }
@@ -41,7 +63,18 @@ export const ContentPage = () => {
 
   return (
     <div className="h-full w-full overflow-hidden flex flex-col">
-      <h1 className="text-2xl font-bold py-6 pl-6 flex-none">Library</h1>
+      <div className="flex justify-between items-center py-6 px-6 flex-none">
+        <h1 className="text-2xl font-bold">Library</h1>
+        <Button
+          variant="outline"
+          onClick={handleScan}
+          disabled={scanProgress !== null}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={cn("h-4 w-4", scanProgress && "animate-spin")} />
+          {scanProgress ? `Scanning...` : "Scan Library"}
+        </Button>
+      </div>
       <div className="flex-1 min-h-0 p-6 flex flex-col">
         <div className="flex justify-between items-center mb-4 flex-none">
           <div className="flex items-center w-full justify-between gap-4">
@@ -70,6 +103,24 @@ export const ContentPage = () => {
             </div>
           </div>
         </div>
+
+        {scanProgress && (
+          <div className="mb-4">
+            <div className="flex justify-between text-sm text-muted-foreground mb-2">
+              <span>Scanning library...</span>
+              <span>{Math.round((scanProgress.current / scanProgress.total) * 100)}%</span>
+            </div>
+            <Progress value={(scanProgress.current / scanProgress.total) * 100} />
+          </div>
+        )}
+
+        {scanResult && (
+          <div className="mb-4 text-sm text-muted-foreground">
+            Scan complete: {scanResult.added} added, {scanResult.updated} updated,{" "}
+            {scanResult.removed} removed
+          </div>
+        )}
+
         <div className="flex-1 min-h-0 overflow-auto">
           <Gallery
             media={media}

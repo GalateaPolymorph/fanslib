@@ -22,11 +22,21 @@ export const handlers: LibraryHandlers = {
     const limit = params?.limit ?? 50;
     return fetchAllMedia({ page, limit, ...params });
   },
+
   get: async (_, id: string) => {
     return getMediaById(id);
   },
+
   update: async (_, id: string, updates) => {
     return updateMedia(id, updates);
+  },
+
+  onScanProgress: (_) => {
+    // Stub
+  },
+
+  onScanComplete: (_) => {
+    //Stub
   },
 };
 

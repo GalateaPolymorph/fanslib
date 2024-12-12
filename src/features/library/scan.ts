@@ -1,9 +1,11 @@
+import { isSameSecond } from "date-fns";
+import { BrowserWindow } from "electron";
 import { promises as fs, Stats } from "fs";
 import path from "path";
 import { db } from "../../lib/db";
 import { getVideoDuration } from "../../lib/video";
 import { walkDirectory } from "../../lib/walkDirectory";
-import { FileScanResult, LibraryScanResult } from "./api-type";
+import { FileScanResult, LibraryScanProgress, LibraryScanResult } from "./api-type";
 import { Media } from "./entity";
 import { createMedia, deleteMedia, fetchMediaByPath, updateMedia } from "./operations";
 
@@ -53,99 +55,158 @@ export async function scanFile(filePath: string): Promise<FileScanResult> {
     existingMedia = await findMediaByStats(stats);
   }
 
-  let duration: number | undefined;
-  if (type === "video") {
-    duration = await getVideoDuration(filePath);
-    console.log(duration);
-  }
-
-  const media: Omit<Media, "id" | "createdAt" | "updatedAt"> = {
-    path: filePath,
-    type,
-    name: path.basename(filePath),
-    size: stats.size,
-    fileCreationDate: stats.birthtime,
-    fileModificationDate: stats.mtime,
-    categories: existingMedia?.categories || [],
-    postMedia: existingMedia?.postMedia || [],
-    duration,
-  };
-
   if (!existingMedia) {
+    const media: Omit<Media, "id" | "createdAt" | "updatedAt"> = {
+      path: filePath,
+      type,
+      name: path.basename(filePath),
+      size: stats.size,
+      fileCreationDate: stats.birthtime,
+      fileModificationDate: stats.mtime,
+      categories: existingMedia?.categories || [],
+      postMedia: existingMedia?.postMedia || [],
+      duration: type === "video" ? await getVideoDuration(filePath) : undefined,
+    };
     const newMedia = await createMedia(media);
     return { action: "added", media: newMedia };
   }
 
-  // Check if file needs update
   const needsUpdate =
-    existingMedia.path !== filePath || // Path changed (renamed)
-    existingMedia.fileModificationDate !== media.fileModificationDate || // Content changed
-    existingMedia.size !== media.size || // Size changed
-    (type === "video" && existingMedia.duration !== media.duration); // Duration changed
+    existingMedia.path !== filePath ||
+    !isSameSecond(stats.mtime, existingMedia.fileModificationDate) ||
+    existingMedia.size !== stats.size;
 
-  if (needsUpdate) {
-    const updatedMedia = await updateMedia(existingMedia.id, {
-      ...existingMedia,
-      path: filePath,
-      name: media.name,
-      fileModificationDate: media.fileModificationDate,
-      size: media.size,
-      duration: media.duration,
-    });
-    return { action: "updated", media: updatedMedia };
+  if (!needsUpdate) {
+    return { action: "unchanged", media: existingMedia };
   }
 
-  return { action: "unchanged", media: existingMedia };
+  const updatedMedia = await updateMedia(existingMedia.id, {
+    ...existingMedia,
+    path: filePath,
+    name: path.basename(filePath),
+    fileModificationDate: stats.mtime,
+    size: stats.size,
+    duration: type === "video" ? await getVideoDuration(filePath) : undefined,
+  });
+  return { action: "updated", media: updatedMedia };
+}
+
+class LibraryScanner {
+  private static instance: LibraryScanner;
+  private isScanning: boolean = false;
+
+  public static getInstance(): LibraryScanner {
+    if (!LibraryScanner.instance) {
+      LibraryScanner.instance = new LibraryScanner();
+    }
+    return LibraryScanner.instance;
+  }
+
+  public isCurrentlyScanning(): boolean {
+    return this.isScanning;
+  }
+
+  public onProgress(progress: LibraryScanProgress): void {
+    if (BrowserWindow.getAllWindows().length <= 0) return;
+    const win = BrowserWindow.getAllWindows()[0];
+    win.webContents.send("library:scanprogress", progress);
+  }
+
+  public onComplete(result: LibraryScanResult): void {
+    if (BrowserWindow.getAllWindows().length <= 0) return;
+    const win = BrowserWindow.getAllWindows()[0];
+    win.webContents.send("library:scancomplete", result);
+  }
+
+  public async startScan(libraryPath: string): Promise<void> {
+    if (this.isScanning) {
+      throw new Error("Scan already in progress");
+    }
+
+    this.isScanning = true;
+
+    try {
+      // First pass: collect all files
+      const filesToProcess: string[] = [];
+      for await (const filePath of walkDirectory(libraryPath)) {
+        const { isSupported } = isMediaFile(filePath);
+        if (isSupported) {
+          filesToProcess.push(filePath);
+        }
+      }
+
+      // Get existing media for cleanup
+      const database = await db();
+      const existingMedia = await database.getRepository(Media).find();
+      const processedPaths = new Set<string>();
+
+      const result: LibraryScanResult = {
+        added: 0,
+        updated: 0,
+        removed: 0,
+        total: 0,
+      };
+
+      // Second pass: process files
+      for (let i = 0; i < filesToProcess.length; i++) {
+        const filePath = filesToProcess[i];
+        processedPaths.add(filePath);
+
+        try {
+          const scanResult = await scanFile(filePath);
+          switch (scanResult.action) {
+            case "added":
+              result.added++;
+              break;
+            case "updated":
+              result.updated++;
+              break;
+          }
+        } catch (error) {
+          console.error(`Failed to scan file ${filePath}:`, error);
+        }
+
+        // Emit progress
+        this.onProgress({
+          current: i + 1,
+          total: filesToProcess.length,
+        });
+      }
+
+      // Cleanup: remove files that no longer exist
+      for (const media of existingMedia) {
+        if (!processedPaths.has(media.path)) {
+          await deleteMedia(media.id);
+          result.removed++;
+        }
+      }
+
+      result.total = existingMedia.length - result.removed + result.added;
+      this.onComplete(result);
+    } finally {
+      this.isScanning = false;
+    }
+  }
 }
 
 /**
  * Scan the entire library directory
  */
 export async function scanLibrary(libraryPath: string): Promise<LibraryScanResult> {
-  const processedPaths = new Set<string>();
-  const result: LibraryScanResult = {
+  const scanner = LibraryScanner.getInstance();
+
+  // Start the scan process asynchronously
+  scanner.startScan(libraryPath).catch((error) => {
+    console.error("Library scan failed:", error);
+  });
+
+  // Return immediately with empty result - frontend will be notified of progress via events
+  return {
     added: 0,
     updated: 0,
     removed: 0,
     total: 0,
   };
-
-  // Get all existing media from database
-  const database = await db();
-  const existingMedia = await database.getRepository(Media).find();
-
-  // Walk through directory and process files
-  for await (const filePath of walkDirectory(libraryPath)) {
-    processedPaths.add(filePath);
-
-    try {
-      const { isSupported } = isMediaFile(filePath);
-      if (!isSupported) continue;
-
-      const scanResult = await scanFile(filePath);
-
-      switch (scanResult.action) {
-        case "added":
-          result.added++;
-          break;
-        case "updated":
-          result.updated++;
-          break;
-      }
-    } catch (error) {
-      console.error(`Failed to scan file ${filePath}:`, error);
-    }
-  }
-
-  // Remove files that no longer exist
-  for (const media of existingMedia) {
-    if (!processedPaths.has(media.path)) {
-      await deleteMedia(media.id);
-      result.removed++;
-    }
-  }
-
-  result.total = existingMedia.length - result.removed + result.added;
-
-  return result;
 }
+
+export { LibraryScanner };
