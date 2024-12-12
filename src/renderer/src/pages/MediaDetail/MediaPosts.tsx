@@ -1,15 +1,11 @@
-import { Badge } from "@renderer/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@renderer/components/ui/table";
+import { ChannelBadge } from "@renderer/components/ChannelBadge";
+import { Button } from "@renderer/components/ui/button";
+import { Table, TableBody, TableCell, TableRow } from "@renderer/components/ui/table";
 import { format } from "date-fns";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
+import { StatusBadge } from "../../components/StatusBadge";
 
 interface MediaPostsProps {
   mediaId: string;
@@ -49,41 +45,27 @@ export function MediaPosts({ mediaId }: MediaPostsProps) {
     return <div className="text-muted-foreground">No posts found</div>;
   }
 
-  const getStatusColor = (status: Post["status"]) => {
-    switch (status) {
-      case "planned":
-        return "warning";
-      case "scheduled":
-        return "warning";
-      case "posted":
-        return "success";
-      default:
-        return "default";
-    }
-  };
-
   return (
     <div className="border rounded-md">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Channel</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
         <TableBody>
           {posts.map((post) => (
-            <TableRow key={post.id}>
-              <TableCell>{post.channel.name}</TableCell>
-              <TableCell>{format(new Date(post.date), "PPP")}</TableCell>
+            <TableRow key={post.id} className="hover:bg-background">
               <TableCell>
-                <Badge variant={getStatusColor(post.status)}>{post.status}</Badge>
+                <div className="flex w-fit">
+                  <ChannelBadge name={post.channel.name} typeId={post.channel.typeId} />
+                </div>
               </TableCell>
               <TableCell>
-                <a href={`/posts/${post.id}`} className="text-accent-foreground hover:underline">
-                  View
-                </a>
+                <StatusBadge status={post.status} />
+              </TableCell>
+              <TableCell>{format(new Date(post.date), "PPP")}</TableCell>
+              <TableCell>
+                <Button variant="ghost" size="icon" asChild>
+                  <a href={`/posts/${post.id}`}>
+                    <ArrowRight className="size-4 -rotate-45" />
+                  </a>
+                </Button>
               </TableCell>
             </TableRow>
           ))}

@@ -12,7 +12,7 @@ import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
 import { Media } from "../library/entity";
 
-export type PostStatus = "planned" | "scheduled" | "posted";
+export type PostStatus = "draft" | "scheduled" | "posted";
 
 @Entity()
 export class PostMedia {
@@ -59,7 +59,7 @@ export class Post {
 
   @Column({
     type: "varchar",
-    enum: ["planned", "scheduled", "posted"],
+    enum: ["draft", "scheduled", "posted"],
   })
   status!: PostStatus;
 

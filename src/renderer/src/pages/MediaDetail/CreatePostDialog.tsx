@@ -1,5 +1,6 @@
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
+import { StatusSelect } from "@renderer/components/StatusSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
   Dialog,
@@ -10,20 +11,23 @@ import {
 } from "@renderer/components/ui/dialog";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useCallback, useEffect, useState } from "react";
+import { Media } from "../../../../features/library/entity";
+import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
 
 interface CreatePostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mediaId: string;
+  media: Media;
 }
 
-export function CreatePostDialog({ open, onOpenChange, mediaId }: CreatePostDialogProps) {
+export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialogProps) {
   const { toast } = useToast();
 
   const { channels } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [status, setStatus] = useState<PostStatus>("draft");
 
   useEffect(() => {
     if (!channels.length || channels.length > 1) return;
@@ -44,10 +48,11 @@ export function CreatePostDialog({ open, onOpenChange, mediaId }: CreatePostDial
         {
           date: selectedDate.toISOString(),
           channelId: selectedChannel[0],
-          status: "posted",
+          categoryId: media.categories[0]?.id,
+          status,
           caption: "",
         },
-        [mediaId]
+        [media.id]
       );
 
       toast({
@@ -62,7 +67,7 @@ export function CreatePostDialog({ open, onOpenChange, mediaId }: CreatePostDial
         variant: "destructive",
       });
     }
-  }, [selectedChannel, selectedDate, mediaId, onOpenChange, toast]);
+  }, [selectedChannel, selectedDate, status, media, onOpenChange, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,13 +75,17 @@ export function CreatePostDialog({ open, onOpenChange, mediaId }: CreatePostDial
         <DialogHeader>
           <DialogTitle>Create Post</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 pb-4">
           <div className="flex flex-col space-y-2">
             <label className="text-sm font-medium">Channel</label>
             <ChannelSelect value={selectedChannel} onChange={setSelectedChannel} multiple={false} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Date Posted</label>
+            <label className="text-sm font-medium">Status</label>
+            <StatusSelect value={status} onChange={setStatus} />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Date</label>
             <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
           </div>
         </div>

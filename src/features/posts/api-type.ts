@@ -19,7 +19,7 @@ export const methods = [
   "update",
   "markAsScheduled",
   "markAsPosted",
-  "markAsPlanned",
+  "markAsDraft",
   "delete",
   "addMedia",
   "removeMedia",
@@ -39,7 +39,7 @@ export type PostHandlers = {
   ) => Promise<Post | null>;
   markAsScheduled: (_: any, id: string) => Promise<Post | null>;
   markAsPosted: (_: any, id: string) => Promise<Post | null>;
-  markAsPlanned: (_: any, id: string) => Promise<Post | null>;
+  markAsDraft: (_: any, id: string) => Promise<Post | null>;
   delete: (_: any, id: string) => Promise<void>;
   addMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
   removeMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;

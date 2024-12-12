@@ -23,7 +23,7 @@ export const handlers: PostHandlers = {
     updatePost(id, updates, newMediaPathsInOrder),
   markAsScheduled: (_, id: string) => updatePost(id, { status: "scheduled" }),
   markAsPosted: (_, id: string) => updatePost(id, { status: "posted" }),
-  markAsPlanned: (_, id: string) => updatePost(id, { status: "planned" }),
+  markAsDraft: (_, id: string) => updatePost(id, { status: "draft" }),
   delete: (_, id) => deletePost(id),
   addMedia: (_, postId: string, mediaPaths: string[]) => updatePost(postId, {}, mediaPaths),
   removeMedia: async (_, postId: string, mediaToRemove: string[]) => {

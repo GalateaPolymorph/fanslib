@@ -1,17 +1,18 @@
-import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
 import { Button } from "@renderer/components/ui/button";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectDialog } from "@renderer/pages/PostDetail/MediaSelectDialog";
 import { format } from "date-fns";
-import { ChevronLeft, Loader2, Plus } from "lucide-react";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Media } from "../../../../features/library/entity";
 import { Post } from "../../../../features/posts/entity";
-import { MediaTile } from "../../components/MediaTile";
+import { CategoryBadge } from "../../components/CategoryBadge";
+import { ChannelBadge } from "../../components/ChannelBadge";
+import { MediaView } from "../../components/MediaView";
+import { StatusBadge } from "../../components/StatusBadge";
+import { cn } from "../../lib/utils";
 
 export const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -20,9 +21,12 @@ export const PostDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+  const [originalCaption, setOriginalCaption] = useState("");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
+
+  const hasChanges = caption !== originalCaption;
 
   useEffect(() => {
     const loadPost = async () => {
@@ -40,7 +44,8 @@ export const PostDetail = () => {
           return;
         }
         setPost(post);
-        setCaption(post.caption);
+        setCaption(post.caption || "");
+        setOriginalCaption(post.caption || "");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load post");
       } finally {
@@ -58,6 +63,7 @@ export const PostDetail = () => {
       setSaving(true);
       const updatedPost = await window.api["post:update"](post.id, { caption });
       setPost(updatedPost);
+      setOriginalCaption(caption);
       toast({
         title: "Caption updated",
         description: "Your changes have been saved.",
@@ -126,213 +132,113 @@ export const PostDetail = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center gap-2 p-4 border-b">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-2xl font-bold">Post Details</h1>
-      </div>
+      <div className="container mx-auto p-6 flex-1 overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="ghost" onClick={() => navigate("/posts")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to overview
+          </Button>
+        </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-6">
-          <div className="grid grid-cols-[2fr_3fr] gap-8">
-            {/* Media Section */}
-            <div className="space-y-4">
-              {post.postMedia && post.postMedia.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    {post.postMedia.map((media) => (
-                      <MediaTile
-                        key={media.media.path}
-                        media={media.media}
-                        className="aspect-square"
-                      />
-                    ))}
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setMediaDialogOpen(true)}
-                  >
-                    Change Media
-                  </Button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setMediaDialogOpen(true)}
-                  className="aspect-square rounded-lg bg-muted flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/80 transition-colors w-full"
+        <div className="grid grid-cols-[2fr_3fr] gap-8">
+          {/* Media Section */}
+          <div className="space-y-4">
+            {post.postMedia && post.postMedia.length > 0 ? (
+              <>
+                <div
+                  className={cn(
+                    post.postMedia.length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4"
+                  )}
                 >
-                  <Plus className="w-8 h-8" />
-                  <span>Assign Media</span>
-                </button>
-              )}
+                  {post.postMedia.map((media) => (
+                    <MediaView
+                      key={media.media.path}
+                      media={media.media}
+                      linkToMediaDetail
+                      className="w-full"
+                    />
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setMediaDialogOpen(true)}
+                >
+                  Change Media
+                </Button>
+              </>
+            ) : (
+              <button
+                onClick={() => setMediaDialogOpen(true)}
+                className="aspect-square rounded-lg bg-muted flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/80 transition-colors w-full"
+              >
+                <Plus className="w-8 h-8" />
+                <span>Assign Media</span>
+              </button>
+            )}
+          </div>
+
+          {/* Content Section */}
+          <div className="space-y-6">
+            <h1 className="text-2xl font-semibold mb-4">
+              Post on {post ? format(new Date(post.date), "MMMM d, yyyy") : "..."}
+            </h1>
+
+            <div className="flex flex-col divide-y">
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  {post.channel && (
+                    <ChannelBadge name={post.channel.name} typeId={post.channel.type.id} />
+                  )}
+                </div>
+                <span className="text-sm text-muted-foreground">Channel</span>
+              </div>
+
+              <div className="flex items-center justify-between py-3">
+                <StatusBadge status={post.status} />
+                <span className="text-sm text-muted-foreground">Status</span>
+              </div>
+
+              <div className="flex items-center justify-between py-3">
+                <div>{post.category && <CategoryBadge category={post.category} />}</div>
+                <span className="text-sm text-muted-foreground">Category</span>
+              </div>
             </div>
 
-            {/* Content Section */}
-            <div className="space-y-6">
-              {/* Channel and Category */}
-              <div className="flex items-center gap-4">
-                {post.channel && (
-                  <div
-                    className="flex items-center gap-2 px-2 py-1 rounded-md"
-                    style={{
-                      backgroundColor:
-                        CHANNEL_TYPES[post.channel.type.id as keyof typeof CHANNEL_TYPES]?.color +
-                        "20",
-                    }}
-                  >
-                    <ChannelTypeIcon
-                      typeId={post.channel.type.id as keyof typeof CHANNEL_TYPES}
-                      className="w-4 h-4"
-                      color={
-                        CHANNEL_TYPES[post.channel.type.id as keyof typeof CHANNEL_TYPES]?.color
-                      }
-                    />
-                    <span className="font-medium">{post.channel.name}</span>
-                  </div>
-                )}
-                {post.category && (
-                  <div
-                    className="px-2 py-1 rounded-md font-medium"
-                    style={{
-                      backgroundColor: post.category.color + "20",
-                      color: post.category.color,
-                    }}
-                  >
-                    {post.category.name}
-                  </div>
-                )}
-              </div>
-
-              {/* Status and Schedule */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="capitalize font-medium">{post.status}</p>
-                    <p className="text-lg">{format(new Date(post.date), "PPP 'at' p")}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {post.status === "planned" && (
-                      <Button
-                        onClick={async () => {
-                          try {
-                            setSaving(true);
-                            const updatedPost = await window.api["post:markAsScheduled"](post.id);
-                            setPost(updatedPost);
-                            toast({
-                              title: "Post scheduled",
-                              description: "The post has been marked as scheduled.",
-                            });
-                          } catch (err) {
-                            toast({
-                              title: "Failed to schedule post",
-                              description: err instanceof Error ? err.message : "An error occurred",
-                              variant: "destructive",
-                            });
-                          } finally {
-                            setSaving(false);
-                          }
-                        }}
-                        disabled={!post.postMedia || post.postMedia.length === 0 || saving}
-                      >
-                        {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                        Schedule
-                      </Button>
-                    )}
-                    {post.status === "scheduled" && (
-                      <>
-                        <Button
-                          onClick={async () => {
-                            try {
-                              setSaving(true);
-                              const updatedPost = await window.api["post:markAsPosted"](post.id);
-                              setPost(updatedPost);
-                              toast({
-                                title: "Post marked as posted",
-                                description: "The post has been marked as posted.",
-                              });
-                            } catch (err) {
-                              toast({
-                                title: "Failed to mark post as posted",
-                                description:
-                                  err instanceof Error ? err.message : "An error occurred",
-                                variant: "destructive",
-                              });
-                            } finally {
-                              setSaving(false);
-                            }
-                          }}
-                          disabled={saving}
-                        >
-                          {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                          Mark as Posted
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={async () => {
-                            try {
-                              setSaving(true);
-                              const updatedPost = await window.api["post:markAsPlanned"](post.id);
-                              setPost(updatedPost);
-                              toast({
-                                title: "Post unscheduled",
-                                description: "The post has been marked as planned.",
-                              });
-                            } catch (err) {
-                              toast({
-                                title: "Failed to unschedule post",
-                                description:
-                                  err instanceof Error ? err.message : "An error occurred",
-                                variant: "destructive",
-                              });
-                            } finally {
-                              setSaving(false);
-                            }
-                          }}
-                          disabled={saving}
-                        >
-                          {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                          Unschedule
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Caption */}
-              <div className="space-y-2">
-                <Textarea
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  className="min-h-[200px] resize-none"
-                  placeholder="Write a caption..."
-                />
-                <div className="flex justify-end">
-                  <Button onClick={handleSaveCaption} disabled={caption === post.caption || saving}>
+            {/* Caption */}
+            <div className="space-y-2">
+              <Textarea
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder="Write a caption..."
+                className="min-h-[200px]"
+              />
+              <div className="flex justify-end">
+                {hasChanges && (
+                  <Button onClick={handleSaveCaption} disabled={saving}>
                     {saving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Saving...
                       </>
                     ) : (
-                      "Save Changes"
+                      "Save caption"
                     )}
                   </Button>
-                </div>
+                )}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Metadata */}
-          <div className="mt-8 pt-4 border-t text-sm text-muted-foreground">
-            <div className="flex items-center gap-6">
-              <p>Created {format(new Date(post.createdAt), "PPP")}</p>
-              <p>Updated {format(new Date(post.updatedAt), "PPP")}</p>
-            </div>
+        {/* Metadata */}
+        <div className="mt-8 pt-4 border-t text-sm text-muted-foreground">
+          <div className="flex items-center gap-6">
+            <p>Created {format(new Date(post.createdAt), "PPP")}</p>
+            <p>Updated {format(new Date(post.updatedAt), "PPP")}</p>
           </div>
         </div>
-      </ScrollArea>
+      </div>
 
       <MediaSelectDialog
         open={mediaDialogOpen}

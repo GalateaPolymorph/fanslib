@@ -1,8 +1,6 @@
-import { Badge } from "@renderer/components/ui/badge";
 import { useEffect, useState } from "react";
-import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
 import { cn } from "../lib/utils";
-import { ChannelTypeIcon, ChannelTypeId } from "./ChannelTypeIcon";
+import { ChannelBadge } from "./ChannelBadge";
 
 interface ChannelSelectProps {
   value?: string[];
@@ -67,32 +65,20 @@ export const ChannelSelect = ({
       {channels.map((channel) => {
         const isDisabled = disabledChannels.includes(channel.id);
         const isSelected = value.includes(channel.id);
-        const channelType = CHANNEL_TYPES[channel.typeId];
 
         return (
-          <Badge
+          <div
             key={channel.id}
-            variant={isSelected ? "default" : "outline"}
-            className={cn(
-              "transition-colors cursor-pointer flex items-center gap-2",
-              !multiple && value.length > 0 && !isSelected && "opacity-50",
-              isDisabled && "opacity-30 cursor-not-allowed"
-            )}
-            style={{
-              backgroundColor: isSelected ? channelType.color : "transparent",
-              borderColor: channelType.color,
-              color: isSelected ? "white" : channelType.color,
-            }}
-            onClick={() => handleToggleChannel(channel.id)}
-            title={isDisabled ? "This channel is not available" : undefined}
+            className={cn(!multiple && value.length > 0 && !isSelected && "opacity-50")}
           >
-            <ChannelTypeIcon
-              typeId={channel.typeId as ChannelTypeId}
-              color={isSelected ? "white" : channelType.color}
-              className={cn("w-4 h-4")}
+            <ChannelBadge
+              name={channel.name}
+              typeId={channel.typeId}
+              selected={isSelected}
+              disabled={isDisabled}
+              onClick={() => handleToggleChannel(channel.id)}
             />
-            {channel.name}
-          </Badge>
+          </div>
         );
       })}
     </div>

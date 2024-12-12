@@ -3,6 +3,7 @@ import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CategorySelect } from "../../components/CategorySelect";
+import { MediaView } from "../../components/MediaView";
 import { Button } from "../../components/ui/button";
 import { useMedia } from "../../hooks/useMedia";
 import { CreatePostDialog } from "./CreatePostDialog";
@@ -66,7 +67,7 @@ export const MediaDetail = () => {
       <CreatePostDialog
         open={createPostDialogOpen}
         onOpenChange={setCreatePostDialogOpen}
-        mediaId={media.id}
+        media={media}
       />
       <div className="container mx-auto p-6 flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
@@ -81,20 +82,8 @@ export const MediaDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="aspect-square overflow-hidden rounded-lg">
-            {media.type === "image" ? (
-              <img
-                src={"media://" + media.path}
-                alt={media.name}
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <video
-                src={"media://" + media.path}
-                controls
-                className="object-contain bg-muted w-full h-full"
-              />
-            )}
+          <div className="flex-1">
+            <MediaView media={media} controls />
           </div>
 
           <div className="space-y-6">
@@ -104,34 +93,31 @@ export const MediaDetail = () => {
               <CategorySelect value={categories} onChange={handleChangeCategory} />
             </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-2">Details</h3>
-              <dl className="grid grid-cols-2 gap-2 text-sm">
-                <dt>Size</dt>
-                <dd>{media.size}</dd>
-                <dt>Created</dt>
-                <dd>{format(new Date(media.fileCreationDate), "PPP")}</dd>
-                <dt>Last modified</dt>
-                <dd>{format(new Date(media.fileModificationDate), "PPP")}</dd>
-              </dl>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-2">Actions</h3>
-              <div className="space-y-2">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setCreatePostDialogOpen(true)}
-                >
-                  Mark Posted
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-2">Posts</h3>
+            <div className="flex flex-col gap-4">
+              <h3 className="text-lg font-medium">Posts</h3>
               <MediaPosts mediaId={media.id} />
+              <Button className="w-72" onClick={() => setCreatePostDialogOpen(true)}>
+                Create post with this {media.type === "image" ? "image" : "video"}
+              </Button>
+            </div>
+
+            <div className="pt-12">
+              <div className="flex flex-col divide-y text-sm">
+                <div className="flex items-center justify-between py-1">
+                  <div className="">{media.size}</div>
+                  <span className=" text-muted-foreground">Size</span>
+                </div>
+
+                <div className="flex items-center justify-between py-1">
+                  <div className="">{format(new Date(media.fileCreationDate), "PPP")}</div>
+                  <span className=" text-muted-foreground">Created</span>
+                </div>
+
+                <div className="flex items-center justify-between py-1">
+                  <div>{format(new Date(media.fileModificationDate), "PPP")}</div>
+                  <span className=" text-muted-foreground">Last modified</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
