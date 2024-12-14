@@ -65,6 +65,11 @@ export const fetchAllMedia = async (
     queryBuilder.andWhere("categories.id IN (:...categories)", { categories: params.categories });
   }
 
+  // Apply category empty filter
+  if (params?.categories?.length === 0) {
+    queryBuilder.andWhere("categories.id IS NULL");
+  }
+
   // Apply unposted filter
   if (params?.unposted) {
     queryBuilder.andWhere("postMedia.id IS NULL");

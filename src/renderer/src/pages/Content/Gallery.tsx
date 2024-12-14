@@ -53,7 +53,7 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
           className={cn(
             "grid gap-4 p-4",
             gridSize === "large"
-              ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              ? "grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
               : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
           )}
         >

@@ -4,27 +4,35 @@ import { cn } from "../lib/utils";
 
 interface CategorySelectProps {
   value?: string[];
-  onChange: (categoryIds: string[]) => void;
+  onChange: (categoryIds: string[] | undefined) => void;
   multiple?: boolean;
   disabledCategories?: string[];
+  includeNoneOption?: boolean;
 }
 
 export const CategorySelect = ({
-  value = [],
+  value,
   onChange,
   multiple = true,
   disabledCategories = [],
+  includeNoneOption = false,
 }: CategorySelectProps) => {
   const { categories, isLoading } = useCategories();
 
   const handleToggleCategory = (id: string) => {
     if (disabledCategories.includes(id)) return;
 
-    if (value.includes(id)) {
-      onChange(value.filter((s) => s !== id));
+    if (value?.includes(id)) {
+      const newValue = value.filter((s) => s !== id);
+      if (newValue.length === 0) {
+        onChange(undefined);
+        return;
+      }
+
+      onChange(newValue);
     } else {
       if (multiple) {
-        onChange([...value, id]);
+        onChange([...(value ?? []), id]);
       } else {
         onChange([id]);
       }
@@ -39,7 +47,7 @@ export const CategorySelect = ({
     <div className="flex flex-wrap gap-2">
       {categories.map((category) => {
         const isDisabled = disabledCategories.includes(category.id);
-        const isSelected = value.includes(category.id);
+        const isSelected = value?.includes(category.id);
 
         return (
           <Badge
@@ -62,6 +70,29 @@ export const CategorySelect = ({
           </Badge>
         );
       })}
+      {includeNoneOption && (
+        <Badge
+          variant={value?.length === 0 ? "default" : "outline"}
+          className={cn(
+            "transition-colors cursor-pointer",
+            !multiple && value?.length > 0 && "opacity-50"
+          )}
+          onClick={() => {
+            if (Array.isArray(value)) {
+              onChange(undefined);
+              return;
+            }
+            onChange([]);
+          }}
+          style={{
+            backgroundColor: value?.length === 0 ? "hsl(var(--muted))" : "transparent",
+            borderColor: "hsl(var(--muted))",
+            color: value?.length === 0 ? "hsl(var(--muted-foreground))" : "hsl(var(--muted))",
+          }}
+        >
+          None
+        </Badge>
+      )}
     </div>
   );
 };

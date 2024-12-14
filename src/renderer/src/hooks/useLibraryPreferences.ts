@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { MediaSort } from "../../../features/library/api-type";
 
 interface LibraryPreferences {
-  categories?: string[];
+  categories?: string[] | undefined;
   unposted?: boolean;
   sort: MediaSort;
   gridSize: "large" | "small";
@@ -49,7 +49,11 @@ export function useLibraryPreferences() {
   }, [preferences]);
 
   const updatePreferences = useCallback((updates: Partial<LibraryPreferences>) => {
-    setPreferences((prev) => ({ ...prev, ...updates }));
+    setPreferences((prev) => {
+      console.log("Updating library preferences:", prev, updates);
+
+      return { ...prev, ...updates };
+    });
   }, []);
 
   return {

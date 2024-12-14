@@ -15,7 +15,7 @@ export interface MediaSort {
 }
 
 export interface MediaFilters {
-  categories?: string[]; // category slugs
+  categories?: string[] | undefined;
   unposted?: boolean;
 }
 

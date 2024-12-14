@@ -8,18 +8,18 @@ interface LibraryFiltersProps {
     categories?: string[];
     unposted?: boolean;
   };
-  onFilterChange: (filters: { categories?: string[]; unposted?: boolean }) => void;
+  onFilterChange: (filters: { categories?: string[] | undefined; unposted?: boolean }) => void;
 }
 
 export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
   return (
     <div className="flex items-center gap-4">
       <CategorySelect
-        value={value.categories ?? []}
+        value={value.categories}
         onChange={(categories) => {
           onFilterChange({
             ...value,
-            categories: categories.length > 0 ? categories : undefined,
+            categories,
           });
         }}
         multiple={true}
@@ -39,11 +39,15 @@ export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
         <Label htmlFor="unposted">Unposted</Label>
       </div>
 
-      {(value.categories?.length > 0 || value.unposted) && (
+      {(value.categories || value.unposted) && (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onFilterChange({})}
+          onClick={() =>
+            onFilterChange({
+              categories: undefined,
+            })
+          }
           className="text-muted-foreground"
         >
           Clear Filters
