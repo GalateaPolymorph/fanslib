@@ -57,7 +57,8 @@ export const fetchAllMedia = async (
     .createQueryBuilder("media")
     .leftJoinAndSelect("media.categories", "categories")
     .leftJoinAndSelect("media.postMedia", "postMedia")
-    .leftJoinAndSelect("postMedia.post", "post");
+    .leftJoinAndSelect("postMedia.post", "post")
+    .leftJoinAndSelect("post.channel", "channel");
 
   // Apply category filter
   if (params?.categories?.length) {
@@ -164,11 +165,9 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
   // Update categories if provided
   if (updates.categoryIds) {
     const categoryRepo = dataSource.getRepository(Category);
-    const categories = await categoryRepo.find({
+    media.categories = await categoryRepo.find({
       where: { id: In(updates.categoryIds) },
     });
-
-    media.categories = [...(media.categories || []), ...categories];
   }
 
   await repository.save(media);

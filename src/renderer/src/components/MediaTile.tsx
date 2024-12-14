@@ -1,8 +1,13 @@
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { format } from "date-fns";
 import { Check, Image as ImageIcon, Video } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Media } from "../../../features/library/entity";
 import { cn } from "../lib/utils";
 import { formatDuration } from "../lib/video";
+import { ChannelBadge } from "./ChannelBadge";
+import { ChannelTypeId } from "./ChannelTypeIcon";
+import { Button } from "./ui/button";
 
 type MediaDisplayProps = {
   media: Media;
@@ -12,6 +17,7 @@ type MediaDisplayProps = {
 export const MediaTile = ({ media, className }: MediaDisplayProps) => {
   const [isHovering, setIsHovering] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [open, setOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const previewIntervalRef = useRef<number>();
 
@@ -20,7 +26,7 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
 
     const video = videoRef.current;
 
-    if (isHovering) {
+    if (isHovering && !open) {
       video.muted = true;
       video.currentTime = 0;
       video.play();
@@ -46,7 +52,38 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
         clearInterval(previewIntervalRef.current);
       }
     };
-  }, [isHovering]);
+  }, [isHovering, open]);
+
+  // Group posts by channel and find the latest post date for each channel
+  const postsByChannel = media.postMedia.reduce(
+    (acc, pm) => {
+      if (pm.post.status !== "posted") return acc;
+
+      const channelId = pm.post.channel?.id;
+      if (!channelId) return acc;
+
+      if (!acc[channelId]) {
+        acc[channelId] = {
+          channelName: pm.post.channel?.name,
+          channelTypeId: pm.post.channel?.typeId,
+          count: 0,
+          lastPostDate: new Date(0),
+        };
+      }
+
+      acc[channelId].count++;
+      const postDate = new Date(pm.post.date);
+      if (postDate > acc[channelId].lastPostDate) {
+        acc[channelId].lastPostDate = postDate;
+      }
+
+      return acc;
+    },
+    {} as Record<
+      string,
+      { channelName: string; channelTypeId: string; count: number; lastPostDate: Date }
+    >
+  );
 
   const mediaHasBeenPosted =
     media.postMedia.find((pm) => pm.post.status === "posted") !== undefined;
@@ -90,7 +127,7 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
           />
         </>
       )}
-      <div className="absolute top-1 left-1 flex gap-1">
+      <div className="absolute top-1 left-1 flex gap-1 z-10">
         <div className="text-background p-1 rounded bg-black/50 size-5">
           {media.type === "video" ? (
             <Video className="w-3 h-3" />
@@ -110,14 +147,46 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
           </div>
         )}
         {(mediaHasBeenPosted || mediaHasBeenScheduled) && (
-          <div
-            className={cn(
-              "p-1 rounded bg-black/50 size-5",
-              mediaHasBeenPosted ? "text-green-400" : "text-blue-400"
-            )}
-          >
-            <Check className="w-3 h-3" />
-          </div>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "p-0 h-5 w-5 bg-black/50 hover:bg-black/70 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0",
+                  mediaHasBeenPosted ? "text-green-400" : "text-blue-400"
+                )}
+                onMouseEnter={() => {
+                  setOpen(true);
+                }}
+                onMouseLeave={() => {
+                  setOpen(false);
+                }}
+              >
+                <Check className="h-3 w-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto p-2 bg-popover text-popover-foreground shadow-md rounded-md border focus-visible:ring-0 focus-visible:outline-none"
+              align="start"
+              sideOffset={5}
+              onMouseEnter={() => setOpen(true)}
+              onMouseLeave={() => setOpen(false)}
+            >
+              <div className="space-y-1.5">
+                {Object.entries(postsByChannel).map(
+                  ([channelId, { channelName, channelTypeId, count, lastPostDate }]) => (
+                    <div key={channelId} className="text-xs flex items-center gap-2">
+                      <ChannelBadge name={channelName} typeId={channelTypeId as ChannelTypeId} />
+                      <span className="text-muted-foreground">
+                        {count}× · {format(lastPostDate, "MMM d")}
+                      </span>
+                    </div>
+                  )
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
     </div>
