@@ -9,6 +9,7 @@ import {
   fetchPostsByChannel,
   fetchPostsByMediaId,
   fetchPostsBySchedule,
+  setFreePreview,
   updatePost,
 } from "./operations";
 
@@ -32,6 +33,8 @@ export const handlers: PostHandlers = {
       post?.postMedia.filter((m) => !mediaToRemove.includes(m.id)).map((m) => m.id)
     );
   },
+  setFreePreview: (_, postId: string, mediaId: string, isFreePreview: boolean) =>
+    setFreePreview(postId, mediaId, isFreePreview),
 };
 
 export const postHandlers = prefixNamespaceObject(namespace, handlers);

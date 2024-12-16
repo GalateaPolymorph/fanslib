@@ -22,6 +22,9 @@ export class PostMedia {
   @Column("int")
   order: number;
 
+  @Column("boolean", { default: false })
+  isFreePreview: boolean;
+
   @ManyToOne(() => Post, (post) => post.postMedia, { onDelete: "CASCADE" })
   @JoinColumn()
   post: Post;

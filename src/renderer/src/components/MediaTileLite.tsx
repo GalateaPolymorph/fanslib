@@ -12,8 +12,8 @@ export type MediaTileLiteProps = {
   isActivePreview?: boolean;
 };
 
-export const MediaTileLite = ({ 
-  media, 
+export const MediaTileLite = ({
+  media,
   className,
   onImageError,
   imageError: controlledImageError,
@@ -23,7 +23,7 @@ export const MediaTileLite = ({
   const imageError = controlledImageError ?? localImageError;
   const videoRef = useRef<HTMLVideoElement>(null);
   const previewIntervalRef = useRef<number>();
-  
+
   const handleImageError = () => {
     setLocalImageError(true);
     onImageError?.(true);

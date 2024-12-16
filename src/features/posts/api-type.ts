@@ -20,7 +20,9 @@ export const methods = [
   "delete",
   "addMedia",
   "removeMedia",
+  "setFreePreview",
 ] as const;
+
 export type PostHandlers = {
   create: (_: any, data: PostCreateData, mediaIds: string[]) => Promise<Post>;
   getAll: (_: any) => Promise<Post[]>;
@@ -37,6 +39,7 @@ export type PostHandlers = {
   delete: (_: any, id: string) => Promise<void>;
   addMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
   removeMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
+  setFreePreview: (_: any, postId: string, mediaId: string, isFreePreview: boolean) => Promise<Post | null>;
 };
 
 export const namespace = "post" as const;

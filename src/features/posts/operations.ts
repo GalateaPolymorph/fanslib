@@ -277,3 +277,32 @@ export const getAllPosts = async () => {
     },
   });
 };
+
+export const setFreePreview = async (
+  postId: string,
+  mediaId: string,
+  isFreePreview: boolean
+): Promise<Post | null> => {
+  const dataSource = await db();
+  const postMediaRepo = dataSource.getRepository(PostMedia);
+
+  const postMedia = await postMediaRepo.findOne({
+    where: {
+      post: { id: postId },
+      media: { id: mediaId },
+    },
+    relations: {
+      post: true,
+      media: true,
+    },
+  });
+
+  if (!postMedia) {
+    return null;
+  }
+
+  postMedia.isFreePreview = isFreePreview;
+  await postMediaRepo.save(postMedia);
+
+  return getPostById(postId);
+};

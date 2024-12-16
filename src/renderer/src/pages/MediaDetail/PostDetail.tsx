@@ -12,7 +12,7 @@ import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
-import { Check } from "lucide-react";
+import { Check, Eye } from "lucide-react";
 import { useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 
@@ -25,7 +25,10 @@ export const PostDetail = ({ post, onUpdate }: PostDetailProps) => {
   const [caption, setCaption] = useState(post.caption || "");
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredMediaId, setHoveredMediaId] = useState<string | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const { toast } = useToast();
+
+  const freePreviewPostMedia = post.postMedia.find((pm) => pm.isFreePreview);
 
   const handleMarkAsPosted = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,6 +53,47 @@ export const PostDetail = ({ post, onUpdate }: PostDetailProps) => {
         variant: "destructive",
       });
       console.error("Failed to save caption:", err);
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent, mediaId: string) => {
+    e.dataTransfer.setData("mediaId", mediaId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+    const mediaId = e.dataTransfer.getData("mediaId");
+
+    try {
+      // First, remove any existing free preview
+      const currentPreview = post.postMedia.find((pm) => pm.isFreePreview);
+      if (currentPreview) {
+        await window.api["post:setFreePreview"](post.id, currentPreview.media.id, false);
+      }
+
+      // Set the new free preview
+      await window.api["post:setFreePreview"](post.id, mediaId, true);
+      await onUpdate();
+      toast({
+        title: "Free preview updated",
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to update free preview",
+        variant: "destructive",
+      });
+      console.error("Failed to update free preview:", err);
     }
   };
 
@@ -89,20 +133,58 @@ export const PostDetail = ({ post, onUpdate }: PostDetailProps) => {
         </div>
         <AccordionContent className="px-4">
           <div className="space-y-4">
-            <div className="grid grid-cols-8 gap-2">
-              {post.postMedia.map((postMedia) => (
-                <div
-                  key={postMedia.id}
-                  className="aspect-square"
-                  onMouseEnter={() => setHoveredMediaId(postMedia.media.id)}
-                  onMouseLeave={() => setHoveredMediaId(null)}
-                >
-                  <MediaTileLite
-                    media={postMedia.media}
-                    isActivePreview={hoveredMediaId === postMedia.media.id}
-                  />
+            <div className="flex gap-4">
+              <div className="grid grid-cols-8 gap-2 flex-1">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Free Preview</span>
+                  </div>
+                  <div
+                    className={cn(
+                      "rounded-lg border-2 border-dashed gap-2 transition-colors",
+                      isDraggingOver && "border-primary bg-primary/10",
+                      !isDraggingOver && "border-muted-foreground/25"
+                    )}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onMouseEnter={() => setHoveredMediaId(freePreviewPostMedia.media.id)}
+                    onMouseLeave={() => setHoveredMediaId(null)}
+                  >
+                    {freePreviewPostMedia ? (
+                      <MediaTileLite
+                        media={freePreviewPostMedia.media}
+                        isActivePreview={hoveredMediaId === freePreviewPostMedia.media.id}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Eye className="w-6 h-6 text-muted-foreground/50" />
+                        <span className="text-xs text-muted-foreground text-center">
+                          Drag media here to set as free preview
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
+                {post.postMedia
+                  .filter((pm) => !pm.isFreePreview)
+                  .map((postMedia) => (
+                    <div
+                      key={postMedia.id}
+                      className="aspect-square"
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, postMedia.media.id)}
+                      onMouseEnter={() => setHoveredMediaId(postMedia.media.id)}
+                      onMouseLeave={() => setHoveredMediaId(null)}
+                    >
+                      <MediaTileLite
+                        media={postMedia.media}
+                        isActivePreview={hoveredMediaId === postMedia.media.id}
+                      />
+                    </div>
+                  ))}
+              </div>
             </div>
             <Textarea
               placeholder="Add a caption..."
