@@ -1,5 +1,6 @@
 import { cn } from "@renderer/lib/utils";
 import { Grid2X2, Grid3X3 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
 import { MediaTile } from "../../components/MediaTile";
@@ -37,6 +38,7 @@ type GalleryProps = {
 };
 export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: GalleryProps) => {
   const navigate = useNavigate();
+  const [activePreviewId, setActivePreviewId] = useState<string | null>(null);
 
   if (error) {
     return (
@@ -69,14 +71,20 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
                   } else {
                     element.style.borderColor = "hsl(var(--primary))";
                   }
+                  if (media.type === "video") {
+                    setActivePreviewId(media.id);
+                  }
                 }}
                 onMouseLeave={(e) => {
                   const element = e.currentTarget as HTMLElement;
                   element.style.borderColor = "transparent";
+                  if (media.type === "video") {
+                    setActivePreviewId(null);
+                  }
                 }}
               >
                 <div className="absolute inset-0">
-                  <MediaTile media={media} />
+                  <MediaTile media={media} isActivePreview={media.id === activePreviewId} />
                 </div>
               </div>
             </div>

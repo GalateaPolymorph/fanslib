@@ -12,12 +12,12 @@ import { Button } from "./ui/button";
 type MediaDisplayProps = {
   media: Media;
   className?: string;
+  isActivePreview?: boolean;
 };
 
-export const MediaTile = ({ media, className }: MediaDisplayProps) => {
-  const [isHovering, setIsHovering] = useState(false);
+export const MediaTile = ({ media, className, isActivePreview = false }: MediaDisplayProps) => {
   const [imageError, setImageError] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const previewIntervalRef = useRef<number>();
 
@@ -26,7 +26,7 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
 
     const video = videoRef.current;
 
-    if (isHovering && !open) {
+    if (isActivePreview && !popoverOpen) {
       video.muted = true;
       video.currentTime = 0;
       video.play();
@@ -52,7 +52,7 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
         clearInterval(previewIntervalRef.current);
       }
     };
-  }, [isHovering, open]);
+  }, [isActivePreview, popoverOpen]);
 
   // Group posts by channel and find the latest post date for each channel
   const postsByChannel = media.postMedia.reduce(
@@ -91,14 +91,10 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
     media.postMedia.find((pm) => pm.post.status === "scheduled") !== undefined;
 
   return (
-    <div
-      className={cn("relative aspect-square bg-muted rounded-md overflow-hidden", className)}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
+    <div className={cn("relative aspect-square bg-muted rounded-md overflow-hidden", className)}>
       {media.type === "video" ? (
         <>
-          {!isHovering && (
+          {!isActivePreview && (
             <img
               src={`thumbnail://${media.id}`}
               alt={media.name}
@@ -109,7 +105,10 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
           <video
             ref={videoRef}
             src={`media://${media.path}`}
-            className={cn("absolute inset-0 w-full h-full object-cover", !isHovering && "hidden")}
+            className={cn(
+              "absolute inset-0 w-full h-full object-cover",
+              !isActivePreview && "hidden"
+            )}
           />
           {media.duration && (
             <div className="absolute bottom-1 right-1 bg-black/50 px-1 py-0.5 rounded text-2xs text-white font-medium">
@@ -147,7 +146,7 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
           </div>
         )}
         {(mediaHasBeenPosted || mediaHasBeenScheduled) && (
-          <Popover open={open} onOpenChange={setOpen}>
+          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
@@ -157,10 +156,10 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
                   mediaHasBeenPosted ? "text-green-400" : "text-blue-400"
                 )}
                 onMouseEnter={() => {
-                  setOpen(true);
+                  setPopoverOpen(true);
                 }}
                 onMouseLeave={() => {
-                  setOpen(false);
+                  setPopoverOpen(false);
                 }}
               >
                 <Check className="h-3 w-3" />
@@ -170,8 +169,8 @@ export const MediaTile = ({ media, className }: MediaDisplayProps) => {
               className="w-auto p-2 bg-popover text-popover-foreground shadow-md rounded-md border focus-visible:ring-0 focus-visible:outline-none"
               align="start"
               sideOffset={5}
-              onMouseEnter={() => setOpen(true)}
-              onMouseLeave={() => setOpen(false)}
+              onMouseEnter={() => setPopoverOpen(true)}
+              onMouseLeave={() => setPopoverOpen(false)}
             >
               <div className="space-y-1.5">
                 {Object.entries(postsByChannel).map(
