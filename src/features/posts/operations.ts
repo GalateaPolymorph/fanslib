@@ -178,7 +178,7 @@ export const updatePost = async (
 
   const post = await postRepo.findOne({
     where: { id },
-    relations: ["media"],
+    relations: ["postMedia"],
   });
 
   if (!post) {

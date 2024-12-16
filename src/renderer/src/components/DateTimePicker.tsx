@@ -1,5 +1,5 @@
 import { Button } from "@renderer/components/ui/button";
-import { DatePicker } from "@renderer/components/ui/date-picker";
+import { Calendar } from "@renderer/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/popover";
 import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
@@ -27,10 +27,11 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-        <div className="grid gap-4 p-3">
-          <DatePicker
-            date={date}
-            setDate={(newDate) => {
+        <div className="space-y-4 p-3">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(newDate) => {
               if (newDate) {
                 const updatedDate = new Date(newDate);
                 updatedDate.setHours(date.getHours());
@@ -38,8 +39,9 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
                 setDate(updatedDate);
               }
             }}
+            initialFocus
           />
-          <div className="p-3 border-t border-border">
+          <div className="border-t border-border pt-3">
             <TimePickerDemo
               setDate={(hours: number, minutes: number) => {
                 const newDate = new Date(date);

@@ -17,9 +17,6 @@ export const methods = [
   "byChannel",
   "byMediaId",
   "update",
-  "markAsScheduled",
-  "markAsPosted",
-  "markAsDraft",
   "delete",
   "addMedia",
   "removeMedia",
@@ -37,9 +34,6 @@ export type PostHandlers = {
     updates: Partial<Post>,
     newMediaPathsInOrder?: string[]
   ) => Promise<Post | null>;
-  markAsScheduled: (_: any, id: string) => Promise<Post | null>;
-  markAsPosted: (_: any, id: string) => Promise<Post | null>;
-  markAsDraft: (_: any, id: string) => Promise<Post | null>;
   delete: (_: any, id: string) => Promise<void>;
   addMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
   removeMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
