@@ -3,43 +3,39 @@ import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/popover";
 import { Palette, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CATEGORY_COLORS } from "../../../../features/categories/colors";
-import { Category } from "../../../../features/categories/entity";
+import { useCategories } from "../../contexts/CategoryContext";
 
 export const CategorySettings = () => {
   const [categoryName, setCategoryName] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    window.api["category:getAll"]().then(setCategories);
-  }, []);
+  const { categories, refetch } = useCategories();
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) return;
 
     try {
-      const newCategory = await window.api["category:create"](categoryName);
-      setCategories((prev) => [...prev, newCategory]);
+      await window.api["category:create"](categoryName);
+      refetch();
       setCategoryName("");
     } catch (error) {
       console.error("Failed to create category", error);
     }
   };
 
-  const handleDeleteCategory = async (slug: string) => {
+  const handleDeleteCategory = async (id: string) => {
     try {
-      await window.api["category:delete"](slug);
-      setCategories((prev) => prev.filter((cat) => cat.slug !== slug));
+      await window.api["category:delete"](id);
+      refetch();
     } catch (error) {
       console.error("Failed to delete category", error);
     }
   };
 
-  const handleUpdateColor = async (slug: string, color: string) => {
+  const handleUpdateColor = async (id: string, color: string) => {
     try {
-      await window.api["category:update"](slug, { color });
-      setCategories((prev) => prev.map((cat) => (cat.slug === slug ? { ...cat, color } : cat)));
+      await window.api["category:update"](id, { color });
+      refetch();
     } catch (error) {
       console.error("Failed to update category color", error);
     }
@@ -64,7 +60,7 @@ export const CategorySettings = () => {
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <Badge
-              key={category.slug}
+              key={category.id}
               style={{ backgroundColor: category.color }}
               className="text-white group flex items-center py-1"
             >
@@ -88,7 +84,7 @@ export const CategorySettings = () => {
                         size="icon"
                         className="h-6 w-6 p-0 rounded-full hover:ring-1 hover:ring-accent-foreground transition-all"
                         style={{ backgroundColor: color }}
-                        onClick={() => handleUpdateColor(category.slug, color)}
+                        onClick={() => handleUpdateColor(category.id, color)}
                       />
                     ))}
                   </div>
@@ -98,7 +94,7 @@ export const CategorySettings = () => {
                 variant="ghost"
                 size="icon"
                 className="h-4 w-4 hover:bg-white/20 rounded-full"
-                onClick={() => handleDeleteCategory(category.slug)}
+                onClick={() => handleDeleteCategory(category.id)}
               >
                 <X className="h-3 w-3" />
               </Button>

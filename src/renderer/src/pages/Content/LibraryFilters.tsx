@@ -23,6 +23,7 @@ export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
           });
         }}
         multiple={true}
+        includeNoneOption
       />
 
       <div className="flex items-center gap-2">

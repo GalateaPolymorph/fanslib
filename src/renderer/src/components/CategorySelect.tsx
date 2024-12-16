@@ -74,7 +74,7 @@ export const CategorySelect = ({
         <Badge
           variant={value?.length === 0 ? "default" : "outline"}
           className={cn(
-            "transition-colors cursor-pointer",
+            "transition-colors cursor-pointer text-muted-foreground",
             !multiple && value?.length > 0 && "opacity-50"
           )}
           onClick={() => {
@@ -87,7 +87,6 @@ export const CategorySelect = ({
           style={{
             backgroundColor: value?.length === 0 ? "hsl(var(--muted))" : "transparent",
             borderColor: "hsl(var(--muted))",
-            color: value?.length === 0 ? "hsl(var(--muted-foreground))" : "hsl(var(--muted))",
           }}
         >
           None
