@@ -10,7 +10,6 @@ import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
 import { ContentPage } from "./pages/Content";
 import { MediaDetail } from "./pages/MediaDetail";
-import { PostDetail } from "./pages/PostDetail";
 import { PostsPage } from "./pages/Posts";
 import { SettingsPage } from "./pages/Settings";
 
@@ -28,7 +27,6 @@ const App = () => {
                     <Route index element={<ContentPage />} />
                     <Route path="content/:mediaId" element={<MediaDetail />} />
                     <Route path="posts" element={<PostsPage />} />
-                    <Route path="posts/:postId" element={<PostDetail />} />
                     <Route path="channels" element={<ChannelsPage />} />
                     <Route path="settings" element={<SettingsPage />} />
                   </Route>

@@ -1,11 +1,6 @@
-import { ChannelBadge } from "@renderer/components/ChannelBadge";
-import { Button } from "@renderer/components/ui/button";
-import { Table, TableBody, TableCell, TableRow } from "@renderer/components/ui/table";
-import { format } from "date-fns";
-import { ArrowRight, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
-import { StatusBadge } from "../../components/StatusBadge";
+import { PostDetail } from "./PostDetail";
 
 interface MediaPostsProps {
   mediaId: string;
@@ -33,15 +28,6 @@ export function MediaPosts({ mediaId }: MediaPostsProps) {
     fetchPosts();
   }, [mediaId]);
 
-  const handleMarkAsPosted = async (postId: string) => {
-    try {
-      await window.api["post:update"](postId, { status: "posted" });
-      await fetchPosts(); // Refresh the posts list
-    } catch (err) {
-      console.error("Failed to mark post as posted:", err);
-    }
-  };
-
   if (isLoading) {
     return <div className="text-muted-foreground">Loading posts...</div>;
   }
@@ -55,41 +41,10 @@ export function MediaPosts({ mediaId }: MediaPostsProps) {
   }
 
   return (
-    <div className="border rounded-md">
-      <Table>
-        <TableBody>
-          {posts.map((post) => (
-            <TableRow key={post.id} className="hover:bg-background">
-              <TableCell>
-                <div className="flex w-fit">
-                  <ChannelBadge name={post.channel.name} typeId={post.channel.typeId} />
-                </div>
-              </TableCell>
-              <TableCell>
-                <StatusBadge status={post.status} />
-              </TableCell>
-              <TableCell>{format(new Date(post.date), "PPP")}</TableCell>
-              <TableCell className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                  <a href={`/posts/${post.id}`}>
-                    <ArrowRight className="size-4 -rotate-45" />
-                  </a>
-                </Button>
-                {post.status === "draft" && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleMarkAsPosted(post.id)}
-                    className="text-green-500 hover:text-green-600 hover:bg-green-100"
-                  >
-                    <Check className="size-4" />
-                  </Button>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="flex flex-col">
+      {posts.map((post) => (
+        <PostDetail post={post} onUpdate={fetchPosts} />
+      ))}
     </div>
   );
 }

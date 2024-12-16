@@ -44,7 +44,9 @@ export const fetchAllPosts = async (): Promise<Post[]> => {
       postMedia: {
         media: true,
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
@@ -87,9 +89,13 @@ export const fetchPostsByMediaId = async (mediaId: string): Promise<Post[]> => {
     where: { postMedia: { media: { id: mediaId } } },
     relations: {
       postMedia: {
-        media: true,
+        media: {
+          categories: true,
+        },
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
@@ -110,7 +116,9 @@ export const fetchPostsByChannel = async (channelId: string): Promise<Post[]> =>
       postMedia: {
         media: true,
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
@@ -132,7 +140,9 @@ export const fetchPostsBySchedule = async (scheduleId: string): Promise<Post[]> 
       postMedia: {
         media: true,
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
@@ -154,7 +164,9 @@ export const fetchScheduledPosts = async (): Promise<Post[]> => {
       postMedia: {
         media: true,
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
