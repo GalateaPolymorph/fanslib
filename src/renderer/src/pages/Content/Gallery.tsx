@@ -1,6 +1,6 @@
 import { cn } from "@renderer/lib/utils";
-import { Grid2X2, Grid3X3 } from "lucide-react";
-import { useState } from "react";
+import { Check, Grid2X2, Grid3X3, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
 import { MediaTile } from "../../components/MediaTile";
@@ -14,6 +14,7 @@ type GridSizeToggleProps = {
   gridSize: GridSize;
   setGridSize: (size: GridSize) => void;
 };
+
 export const GridSizeToggle = ({ gridSize, setGridSize }: GridSizeToggleProps) => (
   <ToggleGroup
     type="single"
@@ -36,9 +37,90 @@ type GalleryProps = {
   onScan?: () => void;
   gridSize: GridSize;
 };
+
 export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: GalleryProps) => {
   const navigate = useNavigate();
-  const [activePreviewId, setActivePreviewId] = useState<string | null>(null);
+  const [selectedMediaIds, setSelectedMediaIds] = useState<Set<string>>(new Set());
+  const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
+  const [isShiftPressed, setIsShiftPressed] = useState(false);
+  const [currentHoveredIndex, setCurrentHoveredIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        setIsShiftPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        setIsShiftPressed(false);
+      }
+    };
+
+    // Handle case where user switches windows while holding shift
+    const handleBlur = () => {
+      setIsShiftPressed(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, [lastClickedIndex, currentHoveredIndex]);
+
+  const getIndexRange = (index1: number, index2: number) => {
+    const start = Math.min(index1, index2);
+    const end = Math.max(index1, index2);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  const toggleMediaSelection = (mediaId: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    const currentIndex = media.findIndex((m) => m.id === mediaId);
+
+    // Multi-selection (shift + click)
+    if (isShiftPressed && lastClickedIndex !== null) {
+      const indices = getIndexRange(lastClickedIndex, currentIndex);
+      setSelectedMediaIds((prev) => {
+        const newSelection = new Set(prev);
+        indices.forEach((i) => {
+          if (i >= 0 && i < media.length) {
+            newSelection.add(media[i].id);
+          }
+        });
+        return newSelection;
+      });
+      setLastClickedIndex(currentIndex);
+      return;
+    }
+
+    // Single selection
+    setSelectedMediaIds((prev) => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(mediaId)) {
+        newSelection.delete(mediaId);
+      } else {
+        newSelection.add(mediaId);
+      }
+      return newSelection;
+    });
+    setLastClickedIndex(currentIndex);
+  };
+
+  const handleMouseEnter = (mediaId: string) => {
+    const currentIndex = media.findIndex((m) => m.id === mediaId);
+    setCurrentHoveredIndex(currentIndex);
+  };
+
+  const handleMouseLeave = () => {
+    setCurrentHoveredIndex(null);
+  };
 
   if (error) {
     return (
@@ -48,6 +130,21 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
     );
   }
 
+  const isHighlighted = (index: number) => {
+    if (lastClickedIndex === null || currentHoveredIndex === null) return false;
+    if (selectedMediaIds.size === 0) return false;
+    if (!isShiftPressed) return false;
+
+    const highlighted =
+      index >= Math.min(lastClickedIndex, currentHoveredIndex) &&
+      index <= Math.max(lastClickedIndex, currentHoveredIndex);
+
+    return highlighted;
+  };
+
+  const isSelected = (mediaId: string) => {
+    return selectedMediaIds.has(mediaId);
+  };
   return (
     <div className="h-full relative">
       <ScrollArea className="h-full absolute inset-0">
@@ -59,32 +156,62 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
               : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
           )}
         >
-          {media.map((media) => (
+          {media.map((media, index) => (
             <div key={media.path} className="relative">
               <div
-                className="group relative border-2 border-transparent aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer"
-                onClick={() => navigate(`/content/${encodeURIComponent(media.id)}`)}
-                onMouseEnter={(e) => {
-                  const element = e.currentTarget as HTMLElement;
-                  if (media.categories && media.categories.length > 0) {
-                    element.style.borderColor = media.categories[0].color;
-                  } else {
-                    element.style.borderColor = "hsl(var(--primary))";
-                  }
-                  if (media.type === "video") {
-                    setActivePreviewId(media.id);
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  const element = e.currentTarget as HTMLElement;
-                  element.style.borderColor = "transparent";
-                  if (media.type === "video") {
-                    setActivePreviewId(null);
+                className={cn(
+                  "group relative aspect-square bg-muted rounded-lg ring-2 overflow-hidden cursor-pointer",
+                  "transition-all duration-200",
+                  isSelected(media.id)
+                    ? "ring-primary"
+                    : isHighlighted(index)
+                      ? "ring-primary/50"
+                      : "ring-transparent"
+                )}
+                onClick={(e) => {
+                  if (selectedMediaIds.size > 0) {
+                    toggleMediaSelection(media.id, e);
+                  } else if (!(e.target as HTMLElement).closest(".selection-circle")) {
+                    navigate(`/content/${encodeURIComponent(media.id)}`);
                   }
                 }}
+                onMouseEnter={() => handleMouseEnter(media.id)}
+                onMouseLeave={() => handleMouseLeave()}
               >
-                <div className="absolute inset-0">
-                  <MediaTile media={media} isActivePreview={media.id === activePreviewId} />
+                <div
+                  className={cn("absolute inset-0", {
+                    "bg-primary/5": isSelected(media.id),
+                  })}
+                >
+                  <MediaTile
+                    className={cn("transition-transform duration-80 ease-in-out", {
+                      "bg-primary/5": isSelected(media.id),
+                    })}
+                    media={media}
+                    isActivePreview={index === currentHoveredIndex}
+                  />
+                </div>
+                <div
+                  className={cn(
+                    "selection-circle absolute top-2 right-2 w-5 h-5 rounded-full",
+                    "transition-opacity duration-200",
+                    "flex items-center justify-center",
+                    "border-2 cursor-pointer",
+                    "hover:opacity-100 group-hover:opacity-100",
+                    {
+                      "opacity-100 bg-primary border-primary text-primary-foreground": isSelected(
+                        media.id
+                      ),
+                      "opacity-0 bg-background/80 border-foreground/20 hover:border-foreground/40":
+                        !isSelected(media.id),
+                    }
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleMediaSelection(media.id, e);
+                  }}
+                >
+                  {selectedMediaIds.has(media.id) && <Check className="w-3 h-3" />}
                 </div>
               </div>
             </div>
@@ -92,6 +219,39 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
           {media.length === 0 && <GalleryEmpty libraryPath={libraryPath} onScan={onScan} />}
         </div>
       </ScrollArea>
+
+      {selectedMediaIds.size > 0 && (
+        <div
+          className={cn(
+            "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75",
+            "p-4 border-t shadow-lg transform transition-transform duration-200 ease-in-out",
+            "flex items-center justify-between"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <div className="text-sm">{selectedMediaIds.size} items selected</div>
+            <button
+              onClick={() => {
+                setSelectedMediaIds(new Set());
+                setLastClickedIndex(null);
+              }}
+              className={cn(
+                "inline-flex items-center justify-center rounded-md",
+                "text-sm font-medium",
+                "h-8 w-8",
+                "border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Clear selection</span>
+            </button>
+          </div>
+          <div className="space-x-2">
+            {/* Action buttons will go here */}
+            <span>Action buttons placeholder</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
