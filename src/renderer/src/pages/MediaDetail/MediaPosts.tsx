@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
-import { PostDetail } from "./PostDetail";
+import { PostDetail } from "./PostDetail/PostDetail";
 
 interface MediaPostsProps {
   mediaId: string;
 }
 
-export function MediaPosts({ mediaId }: MediaPostsProps) {
+export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [openPostIds, setOpenPostIds] = useState<Set<string>>(new Set());
 
   const fetchPosts = async () => {
     try {
@@ -28,6 +29,18 @@ export function MediaPosts({ mediaId }: MediaPostsProps) {
     fetchPosts();
   }, [mediaId]);
 
+  const handleTogglePost = (postId: string, isOpen: boolean) => {
+    setOpenPostIds((prev) => {
+      const next = new Set(prev);
+      if (isOpen) {
+        next.add(postId);
+      } else {
+        next.delete(postId);
+      }
+      return next;
+    });
+  };
+
   if (isLoading) {
     return <div className="text-muted-foreground">Loading posts...</div>;
   }
@@ -41,10 +54,16 @@ export function MediaPosts({ mediaId }: MediaPostsProps) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-2">
       {posts.map((post) => (
-        <PostDetail post={post} onUpdate={fetchPosts} />
+        <PostDetail
+          key={post.id}
+          post={post}
+          onUpdate={fetchPosts}
+          isOpen={openPostIds.has(post.id)}
+          onOpenChange={(isOpen) => handleTogglePost(post.id, isOpen)}
+        />
       ))}
     </div>
   );
-}
+};

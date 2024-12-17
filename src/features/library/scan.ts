@@ -18,12 +18,16 @@ const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov", ".avi", ".mkv"]);
  * This helps identify renamed files by matching size and creation time
  */
 const findMediaByStats = async (stats: Stats) => {
-  return (await db()).getRepository(Media).findOne({
+  console.log("trying to find media by stats", stats);
+
+  const media = await (await db()).getRepository(Media).findOne({
     where: {
       size: stats.size,
-      fileCreationDate: stats.ctime,
+      fileCreationDate: stats.birthtime,
     },
   });
+  console.log("found media by stats", media);
+  return media;
 };
 
 /**

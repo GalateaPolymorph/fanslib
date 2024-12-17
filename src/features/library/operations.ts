@@ -75,6 +75,18 @@ export const fetchAllMedia = async (
     queryBuilder.andWhere("postMedia.id IS NULL");
   }
 
+  // Apply date range filters
+  if (params?.createdDateStart) {
+    queryBuilder.andWhere("media.fileCreationDate >= :startDate", {
+      startDate: params.createdDateStart,
+    });
+  }
+  if (params?.createdDateEnd) {
+    queryBuilder.andWhere("media.fileCreationDate <= :endDate", {
+      endDate: params.createdDateEnd,
+    });
+  }
+
   // Apply sorting
   if (params?.sort) {
     const { field, direction } = params.sort;
@@ -180,11 +192,11 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
   return media;
 };
 
-export const deleteMedia = async (path: string) => {
+export const deleteMedia = async (id: string) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
-  await repository.delete({ path });
+  await repository.delete({ id });
 };
 
 export const removeCategoriesFromMedia = async (path: string, categoryIds: string[]) => {

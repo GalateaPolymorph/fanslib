@@ -17,6 +17,8 @@ export interface MediaSort {
 export interface MediaFilters {
   categories?: string[] | undefined;
   unposted?: boolean;
+  createdDateStart?: Date;
+  createdDateEnd?: Date;
 }
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
@@ -54,8 +56,8 @@ const methods = [
   "scan",
   "scanFile",
   "getAll",
-  "update",
   "get",
+  "update",
   "onScanProgress",
   "onScanComplete",
 ] as const;

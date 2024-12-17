@@ -17,7 +17,11 @@ export const MediaView = ({
 }: MediaViewProps) => {
   const mediaContent =
     media.type === "image" ? (
-      <img src={`media://${media.path}`} alt={media.name} className="object-cover w-full h-full" />
+      <img
+        src={`media://${media.path}`}
+        alt={media.name}
+        className="object-contain w-full h-full"
+      />
     ) : (
       <video
         src={`media://${media.path}`}

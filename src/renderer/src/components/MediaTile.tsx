@@ -17,7 +17,7 @@ export const MediaTile = (props: MediaTileProps) => {
   // Group posts by channel and find the latest post date for each channel
   const postsByChannel = props.media.postMedia.reduce(
     (acc, pm) => {
-      if (pm.post.status !== "posted") return acc;
+      if (pm.post?.status !== "posted") return acc;
 
       const channelId = pm.post.channel?.id;
       if (!channelId) return acc;
@@ -46,9 +46,9 @@ export const MediaTile = (props: MediaTileProps) => {
   );
 
   const mediaHasBeenPosted =
-    props.media.postMedia.find((pm) => pm.post.status === "posted") !== undefined;
+    props.media.postMedia.find((pm) => pm.post?.status === "posted") !== undefined;
   const mediaHasBeenScheduled =
-    props.media.postMedia.find((pm) => pm.post.status === "scheduled") !== undefined;
+    props.media.postMedia.find((pm) => pm.post?.status === "scheduled") !== undefined;
 
   return (
     <div className="relative">

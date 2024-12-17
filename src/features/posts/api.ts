@@ -23,14 +23,20 @@ export const handlers: PostHandlers = {
   update: (_, id: string, updates: Partial<Post>, newMediaPathsInOrder?: string[]) =>
     updatePost(id, updates, newMediaPathsInOrder),
   delete: (_, id) => deletePost(id),
-  addMedia: (_, postId: string, mediaPaths: string[]) => updatePost(postId, {}, mediaPaths),
-  removeMedia: async (_, postId: string, mediaToRemove: string[]) => {
+  addMedia: async (_, postId: string, mediaIds: string[]) => {
     const post = await fetchPostById(postId);
     if (!post) return null;
+
+    return updatePost(postId, {}, [...post.postMedia.map((pm) => pm.media.id), ...mediaIds]);
+  },
+  removeMedia: async (_, postId: string, postMediaIdsToRemove: string[]) => {
+    const post = await fetchPostById(postId);
+    if (!post) return null;
+
     return updatePost(
       postId,
       {},
-      post?.postMedia.filter((m) => !mediaToRemove.includes(m.id)).map((m) => m.id)
+      post?.postMedia.filter((pm) => !postMediaIdsToRemove.includes(pm.id)).map((pm) => pm.media.id)
     );
   },
   setFreePreview: (_, postId: string, mediaId: string, isFreePreview: boolean) =>

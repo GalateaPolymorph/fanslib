@@ -32,7 +32,8 @@ export const createPost = async (postData: PostCreateData, mediaIds: string[]): 
     await postMediaRepo.save(postMedia);
   }
 
-  return getPostById(post.id);
+  const newPost = await getPostById(post.id);
+  return newPost;
 };
 
 export const fetchAllPosts = async (): Promise<Post[]> => {
@@ -85,8 +86,24 @@ export const fetchPostsByMediaId = async (mediaId: string): Promise<Post[]> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Post);
 
-  return repository.find({
-    where: { postMedia: { media: { id: mediaId } } },
+  // First get the post IDs that have the specified media
+  const postsWithMedia = await repository
+    .createQueryBuilder("post")
+    .innerJoin("post.postMedia", "pm")
+    .innerJoin("pm.media", "media")
+    .where("media.id = :mediaId", { mediaId })
+    .select("post.id")
+    .getMany();
+
+  if (postsWithMedia.length === 0) {
+    return [];
+  }
+
+  // Then fetch the complete posts with all their postMedia
+  const posts = await repository.find({
+    where: {
+      id: In(postsWithMedia.map((p) => p.id)),
+    },
     relations: {
       postMedia: {
         media: {
@@ -104,6 +121,8 @@ export const fetchPostsByMediaId = async (mediaId: string): Promise<Post[]> => {
       },
     },
   });
+
+  return posts;
 };
 
 export const fetchPostsByChannel = async (channelId: string): Promise<Post[]> => {
@@ -181,7 +200,7 @@ export const fetchScheduledPosts = async (): Promise<Post[]> => {
 export const updatePost = async (
   id: string,
   updates: Partial<Omit<Post, "id" | "media" | "channel" | "category">>,
-  newMediaPathsInOrder?: string[]
+  mediaIds?: string[]
 ): Promise<Post | null> => {
   const dataSource = await db();
   const postRepo = dataSource.getRepository(Post);
@@ -190,7 +209,11 @@ export const updatePost = async (
 
   const post = await postRepo.findOne({
     where: { id },
-    relations: ["postMedia"],
+    relations: {
+      postMedia: {
+        media: true,
+      },
+    },
   });
 
   if (!post) {
@@ -206,20 +229,28 @@ export const updatePost = async (
   await postRepo.save(post);
 
   // Update media if provided
-  if (newMediaPathsInOrder) {
-    // Remove existing media
-    await postMediaRepo.delete({ post: { id: post.id } });
+  if (mediaIds) {
+    // Check if we need to remove any media
+    const currentMediaIds = post.postMedia.map((pm) => pm.media.id);
+    const mediaToRemove = currentMediaIds.filter((id) => !mediaIds.includes(id));
 
-    // Add new media
-    const media = await mediaRepo.findBy({ path: In(newMediaPathsInOrder) });
-    const postMedia = media.map((m, index) =>
-      postMediaRepo.create({
-        post,
-        media: m,
-        order: index,
-      })
-    );
-    await postMediaRepo.save(postMedia);
+    if (mediaToRemove.length) {
+      await postMediaRepo.delete({ post: { id }, media: { id: In(mediaToRemove) } });
+    }
+
+    // Check if we need to add any new media
+    const mediaToAdd = mediaIds.filter((id) => !currentMediaIds.includes(id));
+    if (mediaToAdd.length) {
+      const media = await mediaRepo.findBy({ id: In(mediaToAdd) });
+      const postMedia = media.map((m, index) =>
+        postMediaRepo.create({
+          post,
+          media: m,
+          order: index,
+        })
+      );
+      await postMediaRepo.save(postMedia);
+    }
   }
 
   return getPostById(id);

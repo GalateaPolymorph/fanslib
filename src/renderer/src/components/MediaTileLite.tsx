@@ -70,7 +70,7 @@ export const MediaTileLite = ({
             <img
               src={`thumbnail://${media.id}`}
               alt={media.name}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-contain"
               onError={handleImageError}
             />
           )}
@@ -78,7 +78,7 @@ export const MediaTileLite = ({
             ref={videoRef}
             src={`media://${media.path}`}
             className={cn(
-              "absolute inset-0 w-full h-full object-cover",
+              "absolute inset-0 w-full h-full object-contain",
               !isActivePreview && "hidden"
             )}
           />
@@ -92,11 +92,11 @@ export const MediaTileLite = ({
         <img
           src={imageError ? `media://${media.path}` : `thumbnail://${media.id}`}
           alt={media.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain"
           onError={handleImageError}
         />
       )}
-      <div className="absolute top-1 left-1 flex gap-1 z-10">
+      <div className="absolute bottom-1 left-1 flex gap-1 z-10">
         <div className="text-background p-1 rounded bg-black/50 size-5">
           {media.type === "video" ? (
             <Video className="w-3 h-3" />

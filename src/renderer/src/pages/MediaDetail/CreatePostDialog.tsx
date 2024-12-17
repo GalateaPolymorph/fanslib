@@ -1,8 +1,8 @@
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
+import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
-import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
 import {
   Dialog,
@@ -12,11 +12,7 @@ import {
   DialogTitle,
 } from "@renderer/components/ui/dialog";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@renderer/components/ui/tooltip";
 import { useToast } from "@renderer/components/ui/use-toast";
-import { useLibrary } from "@renderer/hooks/useLibrary";
-import { cn } from "@renderer/lib/utils";
-import { Calendar } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
@@ -36,24 +32,19 @@ export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialog
   const [status, setStatus] = useState<PostStatus>("draft");
   const [selectedMedia, setSelectedMedia] = useState<Media[]>([media]);
 
-  const { media: libraryMedia, isLoading } = useLibrary({
-    page: 1,
-    limit: 50,
-    categories: media.categories.map((cat) => cat.id),
-  });
+  useEffect(() => {
+    if (!open) return;
+    if (selectedMedia.length === 0) {
+      setSelectedMedia([media]);
+    }
+  }, [open, media, selectedMedia.length]);
 
   useEffect(() => {
     if (!channels.length || channels.length > 1) return;
     setSelectedChannel([channels[0].id]);
   }, [channels]);
 
-  useEffect(() => {
-    if (open) {
-      setSelectedMedia([media]);
-    }
-  }, [open, media]);
-
-  const toggleMediaSelection = (mediaItem: Media) => {
+  const handleMediaSelect = (mediaItem: Media) => {
     setSelectedMedia((prev) => {
       const isSelected = prev.some((m) => m.id === mediaItem.id);
       if (isSelected) {
@@ -90,6 +81,7 @@ export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialog
       toast({
         title: "Post created successfully",
       });
+
       onOpenChange(false);
       window.location.reload();
     } catch (error) {
@@ -144,73 +136,12 @@ export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialog
           </div>
 
           <div className="flex flex-col flex-1 min-h-0 border-t mt-4">
-            <div className="flex justify-between items-center py-4">
-              <label className="text-sm font-medium">Add More Media</label>
-              <span className="text-xs text-muted-foreground">
-                {isLoading ? "Loading..." : `${libraryMedia.length} items available`}
-              </span>
-            </div>
-            <ScrollArea className="h-[calc(100%-4rem)] border rounded-md">
-              <div className="p-4">
-                <div className="grid grid-cols-4 lg:grid-cols-5 gap-4">
-                  {libraryMedia.map((item) => {
-                    const posts = item.postMedia.map((pm) => pm.post) || [];
-                    const isScheduled = posts.some((post) => post.status === "scheduled");
-                    const isPosted = posts.some((post) => post.status === "posted");
-
-                    return (
-                      <Tooltip key={item.id}>
-                        <TooltipTrigger asChild>
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => toggleMediaSelection(item)}
-                            className={cn(
-                              "relative rounded-md cursor-pointer",
-                              selectedMedia.some((m) => m.id === item.id)
-                                ? "ring-2 ring-primary"
-                                : "hover:ring-2 hover:ring-primary/50",
-                              item.id === media.id && "pointer-events-none opacity-50"
-                            )}
-                          >
-                            <div className="aspect-square">
-                              <MediaTile media={item} />
-                            </div>
-                            {(isScheduled || isPosted) && (
-                              <div className="absolute top-2 right-2 flex gap-1">
-                                {isScheduled && (
-                                  <Badge
-                                    variant="secondary"
-                                    className="bg-orange-500/20 text-orange-500"
-                                  >
-                                    <Calendar className="w-3 h-3 mr-1" />
-                                    Scheduled
-                                  </Badge>
-                                )}
-                                {isPosted && (
-                                  <Badge
-                                    variant="secondary"
-                                    className="bg-green-500/20 text-green-500"
-                                  >
-                                    Posted
-                                  </Badge>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            Click to{" "}
-                            {selectedMedia.some((m) => m.id === item.id) ? "remove" : "add"}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
-                </div>
-              </div>
-            </ScrollArea>
+            <MediaSelection
+              selectedMedia={selectedMedia}
+              onMediaSelect={handleMediaSelect}
+              referenceMedia={media}
+              excludeMediaIds={[media.id]}
+            />
           </div>
         </div>
 

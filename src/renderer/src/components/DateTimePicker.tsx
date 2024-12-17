@@ -39,7 +39,7 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
                 setDate(updatedDate);
               }
             }}
-            initialFocus
+            autoFocus
           />
           <div className="border-t border-border pt-3">
             <TimePickerDemo
