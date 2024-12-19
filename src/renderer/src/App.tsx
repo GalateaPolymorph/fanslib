@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { MouseBackButton } from "./components/MouseBackButton";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -21,7 +20,6 @@ const App = () => {
           <ChannelProvider>
             <TooltipProvider delayDuration={0}>
               <BrowserRouter>
-                <MouseBackButton />
                 <Routes>
                   <Route path="/" element={<Layout />}>
                     <Route index element={<ContentPage />} />

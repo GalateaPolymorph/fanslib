@@ -3,6 +3,7 @@ import { Check, Grid2X2, Grid3X3, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
+import { CategorySelect } from "../../components/CategorySelect";
 import { MediaTile } from "../../components/MediaTile";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
@@ -34,13 +35,22 @@ type GalleryProps = {
   media: Media[];
   error?: string;
   libraryPath?: string;
-  onScan?: () => void;
+  onScan: () => void;
+  onUpdate: () => void;
   gridSize: GridSize;
 };
 
-export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: GalleryProps) => {
+export const Gallery = ({
+  media,
+  error,
+  libraryPath,
+  onScan,
+  onUpdate,
+  gridSize,
+}: GalleryProps) => {
   const navigate = useNavigate();
   const [selectedMediaIds, setSelectedMediaIds] = useState<Set<string>>(new Set());
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
   const [isShiftPressed, setIsShiftPressed] = useState(false);
   const [currentHoveredIndex, setCurrentHoveredIndex] = useState<number | null>(null);
@@ -73,6 +83,21 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
       window.removeEventListener("blur", handleBlur);
     };
   }, [lastClickedIndex, currentHoveredIndex]);
+
+  useEffect(() => {
+    // When media items are filtered out (e.g. by category), remove them from selection
+    // If all selected items are filtered out, clear the entire selection state
+    const mediaIds = new Set(media.map((m) => m.id));
+    const newSelectedIds = new Set(Array.from(selectedMediaIds).filter((id) => mediaIds.has(id)));
+
+    if (newSelectedIds.size !== selectedMediaIds.size) {
+      setSelectedMediaIds(newSelectedIds);
+      if (newSelectedIds.size === 0) {
+        setSelectedCategories([]);
+        setLastClickedIndex(null);
+      }
+    }
+  }, [media]);
 
   const getIndexRange = (index1: number, index2: number) => {
     const start = Math.min(index1, index2);
@@ -120,6 +145,36 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
 
   const handleMouseLeave = () => {
     setCurrentHoveredIndex(null);
+  };
+
+  const handleCategoryChange = async (categoryIds: string[]) => {
+    const lastChanged =
+      categoryIds.length > selectedCategories.length
+        ? categoryIds.find((id) => !selectedCategories.includes(id))
+        : selectedCategories.find((id) => !categoryIds.includes(id));
+
+    if (!lastChanged || !selectedMediaIds.size) return;
+
+    const allHaveCategory = media
+      .filter((m) => selectedMediaIds.has(m.id))
+      .every((media) => media.categories.some((cat) => cat.id === lastChanged));
+
+    await Promise.all(
+      media
+        .filter((m) => selectedMediaIds.has(m.id))
+        .map((media) => {
+          const updatedCategoryIds = allHaveCategory
+            ? media.categories.filter((cat) => cat.id !== lastChanged).map((cat) => cat.id)
+            : [...media.categories.map((cat) => cat.id), lastChanged];
+
+          return window.api["library:update"](media.id, {
+            categoryIds: updatedCategoryIds,
+          });
+        })
+    );
+
+    setSelectedCategories(categoryIds);
+    onUpdate();
   };
 
   if (error) {
@@ -220,38 +275,52 @@ export const Gallery = ({ media, error, libraryPath, onScan, gridSize }: Gallery
         </div>
       </ScrollArea>
 
-      {selectedMediaIds.size > 0 && (
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center z-50">
         <div
           className={cn(
-            "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75",
-            "p-4 border-t shadow-lg transform transition-transform duration-200 ease-in-out",
-            "flex items-center justify-between"
+            "w-[60%] bg-background",
+            "border shadow-lg rounded-lg",
+            "p-6",
+            "flex items-center justify-between",
+            "transform transition-all duration-300 ease-out",
+            selectedMediaIds.size > 0
+              ? "translate-y-0 opacity-100"
+              : "translate-y-full opacity-0 pointer-events-none"
           )}
         >
-          <div className="flex items-center gap-2">
-            <div className="text-sm">{selectedMediaIds.size} items selected</div>
+          <div className="flex items-center gap-3">
+            <div className="text-base font-medium">
+              {selectedMediaIds.size} {selectedMediaIds.size === 1 ? "item" : "items"} selected
+            </div>
             <button
               onClick={() => {
                 setSelectedMediaIds(new Set());
+                setSelectedCategories([]);
                 setLastClickedIndex(null);
               }}
               className={cn(
                 "inline-flex items-center justify-center rounded-md",
                 "text-sm font-medium",
-                "h-8 w-8",
-                "border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                "h-9 px-3",
+                "border border-input bg-background",
+                "hover:bg-accent hover:text-accent-foreground",
+                "transition-colors"
               )}
             >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Clear selection</span>
+              <X className="h-4 w-4 mr-2" />
+              Clear selection
             </button>
           </div>
-          <div className="space-x-2">
-            {/* Action buttons will go here */}
-            <span>Action buttons placeholder</span>
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-muted-foreground">Assign category</div>
+            <CategorySelect
+              value={selectedCategories}
+              onChange={handleCategoryChange}
+              multiple={true}
+            />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -75,6 +75,7 @@ export const ContentPage = () => {
               value={{
                 categories: preferences.categories,
                 unposted: preferences.unposted,
+                search: preferences.search,
               }}
               onFilterChange={(newFilters) => {
                 updatePreferences({
@@ -117,9 +118,10 @@ export const ContentPage = () => {
         <div className="flex-1 min-h-0 overflow-auto">
           <Gallery
             media={media}
-            error={error ?? undefined}
+            error={error}
             libraryPath={settings?.libraryPath}
             onScan={handleScan}
+            onUpdate={() => void refetch()}
             gridSize={preferences.gridSize}
           />
         </div>

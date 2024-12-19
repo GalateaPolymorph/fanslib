@@ -1,7 +1,7 @@
 import { prefixNamespaceObject } from "../../lib/namespace";
 import { loadSettings } from "../settings/load";
 import { LibraryHandlers, namespace } from "./api-type";
-import { fetchAllMedia, getMediaById, updateMedia } from "./operations";
+import { deleteMedia, fetchAllMedia, getMediaById, updateMedia } from "./operations";
 import { scanFile, scanLibrary } from "./scan";
 
 export const handlers: LibraryHandlers = {
@@ -29,6 +29,10 @@ export const handlers: LibraryHandlers = {
 
   update: async (_, id: string, updates) => {
     return updateMedia(id, updates);
+  },
+
+  delete: async (_, id: string, deleteFile = false) => {
+    return deleteMedia(id, deleteFile);
   },
 
   onScanProgress: (_) => {

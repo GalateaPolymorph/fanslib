@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
-import icon from "../../resources/icon.png?asset";
+import icon from "../../assets/icons/icon.png?asset";
 import { loadChannelTypeFixtures } from "../features/channels/fixtures";
 import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
@@ -15,21 +15,30 @@ import {
 registerMediaSchemeAsPrivileged();
 registerThumbnailSchemeAsPrivileged();
 
+if (process.platform === "darwin") {
+  app.name = "FansLib";
+}
+
 const createWindow = () => {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    title: "FansLib",
+    icon,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === "linux" ? { icon } : {}),
+    ...(process.platform === "darwin"
+      ? {
+          icon: join(__dirname, "../../assets/icons/icon.icns"),
+        }
+      : {
+          icon,
+        }),
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false,
-      nodeIntegration: true,
-      contextIsolation: true,
     },
   });
+
+  mainWindow.setTitle("FansLib");
 
   mainWindow.on("ready-to-show", () => {
     if (process.env.DEVELOPMENT) {

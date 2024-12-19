@@ -19,6 +19,7 @@ export interface MediaFilters {
   unposted?: boolean;
   createdDateStart?: Date;
   createdDateEnd?: Date;
+  search?: string;
 }
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
@@ -58,6 +59,7 @@ const methods = [
   "getAll",
   "get",
   "update",
+  "delete",
   "onScanProgress",
   "onScanComplete",
 ] as const;
@@ -67,6 +69,7 @@ export type LibraryHandlers = {
   get: (_: unknown, id: string) => Promise<Media | null>;
   getAll: (_: unknown, params?: GetAllMediaParams) => Promise<PaginatedResponse<Media>>;
   update: (_: unknown, id: string, updates: UpdateMediaPayload) => Promise<Media | null>;
+  delete: (_: unknown, id: string, deleteFile?: boolean) => Promise<void>;
   onScanProgress: (
     _: unknown,
     listener: (_: unknown, progress: LibraryScanProgress) => void

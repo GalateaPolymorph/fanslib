@@ -1,3 +1,4 @@
+import * as fs from "fs/promises";
 import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { Category } from "../categories/entity";
@@ -68,6 +69,13 @@ export const fetchAllMedia = async (
   // Apply category empty filter
   if (params?.categories?.length === 0) {
     queryBuilder.andWhere("categories.id IS NULL");
+  }
+
+  // Apply search filter
+  if (params?.search) {
+    queryBuilder.andWhere("LOWER(media.path) LIKE LOWER(:search)", {
+      search: `%${params.search}%`,
+    });
   }
 
   // Apply unposted filter
@@ -192,11 +200,24 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
   return media;
 };
 
-export const deleteMedia = async (id: string) => {
+export const deleteMedia = async (id: string, deleteFile = false) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
+  // Get the media path before deleting if we need to delete the file
+  const media = deleteFile ? await repository.findOneBy({ id }) : null;
+
   await repository.delete({ id });
+
+  // Delete the file if requested
+  if (deleteFile && media) {
+    try {
+      await fs.unlink(media.path);
+    } catch (error) {
+      console.error("Failed to delete file:", error);
+      // Don't throw since we already deleted from DB
+    }
+  }
 };
 
 export const removeCategoriesFromMedia = async (path: string, categoryIds: string[]) => {

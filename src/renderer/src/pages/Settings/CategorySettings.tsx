@@ -2,13 +2,14 @@ import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/popover";
-import { Palette, X } from "lucide-react";
+import { Check, Palette, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { CATEGORY_COLORS } from "../../../../features/categories/colors";
 import { useCategories } from "../../contexts/CategoryContext";
 
 export const CategorySettings = () => {
   const [categoryName, setCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string } | null>(null);
   const { categories, refetch } = useCategories();
 
   const handleCreateCategory = async () => {
@@ -41,6 +42,18 @@ export const CategorySettings = () => {
     }
   };
 
+  const handleUpdateName = async () => {
+    if (!editingCategory || !editingCategory.name.trim()) return;
+
+    try {
+      await window.api["category:update"](editingCategory.id, { name: editingCategory.name });
+      refetch();
+      setEditingCategory(null);
+    } catch (error) {
+      console.error("Failed to update category name", error);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div>
@@ -59,46 +72,86 @@ export const CategorySettings = () => {
         </div>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
-            <Badge
+            <div
               key={category.id}
-              style={{ backgroundColor: category.color }}
-              className="text-white group flex items-center py-1"
+              className="flex items-center justify-between space-x-2 rounded-md border p-2"
             >
-              <span className="mr-2">{category.name}</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-4 w-4 hover:bg-white/20 rounded-full"
-                  >
-                    <Palette className="h-2 w-2" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2" align="start">
-                  <div className="grid grid-cols-5 gap-1">
-                    {CATEGORY_COLORS.map((color) => (
-                      <Button
-                        key={color}
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 p-0 rounded-full hover:ring-1 hover:ring-accent-foreground transition-all"
-                        style={{ backgroundColor: color }}
-                        onClick={() => handleUpdateColor(category.id, color)}
-                      />
-                    ))}
+              <div className="flex items-center space-x-2 flex-1">
+                {editingCategory?.id === category.id ? (
+                  <div className="flex items-center space-x-2 flex-1">
+                    <Input
+                      value={editingCategory.name}
+                      onChange={(e) =>
+                        setEditingCategory({ ...editingCategory, name: e.target.value })
+                      }
+                      className="h-8"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={handleUpdateName}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
                   </div>
-                </PopoverContent>
-              </Popover>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-4 w-4 hover:bg-white/20 rounded-full"
-                onClick={() => handleDeleteCategory(category.id)}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
+                ) : (
+                  <>
+                    <Badge
+                      variant="outline"
+                      className="font-normal"
+                      style={{ borderColor: category.color, color: category.color }}
+                    >
+                      {category.name}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setEditingCategory({ id: category.id, name: category.name })}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 hover:bg-white/20 rounded-full"
+                    >
+                      <Palette className="h-2 w-2" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-2" align="start">
+                    <div className="grid grid-cols-5 gap-1">
+                      {CATEGORY_COLORS.map((color) => (
+                        <Button
+                          key={color}
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 rounded-full hover:ring-1 hover:ring-accent-foreground transition-all"
+                          style={{ backgroundColor: color }}
+                          onClick={() => handleUpdateColor(category.id, color)}
+                        />
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-4 w-4 hover:bg-white/20 rounded-full"
+                  onClick={() => handleDeleteCategory(category.id)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
       </div>

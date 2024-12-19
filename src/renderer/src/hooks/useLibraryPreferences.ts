@@ -4,6 +4,7 @@ import { MediaSort } from "../../../features/library/api-type";
 interface LibraryPreferences {
   categories?: string[] | undefined;
   unposted?: boolean;
+  search?: string;
   sort: MediaSort;
   gridSize: "large" | "small";
   page: number;
@@ -11,6 +12,7 @@ interface LibraryPreferences {
 }
 
 const defaultPreferences: LibraryPreferences = {
+  search: "",
   sort: {
     field: "fileModificationDate",
     direction: "DESC",
