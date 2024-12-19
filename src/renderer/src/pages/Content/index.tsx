@@ -1,21 +1,30 @@
 import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LibraryScanProgress, LibraryScanResult } from "../../../../features/library/api-type";
+import { LibraryFilters } from "../../components/LibraryFilters";
 import { WelcomeScreen } from "../../components/WelcomeScreen";
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
+import {
+  LibraryPreferencesProvider,
+  useLibraryPreferences,
+} from "../../contexts/LibraryPreferencesContext";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useLibrary } from "../../hooks/useLibrary";
-import { useLibraryPreferences } from "../../hooks/useLibraryPreferences";
 import { cn } from "../../lib/utils";
 import { Gallery } from "./Gallery";
-import { LibraryFilters } from "./LibraryFilters";
+import { GalleryPagination } from "./GalleryPagination";
 import { LibrarySortOptions } from "./LibrarySortOptions";
 
-export const ContentPage = () => {
+const ContentPageContent = () => {
   const { settings, loading } = useSettings();
-  const { preferences, updatePreferences } = useLibraryPreferences();
-  const { media, totalItems, currentPage, totalPages, error, refetch } = useLibrary(preferences);
+  const {
+    preferences,
+    updateFilterPreferences,
+    updatePaginationPreferences,
+    updateSortPreferences,
+  } = useLibraryPreferences();
+  const { media, totalItems, totalPages, error, refetch } = useLibrary(preferences);
 
   const [scanProgress, setScanProgress] = useState<LibraryScanProgress | null>(null);
   const [scanResult, setScanResult] = useState<LibraryScanResult | null>(null);
@@ -31,10 +40,6 @@ export const ContentPage = () => {
       refetch();
     });
   }, []);
-
-  const handlePageChange = (newPage: number) => {
-    updatePreferences({ page: newPage });
-  };
 
   const handleScan = async () => {
     setScanProgress(null);
@@ -73,24 +78,22 @@ export const ContentPage = () => {
           <div className="flex items-center w-full justify-between gap-4">
             <LibraryFilters
               value={{
-                categories: preferences.categories,
-                unposted: preferences.unposted,
-                search: preferences.search,
+                search: preferences.filter.search,
+                categories: preferences.filter.categories,
+                unposted: preferences.filter.unposted,
               }}
-              onFilterChange={(newFilters) => {
-                updatePreferences({
-                  ...newFilters,
-                  page: 1, // Reset to first page when filters change
-                });
+              onFilterChange={(filters) => {
+                updateFilterPreferences(filters);
+                updatePaginationPreferences({ page: 1 });
               }}
             />
             <div className="flex items-center gap-2">
               <LibrarySortOptions
                 value={preferences.sort}
                 onChange={(sort) => {
-                  updatePreferences({
-                    sort,
-                    page: 1, // Reset to first page when sort changes
+                  updateSortPreferences(sort);
+                  updatePaginationPreferences({
+                    page: 1,
                   });
                 }}
               />
@@ -122,34 +125,18 @@ export const ContentPage = () => {
             libraryPath={settings?.libraryPath}
             onScan={handleScan}
             onUpdate={() => void refetch()}
-            gridSize={preferences.gridSize}
           />
         </div>
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4 pt-4 flex-none">
-          <div className="text-sm text-muted-foreground">
-            {totalItems} items • Page {currentPage} of {totalPages}
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage <= 1}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <GalleryPagination totalPages={totalPages} totalItems={totalItems} />
       </div>
     </div>
+  );
+};
+
+export const ContentPage = () => {
+  return (
+    <LibraryPreferencesProvider>
+      <ContentPageContent />
+    </LibraryPreferencesProvider>
   );
 };

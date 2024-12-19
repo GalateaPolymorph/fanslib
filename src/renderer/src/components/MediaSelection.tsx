@@ -3,7 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MediaFilters, PaginatedResponse } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
-import { LibraryFilters } from "../pages/Content/LibraryFilters";
+import { LibraryFilters } from "./LibraryFilters";
 import { MediaTileLite } from "./MediaTileLite";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";

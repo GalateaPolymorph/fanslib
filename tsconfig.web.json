@@ -5,6 +5,7 @@
     "src/preload/api-type.ts",
     "src/features/**/api-type.ts",
     "src/features/**/entity.ts",
+    "src/features/_common/pagination.ts",
     "src/features/index-renderer.ts",
     "src/features/categories/colors.ts",
     "src/features/channels/channelTypes.ts",

@@ -1,8 +1,8 @@
-import { CategorySelect } from "../../components/CategorySelect";
-import { SearchInput } from "../../components/SearchInput";
-import { Button } from "../../components/ui/button";
-import { Label } from "../../components/ui/label";
-import { Switch } from "../../components/ui/switch";
+import { CategorySelect } from "./CategorySelect";
+import { SearchInput } from "./SearchInput";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
 
 interface LibraryFiltersProps {
   value: {

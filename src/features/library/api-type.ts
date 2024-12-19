@@ -1,10 +1,6 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
+import { PaginatedResponse, PaginationParams } from "../_common/pagination";
 import { Media } from "./entity";
-
-export interface PaginationParams {
-  page: number;
-  limit: number;
-}
 
 export type SortField = "fileModificationDate" | "fileCreationDate" | "lastPosted";
 export type SortDirection = "ASC" | "DESC";
@@ -23,14 +19,6 @@ export interface MediaFilters {
 }
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
 
 export interface LibraryScanResult {
   added: number;
