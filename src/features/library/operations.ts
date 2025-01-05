@@ -1,8 +1,9 @@
 import * as fs from "fs/promises";
 import { In } from "typeorm";
 import { db } from "../../lib/db";
+import { PaginatedResponse } from "../_common/pagination";
 import { Category } from "../categories/entity";
-import { GetAllMediaParams, PaginatedResponse, UpdateMediaPayload } from "./api-type";
+import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 
 export const createMedia = async ({
@@ -81,6 +82,17 @@ export const fetchAllMedia = async (
   // Apply unposted filter
   if (params?.unposted) {
     queryBuilder.andWhere("postMedia.id IS NULL");
+  }
+
+  console.log(params?.excludeShoots);
+  // Apply exclude shoots filter
+  if (params?.excludeShoots?.length) {
+    queryBuilder
+      .leftJoin("media.shoots", "shoots")
+      .andWhere(
+        "NOT EXISTS (SELECT 1 FROM shoot_media sm WHERE sm.media_id = media.id AND sm.shoot_id IN (:...excludeShoots))",
+        { excludeShoots: params.excludeShoots }
+      );
   }
 
   // Apply date range filters

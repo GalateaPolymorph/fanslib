@@ -35,6 +35,7 @@ export const useLibrary = (
     setIsLoading(true);
     try {
       setError(null);
+      console.log(preferences.filter);
 
       const params: GetAllMediaParams = {
         page: preferences.pagination.page,
@@ -43,6 +44,7 @@ export const useLibrary = (
         categories: preferences.filter.categories,
         search: preferences.filter.search,
         unposted: preferences.filter.unposted,
+        excludeShoots: preferences.filter.excludeShoots,
 
         sort: {
           field: preferences.sort.field,

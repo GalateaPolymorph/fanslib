@@ -8,13 +8,14 @@ import { Channel, ChannelType } from "../features/channels/entity";
 import { ContentSchedule } from "../features/content-schedules/entity";
 import { Media } from "../features/library/entity";
 import { Post, PostMedia } from "../features/posts/entity";
+import { Shoot } from "../features/shoots/entity";
 
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
 export const AppDataSource = new DataSource({
   type: "sqlite",
   database: dbPath,
-  entities: [Category, Channel, ChannelType, Media, Post, PostMedia, ContentSchedule],
+  entities: [Category, Channel, ChannelType, Media, Post, PostMedia, ContentSchedule, Shoot],
   synchronize: true,
   logging: false,
 });

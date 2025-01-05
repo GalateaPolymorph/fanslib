@@ -93,6 +93,8 @@ export const listShoots = async (
 
   const queryBuilder = shootRepository
     .createQueryBuilder("shoot")
+    .leftJoinAndSelect("shoot.media", "media")
+    .leftJoinAndSelect("media.categories", "categories")
     .loadRelationCountAndMap("shoot.mediaCount", "shoot.media");
 
   if (params?.search) {

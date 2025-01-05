@@ -1,5 +1,5 @@
-import { Button } from "../../components/ui/button";
-import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
+import { Button } from "../../../components/ui/button";
+import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 
 type GalleryPaginationProps = {
   totalItems: number;

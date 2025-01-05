@@ -1,7 +1,7 @@
 import { cn } from "@renderer/lib/utils";
 import { X } from "lucide-react";
-import { Media } from "../../../../features/library/entity";
-import { CategorySelect } from "../../components/CategorySelect";
+import { Media } from "../../../../../features/library/entity";
+import { CategorySelect } from "../../../components/CategorySelect";
 
 type GalleryActionBarProps = {
   selectedCount: number;
@@ -82,7 +82,11 @@ export const GalleryActionBar = ({
         </div>
         <div className="space-y-2">
           <div className="text-sm font-medium text-muted-foreground">Assign category</div>
-          <CategorySelect value={selectedCategories} onChange={handleCategoryChange} multiple={true} />
+          <CategorySelect
+            value={selectedCategories}
+            onChange={handleCategoryChange}
+            multiple={true}
+          />
         </div>
       </div>
     </div>

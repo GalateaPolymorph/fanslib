@@ -11,6 +11,7 @@ type FilterPreferences = {
   categories?: string[];
   unposted?: boolean;
   search?: string;
+  excludeShoots?: string[];
 };
 
 type SortPreferences = MediaSort;
@@ -41,6 +42,7 @@ const defaultPreferences: LibraryPreferences = {
   },
   filter: {
     search: "",
+    excludeShoots: [],
   },
   sort: {
     field: "fileModificationDate",

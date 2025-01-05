@@ -20,7 +20,7 @@ export type ShootWithMedia = Shoot & {
   media: Media[];
 };
 
-export type ShootSummary = Shoot & {
+export type ShootSummary = ShootWithMedia & {
   mediaCount: number;
 };
 

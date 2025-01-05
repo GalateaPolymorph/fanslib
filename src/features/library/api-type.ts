@@ -16,6 +16,7 @@ export interface MediaFilters {
   createdDateStart?: Date;
   createdDateEnd?: Date;
   search?: string;
+  excludeShoots?: string[];
 }
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
