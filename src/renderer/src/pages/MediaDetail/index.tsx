@@ -42,7 +42,7 @@ export const MediaDetail = () => {
         media={media}
       />
       <div className="overflow-y-auto">
-        <div className="max-w-[1280px] mx-auto pt-8 pb-12">
+        <div className="max-w-[1280px] px-8 mx-auto pt-8 pb-12">
           <Button className="mb-2" variant="ghost" onClick={() => navigate("/")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to gallery

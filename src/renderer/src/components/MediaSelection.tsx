@@ -1,7 +1,8 @@
 import { cn } from "@renderer/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { MediaFilters, PaginatedResponse } from "../../../features/library/api-type";
+import { PaginatedResponse } from "../../../features/_common/pagination";
+import { MediaFilters } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
 import { LibraryFilters } from "./LibraryFilters";
 import { MediaTileLite } from "./MediaTileLite";
@@ -90,7 +91,7 @@ export const MediaSelection = ({
   };
 
   return (
-    <div className={cn("flex flex-col flex-1 min-h-0", className)}>
+    <div className={cn("flex flex-col flex-1 min-h-0 h-full", className)}>
       <div className="flex flex-col gap-4 py-4">
         <div className="flex justify-end items-center">
           <span className="text-xs text-muted-foreground">

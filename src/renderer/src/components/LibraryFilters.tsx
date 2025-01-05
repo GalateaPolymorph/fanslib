@@ -1,99 +1,101 @@
+import { omit } from "ramda";
+import type { ChannelPostFilter as ChannelPostFilterType } from "../../../features/library/api-type";
 import { CategorySelect } from "./CategorySelect";
+import { ChannelPostFilter } from "./ChannelPostFilter";
 import { SearchInput } from "./SearchInput";
 import { ShootSelect } from "./ShootSelect";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
 
 interface LibraryFiltersProps {
   value: {
     categories?: string[];
-    unposted?: boolean;
     search?: string;
     excludeShoots?: string[];
+    channelFilters?: ChannelPostFilterType[];
   };
   onFilterChange: (filters: {
     categories?: string[] | undefined;
-    unposted?: boolean;
     search?: string;
     excludeShoots?: string[];
+    channelFilters?: ChannelPostFilterType[];
   }) => void;
 }
 
 export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
   return (
-    <div className="flex justify-between items-center w-full">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <CategorySelect
-            value={value.categories}
-            onChange={(categories) => {
-              onFilterChange({
-                ...value,
-                categories,
-              });
-            }}
-            multiple={true}
-            includeNoneOption
-          />
-
-          <div className="flex items-center gap-2">
-            <Switch
-              id="unposted"
-              checked={value.unposted ?? false}
-              onCheckedChange={(checked) => {
+    <div className="flex flex-col gap-4 w-full">
+      <div className="flex justify-between items-center w-full">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <SearchInput
+              value={value.search ?? ""}
+              onChange={(search) => {
                 onFilterChange({
                   ...value,
-                  unposted: checked,
+                  search: search || undefined,
+                });
+              }}
+              placeholder="Search media paths..."
+            />
+            <CategorySelect
+              value={value.categories}
+              onChange={(categories) => {
+                onFilterChange({
+                  ...value,
+                  categories,
+                });
+              }}
+              multiple={true}
+              includeNoneOption
+            />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <ChannelPostFilter
+              value={value.channelFilters ?? []}
+              onChange={(channelFilters) => {
+                onFilterChange({
+                  ...omit(["channelFilters"], value),
+                  channelFilters,
                 });
               }}
             />
-            <Label htmlFor="unposted">Unposted</Label>
+            <ShootSelect
+              value={value.excludeShoots}
+              onChange={(excludeShoots) => {
+                onFilterChange({
+                  ...value,
+                  excludeShoots,
+                });
+              }}
+              multiple={true}
+            />
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <SearchInput
-            value={value.search ?? ""}
-            onChange={(search) => {
+        {(value.categories ||
+          value.unposted ||
+          value.search ||
+          value.excludeShoots ||
+          value.channelFilters) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() =>
               onFilterChange({
-                ...value,
-                search: search || undefined,
-              });
-            }}
-            placeholder="Search media paths..."
-          />
-
-          <ShootSelect
-            value={value.excludeShoots}
-            onChange={(excludeShoots) => {
-              onFilterChange({
-                ...value,
-                excludeShoots,
-              });
-            }}
-            multiple={true}
-          />
-        </div>
+                categories: undefined,
+                unposted: undefined,
+                search: undefined,
+                excludeShoots: undefined,
+                channelFilters: undefined,
+              })
+            }
+            className="text-muted-foreground"
+          >
+            Clear filters
+          </Button>
+        )}
       </div>
-
-      {(value.categories || value.unposted || value.search || value.excludeShoots) && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() =>
-            onFilterChange({
-              categories: undefined,
-              unposted: undefined,
-              search: undefined,
-              excludeShoots: undefined,
-            })
-          }
-          className="text-muted-foreground"
-        >
-          Clear filters
-        </Button>
-      )}
     </div>
   );
 }

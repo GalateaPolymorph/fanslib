@@ -10,6 +10,11 @@ export interface MediaSort {
   direction: SortDirection;
 }
 
+export type ChannelPostFilter = {
+  channelId: string;
+  posted: boolean;
+};
+
 export interface MediaFilters {
   categories?: string[] | undefined;
   unposted?: boolean;
@@ -17,6 +22,7 @@ export interface MediaFilters {
   createdDateEnd?: Date;
   search?: string;
   excludeShoots?: string[];
+  channelFilters?: ChannelPostFilter[];
 }
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;

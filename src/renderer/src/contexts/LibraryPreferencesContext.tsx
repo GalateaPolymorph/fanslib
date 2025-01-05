@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { MediaSort } from "../../../features/library/api-type";
+import { ChannelPostFilter, MediaSort } from "../../../features/library/api-type";
 
 type GridSize = "small" | "large";
 
@@ -12,6 +12,7 @@ type FilterPreferences = {
   unposted?: boolean;
   search?: string;
   excludeShoots?: string[];
+  channelFilters?: ChannelPostFilter[];
 };
 
 type SortPreferences = MediaSort;
@@ -43,6 +44,7 @@ const defaultPreferences: LibraryPreferences = {
   filter: {
     search: "",
     excludeShoots: [],
+    channelFilters: [],
   },
   sort: {
     field: "fileModificationDate",
@@ -97,8 +99,6 @@ export const LibraryPreferencesProvider = ({ children }: { children: React.React
       filter: { ...prev.filter, ...updates },
     }));
   }, []);
-
-  console.log("preferences updated:", preferences);
 
   const updateSortPreferences = useCallback((updates: Partial<SortPreferences>) => {
     setPreferences((prev) => ({

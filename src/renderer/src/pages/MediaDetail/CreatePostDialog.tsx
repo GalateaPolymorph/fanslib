@@ -95,12 +95,12 @@ export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialog
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col overflow-hidden">
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Create Post</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
               <div className="flex flex-col space-y-2">

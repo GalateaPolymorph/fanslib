@@ -59,6 +59,7 @@ export const ContentPage = () => {
                         categories: preferences.filter.categories,
                         unposted: preferences.filter.unposted,
                         excludeShoots: preferences.filter.excludeShoots,
+                        channelFilters: preferences.filter.channelFilters,
                       }}
                       onFilterChange={(filters) => {
                         console.log("filters", filters);

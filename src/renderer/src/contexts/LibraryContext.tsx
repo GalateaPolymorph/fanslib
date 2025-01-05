@@ -24,11 +24,6 @@ export const LibraryProvider = ({ children }: LibraryProviderProps) => {
   const { settings } = useSettings();
   const libraryPath = settings?.libraryPath;
   const { preferences } = useLibraryPreferences();
-
-  useEffect(() => {
-    console.log("preferences updated in library provider", preferences);
-  }, [preferences]);
-
   const [mediaData, setMediaData] = useState<PaginatedResponse<Media>>({
     items: [],
     total: 0,
@@ -45,7 +40,6 @@ export const LibraryProvider = ({ children }: LibraryProviderProps) => {
     setIsLoading(true);
     try {
       setError(null);
-      console.log(preferences.filter);
 
       const params: GetAllMediaParams = {
         page: preferences.pagination.page,
@@ -71,8 +65,6 @@ export const LibraryProvider = ({ children }: LibraryProviderProps) => {
     isLoading,
     refetch: fetchLibrary,
   };
-
-  console.log("updating", preferences);
 
   useEffect(() => {
     fetchLibrary();

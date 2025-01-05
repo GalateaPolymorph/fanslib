@@ -114,6 +114,35 @@ export const fetchAllMedia = async (
     });
   }
 
+  // Apply channel filters
+  if (params?.channelFilters?.length) {
+    params.channelFilters.forEach((filter, index) => {
+      if (filter.posted) {
+        // Media that HAS been posted in the specific channel
+        queryBuilder.andWhere(
+          `EXISTS (
+            SELECT 1 FROM post_media pm
+            JOIN post p ON p.id = pm.postId
+            WHERE pm.mediaId = media.id
+            AND p.channelId = :channelId${index}
+          )`,
+          { [`channelId${index}`]: filter.channelId }
+        );
+      } else {
+        // Media that has NOT been posted in the specific channel
+        queryBuilder.andWhere(
+          `NOT EXISTS (
+            SELECT 1 FROM post_media pm
+            JOIN post p ON p.id = pm.postId
+            WHERE pm.mediaId = media.id
+            AND p.channelId = :channelId${index}
+          )`,
+          { [`channelId${index}`]: filter.channelId }
+        );
+      }
+    });
+  }
+
   // Apply sorting
   if (params?.sort) {
     const { field, direction } = params.sort;
@@ -127,8 +156,8 @@ export const fetchAllMedia = async (
           .addSelect(
             (subQuery) =>
               subQuery
-                .select("MAX(post.date)")
-                .from("post", "post")
+                .select("MAX(p.date)")
+                .from("post", "p")
                 .innerJoin("post.postMedia", "pm")
                 .where("pm.mediaId = media.id"),
             "lastPostDate"
