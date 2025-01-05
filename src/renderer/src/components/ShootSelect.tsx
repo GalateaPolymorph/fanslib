@@ -1,6 +1,7 @@
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ShootSummary } from "../../../features/shoots/api-type";
+import { useShootContext } from "../contexts/ShootContext";
 import { cn } from "../lib/utils";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -14,6 +15,8 @@ type ShootSelectProps = {
   disabled?: boolean;
 };
 
+const ALL_SHOOTS_ID = "__all__";
+
 export const ShootSelect = ({
   value = [],
   onChange,
@@ -21,44 +24,42 @@ export const ShootSelect = ({
   disabled = false,
 }: ShootSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [shoots, setShoots] = useState<ShootSummary[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    const loadShoots = async () => {
-      try {
-        const response = await window.api["shoot:getAll"]();
-        setShoots(response.items);
-      } catch (error) {
-        console.error("Failed to load shoots:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadShoots();
-  }, []);
+  const { shoots } = useShootContext();
 
   const handleToggleShoot = (shootId: string) => {
     if (disabled) return;
 
-    if (value.includes(shootId)) {
-      onChange(value.filter((id) => id !== shootId));
+    if (shootId === ALL_SHOOTS_ID) {
+      if (value.includes(ALL_SHOOTS_ID)) {
+        onChange([]);
+      } else {
+        onChange([ALL_SHOOTS_ID]);
+      }
+      return;
+    }
+
+    const newValue = value.filter((id) => id !== ALL_SHOOTS_ID);
+
+    if (newValue.includes(shootId)) {
+      onChange(newValue.filter((id) => id !== shootId));
     } else {
       if (multiple) {
-        onChange([...value, shootId]);
+        onChange([...newValue, shootId]);
       } else {
         onChange([shootId]);
       }
     }
   };
 
-  const filteredShoots = shoots.filter((shoot) =>
-    shoot.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredShoots = [
+    { id: ALL_SHOOTS_ID, name: "All Shoots" } as ShootSummary,
+    ...shoots.filter((shoot) => shoot.name.toLowerCase().includes(search.toLowerCase())),
+  ];
 
-  const selectedShoots = shoots.filter((shoot) => value.includes(shoot.id));
+  const selectedShoots = value.includes(ALL_SHOOTS_ID)
+    ? [{ id: ALL_SHOOTS_ID, name: "All Shoots" } as ShootSummary]
+    : shoots.filter((shoot) => value.includes(shoot.id));
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -67,59 +68,52 @@ export const ShootSelect = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="min-w-[250px] justify-between"
-          disabled={disabled || isLoading}
+          className="w-full justify-between"
+          disabled={disabled}
         >
           {selectedShoots.length > 0 ? (
             <div className="flex gap-1 flex-wrap">
               {selectedShoots.map((shoot) => (
-                <Badge
-                  variant="secondary"
-                  key={shoot.id}
-                  className="mr-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleShoot(shoot.id);
-                  }}
-                >
+                <Badge variant="secondary" key={shoot.id} className="mr-1">
                   {shoot.name}
                 </Badge>
               ))}
             </div>
           ) : (
-            "Exclude shoots..."
+            "Select shoots..."
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-        <Command shouldFilter={false}>
-          <CommandInput placeholder="Search shoots..." value={search} onValueChange={setSearch} />
-          {isLoading ? (
-            <CommandEmpty>Loading shoots...</CommandEmpty>
-          ) : filteredShoots.length === 0 ? (
-            <CommandEmpty>No shoots found.</CommandEmpty>
-          ) : (
-            filteredShoots.map((shoot) => (
-              <CommandItem
-                key={shoot.id}
-                onSelect={() => {
-                  handleToggleShoot(shoot.id);
-                  if (!multiple) {
-                    setOpen(false);
-                  }
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value.includes(shoot.id) ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {shoot.name}
-              </CommandItem>
-            ))
-          )}
+      <PopoverContent className="w-full p-0">
+        <Command>
+          <CommandInput
+            placeholder="Search shoots..."
+            className="h-9"
+            value={search}
+            onValueChange={setSearch}
+          />
+          <CommandEmpty>No shoots found.</CommandEmpty>
+          {filteredShoots.map((shoot) => (
+            <CommandItem
+              key={shoot.id}
+              onSelect={() => {
+                handleToggleShoot(shoot.id);
+                if (!multiple) {
+                  setOpen(false);
+                }
+              }}
+              className="cursor-pointer"
+            >
+              <Check
+                className={cn(
+                  "mr-2 h-4 w-4",
+                  value.includes(shoot.id) ? "opacity-100" : "opacity-0"
+                )}
+              />
+              {shoot.name}
+            </CommandItem>
+          ))}
         </Command>
       </PopoverContent>
     </Popover>

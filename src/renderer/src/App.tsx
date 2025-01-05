@@ -4,7 +4,10 @@ import { Toaster } from "./components/Toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { CategoryProvider } from "./contexts/CategoryContext";
 import { ChannelProvider } from "./contexts/ChannelContext";
+import { LibraryProvider } from "./contexts/LibraryContext";
+import { LibraryPreferencesProvider } from "./contexts/LibraryPreferencesContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
+import { ShootProvider } from "./contexts/ShootContext";
 import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
 import { ContentPage } from "./pages/Content";
@@ -18,20 +21,26 @@ const App = () => {
       <SettingsProvider>
         <CategoryProvider>
           <ChannelProvider>
-            <TooltipProvider delayDuration={0}>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Layout />}>
-                    <Route index element={<ContentPage />} />
-                    <Route path="content/:mediaId" element={<MediaDetail />} />
-                    <Route path="posts" element={<PostsPage />} />
-                    <Route path="channels" element={<ChannelsPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-              <Toaster />
-            </TooltipProvider>
+            <ShootProvider>
+              <LibraryPreferencesProvider>
+                <LibraryProvider>
+                  <TooltipProvider delayDuration={0}>
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/" element={<Layout />}>
+                          <Route index element={<ContentPage />} />
+                          <Route path="content/:mediaId" element={<MediaDetail />} />
+                          <Route path="posts" element={<PostsPage />} />
+                          <Route path="channels" element={<ChannelsPage />} />
+                          <Route path="settings" element={<SettingsPage />} />
+                        </Route>
+                      </Routes>
+                    </BrowserRouter>
+                    <Toaster />
+                  </TooltipProvider>
+                </LibraryProvider>
+              </LibraryPreferencesProvider>
+            </ShootProvider>
           </ChannelProvider>
         </CategoryProvider>
       </SettingsProvider>

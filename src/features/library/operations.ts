@@ -84,15 +84,22 @@ export const fetchAllMedia = async (
     queryBuilder.andWhere("postMedia.id IS NULL");
   }
 
-  console.log(params?.excludeShoots);
   // Apply exclude shoots filter
   if (params?.excludeShoots?.length) {
-    queryBuilder
-      .leftJoin("media.shoots", "shoots")
-      .andWhere(
+    queryBuilder.leftJoin("media.shoots", "shoots");
+
+    if (params.excludeShoots.includes("__all__")) {
+      // Return only media without any shoots
+      queryBuilder.andWhere(
+        "NOT EXISTS (SELECT 1 FROM shoot_media sm WHERE sm.media_id = media.id)"
+      );
+    } else {
+      // Normal case: exclude specific shoots
+      queryBuilder.andWhere(
         "NOT EXISTS (SELECT 1 FROM shoot_media sm WHERE sm.media_id = media.id AND sm.shoot_id IN (:...excludeShoots))",
         { excludeShoots: params.excludeShoots }
       );
+    }
   }
 
   // Apply date range filters

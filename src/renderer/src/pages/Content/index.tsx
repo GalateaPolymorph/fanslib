@@ -7,13 +7,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "../../components/ui/resizable";
-import {
-  LibraryPreferencesProvider,
-  useLibraryPreferences,
-} from "../../contexts/LibraryPreferencesContext";
+import { useLibrary } from "../../contexts/LibraryContext";
+import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import { MediaDragProvider } from "../../contexts/MediaDragContext";
 import { useSettings } from "../../contexts/SettingsContext";
-import { useLibrary } from "../../hooks/useLibrary";
 import { Gallery } from "./Gallery/Gallery";
 import { GalleryPagination } from "./Gallery/GalleryPagination";
 import { GalleryViewSettings } from "./Gallery/GalleryViewSettings";
@@ -23,7 +20,7 @@ import { ScanProgress } from "./Scan/ScanProgress";
 import { useScan } from "./Scan/useScan";
 import { Shoots } from "./Shoots/Shoots";
 
-const ContentPageContent = () => {
+export const ContentPage = () => {
   const { settings, loading } = useSettings();
   const {
     preferences,
@@ -31,7 +28,7 @@ const ContentPageContent = () => {
     updatePaginationPreferences,
     updateSortPreferences,
   } = useLibraryPreferences();
-  const { media, totalItems, totalPages, error, refetch } = useLibrary(preferences);
+  const { media, totalItems, totalPages, error, refetch } = useLibrary();
   const { scanProgress, scanResult, isScanning, handleScan } = useScan(refetch);
   const panelGroupRef = useRef<ResizablePrimitive.ImperativePanelGroupHandle>(null);
 
@@ -64,6 +61,7 @@ const ContentPageContent = () => {
                         excludeShoots: preferences.filter.excludeShoots,
                       }}
                       onFilterChange={(filters) => {
+                        console.log("filters", filters);
                         updateFilterPreferences(filters);
                         updatePaginationPreferences({ page: 1 });
                       }}
@@ -108,18 +106,10 @@ const ContentPageContent = () => {
             panelIndex={1}
             groupRef={panelGroupRef}
           >
-            <Shoots className="flex-1 min-h-0" />
+            <Shoots />
           </ResizablePanel>
         </ResizablePanelGroup>
       </MediaDragProvider>
     </div>
-  );
-};
-
-export const ContentPage = () => {
-  return (
-    <LibraryPreferencesProvider>
-      <ContentPageContent />
-    </LibraryPreferencesProvider>
   );
 };

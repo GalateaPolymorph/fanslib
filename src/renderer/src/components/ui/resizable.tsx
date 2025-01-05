@@ -119,7 +119,7 @@ const ResizablePanel = ({
       onClick={isCollapsed ? toggleCollapse : undefined}
       {...props}
     >
-      <div className="h-full w-full overflow-hidden flex flex-col">
+      <div className="h-full w-full flex flex-col">
         {collapsible && (
           <div className="flex items-center gap-2 py-6 px-6 flex-none">
             {!isCollapsed && (

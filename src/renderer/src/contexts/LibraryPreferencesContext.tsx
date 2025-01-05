@@ -98,6 +98,8 @@ export const LibraryPreferencesProvider = ({ children }: { children: React.React
     }));
   }, []);
 
+  console.log("preferences updated:", preferences);
+
   const updateSortPreferences = useCallback((updates: Partial<SortPreferences>) => {
     setPreferences((prev) => ({
       ...prev,
