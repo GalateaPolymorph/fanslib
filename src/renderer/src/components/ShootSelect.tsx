@@ -88,7 +88,7 @@ export const ShootSelect = ({
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput
-            placeholder="Search shoots..."
+            placeholder="Exclude shoots..."
             className="h-9"
             value={search}
             onValueChange={setSearch}
