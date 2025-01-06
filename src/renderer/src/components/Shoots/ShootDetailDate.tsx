@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { type FC } from "react";
-import { ShootWithMedia } from "../../../../../features/shoots/api-type";
-import { DateTimePicker } from "../../../components/DateTimePicker";
+import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { DateTimePicker } from "../DateTimePicker";
 
 type ShootDetailDateProps = {
   shoot: ShootWithMedia;

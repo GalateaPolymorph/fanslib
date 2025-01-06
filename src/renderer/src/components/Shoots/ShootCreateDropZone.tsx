@@ -2,9 +2,9 @@ import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
 import { type FC, useState } from "react";
-import { useLibrary } from "../../../contexts/LibraryContext";
-import { useMediaDrag } from "../../../contexts/MediaDragContext";
-import { useShootContext } from "../../../contexts/ShootContext";
+import { useLibrary } from "../../contexts/LibraryContext";
+import { useMediaDrag } from "../../contexts/MediaDragContext";
+import { useShootContext } from "../../contexts/ShootContext";
 
 type ShootCreateDropZoneProps = {
   className?: string;

@@ -1,19 +1,18 @@
-import { Trash2 } from "lucide-react";
-import { type FC } from "react";
-import { ShootWithMedia } from "../../../../../features/shoots/api-type";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../../components/ui/alert-dialog";
-import { Button } from "../../../components/ui/button";
-import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
+} from "@radix-ui/react-alert-dialog";
+import { Trash2 } from "lucide-react";
+import { type FC } from "react";
+import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
+import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
+import { Button } from "../ui/button";
 
 type ShootDetailDeleteButtonProps = {
   shoot: ShootWithMedia;

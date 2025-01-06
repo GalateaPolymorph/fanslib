@@ -1,12 +1,12 @@
+import { ShootsFilter } from "@renderer/components/ShootsFilter";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { cn } from "@renderer/lib/utils";
 import { type FC } from "react";
-import { useLibrary } from "../../../contexts/LibraryContext";
-import { useMediaDrag } from "../../../contexts/MediaDragContext";
-import { useShootContext } from "../../../contexts/ShootContext";
+import { useLibrary } from "../../contexts/LibraryContext";
+import { useMediaDrag } from "../../contexts/MediaDragContext";
+import { useShootContext } from "../../contexts/ShootContext";
 import { ShootCreateDropZone } from "./ShootCreateDropZone";
 import { ShootDetail } from "./ShootDetail";
-import { ShootsFilter } from "@renderer/components/ShootsFilter";
 
 type ShootsProps = {
   className?: string;
@@ -14,16 +14,16 @@ type ShootsProps = {
 
 export const Shoots: FC<ShootsProps> = ({ className }) => {
   const { refetch: refetchLibrary } = useLibrary();
-  const { 
-    shoots, 
-    isLoading, 
-    error, 
+  const {
+    shoots,
+    isLoading,
+    error,
     refetch,
     startDate,
     endDate,
     setStartDate,
     setEndDate,
-    clearDateFilters
+    clearDateFilters,
   } = useShootContext();
   const { isDragging } = useMediaDrag();
 
@@ -45,7 +45,7 @@ export const Shoots: FC<ShootsProps> = ({ className }) => {
 
   return (
     <div className={cn(className, "relative h-full")}>
-      <div className="sticky top-0 z-10 bg-background p-4 border-b">
+      <div className="sticky top-0 z-10 bg-background p-6">
         <ShootsFilter
           startDate={startDate}
           endDate={endDate}
@@ -55,7 +55,7 @@ export const Shoots: FC<ShootsProps> = ({ className }) => {
         />
       </div>
       <ScrollArea className="h-full w-full">
-        <div className="flex flex-col px-4 pt-4 gap-2 pb-48">
+        <div className="flex flex-col px-6 pt-4 gap-2 pb-48">
           {shoots.length === 0 ? (
             isDragging ? (
               <ShootCreateDropZone className="h-24" />

@@ -1,9 +1,9 @@
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { type FC, useState } from "react";
-import { ShootWithMedia } from "../../../../../features/shoots/api-type";
-import { useLibrary } from "../../../contexts/LibraryContext";
-import { useMediaDrag } from "../../../contexts/MediaDragContext";
+import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { useLibrary } from "../../contexts/LibraryContext";
+import { useMediaDrag } from "../../contexts/MediaDragContext";
 
 type ShootDetailDropZoneProps = {
   shoot: ShootWithMedia;

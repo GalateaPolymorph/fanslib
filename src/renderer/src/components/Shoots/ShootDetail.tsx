@@ -1,11 +1,11 @@
 import { cn } from "@renderer/lib/utils";
 import { ImageIcon, VideoIcon } from "lucide-react";
 import { type FC, useState } from "react";
-import { ShootWithMedia } from "../../../../../features/shoots/api-type";
-import { MediaTileLite } from "../../../components/MediaTileLite";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
-import { useMediaDrag } from "../../../contexts/MediaDragContext";
+import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
+import { useMediaDrag } from "../../contexts/MediaDragContext";
+import { MediaTileLite } from "../MediaTileLite";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ShootDetailDate } from "./ShootDetailDate";
 import { ShootDetailDeleteButton } from "./ShootDetailDeleteButton";
 import { ShootDetailDropZone } from "./ShootDetailDropZone";
@@ -15,10 +15,9 @@ import { ShootDetailTitle } from "./ShootDetailTitle";
 type ShootDetailProps = {
   shoot: ShootWithMedia;
   onUpdate?: () => void;
-  isFirst?: boolean;
 };
 
-export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate, isFirst = false }) => {
+export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate }) => {
   const { preferences } = useLibraryPreferences();
   const { isDragging } = useMediaDrag();
   const [isEditing, setIsEditing] = useState(false);

@@ -21,7 +21,7 @@ interface LibraryFiltersProps {
   }) => void;
 }
 
-export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
+export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) => {
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex justify-between items-center w-full">
@@ -73,18 +73,13 @@ export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
           </div>
         </div>
 
-        {(value.categories ||
-          value.unposted ||
-          value.search ||
-          value.excludeShoots ||
-          value.channelFilters) && (
+        {(value.categories || value.search || value.excludeShoots || value.channelFilters) && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() =>
               onFilterChange({
                 categories: undefined,
-                unposted: undefined,
                 search: undefined,
                 excludeShoots: undefined,
                 channelFilters: undefined,
@@ -98,4 +93,4 @@ export function LibraryFilters({ value, onFilterChange }: LibraryFiltersProps) {
       </div>
     </div>
   );
-}
+};

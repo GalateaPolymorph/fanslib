@@ -1,12 +1,16 @@
 import { addMonths, startOfMonth } from "date-fns";
 import { useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
+import { Library } from "../../components/Library";
+import { Shoots } from "../../components/Shoots/Shoots";
 import { SplitViewLayout } from "../../components/SplitViewLayout";
-import { Shoots } from "../Content/Shoots/Shoots";
 import { PostTimeline } from "./PostTimeline";
+
+type SideContentView = "shoots" | "library";
 
 export const PostsPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [sideContentView, setSideContentView] = useState<SideContentView>("shoots");
 
   const fetchPosts = async () => {
     try {
@@ -44,14 +48,38 @@ export const PostsPage = () => {
     </div>
   );
 
+  const sideContentHeader = (
+    <div className="flex items-center gap-4">
+      <button
+        onClick={() => setSideContentView("shoots")}
+        className={`text-2xl font-bold ${
+          sideContentView === "shoots"
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground/80"
+        }`}
+      >
+        Shoots
+      </button>
+      <button
+        onClick={() => setSideContentView("library")}
+        className={`text-2xl font-bold ${
+          sideContentView === "library"
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground/80"
+        }`}
+      >
+        Library
+      </button>
+    </div>
+  );
+
+  const sideContent = sideContentView === "shoots" ? <Shoots /> : <Library showHeader={false} />;
+
   return (
     <SplitViewLayout
       mainContent={mainContent}
-      sideContent={<Shoots />}
-      sideContentHeader={<h1 className="text-2xl font-bold">Shoots</h1>}
-      mainDefaultSize={50}
-      sideDefaultSize={50}
-      sideMaxSize={50}
+      sideContent={sideContent}
+      sideContentHeader={sideContentHeader}
     />
   );
 };

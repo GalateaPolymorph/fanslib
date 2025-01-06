@@ -1,5 +1,6 @@
 import { Edit, Trash2 } from "lucide-react";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
+import { CategoryBadge } from "../../components/CategoryBadge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +12,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../components/ui/alert-dialog";
-import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { useCategories } from "../../contexts/CategoryContext";
 
@@ -41,24 +41,13 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
   return (
     <div className="flex flex-col gap-2 divide-y">
       {schedules.map((schedule) => {
-        const category = categories.find((c) => c.slug === schedule.categoryId);
+        const category = categories.find((c) => c.id === schedule.categoryId);
         return (
           <div key={schedule.id} className="pb-3">
             <div className="flex items-center justify-between">
               <p className="text-sm">
-                {schedule.postsPerTimeframe}{" "}
-                {category && (
-                  <Badge
-                    size="sm"
-                    style={{
-                      backgroundColor: category.color,
-                      color: "white",
-                    }}
-                  >
-                    {category.name}
-                  </Badge>
-                )}{" "}
-                posts per{" "}
+                {schedule.postsPerTimeframe} <CategoryBadge category={category} /> post
+                {schedule.postsPerTimeframe > 1 && "s"} per{" "}
                 {schedule.type === "daily" ? "day" : schedule.type === "weekly" ? "week" : "month"}
               </p>
               <div className="flex gap-2">

@@ -4,7 +4,7 @@ import { ContentSchedule } from "./entity";
 
 export type ContentScheduleCreateData = {
   channelId: string;
-  categorySlug: string;
+  categoryId: string;
   type: "daily" | "weekly" | "monthly";
   postsPerTimeframe?: number;
   preferredDays?: number[];

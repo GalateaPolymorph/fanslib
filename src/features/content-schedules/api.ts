@@ -1,5 +1,4 @@
 import { prefixNamespaceObject } from "../../lib/namespace";
-import { syncPostsForSchedule } from "../posts/sync";
 import { syncSchedulesWithPosts } from "../posts/sync-manager";
 import { ContentScheduleHandlers, namespace } from "./api-type";
 import {
@@ -15,12 +14,10 @@ export const handlers: ContentScheduleHandlers = {
   getByChannel: (_, channelId) => fetchContentSchedulesByChannel(channelId),
   create: async (_, data) => {
     const schedule = await createContentSchedule(data);
-    await syncPostsForSchedule(schedule);
     return schedule;
   },
   update: async (_, id, updates) => {
     const schedule = await updateContentSchedule(id, updates);
-    await syncPostsForSchedule(schedule);
     return schedule;
   },
   delete: (_, id) => deleteContentSchedule(id),

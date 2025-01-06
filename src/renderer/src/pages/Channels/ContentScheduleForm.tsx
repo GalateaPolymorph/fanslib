@@ -30,7 +30,7 @@ export const ContentScheduleForm = ({
   onCancel,
 }: ContentScheduleFormProps) => {
   const [type, setType] = useState<ContentSchedule["type"]>(schedule?.type || "daily");
-  const [categorySlug, setCategorySlug] = useState<string[]>(
+  const [categoryId, setCategoryId] = useState<string[]>(
     schedule?.categoryId ? [schedule.categoryId] : []
   );
   const [postsPerTimeframe, setPostsPerTimeframe] = useState(schedule?.postsPerTimeframe || 1);
@@ -57,11 +57,11 @@ export const ContentScheduleForm = ({
     .map((s) => s.categoryId);
 
   const handleSubmit = () => {
-    if (categorySlug.length === 0) return;
+    if (categoryId.length === 0) return;
 
     onSubmit({
       channelId,
-      categorySlug: categorySlug[0],
+      categoryId: categoryId[0],
       type,
       postsPerTimeframe,
       preferredTimes,
@@ -106,8 +106,8 @@ export const ContentScheduleForm = ({
         <div className="space-y-2">
           <h4 className="text-sm">Category</h4>
           <CategorySelect
-            value={categorySlug}
-            onChange={setCategorySlug}
+            value={categoryId}
+            onChange={setCategoryId}
             multiple={false}
             disabledCategories={disabledCategories}
           />
@@ -205,7 +205,7 @@ export const ContentScheduleForm = ({
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={categorySlug.length === 0}>
+        <Button onClick={handleSubmit} disabled={categoryId.length === 0}>
           Save
         </Button>
       </div>

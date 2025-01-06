@@ -28,9 +28,6 @@ export class ContentSchedule {
   @Column("simple-array", { nullable: true })
   preferredTimes?: string[];
 
-  @Column("varchar", { nullable: true })
-  lastSynced?: string;
-
   @Column("varchar")
   updatedAt!: string;
 

@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../ui/button";
 import { PenLine, X } from "lucide-react";
 
 type ShootDetailEditButtonProps = {
