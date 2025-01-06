@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { ToggleGroup, ToggleGroupItem } from "../../../components/ui/toggle-group";
-import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
+import { GridSize, useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 
 export const GalleryViewSettings = () => {
   const { preferences, updateViewPreferences } = useLibraryPreferences();
@@ -29,7 +29,7 @@ export const GalleryViewSettings = () => {
             type="single"
             value={preferences.view.gridSize}
             onValueChange={(value) =>
-              value && updateViewPreferences({ gridSize: value as "small" | "large" })
+              value && updateViewPreferences({ gridSize: value as GridSize })
             }
             className="grid grid-cols-2 gap-2"
           >

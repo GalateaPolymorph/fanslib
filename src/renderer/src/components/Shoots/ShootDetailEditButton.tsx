@@ -1,6 +1,6 @@
+import { Check, PenLine } from "lucide-react";
 import { type FC } from "react";
 import { Button } from "../ui/button";
-import { PenLine, X } from "lucide-react";
 
 type ShootDetailEditButtonProps = {
   isEditing: boolean;
@@ -15,16 +15,12 @@ export const ShootDetailEditButton: FC<ShootDetailEditButtonProps> = ({
 }) => {
   return (
     <Button
-      variant="ghost"
-      size="icon"
-      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+      variant={!isEditing ? "outline" : "default"}
       onClick={isEditing ? onCancel : onEdit}
+      className="text-sm"
     >
-      {isEditing ? (
-        <X className="h-4 w-4 text-muted-foreground" />
-      ) : (
-        <PenLine className="h-4 w-4 text-muted-foreground" />
-      )}
+      {isEditing ? <Check /> : <PenLine />}
+      {isEditing ? "Save" : "Edit"}
     </Button>
   );
 };

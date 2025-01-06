@@ -54,9 +54,9 @@ export const fetchAllMedia = async (
   const limit = params?.limit ?? 50;
   const skip = (page - 1) * limit;
 
-  const repository = (await db()).getRepository(Media);
-  const queryBuilder = repository
-    .createQueryBuilder("media")
+  const database = await db();
+  const queryBuilder = database.manager
+    .createQueryBuilder(Media, "media")
     .leftJoinAndSelect("media.categories", "categories")
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
@@ -100,6 +100,15 @@ export const fetchAllMedia = async (
         { excludeShoots: params.excludeShoots }
       );
     }
+  }
+
+  // Apply shootId filter
+  if (params?.shootId) {
+    queryBuilder.leftJoin("media.shoots", "shoots");
+    queryBuilder.andWhere(
+      "EXISTS (SELECT 1 FROM shoot_media sm WHERE sm.media_id = media.id AND sm.shoot_id = :shootId)",
+      { shootId: params.shootId }
+    );
   }
 
   // Apply date range filters

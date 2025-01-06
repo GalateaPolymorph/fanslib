@@ -12,14 +12,14 @@ import { GalleryActionBar } from "./GalleryActionBar";
 import { GalleryEmpty } from "./GalleryEmpty";
 
 type GalleryProps = {
-  media: Media[];
+  medias: Media[];
   error?: string;
   libraryPath?: string;
   onScan: () => void;
   onUpdate: () => void;
 };
 
-export const Gallery = ({ media, error, libraryPath, onScan, onUpdate }: GalleryProps) => {
+export const Gallery = ({ medias, error, libraryPath, onScan, onUpdate }: GalleryProps) => {
   const navigate = useNavigate();
   const { preferences } = useLibraryPreferences();
   const { handleDragStart, handleDragEnd } = useMediaDrag();
@@ -33,10 +33,10 @@ export const Gallery = ({ media, error, libraryPath, onScan, onUpdate }: Gallery
     clearSelection,
     lastClickedIndex,
     isShiftPressed,
-  } = useSelection({ media });
+  } = useSelection({ media: medias });
 
   const handleMouseEnter = (mediaId: string) => {
-    const currentIndex = media.findIndex((m) => m.id === mediaId);
+    const currentIndex = medias.findIndex((m) => m.id === mediaId);
     setCurrentHoveredIndex(currentIndex);
   };
 
@@ -64,7 +64,7 @@ export const Gallery = ({ media, error, libraryPath, onScan, onUpdate }: Gallery
     );
   }
 
-  const selectedMediaItems = media.filter((m) => selectedMediaIds.has(m.id));
+  const selectedMediaItems = medias.filter((m) => selectedMediaIds.has(m.id));
 
   return (
     <div className="h-full">
@@ -75,20 +75,25 @@ export const Gallery = ({ media, error, libraryPath, onScan, onUpdate }: Gallery
         onClearSelection={clearSelection}
         onUpdate={onUpdate}
       />
-      <ScrollArea className="h-[calc(100%-3rem)]">
+      <ScrollArea className="h-[calc(100%-3rem)] @container">
         <div
           className={cn(
-            "grid gap-4 p-4",
+            "grid gap-4 p-4 grid-cols-3",
             preferences.view.gridSize === "large"
-              ? "grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
-              : "grid-cols-3 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12"
+              ? "@[48rem]:grid-cols-4 @[72rem]:grid-cols-6 @[128rem]:grid-cols-8"
+              : "@[48rem]:grid-cols-4 @[72rem]:grid-cols-8 @[128rem]:grid-cols-12"
           )}
         >
-          {media.map((media, index) => (
+          {medias.map((media, index) => (
             <div
               key={media.id}
               draggable
-              onDragStart={(e) => handleDragStart(e, media)}
+              onDragStart={(e) => {
+                const selectedItems = selectedMediaIds.has(media.id)
+                  ? medias.filter((m) => selectedMediaIds.has(m.id))
+                  : [media];
+                handleDragStart(e, selectedItems);
+              }}
               onDragEnd={handleDragEnd}
               onMouseEnter={() => handleMouseEnter(media.id)}
               onMouseLeave={handleMouseLeave}
@@ -141,7 +146,7 @@ export const Gallery = ({ media, error, libraryPath, onScan, onUpdate }: Gallery
               </div>
             </div>
           ))}
-          {media.length === 0 && <GalleryEmpty libraryPath={libraryPath} onScan={onScan} />}
+          {medias.length === 0 && <GalleryEmpty libraryPath={libraryPath} onScan={onScan} />}
         </div>
       </ScrollArea>
     </div>

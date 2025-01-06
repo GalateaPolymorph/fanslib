@@ -2,10 +2,11 @@ import { useState } from "react";
 import { type Post } from "../../../../features/posts/entity";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { cn } from "../../lib/utils";
+import { isVirtualPost, VirtualPost } from "../../lib/virtual-posts";
 import { PostDetail } from "../MediaDetail/PostDetail/PostDetail";
 
 type PostTimelineProps = {
-  posts: Post[];
+  posts: (Post | VirtualPost)[];
   className?: string;
   onUpdate: () => Promise<void>;
 };
@@ -20,15 +21,19 @@ export const PostTimeline = ({ posts, className, onUpdate }: PostTimelineProps) 
   return (
     <ScrollArea className={cn("h-full pr-4", className)}>
       <div className="space-y-4">
-        {sortedPosts.map((post) => (
-          <PostDetail
-            key={post.id}
-            post={post}
-            onUpdate={onUpdate}
-            isOpen={openPostId === post.id}
-            onOpenChange={(isOpen) => setOpenPostId(isOpen ? post.id : null)}
-          />
-        ))}
+        {sortedPosts.map((post) => {
+          const id = isVirtualPost(post) ? post.virtualId : post.id;
+
+          return (
+            <PostDetail
+              key={id}
+              post={post}
+              onUpdate={onUpdate}
+              isOpen={openPostId === id}
+              onOpenChange={(isOpen) => setOpenPostId(isOpen ? id : null)}
+            />
+          );
+        })}
       </div>
     </ScrollArea>
   );

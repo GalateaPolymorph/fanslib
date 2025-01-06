@@ -38,6 +38,7 @@ export const ShootDetailTitle: FC<ShootDetailTitleProps> = ({
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={handleKeyDown}
+          onClick={(e) => e.stopPropagation()}
           autoFocus
           className="font-normal"
         />

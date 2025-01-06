@@ -34,7 +34,9 @@ export const ContentScheduleForm = ({
     schedule?.categoryId ? [schedule.categoryId] : []
   );
   const [postsPerTimeframe, setPostsPerTimeframe] = useState(schedule?.postsPerTimeframe || 1);
-  const [preferredDays, setPreferredDays] = useState<number[]>(schedule?.preferredDays || []);
+  const [preferredDays, setPreferredDays] = useState<string[]>(
+    schedule?.preferredDays?.map((d) => d.toString()) || []
+  );
   const [preferredTimes, setPreferredTimes] = useState<string[]>(schedule?.preferredTimes || []);
   const [newTime, setNewTime] = useState("12:00");
 
@@ -66,15 +68,14 @@ export const ContentScheduleForm = ({
       postsPerTimeframe,
       preferredTimes,
       ...(type !== "daily" ? { preferredDays } : {}),
-      ...(schedule?.lastSynced ? { lastSynced: schedule.lastSynced } : {}),
     });
   };
 
   const handleDayToggle = (dayIndex: number) => {
-    if (preferredDays.includes(dayIndex)) {
-      setPreferredDays(preferredDays.filter((d) => d !== dayIndex));
+    if (preferredDays.includes(dayIndex.toString())) {
+      setPreferredDays(preferredDays.filter((d) => d !== dayIndex.toString()));
     } else if (preferredDays.length < postsPerTimeframe) {
-      setPreferredDays([...preferredDays, dayIndex]);
+      setPreferredDays([...preferredDays, dayIndex.toString()]);
     }
   };
 
@@ -148,7 +149,7 @@ export const ContentScheduleForm = ({
             </div>
             <div className="flex flex-wrap gap-2">
               {days.map(({ label, index }) => {
-                const isSelected = preferredDays.includes(index);
+                const isSelected = preferredDays.includes(index.toString());
                 const canSelect = isSelected || preferredDays.length < postsPerTimeframe;
 
                 return (
@@ -205,7 +206,7 @@ export const ContentScheduleForm = ({
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={categoryId.length === 0}>
+        <Button onClick={handleSubmit} disabled={categoryId?.length === 0}>
           Save
         </Button>
       </div>

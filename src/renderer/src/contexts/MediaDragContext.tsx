@@ -3,8 +3,8 @@ import { Media } from "../../../features/library/entity";
 
 type MediaDragContextType = {
   isDragging: boolean;
-  draggedMedia: Media | null;
-  handleDragStart: (e: React.DragEvent<HTMLDivElement>, media: Media) => void;
+  draggedMedias: Media[];
+  handleDragStart: (e: React.DragEvent<HTMLDivElement>, medias: Media[]) => void;
   handleDragEnd: () => void;
 };
 
@@ -16,22 +16,24 @@ type MediaDragProviderProps = {
 
 export const MediaDragProvider: FC<MediaDragProviderProps> = ({ children }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
+  const [draggedMedias, setDraggedMedias] = useState<Media[]>([]);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, media: Media) => {
-    console.log("drag start");
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, medias: Media[]) => {
+    console.log("drag start with", medias.length, "items");
     setIsDragging(true);
-    setDraggedMedia(media);
+    setDraggedMedias(medias);
   };
 
   const handleDragEnd = () => {
     console.log("drag end");
     setIsDragging(false);
-    setDraggedMedia(null);
+    setDraggedMedias([]);
   };
 
   return (
-    <MediaDragContext.Provider value={{ isDragging, draggedMedia, handleDragStart, handleDragEnd }}>
+    <MediaDragContext.Provider
+      value={{ isDragging, draggedMedias, handleDragStart, handleDragEnd }}
+    >
       {children}
     </MediaDragContext.Provider>
   );

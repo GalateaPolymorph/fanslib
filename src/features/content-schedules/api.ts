@@ -1,5 +1,4 @@
 import { prefixNamespaceObject } from "../../lib/namespace";
-import { syncSchedulesWithPosts } from "../posts/sync-manager";
 import { ContentScheduleHandlers, namespace } from "./api-type";
 import {
   createContentSchedule,
@@ -21,7 +20,6 @@ export const handlers: ContentScheduleHandlers = {
     return schedule;
   },
   delete: (_, id) => deleteContentSchedule(id),
-  syncAll: () => syncSchedulesWithPosts(),
 };
 
 export const contentScheduleHandlers = prefixNamespaceObject(namespace, handlers);

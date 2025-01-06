@@ -20,32 +20,29 @@ export const MediaTile = (props: MediaTileProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   const { postsByChannel, mediaHasBeenPosted, mediaHasBeenScheduled } = useMemo(() => {
-    const postsByChannel = props.media.postMedia.reduce(
-      (acc, pm) => {
-        if (pm.post?.status !== "posted") return acc;
+    const postsByChannel = props.media.postMedia.reduce((acc, pm) => {
+      if (pm.post?.status !== "posted") return acc;
 
-        const channelId = pm.post.channel?.id;
-        if (!channelId) return acc;
+      const channelId = pm.post.channel?.id;
+      if (!channelId) return acc;
 
-        if (!acc[channelId]) {
-          acc[channelId] = {
-            channelName: pm.post.channel?.name,
-            channelTypeId: pm.post.channel?.typeId,
-            count: 0,
-            lastPostDate: new Date(0),
-          };
-        }
+      if (!acc[channelId]) {
+        acc[channelId] = {
+          channelName: pm.post.channel?.name,
+          channelTypeId: pm.post.channel?.typeId,
+          count: 0,
+          lastPostDate: new Date(0),
+        };
+      }
 
-        acc[channelId].count++;
-        const postDate = new Date(pm.post.date);
-        if (postDate > acc[channelId].lastPostDate) {
-          acc[channelId].lastPostDate = postDate;
-        }
+      acc[channelId].count++;
+      const postDate = new Date(pm.post.date);
+      if (postDate > acc[channelId].lastPostDate) {
+        acc[channelId].lastPostDate = postDate;
+      }
 
-        return acc;
-      },
-      {} as PostsByChannel
-    );
+      return acc;
+    }, {} as PostsByChannel);
 
     const mediaHasBeenPosted =
       props.media.postMedia.find((pm) => pm.post?.status === "posted") !== undefined;
@@ -71,7 +68,7 @@ export const MediaTile = (props: MediaTileProps) => {
             variant="ghost"
             size="icon"
             className={cn(
-              "p-0 h-5 w-5 bg-black/50 hover:bg-black/70 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 absolute top-1 right-1 z-20",
+              "p-0 h-5 w-5 bg-black/50 hover:bg-black/70 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 absolute bottom-1 right-1 z-20",
               mediaHasBeenPosted ? "text-green-400" : "text-blue-400"
             )}
             onMouseEnter={handlePopoverOpen}
@@ -81,11 +78,13 @@ export const MediaTile = (props: MediaTileProps) => {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto p-2 bg-popover text-popover-foreground shadow-md rounded-md border focus-visible:ring-0 focus-visible:outline-none"
+          side="left"
           align="start"
           sideOffset={5}
-          onMouseEnter={handlePopoverOpen}
-          onMouseLeave={handlePopoverClose}
+          className="z-50 w-[200px] p-2 bg-popover text-popover-foreground shadow-lg rounded-md border outline-none"
+          avoidCollisions={true}
+          collisionPadding={20}
+          sticky="always"
         >
           <div className="space-y-1.5">
             {Object.entries(postsByChannel).map(

@@ -80,7 +80,7 @@ export const MediaTileLite = memo(
           className
         )}
         draggable={draggable}
-        onDragStart={(e) => handleDragStart(e, media)}
+        onDragStart={(e) => handleDragStart(e, [media])}
         onDragEnd={handleDragEnd}
       >
         {media.type === "video" ? (

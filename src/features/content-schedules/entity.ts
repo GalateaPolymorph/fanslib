@@ -23,7 +23,7 @@ export class ContentSchedule {
   postsPerTimeframe?: number;
 
   @Column("simple-array", { nullable: true })
-  preferredDays?: number[];
+  preferredDays?: string[];
 
   @Column("simple-array", { nullable: true })
   preferredTimes?: string[];

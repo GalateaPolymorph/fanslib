@@ -11,7 +11,7 @@ type ShootDetailDropZoneProps = {
 };
 
 export const ShootDetailDropZone: FC<ShootDetailDropZoneProps> = ({ shoot, onUpdate }) => {
-  const { draggedMedia } = useMediaDrag();
+  const { draggedMedias } = useMediaDrag();
   const [isOver, setIsOver] = useState(false);
   const { refetch: refetchLibrary } = useLibrary();
 
@@ -19,8 +19,9 @@ export const ShootDetailDropZone: FC<ShootDetailDropZoneProps> = ({ shoot, onUpd
     e.preventDefault();
     e.stopPropagation();
 
-    // Don't show copy cursor if media is already in the shoot
-    if (draggedMedia && !shoot.media?.some((m) => m.id === draggedMedia.id)) {
+    // Don't show copy cursor if all media items are already in the shoot
+    const hasNewMedia = draggedMedias.some(media => !shoot.media?.some(m => m.id === media.id));
+    if (draggedMedias.length > 0 && hasNewMedia) {
       e.dataTransfer.dropEffect = "copy";
       setIsOver(true);
     }
@@ -37,16 +38,18 @@ export const ShootDetailDropZone: FC<ShootDetailDropZoneProps> = ({ shoot, onUpd
     e.stopPropagation();
     setIsOver(false);
 
-    if (!draggedMedia) return;
+    if (draggedMedias.length === 0) return;
 
-    // Don't add if media is already in the shoot
-    if (shoot.media?.some((m) => m.id === draggedMedia.id)) {
-      return;
-    }
+    // Filter out media items that are already in the shoot
+    const newMediaIds = draggedMedias
+      .filter(media => !shoot.media?.some(m => m.id === media.id))
+      .map(media => media.id);
+
+    if (newMediaIds.length === 0) return;
 
     try {
       await window.api["shoot:update"](shoot.id, {
-        mediaIds: [...(shoot.media?.map((m) => m.id) || []), draggedMedia.id],
+        mediaIds: [...(shoot.media?.map(m => m.id) || []), ...newMediaIds],
       });
       onUpdate();
       await refetchLibrary();
@@ -55,8 +58,9 @@ export const ShootDetailDropZone: FC<ShootDetailDropZoneProps> = ({ shoot, onUpd
     }
   };
 
-  // Don't show drop zone if media is already in the shoot
-  if (draggedMedia && shoot.media?.some((m) => m.id === draggedMedia.id)) {
+  // Don't show drop zone if all media items are already in the shoot
+  const hasNewMedia = draggedMedias.some(media => !shoot.media?.some(m => m.id === media.id));
+  if (draggedMedias.length > 0 && !hasNewMedia) {
     return null;
   }
 

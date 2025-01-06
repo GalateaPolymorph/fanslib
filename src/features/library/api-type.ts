@@ -22,6 +22,7 @@ export interface MediaFilters {
   createdDateEnd?: Date;
   search?: string;
   excludeShoots?: string[];
+  shootId?: string;
   channelFilters?: ChannelPostFilter[];
 }
 

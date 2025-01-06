@@ -7,7 +7,7 @@ export type ContentScheduleCreateData = {
   categoryId: string;
   type: "daily" | "weekly" | "monthly";
   postsPerTimeframe?: number;
-  preferredDays?: number[];
+  preferredDays?: string[];
   preferredTimes?: string[];
 };
 
@@ -22,7 +22,6 @@ export type ContentScheduleHandlers = {
     updates: Partial<Omit<ContentSchedule, "id" | "createdAt" | "updatedAt">>
   ) => Promise<ContentSchedule | null>;
   delete: (_: any, id: ContentSchedule["id"]) => Promise<void>;
-  syncAll: (_: any) => Promise<number>;
 };
 
 export const namespace = "content-schedule" as const;

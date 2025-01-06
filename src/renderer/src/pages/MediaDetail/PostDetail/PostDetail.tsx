@@ -1,8 +1,16 @@
-import { Accordion, AccordionContent, AccordionItem } from "@renderer/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@renderer/components/ui/accordion";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
-import { useRef } from "react";
+import { Plus } from "lucide-react";
+import { useRef, useState } from "react";
 import { Post } from "../../../../../features/posts/entity";
+import { cn } from "../../../lib/utils";
+import { isVirtualPost, VirtualPost } from "../../../lib/virtual-posts";
 import { PostDetailCaptionInput } from "./PostDetailCaptionInput";
 import { PostDetailDateInput } from "./PostDetailDateInput";
 import { PostDetailDeleteButton } from "./PostDetailDeleteButton";
@@ -11,7 +19,7 @@ import { PostDetailMedia } from "./PostDetailMedia";
 import { PostDetailStatusButton } from "./PostDetailStatusButton";
 
 type PostDetailProps = {
-  post: Post;
+  post: Post | VirtualPost;
   onUpdate: () => Promise<void>;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
@@ -19,34 +27,40 @@ type PostDetailProps = {
 
 export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailProps) => {
   const { toast } = useToast();
-  const { isDragging, draggedMedia, handleDragEnd } = useMediaDrag();
+  const { isDragging, draggedMedias, handleDragEnd } = useMediaDrag();
   const wasClosedRef = useRef(false);
   const dragEnterCountRef = useRef(0);
+  const [isDraggedOver, setIsDraggedOver] = useState(false);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    if (isDragging && draggedMedia) {
+    if (isDragging && draggedMedias.length > 0) {
       e.preventDefault();
       e.dataTransfer.dropEffect = "copy";
+      setIsDraggedOver(true);
     }
   };
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    if (isDragging && draggedMedia) {
+    if (isDragging && draggedMedias.length > 0) {
       e.preventDefault();
       dragEnterCountRef.current++;
       if (dragEnterCountRef.current === 1) {
         wasClosedRef.current = !isOpen;
         onOpenChange(true);
+        setIsDraggedOver(true);
       }
     }
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    if (isDragging && draggedMedia) {
+    if (isDragging && draggedMedias.length > 0) {
       dragEnterCountRef.current--;
       // Only close when we've left the outermost element
-      if (dragEnterCountRef.current === 0 && wasClosedRef.current) {
-        onOpenChange(false);
+      if (dragEnterCountRef.current === 0) {
+        if (wasClosedRef.current) {
+          onOpenChange(false);
+        }
+        setIsDraggedOver(false);
       }
     }
   };
@@ -54,13 +68,39 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     dragEnterCountRef.current = 0;
-    if (draggedMedia) {
+    setIsDraggedOver(false);
+    if (wasClosedRef.current) {
+      onOpenChange(false);
+    }
+
+    if (draggedMedias.length > 0) {
       try {
-        await window.api["post:addMedia"](post.id, [draggedMedia.id]);
+        // if the post is virtual, create a new post
+        if (isVirtualPost(post)) {
+          await window.api["post:create"](
+            {
+              date: post.date,
+              categoryId: post.categoryId,
+              channelId: post.channelId,
+              status: "draft",
+              caption: "",
+            },
+            draggedMedias.map((media) => media.id)
+          );
+          await onUpdate();
+          toast({
+            title: "Post created",
+          });
+          handleDragEnd();
+          return;
+        }
+
+        await window.api["post:addMedia"](post.id, draggedMedias.map((media) => media.id));
         await onUpdate();
         toast({
-          title: "Media added to post",
+          title: draggedMedias.length === 1 ? "Media added to post" : `${draggedMedias.length} media items added to post`,
         });
+        handleDragEnd();
       } catch (error) {
         console.error("Failed to add media to post:", error);
         toast({
@@ -68,12 +108,35 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
           variant: "destructive",
         });
       } finally {
-        handleDragEnd();
-        // Reset wasClosedRef after drop
-        wasClosedRef.current = false;
+        setIsDraggedOver(false);
+        if (wasClosedRef.current) {
+          onOpenChange(false);
+        }
       }
     }
   };
+
+  if (isVirtualPost(post)) {
+    return (
+      <div
+        className={cn(
+          "border opacity-70 rounded-md relative group transition-colors",
+          isDraggedOver && "border-2 border-dashed border-purple-500 bg-purple-50/50 opacity-100"
+        )}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <PostDetailHead post={post} isOpen={false} />
+        {isDraggedOver && (
+          <div className="absolute inset-0 flex items-center justify-center bg-purple-50/50">
+            <Plus className="w-6 h-6 text-purple-500" />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Accordion
@@ -83,11 +146,23 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
     >
       <AccordionItem
         value="item-1"
-        className="border rounded-md"
+        className={cn("border rounded-md", {
+          "bg-muted opacity-50": isVirtualPost(post),
+        })}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
       >
-        <PostDetailHead post={post} isOpen={isOpen} setIsOpen={onOpenChange} />
+        <AccordionTrigger
+          value="item-1"
+          onClick={() => onOpenChange(!isOpen)}
+          className={cn(
+            "hover:no-underline cursor-pointer hover:bg-muted/50 px-4",
+            isOpen && "mb-2",
+            !isOpen && "hover:bg-muted/50"
+          )}
+        >
+          <PostDetailHead post={post} isOpen={isOpen} />
+        </AccordionTrigger>
         <AccordionContent className="px-4" onDragOver={handleDragOver} onDrop={handleDrop}>
           <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
             <PostDetailMedia

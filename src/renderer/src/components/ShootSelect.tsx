@@ -13,6 +13,8 @@ type ShootSelectProps = {
   onChange: (shootIds: string[]) => void;
   multiple?: boolean;
   disabled?: boolean;
+  omitAllShoots?: boolean;
+  placeholder?: string;
 };
 
 const ALL_SHOOTS_ID = "__all__";
@@ -22,6 +24,8 @@ export const ShootSelect = ({
   onChange,
   multiple = true,
   disabled = false,
+  omitAllShoots = false,
+  placeholder = "Select shoot...",
 }: ShootSelectProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -43,19 +47,21 @@ export const ShootSelect = ({
 
     if (newValue.includes(shootId)) {
       onChange(newValue.filter((id) => id !== shootId));
-    } else {
-      if (multiple) {
-        onChange([...newValue, shootId]);
-      } else {
-        onChange([shootId]);
-      }
+      return;
     }
+
+    if (multiple) {
+      onChange([...newValue, shootId]);
+      return;
+    }
+
+    onChange([shootId]);
   };
 
   const filteredShoots = [
-    { id: ALL_SHOOTS_ID, name: "All Shoots" } as ShootSummary,
+    !omitAllShoots && ({ id: ALL_SHOOTS_ID, name: "All Shoots" } as ShootSummary),
     ...shoots.filter((shoot) => shoot.name.toLowerCase().includes(search.toLowerCase())),
-  ];
+  ].filter(Boolean);
 
   const selectedShoots = value.includes(ALL_SHOOTS_ID)
     ? [{ id: ALL_SHOOTS_ID, name: "All Shoots" } as ShootSummary]
@@ -80,7 +86,7 @@ export const ShootSelect = ({
               ))}
             </div>
           ) : (
-            "Exclude shoots..."
+            placeholder
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -88,7 +94,7 @@ export const ShootSelect = ({
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput
-            placeholder="Exclude shoots..."
+            placeholder={placeholder}
             className="h-9"
             value={search}
             onValueChange={setSearch}

@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid";
-import { LessThanOrEqual } from "typeorm";
 import { db } from "../../lib/db";
 import { ContentScheduleCreateData } from "./api-type";
 import { ContentSchedule } from "./entity";
@@ -131,33 +130,8 @@ export const updateContentSchedule = async (
   });
 };
 
-export const updateLastSynced = async (
-  id: string,
-  lastSynced: string
-): Promise<ContentSchedule | null> => {
-  return updateContentSchedule(id, { lastSynced });
-};
-
 export const deleteContentSchedule = async (id: string): Promise<void> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(ContentSchedule);
   await repository.delete({ id });
-};
-
-// Helper functions for finding schedules that need syncing
-export const fetchSchedulesNeedingSync = async (cutoffDate: string): Promise<ContentSchedule[]> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(ContentSchedule);
-
-  return repository.find({
-    where: [{ lastSynced: LessThanOrEqual(cutoffDate) }, { lastSynced: undefined }],
-    relations: {
-      channel: true,
-      category: true,
-    },
-    order: {
-      lastSynced: "ASC",
-      createdAt: "ASC",
-    },
-  });
 };

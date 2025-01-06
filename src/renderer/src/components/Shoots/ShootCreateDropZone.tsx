@@ -11,7 +11,7 @@ type ShootCreateDropZoneProps = {
 };
 
 export const ShootCreateDropZone: FC<ShootCreateDropZoneProps> = ({ className }) => {
-  const { draggedMedia } = useMediaDrag();
+  const { draggedMedias } = useMediaDrag();
   const [isOver, setIsOver] = useState(false);
   const { refetch: refetchLibrary } = useLibrary();
   const { createShoot } = useShootContext();
@@ -34,14 +34,14 @@ export const ShootCreateDropZone: FC<ShootCreateDropZoneProps> = ({ className })
     e.stopPropagation();
     setIsOver(false);
 
-    if (!draggedMedia) return;
+    if (draggedMedias.length === 0) return;
 
     try {
       await createShoot({
         name: `New Shoot - ${format(new Date(), "PPP")}`,
         description: "",
         shootDate: new Date(),
-        mediaIds: [draggedMedia.id],
+        mediaIds: draggedMedias.map((media) => media.id),
       });
       await refetchLibrary();
     } catch (error) {

@@ -1,39 +1,29 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { StatusBadge } from "@renderer/components/StatusBadge";
-import { AccordionTrigger } from "@renderer/components/ui/accordion";
 import { format } from "date-fns";
 import { Post } from "../../../../../features/posts/entity";
-import { cn } from "../../../lib/utils";
+import { CategoryBadge } from "../../../components/CategoryBadge";
+import { VirtualPost } from "../../../lib/virtual-posts";
 
 type PostDetailHeadProps = {
-  post: Post;
+  post: Post | VirtualPost;
   isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
 };
 
-export const PostDetailHead = ({ post, isOpen, setIsOpen }: PostDetailHeadProps) => {
+export const PostDetailHead = ({ post, isOpen }: PostDetailHeadProps) => {
   return (
-    <AccordionTrigger
-      value="item-1"
-      onClick={() => setIsOpen(!isOpen)}
-      className={cn(
-        "px-4 hover:no-underline cursor-pointer hover:bg-muted/50 py-4",
-        isOpen && "mb-2",
-        !isOpen && "hover:bg-muted/50"
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <ChannelBadge name={post.channel.name} typeId={post.channel.typeId} />
-          {!isOpen && <StatusBadge status={post.status} />}
-          {!isOpen && (
-            <span className="text-sm text-muted-foreground">
-              {format(new Date(post.date), "PPP")}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center"></div>
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center gap-4">
+        <ChannelBadge name={post.channel.name} typeId={post.channel.typeId} />
+        <CategoryBadge category={post.category} />
+        {!isOpen && <StatusBadge status={post.status} />}
+        {!isOpen && (
+          <span className="text-sm text-muted-foreground">
+            {format(new Date(post.date), "eeee, PPP")}
+          </span>
+        )}
       </div>
-    </AccordionTrigger>
+      <div className="flex items-center"></div>
+    </div>
   );
 };

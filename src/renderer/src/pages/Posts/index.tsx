@@ -4,12 +4,13 @@ import { Post } from "../../../../features/posts/entity";
 import { Library } from "../../components/Library";
 import { Shoots } from "../../components/Shoots/Shoots";
 import { SplitViewLayout } from "../../components/SplitViewLayout";
+import { generateVirtualPosts, VirtualPost } from "../../lib/virtual-posts";
 import { PostTimeline } from "./PostTimeline";
 
 type SideContentView = "shoots" | "library";
 
 export const PostsPage = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
   const [sideContentView, setSideContentView] = useState<SideContentView>("shoots");
 
   const fetchPosts = async () => {
@@ -19,7 +20,10 @@ export const PostsPage = () => {
       const endDate = addMonths(startDate, 3);
 
       // Posts are already enriched with channel and category data
-      const allPosts = await window.api["post:getAll"]();
+      const [allPosts, schedules] = await Promise.all([
+        window.api["post:getAll"](),
+        window.api["content-schedule:getAll"](),
+      ]);
 
       // Filter posts within the date range
       const filteredPosts = allPosts.filter((post) => {
@@ -27,7 +31,15 @@ export const PostsPage = () => {
         return postDate >= startDate && postDate <= endDate;
       });
 
-      setPosts(filteredPosts);
+      // Generate virtual posts from schedules
+      const virtualPosts = generateVirtualPosts(schedules, filteredPosts);
+
+      // Combine and sort all posts by date
+      const allPostsCombined = [...filteredPosts, ...virtualPosts].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      setPosts(allPostsCombined);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }

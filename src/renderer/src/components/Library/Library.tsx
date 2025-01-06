@@ -45,6 +45,7 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
                 search: preferences.filter.search,
                 categories: preferences.filter.categories,
                 excludeShoots: preferences.filter.excludeShoots,
+                shootId: preferences.filter.shootId,
                 channelFilters: preferences.filter.channelFilters,
               }}
               onFilterChange={(filters) => {
@@ -71,7 +72,7 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
 
         <div className="flex-1 min-h-0 overflow-auto">
           <Gallery
-            media={media}
+            medias={media}
             error={error}
             libraryPath={settings?.libraryPath}
             onScan={handleScan}

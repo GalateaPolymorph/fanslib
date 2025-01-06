@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ChannelPostFilter, MediaSort } from "../../../features/library/api-type";
 
-type GridSize = "small" | "large";
+export type GridSize = "small" | "large";
 
 type ViewPreferences = {
   gridSize: GridSize;
@@ -10,6 +10,7 @@ type ViewPreferences = {
 type FilterPreferences = {
   categories?: string[];
   search?: string;
+  shootId?: string;
   excludeShoots?: string[];
   channelFilters?: ChannelPostFilter[];
 };

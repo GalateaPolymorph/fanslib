@@ -27,7 +27,7 @@ export const ChannelPostFilter = ({ value, onChange }: ChannelPostFilterProps) =
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[180px]">
-          Filter by channel...
+          Channel
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-4">

@@ -94,6 +94,9 @@ export const listShoots = async (
   const queryBuilder = shootRepository
     .createQueryBuilder("shoot")
     .leftJoinAndSelect("shoot.media", "media")
+    .leftJoinAndSelect("media.postMedia", "postMedia")
+    .leftJoinAndSelect("postMedia.post", "post")
+    .leftJoinAndSelect("post.channel", "channel")
     .leftJoinAndSelect("media.categories", "categories")
     .loadRelationCountAndMap("shoot.mediaCount", "shoot.media");
 

@@ -1,17 +1,18 @@
+import { Trash2 } from "lucide-react";
+import { type FC } from "react";
+import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@radix-ui/react-alert-dialog";
-import { Trash2 } from "lucide-react";
-import { type FC } from "react";
-import { ShootWithMedia } from "../../../../features/shoots/api-type";
-import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
-import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
+} from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 
 type ShootDetailDeleteButtonProps = {
@@ -39,12 +40,8 @@ export const ShootDetailDeleteButton: FC<ShootDetailDeleteButtonProps> = ({ shoo
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
+        <Button variant="outline" className="text-destructive">
+          <Trash2 className="h-4 w-4" /> Delete
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

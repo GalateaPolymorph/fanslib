@@ -16,7 +16,11 @@ export const ShootDetailDate: FC<ShootDetailDateProps> = ({ shoot, isEditing, on
   };
 
   if (isEditing) {
-    return <DateTimePicker date={new Date(shoot.shootDate)} setDate={handleDateChange} />;
+    return (
+      <div onClick={(e) => e.stopPropagation()}>
+        <DateTimePicker date={new Date(shoot.shootDate)} setDate={handleDateChange} />
+      </div>
+    );
   }
 
   return <span>{format(new Date(shoot.shootDate), "PPP")}</span>;

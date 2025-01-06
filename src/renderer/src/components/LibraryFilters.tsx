@@ -11,12 +11,14 @@ interface LibraryFiltersProps {
     categories?: string[];
     search?: string;
     excludeShoots?: string[];
+    shootId?: string;
     channelFilters?: ChannelPostFilterType[];
   };
   onFilterChange: (filters: {
     categories?: string[] | undefined;
     search?: string;
     excludeShoots?: string[];
+    shootId?: string;
     channelFilters?: ChannelPostFilterType[];
   }) => void;
 }
@@ -61,6 +63,18 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
               }}
             />
             <ShootSelect
+              value={[value.shootId]}
+              onChange={(shootIds) => {
+                onFilterChange({
+                  ...value,
+                  shootId: shootIds[0],
+                });
+              }}
+              multiple={false}
+              omitAllShoots
+              placeholder="Shoot"
+            />
+            <ShootSelect
               value={value.excludeShoots}
               onChange={(excludeShoots) => {
                 onFilterChange({
@@ -69,11 +83,16 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
                 });
               }}
               multiple={true}
+              placeholder="Exclude shoots"
             />
           </div>
         </div>
 
-        {(value.categories || value.search || value.excludeShoots || value.channelFilters) && (
+        {(value.categories ||
+          value.search ||
+          value.excludeShoots ||
+          value.shootId ||
+          value.channelFilters) && (
           <Button
             variant="ghost"
             size="sm"
@@ -82,6 +101,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
                 categories: undefined,
                 search: undefined,
                 excludeShoots: undefined,
+                shootId: undefined,
                 channelFilters: undefined,
               })
             }
