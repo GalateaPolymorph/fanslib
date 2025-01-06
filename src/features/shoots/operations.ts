@@ -104,6 +104,24 @@ export const listShoots = async (
     );
   }
 
+  if (params?.startDate) {
+    // Set time to start of day in UTC
+    const startOfDay = new Date(params.startDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    queryBuilder.andWhere("DATE(shoot.shootDate) >= DATE(:startDate)", {
+      startDate: startOfDay,
+    });
+  }
+
+  if (params?.endDate) {
+    // Set time to end of day in UTC
+    const endOfDay = new Date(params.endDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+    queryBuilder.andWhere("DATE(shoot.shootDate) <= DATE(:endDate)", {
+      endDate: endOfDay,
+    });
+  }
+
   const [items, total] = await queryBuilder
     .skip(skip)
     .take(limit)

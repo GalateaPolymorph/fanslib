@@ -9,7 +9,6 @@ type ViewPreferences = {
 
 type FilterPreferences = {
   categories?: string[];
-  unposted?: boolean;
   search?: string;
   excludeShoots?: string[];
   channelFilters?: ChannelPostFilter[];

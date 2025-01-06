@@ -6,6 +6,7 @@ import { CategoryProvider } from "./contexts/CategoryContext";
 import { ChannelProvider } from "./contexts/ChannelContext";
 import { LibraryProvider } from "./contexts/LibraryContext";
 import { LibraryPreferencesProvider } from "./contexts/LibraryPreferencesContext";
+import { MediaDragProvider } from "./contexts/MediaDragContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { ShootProvider } from "./contexts/ShootContext";
 import { Layout } from "./Layout";
@@ -24,20 +25,22 @@ const App = () => {
             <ShootProvider>
               <LibraryPreferencesProvider>
                 <LibraryProvider>
-                  <TooltipProvider delayDuration={0}>
-                    <BrowserRouter>
-                      <Routes>
-                        <Route path="/" element={<Layout />}>
-                          <Route index element={<ContentPage />} />
-                          <Route path="content/:mediaId" element={<MediaDetail />} />
-                          <Route path="posts" element={<PostsPage />} />
-                          <Route path="channels" element={<ChannelsPage />} />
-                          <Route path="settings" element={<SettingsPage />} />
-                        </Route>
-                      </Routes>
-                    </BrowserRouter>
-                    <Toaster />
-                  </TooltipProvider>
+                  <MediaDragProvider>
+                    <TooltipProvider delayDuration={0}>
+                      <BrowserRouter>
+                        <Routes>
+                          <Route path="/" element={<Layout />}>
+                            <Route index element={<ContentPage />} />
+                            <Route path="content/:mediaId" element={<MediaDetail />} />
+                            <Route path="posts" element={<PostsPage />} />
+                            <Route path="channels" element={<ChannelsPage />} />
+                            <Route path="settings" element={<SettingsPage />} />
+                          </Route>
+                        </Routes>
+                      </BrowserRouter>
+                      <Toaster />
+                    </TooltipProvider>
+                  </MediaDragProvider>
                 </LibraryProvider>
               </LibraryPreferencesProvider>
             </ShootProvider>

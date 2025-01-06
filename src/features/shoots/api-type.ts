@@ -14,6 +14,8 @@ export type UpdateShootPayload = Partial<CreateShootPayload>;
 
 export interface GetAllShootsParams extends Partial<PaginationParams> {
   search?: string;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export type ShootWithMedia = Shoot & {

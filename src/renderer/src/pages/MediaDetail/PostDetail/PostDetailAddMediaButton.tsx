@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@renderer/components/ui/dialog";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Media } from "../../../../../features/library/entity";
@@ -18,9 +19,14 @@ import { MediaTileLite } from "../../../components/MediaTileLite";
 type PostDetailAddMediaButtonProps = {
   post: Post;
   onUpdate: () => Promise<void>;
+  isDraggingMedia?: boolean;
 };
 
-export const PostDetailAddMediaButton = ({ post, onUpdate }: PostDetailAddMediaButtonProps) => {
+export const PostDetailAddMediaButton = ({ 
+  post, 
+  onUpdate,
+  isDraggingMedia = false,
+}: PostDetailAddMediaButtonProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media[]>([]);
@@ -66,8 +72,18 @@ export const PostDetailAddMediaButton = ({ post, onUpdate }: PostDetailAddMediaB
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <div className="relative aspect-square cursor-pointer rounded-lg overflow-hidden">
-          <div className="absolute inset-0 z-10 border-2 border-dashed border-border rounded-lg flex items-center justify-center">
-            <Plus className="size-6 text-border" />
+          <div 
+            className={cn(
+              "absolute inset-0 z-10 border-2 border-dashed rounded-lg flex items-center justify-center transition-colors duration-200",
+              isDraggingMedia 
+                ? "border-primary bg-primary/10" 
+                : "border-border"
+            )}
+          >
+            <Plus className={cn(
+              "size-6 transition-colors duration-200",
+              isDraggingMedia ? "text-primary" : "text-border"
+            )} />
           </div>
         </div>
       </DialogTrigger>

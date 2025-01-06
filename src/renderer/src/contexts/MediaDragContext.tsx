@@ -19,11 +19,13 @@ export const MediaDragProvider: FC<MediaDragProviderProps> = ({ children }) => {
   const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, media: Media) => {
+    console.log("drag start");
     setIsDragging(true);
     setDraggedMedia(media);
   };
 
   const handleDragEnd = () => {
+    console.log("drag end");
     setIsDragging(false);
     setDraggedMedia(null);
   };

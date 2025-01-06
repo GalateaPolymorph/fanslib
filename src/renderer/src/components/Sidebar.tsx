@@ -14,7 +14,7 @@ export const AppSidebar = () => {
   const location = useLocation();
 
   return (
-    <Sidebar>
+    <Sidebar defaultOpen={false}>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>

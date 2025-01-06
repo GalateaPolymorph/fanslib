@@ -16,9 +16,14 @@ import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
 type PostDetailMediaProps = {
   post: Post;
   onUpdate: () => Promise<void>;
+  isDraggingMedia?: boolean;
 };
 
-export const PostDetailMedia = ({ post, onUpdate }: PostDetailMediaProps) => {
+export const PostDetailMedia = ({
+  post,
+  onUpdate,
+  isDraggingMedia = false,
+}: PostDetailMediaProps) => {
   const { toast } = useToast();
   const [hoveredMediaId, setHoveredMediaId] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
@@ -54,7 +59,7 @@ export const PostDetailMedia = ({ post, onUpdate }: PostDetailMediaProps) => {
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-8 gap-2 pt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 pt-1">
         {post.postMedia.map((postMedia) => (
           <Tooltip key={postMedia.id} delayDuration={0}>
             <TooltipTrigger asChild>
@@ -117,7 +122,11 @@ export const PostDetailMedia = ({ post, onUpdate }: PostDetailMediaProps) => {
             </TooltipContent>
           </Tooltip>
         ))}
-        <PostDetailAddMediaButton post={post} onUpdate={onUpdate} />
+        <PostDetailAddMediaButton
+          post={post}
+          onUpdate={onUpdate}
+          isDraggingMedia={isDraggingMedia}
+        />
       </div>
     </TooltipProvider>
   );

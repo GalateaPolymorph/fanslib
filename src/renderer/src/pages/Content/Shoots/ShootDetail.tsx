@@ -15,9 +15,10 @@ import { ShootDetailTitle } from "./ShootDetailTitle";
 type ShootDetailProps = {
   shoot: ShootWithMedia;
   onUpdate?: () => void;
+  isFirst?: boolean;
 };
 
-export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate }) => {
+export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate, isFirst = false }) => {
   const { preferences } = useLibraryPreferences();
   const { isDragging } = useMediaDrag();
   const [isEditing, setIsEditing] = useState(false);

@@ -1,29 +1,26 @@
 import { cn } from "@renderer/lib/utils";
+import { format } from "date-fns";
 import { Plus } from "lucide-react";
 import { type FC, useState } from "react";
-import { ShootWithMedia } from "../../../../../features/shoots/api-type";
 import { useLibrary } from "../../../contexts/LibraryContext";
 import { useMediaDrag } from "../../../contexts/MediaDragContext";
+import { useShootContext } from "../../../contexts/ShootContext";
 
-type ShootDetailDropZoneProps = {
-  shoot: ShootWithMedia;
-  onUpdate: () => void;
+type ShootCreateDropZoneProps = {
+  className?: string;
 };
 
-export const ShootDetailDropZone: FC<ShootDetailDropZoneProps> = ({ shoot, onUpdate }) => {
+export const ShootCreateDropZone: FC<ShootCreateDropZoneProps> = ({ className }) => {
   const { draggedMedia } = useMediaDrag();
   const [isOver, setIsOver] = useState(false);
   const { refetch: refetchLibrary } = useLibrary();
+  const { createShoot } = useShootContext();
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // Don't show copy cursor if media is already in the shoot
-    if (draggedMedia && !shoot.media?.some((m) => m.id === draggedMedia.id)) {
-      e.dataTransfer.dropEffect = "copy";
-      setIsOver(true);
-    }
+    e.dataTransfer.dropEffect = "copy";
+    setIsOver(true);
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
@@ -39,38 +36,36 @@ export const ShootDetailDropZone: FC<ShootDetailDropZoneProps> = ({ shoot, onUpd
 
     if (!draggedMedia) return;
 
-    // Don't add if media is already in the shoot
-    if (shoot.media?.some((m) => m.id === draggedMedia.id)) {
-      return;
-    }
-
     try {
-      await window.api["shoot:update"](shoot.id, {
-        mediaIds: [...(shoot.media?.map((m) => m.id) || []), draggedMedia.id],
+      await createShoot({
+        name: `New Shoot - ${format(new Date(), "PPP")}`,
+        description: "",
+        shootDate: new Date(),
+        mediaIds: [draggedMedia.id],
       });
-      onUpdate();
       await refetchLibrary();
     } catch (error) {
-      console.error("Failed to add media to shoot:", error);
+      console.error("Failed to create shoot:", error);
     }
   };
-
-  // Don't show drop zone if media is already in the shoot
-  if (draggedMedia && shoot.media?.some((m) => m.id === draggedMedia.id)) {
-    return null;
-  }
 
   return (
     <div
       className={cn(
         "aspect-square rounded-lg border-2 border-dashed flex items-center justify-center transition-colors",
-        isOver ? "border-primary bg-primary/10" : "border-muted"
+        isOver ? "border-primary bg-primary/10" : "border-muted",
+        className
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Plus className="h-4 w-4 text-muted-foreground" />
+      <Plus
+        className={cn(
+          "h-4 w-4 transition-colors",
+          isOver ? "text-primary" : "text-muted-foreground"
+        )}
+      />
     </div>
   );
 };
