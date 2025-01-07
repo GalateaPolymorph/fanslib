@@ -9,7 +9,7 @@ type TimePickerProps = {
   className?: string;
 };
 
-export function TimePickerDemo({ date, setDate, className }: TimePickerProps) {
+export const TimePicker = ({ date, setDate, className }: TimePickerProps) => {
   const minuteRef = React.useRef<HTMLInputElement>(null);
   const hourRef = React.useRef<HTMLInputElement>(null);
 
@@ -57,4 +57,4 @@ export function TimePickerDemo({ date, setDate, className }: TimePickerProps) {
       </div>
     </div>
   );
-}
+};

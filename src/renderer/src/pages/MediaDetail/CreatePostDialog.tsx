@@ -24,7 +24,7 @@ type CreatePostDialogProps = {
   media: Media;
 };
 
-export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialogProps) {
+export const CreatePostDialog = ({ open, onOpenChange, media }: CreatePostDialogProps) => {
   const { toast } = useToast();
   const { channels } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
@@ -156,4 +156,4 @@ export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialog
       </DialogContent>
     </Dialog>
   );
-}
+};

@@ -33,7 +33,9 @@ const findMediaByStats = async (stats: Stats) => {
 /**
  * Determine if a file is a supported media type
  */
-function isMediaFile(filePath: string): { isSupported: boolean; type: "image" | "video" | null } {
+const isMediaFile = (
+  filePath: string
+): { isSupported: boolean; type: "image" | "video" | null } => {
   const ext = path.extname(filePath).toLowerCase();
   if (IMAGE_EXTENSIONS.has(ext)) {
     return { isSupported: true, type: "image" };
@@ -42,12 +44,12 @@ function isMediaFile(filePath: string): { isSupported: boolean; type: "image" | 
     return { isSupported: true, type: "video" };
   }
   return { isSupported: false, type: null };
-}
+};
 
 /**
  * Scan a single file and create/update its media entry
  */
-export async function scanFile(filePath: string): Promise<FileScanResult> {
+export const scanFile = async (filePath: string): Promise<FileScanResult> => {
   const { isSupported, type } = isMediaFile(filePath);
   if (!isSupported || !type) {
     throw new Error(`Unsupported file type: ${filePath}`);
@@ -110,7 +112,7 @@ export async function scanFile(filePath: string): Promise<FileScanResult> {
   }
 
   return { action: "updated", media: updatedMedia };
-}
+};
 
 class LibraryScanner {
   private static instance: LibraryScanner;
@@ -213,7 +215,7 @@ class LibraryScanner {
 /**
  * Scan the entire library directory
  */
-export async function scanLibrary(libraryPath: string): Promise<LibraryScanResult> {
+export const scanLibrary = async (libraryPath: string): Promise<LibraryScanResult> => {
   const scanner = LibraryScanner.getInstance();
 
   // Start the scan process asynchronously
@@ -228,6 +230,6 @@ export async function scanLibrary(libraryPath: string): Promise<LibraryScanResul
     removed: 0,
     total: 0,
   };
-}
+};
 
 export { LibraryScanner };

@@ -6,7 +6,7 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export function getFfprobePath(): string {
+export const getFfprobePath = (): string => {
   if (app.isPackaged) {
     // In packaged app, binaries are in Resources directory
     const resourcesPath =
@@ -17,9 +17,9 @@ export function getFfprobePath(): string {
   }
   // In development, use the one from node_modules
   return ffprobe.path;
-}
+};
 
-export async function getVideoDuration(filePath: string): Promise<number | undefined> {
+export const getVideoDuration = async (filePath: string): Promise<number | undefined> => {
   try {
     const ffprobePath = getFfprobePath();
 
@@ -32,4 +32,4 @@ export async function getVideoDuration(filePath: string): Promise<number | undef
     console.error(`Failed to get duration for ${filePath}:`, error);
     return undefined;
   }
-}
+};

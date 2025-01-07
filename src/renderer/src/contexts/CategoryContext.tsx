@@ -10,7 +10,7 @@ type CategoryContextType = {
 
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
 
-export function CategoryProvider({ children }: { children: React.ReactNode }) {
+export const CategoryProvider = ({ children }: { children: React.ReactNode }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -40,12 +40,12 @@ export function CategoryProvider({ children }: { children: React.ReactNode }) {
   };
 
   return <CategoryContext.Provider value={value}>{children}</CategoryContext.Provider>;
-}
+};
 
-export function useCategories() {
+export const useCategories = () => {
   const context = useContext(CategoryContext);
   if (context === undefined) {
     throw new Error("useCategories must be used within a CategoryProvider");
   }
   return context;
-}
+};

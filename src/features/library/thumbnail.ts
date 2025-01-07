@@ -8,13 +8,13 @@ const THUMBNAIL_DIR = path.join(app.getPath("userData"), "thumbnails");
 /**
  * Ensure the thumbnails directory exists
  */
-async function ensureThumbnailDir() {
+const ensureThumbnailDir = async () => {
   try {
     await fs.access(THUMBNAIL_DIR);
   } catch {
     await fs.mkdir(THUMBNAIL_DIR, { recursive: true });
   }
-}
+};
 
 /**
  * Generate a thumbnail for a media file using ffmpeg
@@ -22,11 +22,11 @@ async function ensureThumbnailDir() {
  * @param mediaId ID of the media entry
  * @param type Type of media ('image' | 'video')
  */
-export async function generateThumbnail(
+export const generateThumbnail = async (
   mediaPath: string,
   mediaId: string,
   type: "image" | "video"
-): Promise<string> {
+): Promise<string> => {
   await ensureThumbnailDir();
 
   const thumbnailPath = path.join(THUMBNAIL_DIR, `${mediaId}.jpg`);
@@ -75,23 +75,23 @@ export async function generateThumbnail(
       }
     });
   });
-}
+};
 
 /**
  * Get the path to a thumbnail for a given media ID
  */
-export function getThumbnailPath(mediaId: string): string {
+export const getThumbnailPath = (mediaId: string): string => {
   return path.join(THUMBNAIL_DIR, `${mediaId.replace(/\/$/, "")}.jpg`);
-}
+};
 
 /**
  * Check if a thumbnail exists for a given media ID
  */
-export async function thumbnailExists(mediaId: string): Promise<boolean> {
+export const thumbnailExists = async (mediaId: string): Promise<boolean> => {
   try {
     await fs.access(getThumbnailPath(mediaId));
     return true;
   } catch {
     return false;
   }
-}
+};

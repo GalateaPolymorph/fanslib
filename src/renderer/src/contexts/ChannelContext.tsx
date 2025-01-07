@@ -10,7 +10,7 @@ type ChannelContextType = {
 
 const ChannelContext = createContext<ChannelContextType | undefined>(undefined);
 
-export function ChannelProvider({ children }: { children: React.ReactNode }) {
+export const ChannelProvider = ({ children }: { children: React.ReactNode }) => {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -40,12 +40,12 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
   };
 
   return <ChannelContext.Provider value={value}>{children}</ChannelContext.Provider>;
-}
+};
 
-export function useChannels() {
+export const useChannels = () => {
   const context = useContext(ChannelContext);
   if (context === undefined) {
     throw new Error("useChannels must be used within a ChannelProvider");
   }
   return context;
-}
+};

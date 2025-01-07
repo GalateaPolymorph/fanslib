@@ -4,14 +4,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui
 import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { TimePickerDemo } from "./TimePicker";
+import { TimePicker } from "./TimePicker";
 
 type DateTimePickerProps = {
   date: Date;
   setDate: (date: Date) => void;
 };
 
-export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
+export const DateTimePicker = ({ date, setDate }: DateTimePickerProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -42,7 +42,7 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
             autoFocus
           />
           <div className="border-t border-border pt-3">
-            <TimePickerDemo
+            <TimePicker
               setDate={(hours: number, minutes: number) => {
                 const newDate = new Date(date);
                 newDate.setHours(hours);
@@ -56,4 +56,4 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
       </PopoverContent>
     </Popover>
   );
-}
+};

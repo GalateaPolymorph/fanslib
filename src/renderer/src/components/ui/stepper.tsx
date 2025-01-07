@@ -10,7 +10,7 @@ type StepperProps = {
   className?: string;
 };
 
-export function Stepper({ value, onChange, min = 1, max, className }: StepperProps) {
+export const Stepper = ({ value, onChange, min = 1, max, className }: StepperProps) => {
   const increment = () => {
     if (max === undefined || value < max) {
       onChange(value + 1);
@@ -56,4 +56,4 @@ export function Stepper({ value, onChange, min = 1, max, className }: StepperPro
       </Button>
     </div>
   );
-}
+};
