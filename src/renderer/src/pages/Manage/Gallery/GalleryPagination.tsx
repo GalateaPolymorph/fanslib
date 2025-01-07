@@ -7,13 +7,9 @@ type GalleryPaginationProps = {
 };
 
 export const GalleryPagination = ({ totalItems, totalPages }: GalleryPaginationProps) => {
-  const { preferences, updatePaginationPreferences } = useLibraryPreferences();
+  const { preferences, updatePreferences } = useLibraryPreferences();
 
   const currentPage = preferences.pagination.page;
-
-  const handlePageChange = (page: number) => {
-    updatePaginationPreferences({ page });
-  };
 
   return (
     <div className="flex justify-between items-center mt-4 pt-4 flex-none">
@@ -24,7 +20,7 @@ export const GalleryPagination = ({ totalItems, totalPages }: GalleryPaginationP
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePageChange(currentPage - 1)}
+          onClick={() => updatePreferences({ pagination: { page: currentPage - 1 } })}
           disabled={currentPage <= 1}
         >
           Previous
@@ -32,7 +28,7 @@ export const GalleryPagination = ({ totalItems, totalPages }: GalleryPaginationP
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePageChange(currentPage + 1)}
+          onClick={() => updatePreferences({ pagination: { page: currentPage + 1 } })}
           disabled={currentPage >= totalPages}
         >
           Next

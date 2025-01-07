@@ -8,12 +8,14 @@ Code Style and Structure
 - Prefer .map, .forEach and .reduce over for loops
 - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 - Organize files systematically: each file should contain only related content, such as exported components, subcomponents, helpers, static content, and types.
+- Prefer using early returns over if/else statements
 
 Naming Conventions
 
 - Use lowercase with dashes for directories (e.g., components/auth-wizard).
 - Favor named exports for functions.
 - Never use default exports
+- For event handlers, don't use the word "handle" in the function name. Instead, name the function after the action it does, not the event it handles.
 - Only add comments when it's necessary to explain why something is done this specific way
 
 TypeScript Usage

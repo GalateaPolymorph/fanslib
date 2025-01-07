@@ -11,7 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from "../../../components/ui/toggle-grou
 import { GridSize, useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 
 export const GalleryViewSettings = () => {
-  const { preferences, updateViewPreferences } = useLibraryPreferences();
+  const { preferences, updatePreferences } = useLibraryPreferences();
 
   return (
     <DropdownMenu>
@@ -28,9 +28,10 @@ export const GalleryViewSettings = () => {
           <ToggleGroup
             type="single"
             value={preferences.view.gridSize}
-            onValueChange={(value) =>
-              value && updateViewPreferences({ gridSize: value as GridSize })
-            }
+            onValueChange={(value) => {
+              if (!value) return;
+              updatePreferences({ view: { gridSize: value as GridSize } });
+            }}
             className="grid grid-cols-2 gap-2"
           >
             <ToggleGroupItem value="small" aria-label="Small grid" className="flex-1">

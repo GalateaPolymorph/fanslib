@@ -1,5 +1,5 @@
+import { FilterPreferences } from "@renderer/contexts/LibraryPreferencesContext";
 import { omit } from "ramda";
-import type { ChannelPostFilter as ChannelPostFilterType } from "../../../features/library/api-type";
 import { CategorySelect } from "./CategorySelect";
 import { ChannelPostFilter } from "./ChannelPostFilter";
 import { SearchInput } from "./SearchInput";
@@ -7,20 +7,8 @@ import { ShootSelect } from "./ShootSelect";
 import { Button } from "./ui/button";
 
 type LibraryFiltersProps = {
-  value: {
-    categories?: string[];
-    search?: string;
-    excludeShoots?: string[];
-    shootId?: string;
-    channelFilters?: ChannelPostFilterType[];
-  };
-  onFilterChange: (filters: {
-    categories?: string[] | undefined;
-    search?: string;
-    excludeShoots?: string[];
-    shootId?: string;
-    channelFilters?: ChannelPostFilterType[];
-  }) => void;
+  value: FilterPreferences;
+  onFilterChange: (filters: FilterPreferences) => void;
 };
 
 export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) => {

@@ -27,7 +27,7 @@ export const MediaTileLite = memo(
     const imageError = controlledImageError ?? localImageError;
     const videoRef = useRef<HTMLVideoElement>(null);
     const previewIntervalRef = useRef<number>();
-    const { handleDragStart, handleDragEnd } = useMediaDrag();
+    const { startMediaDrag, endMediaDrag } = useMediaDrag();
 
     const handleImageError = useCallback(() => {
       setLocalImageError(true);
@@ -80,8 +80,8 @@ export const MediaTileLite = memo(
           className
         )}
         draggable={draggable}
-        onDragStart={(e) => handleDragStart(e, [media])}
-        onDragEnd={handleDragEnd}
+        onDragStart={(e) => startMediaDrag(e, [media])}
+        onDragEnd={endMediaDrag}
       >
         {media.type === "video" ? (
           <>

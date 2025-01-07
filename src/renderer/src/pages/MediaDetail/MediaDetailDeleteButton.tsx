@@ -1,7 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { MediaType } from "../../../../features/library/entity";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../components/ui/alert-dialog";
+import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import {
   Tooltip,
@@ -20,7 +21,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../components/ui/tooltip";
-import { MediaType } from "../../../../features/library/entity";
 
 type Props = {
   id: string;
@@ -54,8 +54,7 @@ export const MediaDetailDeleteButton = ({ id, mediaType }: Props) => {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete this {mediaType}. This action cannot be
-                  undone.
+                  This will permanently delete this {mediaType}. This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <div className="flex items-center space-x-2 py-4">

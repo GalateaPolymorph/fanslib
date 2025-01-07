@@ -27,7 +27,7 @@ type PostDetailProps = {
 
 export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailProps) => {
   const { toast } = useToast();
-  const { isDragging, draggedMedias, handleDragEnd } = useMediaDrag();
+  const { draggedMedias, endMediaDrag, isDragging } = useMediaDrag();
   const wasClosedRef = useRef(false);
   const dragEnterCountRef = useRef(0);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
@@ -73,51 +73,51 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
       onOpenChange(false);
     }
 
-    if (draggedMedias.length > 0) {
-      try {
-        // if the post is virtual, create a new post
-        if (isVirtualPost(post)) {
-          await window.api["post:create"](
-            {
-              date: post.date,
-              categoryId: post.categoryId,
-              channelId: post.channelId,
-              status: "draft",
-              caption: "",
-            },
-            draggedMedias.map((media) => media.id)
-          );
-          await onUpdate();
-          toast({
-            title: "Post created",
-          });
-          handleDragEnd();
-          return;
-        }
+    if (!isDragging) return;
 
-        await window.api["post:addMedia"](
-          post.id,
+    try {
+      // if the post is virtual, create a new post
+      if (isVirtualPost(post)) {
+        await window.api["post:create"](
+          {
+            date: post.date,
+            categoryId: post.categoryId,
+            channelId: post.channelId,
+            status: "draft",
+            caption: "",
+          },
           draggedMedias.map((media) => media.id)
         );
         await onUpdate();
         toast({
-          title:
-            draggedMedias.length === 1
-              ? "Media added to post"
-              : `${draggedMedias.length} media items added to post`,
+          title: "Post created",
         });
-        handleDragEnd();
-      } catch (error) {
-        console.error("Failed to add media to post:", error);
-        toast({
-          title: "Failed to add media to post",
-          variant: "destructive",
-        });
-      } finally {
-        setIsDraggedOver(false);
-        if (wasClosedRef.current) {
-          onOpenChange(false);
-        }
+        endMediaDrag();
+        return;
+      }
+
+      await window.api["post:addMedia"](
+        post.id,
+        draggedMedias.map((media) => media.id)
+      );
+      await onUpdate();
+      toast({
+        title:
+          draggedMedias.length === 1
+            ? "Media added to post"
+            : `${draggedMedias.length} media items added to post`,
+      });
+      endMediaDrag();
+    } catch (error) {
+      console.error("Failed to add media to post:", error);
+      toast({
+        title: "Failed to add media to post",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDraggedOver(false);
+      if (wasClosedRef.current) {
+        onOpenChange(false);
       }
     }
   };

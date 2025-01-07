@@ -21,16 +21,18 @@ type ShootDetailDeleteButtonProps = {
 };
 
 export const ShootDetailDeleteButton: FC<ShootDetailDeleteButtonProps> = ({ shoot, onUpdate }) => {
-  const { preferences, updateFilterPreferences } = useLibraryPreferences();
+  const { preferences, updatePreferences } = useLibraryPreferences();
 
   const handleDelete = async () => {
     await window.api["shoot:delete"](shoot.id);
 
     // Remove the shoot from excludeShoots if it's there
     if (preferences.filter.excludeShoots?.includes(shoot.id)) {
-      updateFilterPreferences({
-        ...preferences.filter,
-        excludeShoots: preferences.filter.excludeShoots.filter((id) => id !== shoot.id),
+      updatePreferences({
+        filter: {
+          ...preferences.filter,
+          excludeShoots: preferences.filter.excludeShoots.filter((id) => id !== shoot.id),
+        },
       });
     }
 

@@ -25,7 +25,7 @@ type PostCalendarProps = {
   posts: Post[];
 };
 
-export const PostCalendar = ({ className, posts }: PostCalendar) => {
+export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());

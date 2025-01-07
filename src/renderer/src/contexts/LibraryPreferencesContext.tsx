@@ -1,3 +1,5 @@
+import { DeepPartial } from "@renderer/lib/deep-partial";
+import { mergeDeepRight } from "ramda";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ChannelPostFilter, MediaSort } from "../../../features/library/api-type";
 
@@ -7,7 +9,7 @@ type ViewPreferences = {
   gridSize: GridSize;
 };
 
-type FilterPreferences = {
+export type FilterPreferences = {
   categories?: string[];
   search?: string;
   shootId?: string;
@@ -29,14 +31,6 @@ export type LibraryPreferences = {
   pagination: PaginationPreferences;
 };
 
-type LibraryPreferencesContextValue = {
-  preferences: LibraryPreferences;
-  updateViewPreferences: (updates: Partial<ViewPreferences>) => void;
-  updateFilterPreferences: (updates: Partial<FilterPreferences>) => void;
-  updateSortPreferences: (updates: Partial<SortPreferences>) => void;
-  updatePaginationPreferences: (updates: Partial<PaginationPreferences>) => void;
-};
-
 const defaultPreferences: LibraryPreferences = {
   view: {
     gridSize: "large",
@@ -56,6 +50,11 @@ const defaultPreferences: LibraryPreferences = {
   },
 };
 
+type LibraryPreferencesContextValue = {
+  preferences: LibraryPreferences;
+  updatePreferences: (updates: DeepPartial<LibraryPreferences>) => void;
+};
+
 const LibraryPreferencesContext = createContext<LibraryPreferencesContextValue | undefined>(
   undefined
 );
@@ -67,13 +66,7 @@ export const LibraryPreferencesProvider = ({ children }: { children: React.React
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
-        return {
-          view: { ...defaultPreferences.view, ...parsed.view },
-          filter: { ...defaultPreferences.filter, ...parsed.filter },
-          sort: { ...defaultPreferences.sort, ...parsed.sort },
-          pagination: { ...defaultPreferences.pagination, ...parsed.pagination },
-        };
+        return mergeDeepRight(defaultPreferences, JSON.parse(stored));
       } catch (error) {
         console.error("Failed to parse library preferences:", error);
         return defaultPreferences;
@@ -86,42 +79,15 @@ export const LibraryPreferencesProvider = ({ children }: { children: React.React
     localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
   }, [preferences]);
 
-  const updateViewPreferences = useCallback((updates: Partial<ViewPreferences>) => {
-    setPreferences((prev) => ({
-      ...prev,
-      view: { ...prev.view, ...updates },
-    }));
-  }, []);
-
-  const updateFilterPreferences = useCallback((updates: Partial<FilterPreferences>) => {
-    setPreferences((prev) => ({
-      ...prev,
-      filter: { ...prev.filter, ...updates },
-    }));
-  }, []);
-
-  const updateSortPreferences = useCallback((updates: Partial<SortPreferences>) => {
-    setPreferences((prev) => ({
-      ...prev,
-      sort: { ...prev.sort, ...updates },
-    }));
-  }, []);
-
-  const updatePaginationPreferences = useCallback((updates: Partial<PaginationPreferences>) => {
-    setPreferences((prev) => ({
-      ...prev,
-      pagination: { ...prev.pagination, ...updates },
-    }));
+  const updatePreferences = useCallback((updates: DeepPartial<LibraryPreferences>) => {
+    setPreferences((prev) => mergeDeepRight(prev, updates) as LibraryPreferences);
   }, []);
 
   return (
     <LibraryPreferencesContext.Provider
       value={{
         preferences,
-        updateViewPreferences,
-        updateFilterPreferences,
-        updateSortPreferences,
-        updatePaginationPreferences,
+        updatePreferences,
       }}
     >
       {children}

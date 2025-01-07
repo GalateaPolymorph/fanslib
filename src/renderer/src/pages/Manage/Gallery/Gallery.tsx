@@ -22,7 +22,7 @@ type GalleryProps = {
 export const Gallery = ({ medias, error, libraryPath, onScan, onUpdate }: GalleryProps) => {
   const navigate = useNavigate();
   const { preferences } = useLibraryPreferences();
-  const { handleDragStart, handleDragEnd } = useMediaDrag();
+  const { startMediaDrag, endMediaDrag } = useMediaDrag();
 
   const [currentHoveredIndex, setCurrentHoveredIndex] = useState<number | null>(null);
   const {
@@ -92,9 +92,9 @@ export const Gallery = ({ medias, error, libraryPath, onScan, onUpdate }: Galler
                 const selectedItems = selectedMediaIds.has(media.id)
                   ? medias.filter((m) => selectedMediaIds.has(m.id))
                   : [media];
-                handleDragStart(e, selectedItems);
+                startMediaDrag(e, selectedItems);
               }}
-              onDragEnd={handleDragEnd}
+              onDragEnd={endMediaDrag}
               onMouseEnter={() => handleMouseEnter(media.id)}
               onMouseLeave={handleMouseLeave}
               onClick={(e) => {

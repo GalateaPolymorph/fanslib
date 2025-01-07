@@ -22,8 +22,8 @@ type PostDetailAddMediaButtonProps = {
   isDraggingMedia?: boolean;
 };
 
-export const PostDetailAddMediaButton = ({ 
-  post, 
+export const PostDetailAddMediaButton = ({
+  post,
   onUpdate,
   isDraggingMedia = false,
 }: PostDetailAddMediaButtonProps) => {
@@ -31,14 +31,14 @@ export const PostDetailAddMediaButton = ({
   const [open, setOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media[]>([]);
 
-  const handleOpenChange = async (newOpen: boolean) => {
+  const updateDialogOpen = async (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
       setSelectedMedia([]);
     }
   };
 
-  const handleMediaSelect = (media: Media) => {
+  const toggleMediaSelection = (media: Media) => {
     setSelectedMedia((prev) => {
       const isSelected = prev.some((m) => m.id === media.id);
       if (isSelected) {
@@ -48,7 +48,7 @@ export const PostDetailAddMediaButton = ({
     });
   };
 
-  const handleAddMedia = async () => {
+  const addMediaToPost = async () => {
     try {
       await window.api["post:addMedia"](
         post.id,
@@ -69,21 +69,21 @@ export const PostDetailAddMediaButton = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={updateDialogOpen}>
       <DialogTrigger asChild>
         <div className="relative aspect-square cursor-pointer rounded-lg overflow-hidden">
-          <div 
+          <div
             className={cn(
               "absolute inset-0 z-10 border-2 border-dashed rounded-lg flex items-center justify-center transition-colors duration-200",
-              isDraggingMedia 
-                ? "border-primary bg-primary/10" 
-                : "border-border"
+              isDraggingMedia ? "border-primary bg-primary/10" : "border-border"
             )}
           >
-            <Plus className={cn(
-              "size-6 transition-colors duration-200",
-              isDraggingMedia ? "text-primary" : "text-border"
-            )} />
+            <Plus
+              className={cn(
+                "size-6 transition-colors duration-200",
+                isDraggingMedia ? "text-primary" : "text-border"
+              )}
+            />
           </div>
         </div>
       </DialogTrigger>
@@ -107,7 +107,7 @@ export const PostDetailAddMediaButton = ({
 
           <MediaSelection
             selectedMedia={selectedMedia}
-            onMediaSelect={handleMediaSelect}
+            onMediaSelect={toggleMediaSelection}
             className="mt-4"
             referenceMedia={post.postMedia[0]?.media}
             excludeMediaIds={post.postMedia.map((pm) => pm.media.id)}
@@ -117,7 +117,7 @@ export const PostDetailAddMediaButton = ({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddMedia} disabled={selectedMedia.length === 0}>
+            <Button onClick={addMediaToPost} disabled={selectedMedia.length === 0}>
               Add {selectedMedia.length} {selectedMedia.length === 1 ? "item" : "items"}
             </Button>
           </div>

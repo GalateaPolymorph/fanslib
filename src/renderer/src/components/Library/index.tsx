@@ -17,12 +17,7 @@ export type LibraryProps = {
 export const Library = ({ showHeader = true }: LibraryProps) => {
   const { settings } = useSettings();
   const { media, error, refetch, totalPages, totalItems } = useLibrary();
-  const {
-    preferences,
-    updateFilterPreferences,
-    updatePaginationPreferences,
-    updateSortPreferences,
-  } = useLibraryPreferences();
+  const { preferences, updatePreferences } = useLibraryPreferences();
 
   const { isScanning, scanProgress, handleScan, scanResult } = useScan();
   if (!settings?.libraryPath) {
@@ -41,16 +36,12 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
         <div className="flex justify-between items-center mb-4 flex-none">
           <div className="flex items-center w-full justify-between gap-4">
             <LibraryFilters
-              value={{
-                search: preferences.filter.search,
-                categories: preferences.filter.categories,
-                excludeShoots: preferences.filter.excludeShoots,
-                shootId: preferences.filter.shootId,
-                channelFilters: preferences.filter.channelFilters,
-              }}
+              value={preferences.filter}
               onFilterChange={(filters) => {
-                updateFilterPreferences(filters);
-                updatePaginationPreferences({ page: 1 });
+                updatePreferences({
+                  filter: filters,
+                  pagination: { page: 1 },
+                });
               }}
             />
             <div className="flex items-center gap-2">
@@ -58,9 +49,9 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
               <LibrarySortOptions
                 value={preferences.sort}
                 onChange={(sort) => {
-                  updateSortPreferences(sort);
-                  updatePaginationPreferences({
-                    page: 1,
+                  updatePreferences({
+                    sort,
+                    pagination: { page: 1 },
                   });
                 }}
               />
@@ -76,7 +67,7 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
             error={error}
             libraryPath={settings?.libraryPath}
             onScan={handleScan}
-            onUpdate={() => void refetch()}
+            onUpdate={refetch}
           />
         </div>
         <GalleryPagination totalPages={totalPages} totalItems={totalItems} />
