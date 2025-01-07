@@ -11,7 +11,7 @@ export type ContentScheduleCreateData = {
   preferredTimes?: string[];
 };
 
-const methods = ["getAll", "getByChannel", "create", "update", "delete", "syncAll"] as const;
+const methods = ["getAll", "getByChannel", "create", "update", "delete"] as const;
 export type ContentScheduleHandlers = {
   getAll: (_: any) => Promise<ContentSchedule[]>;
   getByChannel: (_: any, channelId: Channel["id"]) => Promise<ContentSchedule[]>;

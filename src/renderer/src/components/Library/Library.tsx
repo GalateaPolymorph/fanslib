@@ -1,10 +1,10 @@
 import { useLibrary } from "../../contexts/LibraryContext";
 import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import { useSettings } from "../../contexts/SettingsContext";
-import { Gallery } from "../../pages/Content/Gallery/Gallery";
-import { GalleryPagination } from "../../pages/Content/Gallery/GalleryPagination";
-import { GalleryViewSettings } from "../../pages/Content/Gallery/GalleryViewSettings";
-import { LibrarySortOptions } from "../../pages/Content/Gallery/LibrarySortOptions";
+import { Gallery } from "../../pages/Manage/Gallery/Gallery";
+import { GalleryPagination } from "../../pages/Manage/Gallery/GalleryPagination";
+import { GalleryViewSettings } from "../../pages/Manage/Gallery/GalleryViewSettings";
+import { LibrarySortOptions } from "../../pages/Manage/Gallery/LibrarySortOptions";
 import { LibraryFilters } from "../LibraryFilters";
 import { ScanButton } from "./Scan/ScanButton";
 import { ScanProgress } from "./Scan/ScanProgress";

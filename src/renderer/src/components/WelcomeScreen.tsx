@@ -39,7 +39,7 @@ export function WelcomeScreen() {
   }, []);
 
   return (
-    <div className="absolute inset-0 flex flex-col p-8">
+    <div className="absolute inset-0 flex flex-col p-8 justify-center">
       <div className="flex flex-col items-center text-center mb-8">
         <Settings className="w-12 h-12 mb-4 text-muted-foreground" />
         <h1 className="text-2xl font-semibold mb-2">Welcome to FansLib</h1>

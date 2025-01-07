@@ -70,6 +70,7 @@ export async function scanFile(filePath: string): Promise<FileScanResult> {
       fileModificationDate: stats.mtime,
       categories: existingMedia?.categories || [],
       postMedia: existingMedia?.postMedia || [],
+      shoots: [],
       duration: type === "video" ? await getVideoDuration(filePath) : undefined,
     };
     const newMedia = await createMedia(media);

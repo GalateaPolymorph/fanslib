@@ -9,7 +9,7 @@ import { PostTimeline } from "./PostTimeline";
 
 type SideContentView = "shoots" | "library";
 
-export const PostsPage = () => {
+export const PlanPage = () => {
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
   const [sideContentView, setSideContentView] = useState<SideContentView>("shoots");
 
@@ -52,7 +52,7 @@ export const PostsPage = () => {
   const mainContent = (
     <div className="h-full w-full overflow-hidden flex flex-col">
       <div className="flex items-center justify-between py-6 pl-6 pr-4 flex-none">
-        <h1 className="text-2xl font-bold">Posts</h1>
+        <h1 className="text-2xl font-bold">Plan</h1>
       </div>
       <div className="flex-1 overflow-hidden px-6">
         <PostTimeline posts={posts} onUpdate={fetchPosts} />

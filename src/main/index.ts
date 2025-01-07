@@ -38,8 +38,6 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.setTitle("FansLib");
-
   mainWindow.on("ready-to-show", () => {
     if (process.env.DEVELOPMENT) {
       mainWindow.showInactive();

@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui
 import { cn } from "@renderer/lib/utils";
 import { ArrowUpDown, Check } from "lucide-react";
 import { useState } from "react";
-import { MediaSort, SortField } from "../../../../features/library/api-type";
+import { MediaSort, SortField } from "../../../../../features/library/api-type";
 
 export type SortOption = MediaSort;
 

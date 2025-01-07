@@ -4,7 +4,7 @@ import { SplitViewLayout } from "../../components/SplitViewLayout";
 import { WelcomeScreen } from "../../components/WelcomeScreen";
 import { useSettings } from "../../contexts/SettingsContext";
 
-export const ContentPage = () => {
+export const ManagePage = () => {
   const { settings, loading } = useSettings();
 
   if (loading) {

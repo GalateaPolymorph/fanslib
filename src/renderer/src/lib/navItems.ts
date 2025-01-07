@@ -8,12 +8,12 @@ interface NavItem {
 
 export const navItems: NavItem[] = [
   {
-    title: "Content",
+    title: "Manage",
     url: "/",
     icon: LayoutGrid,
   },
   {
-    title: "Posts",
+    title: "Plan",
     url: "/posts",
     icon: FileText,
   },

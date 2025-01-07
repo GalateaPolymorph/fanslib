@@ -52,7 +52,7 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
     }
   };
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = (_: React.DragEvent<HTMLDivElement>) => {
     if (isDragging && draggedMedias.length > 0) {
       dragEnterCountRef.current--;
       // Only close when we've left the outermost element
@@ -95,10 +95,16 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
           return;
         }
 
-        await window.api["post:addMedia"](post.id, draggedMedias.map((media) => media.id));
+        await window.api["post:addMedia"](
+          post.id,
+          draggedMedias.map((media) => media.id)
+        );
         await onUpdate();
         toast({
-          title: draggedMedias.length === 1 ? "Media added to post" : `${draggedMedias.length} media items added to post`,
+          title:
+            draggedMedias.length === 1
+              ? "Media added to post"
+              : `${draggedMedias.length} media items added to post`,
         });
         handleDragEnd();
       } catch (error) {

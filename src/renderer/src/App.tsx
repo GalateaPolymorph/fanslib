@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -11,9 +11,9 @@ import { SettingsProvider } from "./contexts/SettingsContext";
 import { ShootProvider } from "./contexts/ShootContext";
 import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
-import { ContentPage } from "./pages/Content";
+import { ManagePage } from "./pages/Manage";
 import { MediaDetail } from "./pages/MediaDetail";
-import { PostsPage } from "./pages/Posts";
+import { PlanPage } from "./pages/Plan";
 import { SettingsPage } from "./pages/Settings";
 
 const App = () => {
@@ -27,17 +27,17 @@ const App = () => {
                 <LibraryProvider>
                   <MediaDragProvider>
                     <TooltipProvider delayDuration={0}>
-                      <BrowserRouter>
+                      <HashRouter>
                         <Routes>
                           <Route path="/" element={<Layout />}>
-                            <Route index element={<ContentPage />} />
+                            <Route index element={<ManagePage />} />
                             <Route path="content/:mediaId" element={<MediaDetail />} />
-                            <Route path="posts" element={<PostsPage />} />
+                            <Route path="posts" element={<PlanPage />} />
                             <Route path="channels" element={<ChannelsPage />} />
                             <Route path="settings" element={<SettingsPage />} />
                           </Route>
                         </Routes>
-                      </BrowserRouter>
+                      </HashRouter>
                       <Toaster />
                     </TooltipProvider>
                   </MediaDragProvider>
