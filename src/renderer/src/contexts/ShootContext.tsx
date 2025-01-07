@@ -41,9 +41,13 @@ type ShootProviderProps = {
 };
 
 export const ShootProvider = ({ children, params }: ShootProviderProps) => {
-  const [shoots, setShoots] = useState<ShootSummary[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [paginatedShoots, setPaginatedShoots] = useState<PaginatedResponse<ShootSummary>>({
+    items: [],
+    total: 0,
+    totalPages: 0,
+    page: 1,
+    limit: 50,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -58,14 +62,12 @@ export const ShootProvider = ({ children, params }: ShootProviderProps) => {
     try {
       setIsLoading(true);
       setError(null);
-      const response: PaginatedResponse<ShootSummary> = await window.api["shoot:getAll"]({
+      const response = await window.api["shoot:getAll"]({
         ...params,
         startDate,
         endDate,
       });
-      setShoots(response.items);
-      setTotalItems(response.total);
-      setTotalPages(response.totalPages);
+      setPaginatedShoots(response);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch shoots"));
     } finally {
@@ -106,9 +108,9 @@ export const ShootProvider = ({ children, params }: ShootProviderProps) => {
   );
 
   const value = {
-    shoots,
-    totalItems,
-    totalPages,
+    shoots: paginatedShoots.items,
+    totalItems: paginatedShoots.total,
+    totalPages: paginatedShoots.totalPages,
     isLoading,
     error,
     startDate,

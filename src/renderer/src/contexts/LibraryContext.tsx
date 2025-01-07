@@ -57,20 +57,24 @@ export const LibraryProvider = ({ children }: LibraryProviderProps) => {
     }
   };
 
-  const value = {
-    media: mediaData.items,
-    totalItems: mediaData.total,
-    totalPages: mediaData.totalPages,
-    error,
-    isLoading,
-    refetch: fetchLibrary,
-  };
-
   useEffect(() => {
     fetchLibrary();
   }, [libraryPath, preferences]);
 
-  return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
+  return (
+    <LibraryContext.Provider
+      value={{
+        media: mediaData.items,
+        totalItems: mediaData.total,
+        totalPages: mediaData.totalPages,
+        error,
+        isLoading,
+        refetch: fetchLibrary,
+      }}
+    >
+      {children}
+    </LibraryContext.Provider>
+  );
 };
 
 export const useLibrary = () => {
