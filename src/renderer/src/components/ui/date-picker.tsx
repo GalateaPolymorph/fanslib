@@ -5,11 +5,11 @@ import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
-interface DatePickerProps {
+type DatePickerProps = {
   date?: Date;
   setDate: (date: Date | undefined) => void;
   placeholder?: string;
-}
+};
 
 export function DatePicker({ date, setDate, placeholder }: DatePickerProps) {
   return (

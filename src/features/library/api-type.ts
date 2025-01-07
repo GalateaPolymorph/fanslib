@@ -5,17 +5,17 @@ import { Media } from "./entity";
 export type SortField = "fileModificationDate" | "fileCreationDate" | "lastPosted";
 export type SortDirection = "ASC" | "DESC";
 
-export interface MediaSort {
+export type MediaSort = {
   field: SortField;
   direction: SortDirection;
-}
+};
 
 export type ChannelPostFilter = {
   channelId: string;
   posted: boolean;
 };
 
-export interface MediaFilters {
+export type MediaFilters = {
   categories?: string[] | undefined;
   unposted?: boolean;
   createdDateStart?: Date;
@@ -24,26 +24,26 @@ export interface MediaFilters {
   excludeShoots?: string[];
   shootId?: string;
   channelFilters?: ChannelPostFilter[];
-}
+};
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
 
-export interface LibraryScanResult {
+export type LibraryScanResult = {
   added: number;
   updated: number;
   removed: number;
   total: number;
-}
+};
 
 export type LibraryScanProgress = {
   current: number;
   total: number;
 };
 
-export interface FileScanResult {
+export type FileScanResult = {
   action: "added" | "updated" | "unchanged";
   media: Media;
-}
+};
 
 export type UpdateMediaPayload = Partial<
   Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia">

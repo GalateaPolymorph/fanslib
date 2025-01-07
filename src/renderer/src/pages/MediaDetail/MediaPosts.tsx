@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 import { PostDetail } from "./PostDetail/PostDetail";
 
-interface MediaPostsProps {
+type MediaPostsProps = {
   mediaId: string;
-}
+};
 
 export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
   const [posts, setPosts] = useState<Post[]>([]);

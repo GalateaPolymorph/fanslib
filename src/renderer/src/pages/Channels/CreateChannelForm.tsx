@@ -3,10 +3,10 @@ import { Badge } from "@renderer/components/ui/badge";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Channel } from "../../../../features/channels/entity";
 
-interface CreateChannelFormProps {
+type CreateChannelFormProps = {
   onSubmit: (channel: Channel) => void;
   className?: string;
-}
+};
 
 export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFormProps) => {
   const handleTypeSelect = async (typeId: keyof typeof CHANNEL_TYPES) => {

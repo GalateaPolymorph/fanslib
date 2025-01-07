@@ -31,9 +31,9 @@ const PostCalendarPostStatus = ({ status }: PostCalendarPostStatusProps) => (
   </div>
 );
 
-interface PostCalendarPostProps {
+type PostCalendarPostProps = {
   post: Post;
-}
+};
 
 export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
   const firstMediaId = post.postMedia[0]?.media.id;

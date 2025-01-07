@@ -2,13 +2,13 @@ import { Badge } from "@renderer/components/ui/badge";
 import { useCategories } from "../contexts/CategoryContext";
 import { cn } from "../lib/utils";
 
-interface CategorySelectProps {
+type CategorySelectProps = {
   value?: string[];
   onChange: (categoryIds: string[] | undefined) => void;
   multiple?: boolean;
   disabledCategories?: string[];
   includeNoneOption?: boolean;
-}
+};
 
 export const CategorySelect = ({
   value,

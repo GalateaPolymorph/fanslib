@@ -23,14 +23,14 @@ import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { ContentScheduleForm } from "./ContentScheduleForm";
 import { ContentScheduleList } from "./ContentScheduleList";
 
-interface ChannelViewProps {
+type ChannelViewProps = {
   channel: Channel;
   className?: string;
   onUpdate?: (channel: Channel) => void;
   onDelete?: (channel: Channel) => void;
   isEditing?: boolean;
   onEditingChange?: (editing: boolean) => void;
-}
+};
 
 export const ChannelView = ({
   channel,

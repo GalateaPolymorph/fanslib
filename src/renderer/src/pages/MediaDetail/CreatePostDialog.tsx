@@ -18,11 +18,11 @@ import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
 
-interface CreatePostDialogProps {
+type CreatePostDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   media: Media;
-}
+};
 
 export function CreatePostDialog({ open, onOpenChange, media }: CreatePostDialogProps) {
   const { toast } = useToast();

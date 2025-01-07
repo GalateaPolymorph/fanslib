@@ -4,8 +4,10 @@ import { useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 
-export interface FileInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "onChange" | "value"> {
+export type FileInputProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type" | "onChange" | "value"
+> & {
   value?: string;
   onChange?: (value: string) => void;
   onTextChange?: (value: string) => void;
@@ -13,7 +15,7 @@ export interface FileInputProps
   buttonVariant?: "default" | "outline" | "ghost";
   placeholder?: string;
   directory?: boolean;
-}
+};
 
 export const FileInput = ({
   value = "",

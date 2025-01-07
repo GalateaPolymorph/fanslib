@@ -22,12 +22,12 @@ const sortOptions: { value: SortField; label: string }[] = [
   },
 ];
 
-interface Props {
+type LibrarySortOptionsProps = {
   value: SortOption;
   onChange: (value: SortOption) => void;
-}
+};
 
-export const LibrarySortOptions = ({ value, onChange }: Props) => {
+export const LibrarySortOptions = ({ value, onChange }: LibrarySortOptionsProps) => {
   const [open, setOpen] = useState(false);
   const selectedSortOption = sortOptions.find((option) => option.value === value.field);
 

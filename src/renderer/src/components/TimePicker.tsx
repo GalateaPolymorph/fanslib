@@ -3,11 +3,11 @@ import { Label } from "@renderer/components/ui/label";
 import { cn } from "@renderer/lib/utils";
 import React from "react";
 
-interface TimePickerProps {
+type TimePickerProps = {
   date: Date;
   setDate: (hours: number, minutes: number) => void;
   className?: string;
-}
+};
 
 export function TimePickerDemo({ date, setDate, className }: TimePickerProps) {
   const minuteRef = React.useRef<HTMLInputElement>(null);

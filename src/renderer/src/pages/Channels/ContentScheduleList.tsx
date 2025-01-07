@@ -15,11 +15,11 @@ import {
 import { Button } from "../../components/ui/button";
 import { useCategories } from "../../contexts/CategoryContext";
 
-interface ContentScheduleListProps {
+type ContentScheduleListProps = {
   schedules: ContentSchedule[];
   onEdit: (schedule: ContentSchedule) => void;
   onDelete: (schedule: ContentSchedule) => void;
-}
+};
 
 export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentScheduleListProps) => {
   const { categories } = useCategories();

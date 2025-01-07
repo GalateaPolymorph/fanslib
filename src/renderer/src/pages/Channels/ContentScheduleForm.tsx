@@ -14,13 +14,13 @@ import { ContentScheduleCreateData } from "../../../../features/content-schedule
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { CategorySelect } from "../../components/CategorySelect";
 
-interface ContentScheduleFormProps {
+type ContentScheduleFormProps = {
   schedule?: ContentSchedule;
   channelId: string;
   existingSchedules: ContentSchedule[];
   onSubmit: (schedule: ContentScheduleCreateData) => void;
   onCancel: () => void;
-}
+};
 
 export const ContentScheduleForm = ({
   schedule,

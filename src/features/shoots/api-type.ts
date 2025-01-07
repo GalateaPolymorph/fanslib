@@ -12,11 +12,11 @@ export type CreateShootPayload = {
 
 export type UpdateShootPayload = Partial<CreateShootPayload>;
 
-export interface GetAllShootsParams extends Partial<PaginationParams> {
+export type GetAllShootsParams = Partial<PaginationParams> & {
   search?: string;
   startDate?: Date;
   endDate?: Date;
-}
+};
 
 export type ShootWithMedia = Shoot & {
   media: Media[];
@@ -28,13 +28,13 @@ export type ShootSummary = ShootWithMedia & {
 
 const methods = ["create", "get", "getAll", "update", "delete"] as const;
 
-export interface ShootHandlers {
+export type ShootHandlers = {
   create: (_: unknown, payload: CreateShootPayload) => Promise<ShootWithMedia>;
   get: (_: unknown, id: string) => Promise<ShootWithMedia | null>;
   getAll: (_: unknown, params?: GetAllShootsParams) => Promise<PaginatedResponse<ShootSummary>>;
   update: (_: unknown, id: string, payload: UpdateShootPayload) => Promise<ShootWithMedia>;
   delete: (_: unknown, id: string) => Promise<void>;
-}
+};
 
 export const namespace = "shoot" as const;
 export const shootMethods = methods.map((m) => prefixNamespace(namespace, m));

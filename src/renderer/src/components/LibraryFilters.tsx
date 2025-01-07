@@ -6,7 +6,7 @@ import { SearchInput } from "./SearchInput";
 import { ShootSelect } from "./ShootSelect";
 import { Button } from "./ui/button";
 
-interface LibraryFiltersProps {
+type LibraryFiltersProps = {
   value: {
     categories?: string[];
     search?: string;
@@ -21,7 +21,7 @@ interface LibraryFiltersProps {
     shootId?: string;
     channelFilters?: ChannelPostFilterType[];
   }) => void;
-}
+};
 
 export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) => {
   return (

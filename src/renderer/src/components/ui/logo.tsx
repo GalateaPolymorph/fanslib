@@ -1,9 +1,9 @@
 import { cn } from "@renderer/lib/utils";
 import React from "react";
 
-interface LogoProps {
+type LogoProps = {
   isOpen?: boolean;
-}
+};
 
 export const Logo: React.FC<LogoProps> = ({ isOpen = true }) => {
   return (

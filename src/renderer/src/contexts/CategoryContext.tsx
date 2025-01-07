@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Category } from "../../../features/categories/entity";
 
-interface CategoryContextType {
+type CategoryContextType = {
   categories: Category[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
-}
+};
 
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
 

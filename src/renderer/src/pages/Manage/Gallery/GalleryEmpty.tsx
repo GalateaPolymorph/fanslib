@@ -1,10 +1,10 @@
 import { Button } from "@renderer/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
-interface GalleryEmptyProps {
+type GalleryEmptyProps = {
   libraryPath?: string;
   onScan?: () => void;
-}
+};
 
 export const GalleryEmpty = ({ libraryPath, onScan }: GalleryEmptyProps) => {
   if (!libraryPath) {

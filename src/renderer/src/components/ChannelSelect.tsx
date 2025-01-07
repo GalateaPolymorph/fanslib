@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { ChannelBadge } from "./ChannelBadge";
 
-interface ChannelSelectProps {
+type ChannelSelectProps = {
   value?: string[];
   onChange: (value: string[]) => void;
   multiple?: boolean;
   disabledChannels?: string[];
-}
+};
 
 export const ChannelSelect = ({
   value = [],

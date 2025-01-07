@@ -1,5 +1,0 @@
-- Never add comments about what you added or modified
-- Always prefer arrow functions over function keyword
-- Prefer .map, .forEach and .reduce over for loops
-- Prefer type over interface
-- Never use default exports

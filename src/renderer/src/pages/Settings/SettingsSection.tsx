@@ -1,10 +1,10 @@
 import { cn } from "@renderer/lib/utils";
 
-interface SettingsSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+type SettingsSectionProps = {
   title: string;
   description?: string;
   children: React.ReactNode;
-}
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export const SettingsSection = ({
   title,

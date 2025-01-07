@@ -29,13 +29,13 @@ export type LibraryPreferences = {
   pagination: PaginationPreferences;
 };
 
-interface LibraryPreferencesContextValue {
+type LibraryPreferencesContextValue = {
   preferences: LibraryPreferences;
   updateViewPreferences: (updates: Partial<ViewPreferences>) => void;
   updateFilterPreferences: (updates: Partial<FilterPreferences>) => void;
   updateSortPreferences: (updates: Partial<SortPreferences>) => void;
   updatePaginationPreferences: (updates: Partial<PaginationPreferences>) => void;
-}
+};
 
 const defaultPreferences: LibraryPreferences = {
   view: {

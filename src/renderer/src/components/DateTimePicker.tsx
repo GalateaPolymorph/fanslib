@@ -6,10 +6,10 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { TimePickerDemo } from "./TimePicker";
 
-interface DateTimePickerProps {
+type DateTimePickerProps = {
   date: Date;
   setDate: (date: Date) => void;
-}
+};
 
 export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
   return (

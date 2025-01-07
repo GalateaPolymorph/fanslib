@@ -2,13 +2,13 @@ import { Minus, Plus } from "lucide-react";
 import { Button } from "./button";
 import { Input } from "./input";
 
-interface StepperProps {
+type StepperProps = {
   value: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
   className?: string;
-}
+};
 
 export function Stepper({ value, onChange, min = 1, max, className }: StepperProps) {
   const increment = () => {

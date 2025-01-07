@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Channel } from "../../../features/channels/entity";
 
-interface ChannelContextType {
+type ChannelContextType = {
   channels: Channel[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
-}
+};
 
 const ChannelContext = createContext<ChannelContextType | undefined>(undefined);
 

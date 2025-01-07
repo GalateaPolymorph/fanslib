@@ -1,13 +1,13 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
-interface Settings {
+type Settings = {
   libraryPath: string | null;
-}
+};
 
-interface SettingsContextType {
+type SettingsContextType = {
   settings: Settings | null;
   loading: boolean;
-}
+};
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
@@ -19,9 +19,9 @@ export const useSettings = () => {
   return context;
 };
 
-interface SettingsProviderProps {
+type SettingsProviderProps = {
   children: ReactNode;
-}
+};
 
 export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const [settings, setSettings] = useState<Settings | null>(null);
