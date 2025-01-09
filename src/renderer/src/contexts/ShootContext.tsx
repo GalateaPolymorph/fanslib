@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { PaginatedResponse } from "../../../features/_common/pagination";
-import { GetAllShootsParams, ShootSummary } from "../../../features/shoots/api-type";
+import { GetAllShootsParams, ShootFilter, ShootSummary } from "../../../features/shoots/api-type";
 
 type CreateShootParams = {
   name: string;
@@ -15,11 +15,9 @@ type ShootContextType = {
   totalPages: number;
   isLoading: boolean;
   error: Error | null;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  setStartDate: (date: Date | undefined) => void;
-  setEndDate: (date: Date | undefined) => void;
-  clearDateFilters: () => void;
+  filter: ShootFilter;
+  updateFilter: (filter: Partial<ShootFilter>) => void;
+  clearFilter: () => void;
   refetch: () => Promise<void>;
   addMediaToShoot: (shootId: string, mediaIds: string[]) => Promise<void>;
   createShoot: (params: CreateShootParams) => Promise<void>;
@@ -37,7 +35,7 @@ export const useShootContext = () => {
 
 type ShootProviderProps = {
   children: React.ReactNode;
-  params?: GetAllShootsParams;
+  params?: Omit<GetAllShootsParams, "filter">;
 };
 
 export const ShootProvider = ({ children, params }: ShootProviderProps) => {
@@ -50,12 +48,14 @@ export const ShootProvider = ({ children, params }: ShootProviderProps) => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [startDate, setStartDate] = useState<Date | undefined>();
-  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [filter, setFilter] = useState<ShootFilter>({});
 
-  const clearDateFilters = useCallback(() => {
-    setStartDate(undefined);
-    setEndDate(undefined);
+  const updateFilter = useCallback((newFilter: Partial<ShootFilter>) => {
+    setFilter((prev) => ({ ...prev, ...newFilter }));
+  }, []);
+
+  const clearFilter = useCallback(() => {
+    setFilter({});
   }, []);
 
   const fetchShoots = useCallback(async () => {
@@ -64,8 +64,7 @@ export const ShootProvider = ({ children, params }: ShootProviderProps) => {
       setError(null);
       const response = await window.api["shoot:getAll"]({
         ...params,
-        startDate,
-        endDate,
+        filter,
       });
       setPaginatedShoots(response);
     } catch (err) {
@@ -73,13 +72,13 @@ export const ShootProvider = ({ children, params }: ShootProviderProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [params, startDate, endDate]);
+  }, [params, filter]);
 
   useEffect(() => {
-    if ((!startDate && !endDate) || (startDate && endDate)) {
+    if ((!filter.startDate && !filter.endDate) || (filter.startDate && filter.endDate)) {
       void fetchShoots();
     }
-  }, [fetchShoots, startDate, endDate]);
+  }, [fetchShoots, filter]);
 
   const addMediaToShoot = useCallback(
     async (shootId: string, mediaIds: string[]) => {
@@ -113,11 +112,9 @@ export const ShootProvider = ({ children, params }: ShootProviderProps) => {
     totalPages: paginatedShoots.totalPages,
     isLoading,
     error,
-    startDate,
-    endDate,
-    setStartDate,
-    setEndDate,
-    clearDateFilters,
+    filter,
+    updateFilter,
+    clearFilter,
     refetch: fetchShoots,
     addMediaToShoot,
     createShoot,

@@ -4,6 +4,7 @@ import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButto
 import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { CategorySettings } from "./CategorySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
+import { TagSettings } from "./TagSettings";
 
 export const SettingsPage = () => {
   return (
@@ -22,6 +23,7 @@ export const SettingsPage = () => {
         >
           <LibraryPathInput />
           <CategorySettings />
+          <TagSettings />
         </SettingsSection>
 
         <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">

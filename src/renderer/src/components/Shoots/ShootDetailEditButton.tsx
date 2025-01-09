@@ -1,4 +1,4 @@
-import { Check, PenLine } from "lucide-react";
+import { PenLine, X } from "lucide-react";
 import { type FC } from "react";
 import { Button } from "../ui/button";
 
@@ -14,13 +14,9 @@ export const ShootDetailEditButton: FC<ShootDetailEditButtonProps> = ({
   onCancel,
 }) => {
   return (
-    <Button
-      variant={!isEditing ? "outline" : "default"}
-      onClick={isEditing ? onCancel : onEdit}
-      className="text-sm"
-    >
-      {isEditing ? <Check /> : <PenLine />}
-      {isEditing ? "Save" : "Edit"}
+    <Button variant={"outline"} onClick={isEditing ? onCancel : onEdit} className="text-sm">
+      {isEditing ? <X /> : <PenLine />}
+      {isEditing ? "Cancel" : "Edit"}
     </Button>
   );
 };

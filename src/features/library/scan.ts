@@ -16,18 +16,36 @@ const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov", ".avi", ".mkv"]);
 /**
  * Try to find a media entry that matches the given file stats
  * This helps identify renamed files by matching size and creation time
+ * Only considers it a match if the original file no longer exists at its old location
  */
 const findMediaByStats = async (stats: Stats) => {
-  console.log("trying to find media by stats", stats);
-
-  const media = await (await db()).getRepository(Media).findOne({
+  // Find all media with matching size and creation date
+  const mediaRepo = (await db()).getRepository(Media);
+  const potentialMatches = await mediaRepo.find({
     where: {
       size: stats.size,
       fileCreationDate: stats.birthtime,
     },
   });
-  console.log("found media by stats", media);
-  return media;
+
+  // Check each potential match
+  for (const media of potentialMatches) {
+    try {
+      // Check if the original file still exists
+      try {
+        await fs.access(media.path);
+        // If we can access the file, it still exists, so this is not our moved file
+        continue;
+      } catch {
+        // File doesn't exist at original location, this is probably our moved file
+        return media;
+      }
+    } catch (error) {
+      console.error(`Failed to process potential match ${media.path}:`, error);
+    }
+  }
+
+  return null;
 };
 
 /**
@@ -51,6 +69,7 @@ const isMediaFile = (
  */
 export const scanFile = async (filePath: string): Promise<FileScanResult> => {
   const { isSupported, type } = isMediaFile(filePath);
+
   if (!isSupported || !type) {
     throw new Error(`Unsupported file type: ${filePath}`);
   }
@@ -75,8 +94,9 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
       shoots: [],
       duration: type === "video" ? await getVideoDuration(filePath) : undefined,
     };
+
     const newMedia = await createMedia(media);
-    // Generate thumbnail for new media
+
     try {
       await generateThumbnail(filePath, newMedia.id, type);
     } catch (error) {
@@ -85,11 +105,13 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
     return { action: "added", media: newMedia };
   }
 
+  const hasThumbnail = await thumbnailExists(existingMedia.id);
+
   const needsUpdate =
     existingMedia.path !== filePath ||
     !isSameSecond(stats.mtime, existingMedia.fileModificationDate) ||
     existingMedia.size !== stats.size ||
-    !(await thumbnailExists(existingMedia.id));
+    !hasThumbnail;
 
   if (!needsUpdate) {
     return { action: "unchanged", media: existingMedia };
@@ -104,7 +126,6 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
     duration: type === "video" ? await getVideoDuration(filePath) : undefined,
   });
 
-  // Generate or update thumbnail if needed
   try {
     await generateThumbnail(filePath, updatedMedia.id, type);
   } catch (error) {
@@ -162,6 +183,7 @@ class LibraryScanner {
       const database = await db();
       const existingMedia = await database.getRepository(Media).find();
       const processedPaths = new Set<string>();
+      const processedMediaIds = new Set<string>(); // Track which media entries we've processed
 
       const result: LibraryScanResult = {
         added: 0,
@@ -180,9 +202,14 @@ class LibraryScanner {
           switch (scanResult.action) {
             case "added":
               result.added++;
+              processedMediaIds.add(scanResult.media.id);
               break;
             case "updated":
               result.updated++;
+              processedMediaIds.add(scanResult.media.id);
+              break;
+            case "unchanged":
+              processedMediaIds.add(scanResult.media.id);
               break;
           }
         } catch (error) {
@@ -196,9 +223,20 @@ class LibraryScanner {
         });
       }
 
-      // Cleanup: remove files that no longer exist
+      // Cleanup: remove files that no longer exist and weren't processed
       for (const media of existingMedia) {
-        if (!processedPaths.has(media.path)) {
+        // Skip if we've already processed this media (it was moved)
+        if (processedMediaIds.has(media.id)) {
+          continue;
+        }
+
+        // Check if the file still exists at its original location
+        try {
+          await fs.access(media.path);
+          // File exists, keep it
+          continue;
+        } catch {
+          // File doesn't exist and wasn't processed (moved) - delete it
           await deleteMedia(media.id);
           result.removed++;
         }

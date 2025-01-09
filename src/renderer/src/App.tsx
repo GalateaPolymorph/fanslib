@@ -9,6 +9,7 @@ import { LibraryPreferencesProvider } from "./contexts/LibraryPreferencesContext
 import { MediaDragProvider } from "./contexts/MediaDragContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { ShootProvider } from "./contexts/ShootContext";
+import { TagProvider } from "./contexts/TagContext";
 import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
 import { ManagePage } from "./pages/Manage";
@@ -21,30 +22,32 @@ const App = () => {
     <ThemeProvider>
       <SettingsProvider>
         <CategoryProvider>
-          <ChannelProvider>
-            <ShootProvider>
-              <LibraryPreferencesProvider>
-                <LibraryProvider>
-                  <MediaDragProvider>
-                    <TooltipProvider delayDuration={0}>
-                      <HashRouter>
-                        <Routes>
-                          <Route path="/" element={<Layout />}>
-                            <Route index element={<ManagePage />} />
-                            <Route path="content/:mediaId" element={<MediaDetail />} />
-                            <Route path="posts" element={<PlanPage />} />
-                            <Route path="channels" element={<ChannelsPage />} />
-                            <Route path="settings" element={<SettingsPage />} />
-                          </Route>
-                        </Routes>
-                      </HashRouter>
-                      <Toaster />
-                    </TooltipProvider>
-                  </MediaDragProvider>
-                </LibraryProvider>
-              </LibraryPreferencesProvider>
-            </ShootProvider>
-          </ChannelProvider>
+          <TagProvider>
+            <ChannelProvider>
+              <ShootProvider>
+                <LibraryPreferencesProvider>
+                  <LibraryProvider>
+                    <MediaDragProvider>
+                      <TooltipProvider delayDuration={0}>
+                        <HashRouter>
+                          <Routes>
+                            <Route path="/" element={<Layout />}>
+                              <Route index element={<ManagePage />} />
+                              <Route path="content/:mediaId" element={<MediaDetail />} />
+                              <Route path="posts" element={<PlanPage />} />
+                              <Route path="channels" element={<ChannelsPage />} />
+                              <Route path="settings" element={<SettingsPage />} />
+                            </Route>
+                          </Routes>
+                        </HashRouter>
+                        <Toaster />
+                      </TooltipProvider>
+                    </MediaDragProvider>
+                  </LibraryProvider>
+                </LibraryPreferencesProvider>
+              </ShootProvider>
+            </ChannelProvider>
+          </TagProvider>
         </CategoryProvider>
       </SettingsProvider>
     </ThemeProvider>

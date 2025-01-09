@@ -82,16 +82,15 @@ export const deleteShoot = async (id: string): Promise<void> => {
   await shootRepository.delete(id);
 };
 
-export const listShoots = async (
-  params?: GetAllShootsParams
-): Promise<PaginatedResponse<ShootSummary>> => {
+export const listShoots = async ({
+  page = 1,
+  limit = 50,
+  filter,
+}: GetAllShootsParams): Promise<PaginatedResponse<ShootSummary>> => {
   const database = await db();
   const shootRepository = database.getRepository(Shoot);
-  const page = params?.page ?? 1;
-  const limit = params?.limit ?? 50;
-  const skip = (page - 1) * limit;
 
-  const queryBuilder = shootRepository
+  const query = shootRepository
     .createQueryBuilder("shoot")
     .leftJoinAndSelect("shoot.media", "media")
     .leftJoinAndSelect("media.postMedia", "postMedia")
@@ -100,33 +99,30 @@ export const listShoots = async (
     .leftJoinAndSelect("media.categories", "categories")
     .loadRelationCountAndMap("shoot.mediaCount", "shoot.media");
 
-  if (params?.search) {
-    queryBuilder.andWhere(
-      "(LOWER(shoot.name) LIKE LOWER(:search) OR LOWER(shoot.description) LIKE LOWER(:search))",
-      { search: `%${params.search}%` }
-    );
+  if (filter?.name) {
+    query.andWhere("LOWER(shoot.name) LIKE LOWER(:name)", { name: `%${filter.name}%` });
   }
 
-  if (params?.startDate) {
+  if (filter?.startDate) {
     // Set time to start of day in UTC
-    const startOfDay = new Date(params.startDate);
+    const startOfDay = new Date(filter.startDate);
     startOfDay.setUTCHours(0, 0, 0, 0);
-    queryBuilder.andWhere("DATE(shoot.shootDate) >= DATE(:startDate)", {
+    query.andWhere("DATE(shoot.shootDate) >= DATE(:startDate)", {
       startDate: startOfDay,
     });
   }
 
-  if (params?.endDate) {
+  if (filter?.endDate) {
     // Set time to end of day in UTC
-    const endOfDay = new Date(params.endDate);
+    const endOfDay = new Date(filter.endDate);
     endOfDay.setUTCHours(23, 59, 59, 999);
-    queryBuilder.andWhere("DATE(shoot.shootDate) <= DATE(:endDate)", {
+    query.andWhere("DATE(shoot.shootDate) <= DATE(:endDate)", {
       endDate: endOfDay,
     });
   }
 
-  const [items, total] = await queryBuilder
-    .skip(skip)
+  const [items, total] = await query
+    .skip((page - 1) * limit)
     .take(limit)
     .orderBy("shoot.shootDate", "DESC")
     .getManyAndCount();
@@ -134,8 +130,8 @@ export const listShoots = async (
   return {
     items: items as (Shoot & { mediaCount: number })[],
     total,
+    totalPages: Math.ceil(total / limit),
     page,
     limit,
-    totalPages: Math.ceil(total / limit),
   };
 };

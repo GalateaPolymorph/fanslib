@@ -1,24 +1,22 @@
 import { format } from "date-fns";
 import { type FC } from "react";
-import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
 import { DateTimePicker } from "../DateTimePicker";
 
 type ShootDetailDateProps = {
   shoot: ShootWithMedia;
   isEditing: boolean;
-  onUpdate: () => void;
+  onUpdate: (payload: UpdateShootPayload) => Promise<void>;
 };
 
 export const ShootDetailDate: FC<ShootDetailDateProps> = ({ shoot, isEditing, onUpdate }) => {
-  const handleDateChange = async (newDate: Date) => {
-    await window.api["shoot:update"](shoot.id, { shootDate: newDate });
-    onUpdate();
-  };
-
   if (isEditing) {
     return (
       <div onClick={(e) => e.stopPropagation()}>
-        <DateTimePicker date={new Date(shoot.shootDate)} setDate={handleDateChange} />
+        <DateTimePicker
+          date={new Date(shoot.shootDate)}
+          setDate={(date) => onUpdate({ shootDate: date })}
+        />
       </div>
     );
   }

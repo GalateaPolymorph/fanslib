@@ -1,62 +1,58 @@
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { type FC } from "react";
 import { type DateRange } from "react-day-picker";
+import { useShootContext } from "../contexts/ShootContext";
 import { Button } from "./ui/button";
 import { DateRangePicker } from "./ui/date-range-picker";
+import { Input } from "./ui/input";
 
 type ShootsFilterProps = {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  onStartDateChange: (date: Date | undefined) => void;
-  onEndDateChange: (date: Date | undefined) => void;
-  onClear: () => void;
   className?: string;
 };
 
-export const ShootsFilter: FC<ShootsFilterProps> = ({
-  startDate,
-  endDate,
-  onStartDateChange,
-  onEndDateChange,
-  onClear,
-  className,
-}) => {
-  const hasFilters = startDate || endDate;
+export const ShootsFilter: FC<ShootsFilterProps> = ({ className }) => {
+  const { filter, updateFilter, clearFilter } = useShootContext();
+  const hasFilters = filter.startDate || filter.endDate || filter.name;
 
   const dateRange: DateRange | undefined =
-    startDate || endDate
+    filter.startDate || filter.endDate
       ? {
-          from: startDate,
-          to: endDate,
+          from: filter.startDate,
+          to: filter.endDate,
         }
       : undefined;
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
     if (!range) {
-      onStartDateChange(undefined);
-      onEndDateChange(undefined);
+      updateFilter({ startDate: undefined, endDate: undefined });
       return;
     }
 
     // Update both dates at once to prevent unnecessary refetches
-    if (range.from && range.to) {
-      onStartDateChange(range.from);
-      onEndDateChange(range.to);
-    } else {
-      onStartDateChange(range.from);
-      onEndDateChange(undefined);
-    }
+    updateFilter({
+      startDate: range.from,
+      endDate: range.to,
+    });
   };
 
   return (
     <div className={`flex items-center gap-2 ${className || ""}`}>
+      <div className="relative">
+        <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={filter.name ?? ""}
+          onChange={(e) => updateFilter({ name: e.target.value })}
+          className="pl-8"
+          placeholder="Filter by name"
+        />
+      </div>
       <DateRangePicker
         dateRange={dateRange}
         onDateRangeChange={handleDateRangeChange}
         placeholder="Filter by shoot date"
       />
       {hasFilters && (
-        <Button variant="ghost" size="icon" onClick={onClear} className="h-9 w-9">
+        <Button variant="ghost" size="icon" onClick={clearFilter} className="h-9 w-9">
           <X className="h-4 w-4" />
         </Button>
       )}

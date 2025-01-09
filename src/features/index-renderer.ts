@@ -10,6 +10,7 @@ import { OsIpcChannel, OsIpcHandlers, osMethods } from "./os/api-type";
 import { PostIpcChannel, PostIpcHandlers, postMethods } from "./posts/api-type";
 import { SettingsIpcChannel, SettingsIpcHandlers, settingsMethods } from "./settings/api-type";
 import { ShootIpcChannel, ShootIpcHandlers, shootMethods } from "./shoots/api-type";
+import { TagIpcChannel, TagIpcHandlers, tagMethods } from "./tags/api-type";
 
 export type IpcHandlers = CategoryIpcHandlers &
   ChannelIpcHandlers &
@@ -18,7 +19,8 @@ export type IpcHandlers = CategoryIpcHandlers &
   OsIpcHandlers &
   PostIpcHandlers &
   SettingsIpcHandlers &
-  ShootIpcHandlers;
+  ShootIpcHandlers &
+  TagIpcHandlers;
 
 export const ipcMethods = [
   ...categoryMethods,
@@ -29,6 +31,7 @@ export const ipcMethods = [
   ...postMethods,
   ...settingsMethods,
   ...shootMethods,
+  ...tagMethods,
 ];
 export type IpcChannel =
   | CategoryIpcChannel
@@ -38,4 +41,5 @@ export type IpcChannel =
   | OsIpcChannel
   | PostIpcChannel
   | SettingsIpcChannel
-  | ShootIpcChannel;
+  | ShootIpcChannel
+  | TagIpcChannel;

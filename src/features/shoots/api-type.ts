@@ -1,5 +1,5 @@
 import { prefixNamespace, StripNamespace } from "../../lib/namespace";
-import { PaginatedResponse, PaginationParams } from "../_common/pagination";
+import { PaginatedResponse } from "../_common/pagination";
 import { Media } from "../library/entity";
 import { Shoot } from "./entity";
 
@@ -12,10 +12,16 @@ export type CreateShootPayload = {
 
 export type UpdateShootPayload = Partial<CreateShootPayload>;
 
-export type GetAllShootsParams = Partial<PaginationParams> & {
-  search?: string;
+export type ShootFilter = {
+  name?: string;
   startDate?: Date;
   endDate?: Date;
+};
+
+export type GetAllShootsParams = {
+  page?: number;
+  limit?: number;
+  filter?: ShootFilter;
 };
 
 export type ShootWithMedia = Shoot & {

@@ -237,6 +237,7 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
           channel: true,
         },
       },
+      shoots: true,
     },
   });
 
@@ -254,7 +255,16 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
 
   await repository.save(media);
 
-  return media;
+  const newMedia = await repository.findOne({
+    where: { id },
+    relations: {
+      categories: true,
+      postMedia: true,
+      shoots: true,
+    },
+  });
+
+  return newMedia;
 };
 
 export const deleteMedia = async (id: string, deleteFile = false) => {

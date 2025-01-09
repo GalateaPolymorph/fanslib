@@ -2,7 +2,7 @@ import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/popover";
-import { Check, Palette, Pencil, X } from "lucide-react";
+import { Check, Palette, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { CATEGORY_COLORS } from "../../../../features/categories/colors";
 import { useCategories } from "../../contexts/CategoryContext";
@@ -74,11 +74,11 @@ export const CategorySettings = () => {
           {categories.map((category) => (
             <div
               key={category.id}
-              className="flex items-center justify-between space-x-2 rounded-md border p-2"
+              className="flex items-center justify-between rounded-md border p-2"
             >
-              <div className="flex items-center space-x-2 flex-1">
+              <div className="flex items-center flex-1">
                 {editingCategory?.id === category.id ? (
-                  <div className="flex items-center space-x-2 flex-1">
+                  <div className="flex items-center flex-1">
                     <Input
                       value={editingCategory.name}
                       onChange={(e) =>
@@ -112,45 +112,38 @@ export const CategorySettings = () => {
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="size-8">
+                          <Palette className="h-2 w-2" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2" align="start">
+                        <div className="grid grid-cols-5 gap-1">
+                          {CATEGORY_COLORS.map((color) => (
+                            <Button
+                              key={color}
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 p-0 hover:ring-1 hover:ring-accent-foreground transition-all"
+                              style={{ backgroundColor: color }}
+                              onClick={() => handleUpdateColor(category.id, color)}
+                            />
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </>
                 )}
               </div>
-
-              <div className="flex items-center space-x-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 hover:bg-white/20 rounded-full"
-                    >
-                      <Palette className="h-2 w-2" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-2" align="start">
-                    <div className="grid grid-cols-5 gap-1">
-                      {CATEGORY_COLORS.map((color) => (
-                        <Button
-                          key={color}
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 rounded-full hover:ring-1 hover:ring-accent-foreground transition-all"
-                          style={{ backgroundColor: color }}
-                          onClick={() => handleUpdateColor(category.id, color)}
-                        />
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 hover:bg-white/20 rounded-full"
-                  onClick={() => handleDeleteCategory(category.id)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 text-destructive"
+                onClick={() => handleDeleteCategory(category.id)}
+              >
+                <Trash2 className="size-4" />
+              </Button>
             </div>
           ))}
         </div>

@@ -56,6 +56,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
                 onFilterChange({
                   ...value,
                   shootId: shootIds[0],
+                  excludeShoots: [],
                 });
               }}
               multiple={false}
@@ -67,6 +68,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
               onChange={(excludeShoots) => {
                 onFilterChange({
                   ...value,
+                  shootId: undefined,
                   excludeShoots,
                 });
               }}

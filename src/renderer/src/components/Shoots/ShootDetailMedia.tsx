@@ -10,6 +10,7 @@ import { useToast } from "@renderer/components/ui/use-toast";
 import { cn } from "@renderer/lib/utils";
 import { Trash2Icon } from "lucide-react";
 import { type FC, useState } from "react";
+import { Link } from "react-router-dom";
 import { ShootWithMedia } from "../../../../features/shoots/api-type";
 
 type ShootDetailMediaProps = {
@@ -54,13 +55,18 @@ export const ShootDetailMedia: FC<ShootDetailMediaProps> = ({
       <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
           <div className="group relative aspect-square cursor-pointer rounded-lg overflow-hidden">
-            <div className="absolute inset-0 z-10 border-2 border-transparent rounded-lg">
-              <MediaTile
-                media={media}
-                className="w-full h-full"
-                isActivePreview={isActivePreview}
-              />
-            </div>
+            <Link
+              to={`/content/${media.id}`}
+              className="block w-full h-full hover:opacity-90 transition-opacity"
+            >
+              <div className="absolute inset-0 z-10 border-2 border-transparent rounded-lg">
+                <MediaTile
+                  media={media}
+                  className="w-full h-full"
+                  isActivePreview={isActivePreview}
+                />
+              </div>
+            </Link>
           </div>
         </TooltipTrigger>
         <TooltipContent side="top" className="flex gap-1 p-0.5 bg-background border border-border">

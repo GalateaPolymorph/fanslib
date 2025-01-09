@@ -1,11 +1,11 @@
 import { type FC, useState } from "react";
-import { ShootWithMedia } from "../../../../features/shoots/api-type";
+import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
 import { Input } from "../ui/input";
 
 type ShootDetailTitleProps = {
   shoot: ShootWithMedia;
   isEditing: boolean;
-  onUpdate?: () => void;
+  onUpdate: (payload: UpdateShootPayload) => Promise<void>;
   onCancel: () => void;
 };
 
@@ -17,15 +17,10 @@ export const ShootDetailTitle: FC<ShootDetailTitleProps> = ({
 }) => {
   const [newName, setNewName] = useState(shoot.name);
 
-  const handleSaveName = async (name: string) => {
-    await window.api["shoot:update"](shoot.id, { name });
-    onUpdate?.();
-  };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       if (newName.trim() === "") return;
-      handleSaveName(newName);
+      onUpdate({ name: newName });
     } else if (e.key === "Escape") {
       onCancel();
     }
@@ -38,6 +33,11 @@ export const ShootDetailTitle: FC<ShootDetailTitleProps> = ({
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={handleKeyDown}
+          onBlur={() => {
+            if (newName.trim() === "") return;
+            if (newName === shoot.name) return;
+            onUpdate({ name: newName });
+          }}
           onClick={(e) => e.stopPropagation()}
           autoFocus
           className="font-normal"

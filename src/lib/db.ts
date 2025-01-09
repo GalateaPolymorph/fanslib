@@ -9,13 +9,14 @@ import { ContentSchedule } from "../features/content-schedules/entity";
 import { Media } from "../features/library/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
+import { Tag } from "../features/tags/entity";
 
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
 export const AppDataSource = new DataSource({
   type: "sqlite",
   database: dbPath,
-  entities: [Category, Channel, ChannelType, Media, Post, PostMedia, ContentSchedule, Shoot],
+  entities: [Category, Channel, ChannelType, Media, Post, PostMedia, ContentSchedule, Shoot, Tag],
   synchronize: true,
   logging: false,
 });
@@ -28,6 +29,7 @@ export const uninitialize = async () => {
     initialized = false;
   }
 };
+
 export const db = async () => {
   if (!initialized) {
     await AppDataSource.initialize();
