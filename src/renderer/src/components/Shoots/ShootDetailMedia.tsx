@@ -14,26 +14,28 @@ import { Link } from "react-router-dom";
 import { ShootWithMedia } from "../../../../features/shoots/api-type";
 
 type ShootDetailMediaProps = {
-  shoot: ShootWithMedia;
+  shootId: string;
   media: ShootWithMedia["media"][number];
+  index: number;
+  allMedias: ShootWithMedia["media"];
   onUpdate: () => void;
-  isActivePreview: boolean;
 };
 
 export const ShootDetailMedia: FC<ShootDetailMediaProps> = ({
-  shoot,
+  shootId,
   media,
+  index,
+  allMedias,
   onUpdate,
-  isActivePreview,
 }) => {
   const { toast } = useToast();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const removeMediaFromShoot = async () => {
     try {
-      const updatedMediaIds = shoot.media?.filter((m) => m.id !== media.id).map((m) => m.id) || [];
+      const updatedMediaIds = allMedias?.filter((m) => m.id !== media.id).map((m) => m.id) || [];
 
-      await window.api["shoot:update"](shoot.id, {
+      await window.api["shoot:update"](shootId, {
         mediaIds: updatedMediaIds,
       });
 
@@ -59,11 +61,15 @@ export const ShootDetailMedia: FC<ShootDetailMediaProps> = ({
               to={`/content/${media.id}`}
               className="block w-full h-full hover:opacity-90 transition-opacity"
             >
-              <div className="absolute inset-0 z-10 border-2 border-transparent rounded-lg">
+              <div className={cn("absolute inset-0 z-10 border-2 border-transparent rounded-lg")}>
                 <MediaTile
                   media={media}
+                  index={index}
+                  allMedias={allMedias}
                   className="w-full h-full"
-                  isActivePreview={isActivePreview}
+                  withPreview
+                  withDragAndDrop
+                  withSelection
                 />
               </div>
             </Link>

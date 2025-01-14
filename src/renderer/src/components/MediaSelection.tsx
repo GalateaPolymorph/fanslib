@@ -5,7 +5,7 @@ import { PaginatedResponse } from "../../../features/_common/pagination";
 import { MediaFilters } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
 import { LibraryFilters } from "./LibraryFilters";
-import { MediaTileLite } from "./MediaTileLite";
+import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 

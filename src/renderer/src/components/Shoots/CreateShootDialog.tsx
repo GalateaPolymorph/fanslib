@@ -1,5 +1,4 @@
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
-import { MediaTileLite } from "@renderer/components/MediaTileLite";
 import { Button } from "@renderer/components/ui/button";
 import {
   Dialog,
@@ -15,6 +14,7 @@ import { useShootContext } from "@renderer/contexts/ShootContext";
 import { format, formatDistanceToNow, isSameDay, parse } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { Media } from "../../../../features/library/entity";
+import { MediaTileLite } from "../MediaTile/MediaTileLite";
 
 const DATE_FORMATS = [
   "yyyy-MM-dd",
@@ -159,7 +159,7 @@ export const CreateShootDialog = ({
                     className="grid grid-cols-[100px_1fr_auto] gap-4 items-center"
                   >
                     <div className="aspect-square">
-                      <MediaTileLite media={media} draggable={false} />
+                      <MediaTileLite media={media} />
                     </div>
                     <div className="min-w-0">
                       <div className="truncate font-medium">{media.name}</div>

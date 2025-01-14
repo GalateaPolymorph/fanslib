@@ -1,85 +1,37 @@
 import { cn } from "@renderer/lib/utils";
-import { ImageIcon, VideoIcon } from "lucide-react";
 import { type FC, useState } from "react";
+import { Media } from "../../../../features/library/entity";
 import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
 import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import { useMediaDrag } from "../../contexts/MediaDragContext";
+import { useShootPreferences } from "../../contexts/ShootPreferencesContext";
 import { useShootAccordionState } from "../../hooks/useShootAccordionState";
-import { MediaPreview } from "../MediaPreview";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { Button } from "../ui/button";
-import { ShootDetailDate } from "./ShootDetailDate";
 import { ShootDetailDeleteButton } from "./ShootDetailDeleteButton";
 import { ShootDetailDropZone } from "./ShootDetailDropZone";
 import { ShootDetailEditButton } from "./ShootDetailEditButton";
 import { ShootDetailMedia } from "./ShootDetailMedia";
-import { ShootDetailTitle } from "./ShootDetailTitle";
-
-type ShootHeaderProps = {
-  shoot: ShootWithMedia;
-  isEditing: boolean;
-  onUpdate: (payload: UpdateShootPayload) => Promise<void>;
-  onCancel: () => void;
-};
-
-const ShootHeader = ({ shoot, isEditing, onUpdate, onCancel }: ShootHeaderProps) => {
-  const imageCount = shoot.media?.filter((m) => m.type === "image").length ?? 0;
-  const videoCount = shoot.media?.filter((m) => m.type === "video").length ?? 0;
-  const firstMedia = shoot.media?.[0];
-
-  return (
-    <div className="flex flex-row justify-between w-full py-4">
-      <div className="flex flex-row gap-4">
-        {firstMedia && (
-          <div className="w-16 h-16">
-            <MediaPreview media={firstMedia} />
-          </div>
-        )}
-        <div className="flex flex-col gap-2">
-          <div className="text-left">
-            <ShootDetailTitle
-              shoot={shoot}
-              isEditing={isEditing}
-              onUpdate={onUpdate}
-              onCancel={onCancel}
-            />
-          </div>
-          <div>
-            <div className="flex items-center group gap-4 text-sm text-muted-foreground">
-              <ShootDetailDate shoot={shoot} isEditing={isEditing} onUpdate={onUpdate} />
-              <div className="flex gap-1 text-sm text-muted-foreground items-center">
-                {imageCount > 0 && (
-                  <div className="flex items-center gap-1">
-                    <span>{imageCount}</span>
-                    <ImageIcon className="w-4 h-4" />
-                  </div>
-                )}
-                {videoCount > 0 && (
-                  <div className="flex items-center gap-1">
-                    <span>{videoCount}</span>
-                    <VideoIcon className="w-4 h-4" />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { ShootHeader } from "./ShootHeader";
 
 type ShootDetailProps = {
   shoot: ShootWithMedia;
-  onUpdate?: () => void;
+  groupedMedia: Map<string, Media[]>;
+  onUpdate: () => void;
 };
 
-export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate = () => {} }) => {
-  const { preferences, updatePreferences } = useLibraryPreferences();
+type ShootDetailContentProps = {
+  shoot: ShootWithMedia;
+  groupedMedia: Map<string, Media[]>;
+  onUpdate: () => void;
+};
+
+const ShootDetailContent = ({ shoot, groupedMedia, onUpdate }: ShootDetailContentProps) => {
+  const { preferences: libraryPreferences, updatePreferences } = useLibraryPreferences();
+  const { preferences: shootPreferences } = useShootPreferences();
   const { isDragging } = useMediaDrag();
   const [isEditing, setIsEditing] = useState(false);
   const { isOpen, setIsOpen } = useShootAccordionState(shoot.id);
-  const [hoveredMediaId, setHoveredMediaId] = useState<string | null>(null);
 
   const handleUpdate = async (payload: UpdateShootPayload) => {
     try {
@@ -95,12 +47,30 @@ export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate = () => {} }
     setIsEditing(false);
   };
 
-  const handleMouseEnter = (mediaId: string) => {
-    setHoveredMediaId(mediaId);
-  };
+  const renderMediaGrid = (mediaList: Media[], allMedias: Media[]) => {
+    const mediaIndex = (media: Media) => allMedias.findIndex((m) => m.id === media.id);
 
-  const handleMouseLeave = () => {
-    setHoveredMediaId(null);
+    return (
+      <div
+        className={cn(
+          "grid gap-2",
+          libraryPreferences.view.gridSize === "large"
+            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+            : "grid-cols-3 sm:grid-cols-4 md:grid-cols-6"
+        )}
+      >
+        {mediaList.map((media) => (
+          <ShootDetailMedia
+            key={media.id}
+            shootId={shoot.id}
+            media={media}
+            index={mediaIndex(media)}
+            allMedias={shoot.media}
+            onUpdate={onUpdate}
+          />
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -132,51 +102,37 @@ export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate = () => {} }
         <AccordionContent className="px-4 flex-col flex">
           <div className="flex flex-col gap-4 pb-4" onClick={(e) => e.stopPropagation()}>
             {shoot.media && (
-              <div
-                className={cn(
-                  "grid gap-2",
-                  preferences.view.gridSize === "large"
-                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
-                    : "grid-cols-3 sm:grid-cols-4 md:grid-cols-6"
-                )}
-              >
-                {shoot.media.map((media) => (
-                  <div
-                    key={media.id}
-                    className="aspect-square"
-                    onMouseEnter={() => handleMouseEnter(media.id)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <ShootDetailMedia
-                      shoot={shoot}
-                      media={media}
-                      onUpdate={onUpdate}
-                      isActivePreview={hoveredMediaId === media.id}
-                    />
-                  </div>
-                ))}
+              <div className="flex flex-col gap-6">
+                {shootPreferences.groupByCategory
+                  ? Array.from(groupedMedia.entries()).map(([categoryId, mediaList]) => (
+                      <div key={categoryId} className="flex flex-col gap-2">
+                        <h3 className="text-sm font-medium text-muted-foreground">
+                          {categoryId === "uncategorized"
+                            ? "Uncategorized"
+                            : mediaList[0]?.categories.find((c) => c.id === categoryId)?.name ||
+                              "Unknown Category"}
+                        </h3>
+                        {renderMediaGrid(mediaList, Array.from(groupedMedia.values()).flat())}
+                      </div>
+                    ))
+                  : renderMediaGrid(Array.from(groupedMedia.values()).flat(), shoot.media)}
                 {isDragging && <ShootDetailDropZone shoot={shoot} onUpdate={onUpdate} />}
               </div>
             )}
           </div>
           <div className="flex gap-2 justify-between py-2">
-            <div>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  updatePreferences({ filter: { shootId: shoot.id, excludeShoots: [] } })
-                }
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Show in library
-              </Button>
-            </div>
-            <div className="flex gap-2 self-end">
+            <Button
+              variant="outline"
+              onClick={() =>
+                updatePreferences({ filter: { shootId: shoot.id, excludeShoots: [] } })
+              }
+            >
+              View in Library
+            </Button>
+            <div className="flex gap-2">
               <ShootDetailEditButton
                 isEditing={isEditing}
-                onEdit={() => {
-                  setIsEditing(true);
-                }}
+                onEdit={() => setIsEditing(true)}
                 onCancel={handleCancel}
               />
               <ShootDetailDeleteButton shoot={shoot} onUpdate={onUpdate} />
@@ -186,4 +142,8 @@ export const ShootDetail: FC<ShootDetailProps> = ({ shoot, onUpdate = () => {} }
       </AccordionItem>
     </Accordion>
   );
+};
+
+export const ShootDetail: FC<ShootDetailProps> = ({ shoot, groupedMedia, onUpdate }) => {
+  return <ShootDetailContent shoot={shoot} groupedMedia={groupedMedia} onUpdate={onUpdate} />;
 };

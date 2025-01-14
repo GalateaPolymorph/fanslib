@@ -1,4 +1,4 @@
-import { MediaTileLite } from "@renderer/components/MediaTileLite";
+import { MediaTileLite } from "@renderer/components/MediaTile";
 import { Button } from "@renderer/components/ui/button";
 import {
   Tooltip,

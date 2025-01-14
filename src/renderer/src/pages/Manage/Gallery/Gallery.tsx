@@ -1,13 +1,9 @@
 import { cn } from "@renderer/lib/utils";
-import { Check } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../../features/library/entity";
 import { MediaTile } from "../../../components/MediaTile";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
-import { useMediaDrag } from "../../../contexts/MediaDragContext";
-import { useSelection } from "../useSelection";
+import { MediaSelectionProvider, useMediaSelection } from "../../../contexts/MediaSelectionContext";
 import { GalleryActionBar } from "./GalleryActionBar";
 import { GalleryEmpty } from "./GalleryEmpty";
 
@@ -19,42 +15,11 @@ type GalleryProps = {
   onUpdate: () => void;
 };
 
-export const Gallery = ({ medias, error, libraryPath, onScan, onUpdate }: GalleryProps) => {
-  const navigate = useNavigate();
+const GalleryContent = ({ medias, error, libraryPath, onScan, onUpdate }: GalleryProps) => {
   const { preferences } = useLibraryPreferences();
-  const { startMediaDrag, endMediaDrag } = useMediaDrag();
 
-  const [currentHoveredIndex, setCurrentHoveredIndex] = useState<number | null>(null);
-  const {
-    selectedMediaIds,
-    selectedCategories,
-    isSelected,
-    toggleMediaSelection,
-    clearSelection,
-    lastClickedIndex,
-    isShiftPressed,
-  } = useSelection({ media: medias });
-
-  const handleMouseEnter = (mediaId: string) => {
-    const currentIndex = medias.findIndex((m) => m.id === mediaId);
-    setCurrentHoveredIndex(currentIndex);
-  };
-
-  const handleMouseLeave = () => {
-    setCurrentHoveredIndex(null);
-  };
-
-  const isHighlighted = (index: number) => {
-    if (lastClickedIndex === null || currentHoveredIndex === null) return false;
-    if (selectedMediaIds.size === 0) return false;
-    if (!isShiftPressed) return false;
-
-    const highlighted =
-      index >= Math.min(lastClickedIndex, currentHoveredIndex) &&
-      index <= Math.max(lastClickedIndex, currentHoveredIndex);
-
-    return highlighted;
-  };
+  const { selectedMediaIds, clearSelection } = useMediaSelection();
+  const selectedMediaItems = medias.filter((m) => selectedMediaIds.has(m.id));
 
   if (error) {
     return (
@@ -64,13 +29,10 @@ export const Gallery = ({ medias, error, libraryPath, onScan, onUpdate }: Galler
     );
   }
 
-  const selectedMediaItems = medias.filter((m) => selectedMediaIds.has(m.id));
-
   return (
     <div className="h-full">
       <GalleryActionBar
         selectedCount={selectedMediaIds.size}
-        selectedCategories={selectedCategories}
         selectedMedia={selectedMediaItems}
         onClearSelection={clearSelection}
         onUpdate={onUpdate}
@@ -85,70 +47,31 @@ export const Gallery = ({ medias, error, libraryPath, onScan, onUpdate }: Galler
           )}
         >
           {medias.map((media, index) => (
-            <div
+            <MediaTile
               key={media.id}
-              draggable
-              onDragStart={(e) => {
-                const selectedItems = selectedMediaIds.has(media.id)
-                  ? medias.filter((m) => selectedMediaIds.has(m.id))
-                  : [media];
-                startMediaDrag(e, selectedItems);
-              }}
-              onDragEnd={endMediaDrag}
-              onMouseEnter={() => handleMouseEnter(media.id)}
-              onMouseLeave={handleMouseLeave}
-              onClick={(e) => {
-                if (selectedMediaIds.size > 0) {
-                  toggleMediaSelection(media.id, e);
-                } else if (!(e.target as HTMLElement).closest(".selection-circle")) {
-                  navigate(`/content/${encodeURIComponent(media.id)}`);
-                }
-              }}
-              className={cn(
-                "relative rounded-lg overflow-hidden cursor-pointer group aspect-square",
-                isHighlighted(index) && "ring-2 ring-primary/50"
-              )}
-            >
-              <div
-                className={cn("absolute inset-0", {
-                  "bg-primary/5": isSelected(media.id),
-                })}
-              >
-                <MediaTile
-                  className={cn("transition-transform duration-80 ease-in-out", {
-                    "bg-primary/5": isSelected(media.id),
-                  })}
-                  media={media}
-                  isActivePreview={index === currentHoveredIndex}
-                />
-              </div>
-              <div
-                className={cn(
-                  "selection-circle absolute top-2 right-2 w-5 h-5 rounded-full",
-                  "transition-opacity duration-200",
-                  "flex items-center justify-center",
-                  "border-2 cursor-pointer",
-                  "hover:opacity-100 group-hover:opacity-100",
-                  {
-                    "opacity-100 bg-primary border-primary text-primary-foreground": isSelected(
-                      media.id
-                    ),
-                    "opacity-0 bg-background/80 border-foreground/20 hover:border-foreground/40":
-                      !isSelected(media.id),
-                  }
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleMediaSelection(media.id, e);
-                }}
-              >
-                {selectedMediaIds.has(media.id) && <Check className="w-3 h-3" />}
-              </div>
-            </div>
+              media={media}
+              allMedias={medias}
+              withSelection
+              withPreview
+              withDragAndDrop
+              withDuration
+              withCategoryHint
+              withPostsPopover
+              withTypeIcon
+              index={index}
+            />
           ))}
           {medias.length === 0 && <GalleryEmpty libraryPath={libraryPath} onScan={onScan} />}
         </div>
       </ScrollArea>
     </div>
+  );
+};
+
+export const Gallery = (props: GalleryProps) => {
+  return (
+    <MediaSelectionProvider media={props.medias}>
+      <GalleryContent {...props} />
+    </MediaSelectionProvider>
   );
 };

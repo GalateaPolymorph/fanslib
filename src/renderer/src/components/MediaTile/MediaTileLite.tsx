@@ -1,9 +1,8 @@
 import { Image as ImageIcon, Video } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Media } from "../../../features/library/entity";
-import { useMediaDrag } from "../contexts/MediaDragContext";
-import { cn } from "../lib/utils";
-import { formatDuration } from "../lib/video";
+import { Media } from "../../../../features/library/entity";
+import { cn } from "../../lib/utils";
+import { formatDuration } from "../../lib/video";
 
 export type MediaTileLiteProps = {
   media: Media;
@@ -11,7 +10,6 @@ export type MediaTileLiteProps = {
   onImageError?: (error: boolean) => void;
   imageError?: boolean;
   isActivePreview?: boolean;
-  draggable?: boolean;
 };
 
 export const MediaTileLite = memo(
@@ -21,13 +19,11 @@ export const MediaTileLite = memo(
     onImageError,
     imageError: controlledImageError,
     isActivePreview = false,
-    draggable = true,
   }: MediaTileLiteProps) => {
     const [localImageError, setLocalImageError] = useState(false);
     const imageError = controlledImageError ?? localImageError;
     const videoRef = useRef<HTMLVideoElement>(null);
     const previewIntervalRef = useRef<number>();
-    const { startMediaDrag, endMediaDrag } = useMediaDrag();
 
     const handleImageError = useCallback(() => {
       setLocalImageError(true);
@@ -73,16 +69,7 @@ export const MediaTileLite = memo(
     const mediaUrl = `media://${media.path}`;
 
     return (
-      <div
-        className={cn(
-          "relative aspect-square bg-muted rounded-md overflow-hidden",
-          draggable && "active:cursor-grabbing",
-          className
-        )}
-        draggable={draggable}
-        onDragStart={(e) => startMediaDrag(e, [media])}
-        onDragEnd={endMediaDrag}
-      >
+      <div className={cn("relative aspect-square bg-muted rounded-md overflow-hidden", className)}>
         {media.type === "video" ? (
           <>
             {!isActivePreview && (
@@ -131,13 +118,6 @@ export const MediaTileLite = memo(
           </div>
         )}
         <div className="absolute bottom-1 left-1 flex gap-1 z-10">
-          <div className="text-background p-1 rounded bg-black/50 size-5">
-            {media.type === "video" ? (
-              <Video className="size-3" />
-            ) : (
-              <ImageIcon className="size-3" />
-            )}
-          </div>
           {media.categories?.length > 0 && (
             <div className="size-5 p-1 rounded bg-black/50 flex items-center justify-center">
               {media.categories.map((category) => (
