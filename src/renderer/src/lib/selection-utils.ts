@@ -6,7 +6,7 @@ export type SelectionState<T extends string | number = string | number> = {
 };
 
 export const getSelectionStates = <T extends { id: string | number }, K extends string | number>(
-  items: T[],
+  _items: T[],
   selectedItems: T[],
   getIds: (item: T) => K[]
 ): SelectionState<K>[] => {

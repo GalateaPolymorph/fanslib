@@ -15,7 +15,7 @@ import { Input } from "@renderer/components/ui/input";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { cn } from "@renderer/lib/utils";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Channel } from "../../../../features/channels/entity";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
@@ -46,16 +46,16 @@ export const ChannelView = ({
   const [isAddingSchedule, setIsAddingSchedule] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ContentSchedule | null>(null);
 
+  const loadSchedules = useCallback(async () => {
+    const schedules = await window.api["content-schedule:getByChannel"](channel.id);
+    setSchedules(schedules);
+  }, [channel]);
+
   useEffect(() => {
     setName(channel.name);
     setDescription(channel.description || "");
     loadSchedules();
-  }, [channel]);
-
-  const loadSchedules = async () => {
-    const schedules = await window.api["content-schedule:getByChannel"](channel.id);
-    setSchedules(schedules);
-  };
+  }, [channel, loadSchedules]);
 
   const handleSave = async () => {
     const updatedChannel = await window.api["channel:update"](channel.id, {

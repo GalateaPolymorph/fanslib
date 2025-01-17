@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 import { PostDetail } from "./PostDetail/PostDetail";
 
@@ -12,7 +12,7 @@ export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
   const [error, setError] = useState<string | null>(null);
   const [openPostIds, setOpenPostIds] = useState<Set<string>>(new Set());
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setIsLoading(true);
       const posts = await window.api["post:byMediaId"](mediaId);
@@ -23,11 +23,11 @@ export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [mediaId]);
 
   useEffect(() => {
     fetchPosts();
-  }, [mediaId]);
+  }, [fetchPosts]);
 
   const handleTogglePost = (postId: string, isOpen: boolean) => {
     setOpenPostIds((prev) => {

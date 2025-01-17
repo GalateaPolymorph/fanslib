@@ -41,6 +41,7 @@ export const ContentScheduleForm = ({
   const [newTime, setNewTime] = useState("12:00");
 
   // Get the first day of the week based on locale (0 = Sunday, 1 = Monday, etc.)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const firstDayOfWeek = (new Intl.Locale(navigator.language) as any).weekInfo?.firstDay || 0;
 
   // Create array of days starting from the locale's first day

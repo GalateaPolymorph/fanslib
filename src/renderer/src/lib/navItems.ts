@@ -3,7 +3,7 @@ import { FileText, LayoutGrid, Settings, Share2 } from "lucide-react";
 type NavItem = {
   title: string;
   url: string;
-  icon: any;
+  icon: React.ElementType;
 };
 
 export const navItems: NavItem[] = [

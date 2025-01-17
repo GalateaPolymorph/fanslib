@@ -127,7 +127,7 @@ export const MediaSelectionProvider = ({ children, media }: MediaSelectionProvid
         setLastClickedIndex(null);
       }
     }
-  }, [mediaList]);
+  }, [mediaList, selectedMediaIds]);
 
   const getIndexRange = (index1: number, index2: number) => {
     const start = Math.min(index1, index2);

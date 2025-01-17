@@ -28,9 +28,9 @@ const InfoTooltip = () => (
     </TooltipTrigger>
     <TooltipContent side="top" align="center" className="max-w-[300px]">
       <p>
-        FansLib helps you organize your posts but cannot automatically post them. You'll need to
-        manually post/schedule content on each platform as they don't support external posting.
-        After doing so, you can mark your post as scheduled or posted here.
+        FansLib helps you organize your posts but cannot automatically post them. You&apos;ll need
+        to manually post/schedule content on each platform as they don&apos;t support external
+        posting. After doing so, you can mark your post as scheduled or posted here.
       </p>
     </TooltipContent>
   </Tooltip>

@@ -12,7 +12,7 @@ import { MediaTileProps } from "./types";
 
 export const MediaTile = (props: MediaTileProps) => {
   const navigate = useNavigate();
-  const { media, allMedias, index } = props;
+  const { media, allMedias } = props;
 
   const { startMediaDrag, endMediaDrag } = useMediaDrag();
   const { setCurrentHoveredMediaId, isHighlighted, selectedMediaIds, toggleMediaSelection } =

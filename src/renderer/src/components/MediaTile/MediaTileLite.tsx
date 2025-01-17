@@ -134,3 +134,5 @@ export const MediaTileLite = memo(
     );
   }
 );
+
+MediaTileLite.displayName = "MediaTileLite";

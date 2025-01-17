@@ -50,7 +50,8 @@ export const ShootDetailDeleteButton: FC<ShootDetailDeleteButtonProps> = ({ shoo
         <AlertDialogHeader>
           <AlertDialogTitle>Delete shoot?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete the shoot "{shoot.name}". This action cannot be undone.
+            This will permanently delete the shoot &quot;{shoot.name}&quot;. This action cannot be
+            undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

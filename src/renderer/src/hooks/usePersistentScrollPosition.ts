@@ -8,7 +8,7 @@ export const usePersistentScrollPosition = <T extends HTMLElement>(
 
   useEffect(() => {
     const element = elementRef.current;
-    if (!element) return;
+    if (!element) return undefined;
 
     const saveScrollPosition = () => {
       scrollPositionRef.current = element.scrollTop;
@@ -23,6 +23,7 @@ export const usePersistentScrollPosition = <T extends HTMLElement>(
     if (!element) return;
 
     element.scrollTop = scrollPositionRef.current;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return elementRef;

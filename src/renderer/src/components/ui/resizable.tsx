@@ -51,6 +51,8 @@ const ResizablePanelGroup = React.forwardRef<
   );
 });
 
+ResizablePanelGroup.displayName = "ResizablePanelGroup";
+
 type ResizablePanelProps = React.ComponentProps<typeof ResizablePrimitive.Panel> & {
   isFirst: boolean;
   collapsible?: boolean;
@@ -104,7 +106,7 @@ const ResizablePanel = ({
     if (layout) {
       groupRef.current.setLayout(layout);
     }
-  }, [groupRef?.current]);
+  }, [groupRef, id, isFirst]);
 
   const autoCollapseThreshold = 10; // percentage of total width
 

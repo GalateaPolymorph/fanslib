@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { PaginatedResponse } from "../../../features/_common/pagination";
 import { GetAllMediaParams } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
@@ -34,7 +34,7 @@ export const LibraryProvider = ({ children }: LibraryProviderProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchLibrary = async () => {
+  const fetchLibrary = useCallback(async () => {
     if (!libraryPath) return;
 
     setIsLoading(true);
@@ -55,11 +55,11 @@ export const LibraryProvider = ({ children }: LibraryProviderProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [libraryPath, preferences]);
 
   useEffect(() => {
     fetchLibrary();
-  }, [libraryPath, preferences]);
+  }, [fetchLibrary]);
 
   return (
     <LibraryContext.Provider
