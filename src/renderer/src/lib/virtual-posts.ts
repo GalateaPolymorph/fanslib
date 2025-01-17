@@ -95,9 +95,7 @@ export const generateVirtualPosts = (
   currentTime: Date = new Date()
 ): VirtualPost[] => {
   return schedules.flatMap((schedule) => {
-    console.log(schedule);
     const dates = generateScheduleDates(schedule, currentTime);
-    console.log(dates);
 
     // filter out posts that already exist for the schedule on this date
     const filteredDates = dates.filter((date) => {

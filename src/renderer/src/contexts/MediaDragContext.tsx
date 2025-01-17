@@ -16,7 +16,6 @@ type MediaDragProviderProps = {
 
 export const MediaDragProvider: FC<MediaDragProviderProps> = ({ children }) => {
   const [draggedMedias, setDraggedMedias] = useState<Media[]>([]);
-  console.log("draggedMedias", draggedMedias);
 
   const startMediaDrag = (_: React.DragEvent<HTMLDivElement>, medias: Media[]) => {
     setDraggedMedias(medias);

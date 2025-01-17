@@ -20,7 +20,7 @@ export const useDragOver = (options: UseDragOverOptions = {}) => {
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // setIsOver(false);
+    setIsOver(false);
     options.onDragLeave?.(e);
   };
 

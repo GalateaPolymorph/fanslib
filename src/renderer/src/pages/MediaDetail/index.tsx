@@ -39,7 +39,7 @@ export const MediaDetail = () => {
       <CreatePostDialog
         open={createPostDialogOpen}
         onOpenChange={setCreatePostDialogOpen}
-        media={media}
+        media={[media]}
       />
       <div className="overflow-y-auto">
         <div className="max-w-[1280px] px-8 mx-auto pt-8 pb-12">

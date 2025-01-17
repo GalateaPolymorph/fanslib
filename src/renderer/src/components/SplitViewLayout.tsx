@@ -1,12 +1,9 @@
 import { useRef, type ReactNode } from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "./ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./ui/resizable";
 
 type SplitViewLayoutProps = {
+  id;
   mainContent: ReactNode;
   sideContent: ReactNode;
   sideContentHeader?: ReactNode;
@@ -18,6 +15,7 @@ type SplitViewLayoutProps = {
 };
 
 export const SplitViewLayout = ({
+  id,
   mainContent,
   sideContent,
   sideContentHeader,
@@ -31,17 +29,21 @@ export const SplitViewLayout = ({
 
   return (
     <div className="h-full w-full overflow-hidden">
-      <ResizablePanelGroup direction="horizontal" ref={panelGroupRef}>
-        <ResizablePanel 
-          defaultSize={mainDefaultSize} 
-          minSize={mainMinSize} 
-          panelIndex={0} 
+      <ResizablePanelGroup id={id} direction="horizontal" ref={panelGroupRef}>
+        <ResizablePanel
+          id={id}
+          isFirst
+          defaultSize={mainDefaultSize}
+          minSize={mainMinSize}
+          panelIndex={0}
           groupRef={panelGroupRef}
         >
           {mainContent}
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel
+          id={id}
+          isFirst={false}
           defaultSize={sideDefaultSize}
           minSize={sideMinSize}
           maxSize={sideMaxSize}

@@ -1,7 +1,7 @@
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
 import { MediaSelection } from "@renderer/components/MediaSelection";
-import { MediaTile } from "@renderer/components/MediaTile";
+import { MediaTileLite } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
@@ -21,21 +21,27 @@ import { useChannels } from "../../contexts/ChannelContext";
 type CreatePostDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  media: Media;
+  media: Media[];
+  initialDate?: Date;
 };
 
-export const CreatePostDialog = ({ open, onOpenChange, media }: CreatePostDialogProps) => {
+export const CreatePostDialog = ({
+  open,
+  onOpenChange,
+  media,
+  initialDate,
+}: CreatePostDialogProps) => {
   const { toast } = useToast();
   const { channels } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate || new Date());
   const [status, setStatus] = useState<PostStatus>("draft");
-  const [selectedMedia, setSelectedMedia] = useState<Media[]>([media]);
+  const [selectedMedia, setSelectedMedia] = useState<Media[]>(media);
 
   useEffect(() => {
     if (!open) return;
     if (selectedMedia.length === 0) {
-      setSelectedMedia([media]);
+      setSelectedMedia(media);
     }
   }, [open, media, selectedMedia.length]);
 
@@ -44,12 +50,18 @@ export const CreatePostDialog = ({ open, onOpenChange, media }: CreatePostDialog
     setSelectedChannel([channels[0].id]);
   }, [channels]);
 
+  useEffect(() => {
+    if (initialDate) {
+      setSelectedDate(initialDate);
+    }
+  }, [initialDate]);
+
   const handleMediaSelect = (mediaItem: Media) => {
     setSelectedMedia((prev) => {
       const isSelected = prev.some((m) => m.id === mediaItem.id);
       if (isSelected) {
-        // Don't allow deselecting the initial media
-        if (mediaItem.id === media.id) return prev;
+        // Don't allow deselecting the initial media items
+        if (media.some((m) => m.id === mediaItem.id)) return prev;
         return prev.filter((m) => m.id !== mediaItem.id);
       } else {
         return [...prev, mediaItem];
@@ -71,7 +83,7 @@ export const CreatePostDialog = ({ open, onOpenChange, media }: CreatePostDialog
         {
           date: selectedDate.toISOString(),
           channelId: selectedChannel[0],
-          categoryId: media.categories[0]?.id,
+          categoryId: media[0].categories[0]?.id,
           status,
           caption: "",
         },
@@ -127,7 +139,7 @@ export const CreatePostDialog = ({ open, onOpenChange, media }: CreatePostDialog
                 <div className="grid grid-cols-3 gap-2">
                   {selectedMedia.map((item) => (
                     <div key={item.id} className="relative aspect-square">
-                      <MediaTile media={item} isActivePreview={false} />
+                      <MediaTileLite media={item} isActivePreview={false} />
                     </div>
                   ))}
                 </div>
@@ -139,8 +151,8 @@ export const CreatePostDialog = ({ open, onOpenChange, media }: CreatePostDialog
             <MediaSelection
               selectedMedia={selectedMedia}
               onMediaSelect={handleMediaSelect}
-              referenceMedia={media}
-              excludeMediaIds={[media.id]}
+              referenceMedia={media[0]}
+              excludeMediaIds={media.map((m) => m.id)}
             />
           </div>
         </div>

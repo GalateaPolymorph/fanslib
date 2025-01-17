@@ -1,5 +1,5 @@
 import { GripVertical, PanelRightClose, PanelRightOpen } from "lucide-react";
-import React, { createContext, useCallback, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
 import { cn } from "../../lib/utils";
 import { Button } from "./button";
@@ -14,17 +14,32 @@ const ResizableContext = createContext<ResizableContextType>({
   setIsDragging: () => undefined,
 });
 
-type ResizablePanelGroupProps = React.ComponentProps<typeof ResizablePrimitive.PanelGroup>;
+type ResizablePanelGroupProps = React.ComponentProps<typeof ResizablePrimitive.PanelGroup> & {
+  id: string;
+};
 
 const ResizablePanelGroup = React.forwardRef<
   ResizablePrimitive.ImperativePanelGroupHandle,
   ResizablePanelGroupProps
->(({ className, ...props }, ref) => {
+>(({ className, id, ...props }, ref) => {
   const [isDragging, setIsDragging] = useState(false);
+
+  const [shouldSaveLayout, setShouldSaveLayout] = useState(false);
+
+  useEffect(() => {
+    if (shouldSaveLayout) return;
+    setTimeout(() => {
+      setShouldSaveLayout(true);
+    }, 1000);
+  }, [shouldSaveLayout]);
 
   return (
     <ResizableContext.Provider value={{ isDragging, setIsDragging }}>
       <ResizablePrimitive.PanelGroup
+        onLayout={(layout) => {
+          if (!shouldSaveLayout) return;
+          saveLayoutToLocalStorage(id, layout);
+        }}
         ref={ref}
         className={cn(
           "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
@@ -37,6 +52,7 @@ const ResizablePanelGroup = React.forwardRef<
 });
 
 type ResizablePanelProps = React.ComponentProps<typeof ResizablePrimitive.Panel> & {
+  isFirst: boolean;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -48,7 +64,18 @@ type ResizablePanelProps = React.ComponentProps<typeof ResizablePrimitive.Panel>
   expandIcon?: React.ReactNode;
 };
 
+const saveLayoutToLocalStorage = (id: string, layout: number[]) => {
+  localStorage.setItem(`resizable-layout-${id}`, JSON.stringify(layout));
+};
+
+const getLayoutFromLocalStorage = (id: string) => {
+  const layout = localStorage.getItem(`resizable-layout-${id}`);
+  return layout ? JSON.parse(layout) : null;
+};
+
 const ResizablePanel = ({
+  id,
+  isFirst,
   className,
   children,
   collapsible,
@@ -66,6 +93,18 @@ const ResizablePanel = ({
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [previousSize, setPreviousSize] = useState(defaultSize);
   const { isDragging } = useContext(ResizableContext);
+
+  const [animationDelayPassed, setAnimationDelayPassed] = useState(false);
+
+  useEffect(() => {
+    if (!groupRef?.current) return;
+    if (!isFirst) return;
+
+    const layout = getLayoutFromLocalStorage(id);
+    if (layout) {
+      groupRef.current.setLayout(layout);
+    }
+  }, [groupRef?.current]);
 
   const autoCollapseThreshold = 10; // percentage of total width
 
@@ -105,11 +144,21 @@ const ResizablePanel = ({
     onCollapsedChange?.(newCollapsed);
   }, [isCollapsed, collapsedSize, previousSize, groupRef, panelIndex, onCollapsedChange]);
 
+  useEffect(() => {
+    if (animationDelayPassed) return;
+
+    setTimeout(() => {
+      setAnimationDelayPassed(true);
+    }, 100);
+  }, [animationDelayPassed]);
+
+  const shouldAnimate = !isDragging && animationDelayPassed;
+
   return (
     <ResizablePrimitive.Panel
       className={cn(
         "relative flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
-        !isDragging && "transition-all duration-300 ease-in-out",
+        shouldAnimate && "transition-all duration-300 ease-in-out",
         isCollapsed && "cursor-pointer hover:bg-accent/50",
         className
       )}
@@ -137,7 +186,7 @@ const ResizablePanel = ({
             )}
             <div
               className={cn(
-                !isDragging && "transition-opacity duration-300",
+                shouldAnimate && "transition-opacity duration-300",
                 isCollapsed ? "opacity-0" : "opacity-100"
               )}
             >
@@ -149,7 +198,7 @@ const ResizablePanel = ({
           className={cn(
             "flex-1 min-h-0",
             !collapsible && "h-full",
-            !isDragging && "transition-opacity duration-300",
+            !shouldAnimate && "transition-opacity duration-300",
             isCollapsed ? "opacity-0" : "opacity-100"
           )}
         >
@@ -161,7 +210,7 @@ const ResizablePanel = ({
             <div
               className={cn(
                 "rounded-full bg-accent/10 p-2",
-                !isDragging && "transition-colors",
+                !shouldAnimate && "transition-colors",
                 "hover:bg-accent/20"
               )}
             >

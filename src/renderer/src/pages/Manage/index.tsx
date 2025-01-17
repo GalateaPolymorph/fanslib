@@ -17,6 +17,7 @@ export const ManagePage = () => {
 
   return (
     <SplitViewLayout
+      id="manage-page"
       mainContent={<Library />}
       sideContent={<Shoots />}
       sideContentHeader={<h1 className="text-2xl font-bold">Shoots</h1>}
