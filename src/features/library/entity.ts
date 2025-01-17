@@ -11,6 +11,7 @@ import {
 import { Category } from "../categories/entity";
 import { PostMedia } from "../posts/entity";
 import { Shoot } from "../shoots/entity";
+import { Tag } from "../tags/entity";
 
 export type MediaType = "image" | "video";
 
@@ -64,6 +65,14 @@ export class Media {
     inverseJoinColumn: { name: "shoot_id", referencedColumnName: "id" },
   })
   shoots: Shoot[];
+
+  @ManyToMany(() => Tag, { cascade: true })
+  @JoinTable({
+    name: "media_tags",
+    joinColumn: { name: "media_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "tag_id", referencedColumnName: "id" },
+  })
+  tags!: Tag[];
 }
 
 export type MediaWithoutRelations = Omit<Media, "id" | "categories">;

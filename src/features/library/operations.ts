@@ -3,6 +3,7 @@ import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { PaginatedResponse } from "../_common/pagination";
 import { Category } from "../categories/entity";
+import { Tag } from "../tags/entity";
 import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 
@@ -43,7 +44,7 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
   const database = await db();
   return database.manager.findOne(Media, {
     where: { id },
-    relations: ["categories", "postMedia"],
+    relations: ["categories", "postMedia", "tags"],
   });
 };
 
@@ -60,7 +61,8 @@ export const fetchAllMedia = async (
     .leftJoinAndSelect("media.categories", "categories")
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
-    .leftJoinAndSelect("post.channel", "channel");
+    .leftJoinAndSelect("post.channel", "channel")
+    .leftJoinAndSelect("media.tags", "tags");
 
   // Apply category filter
   if (params?.categories?.length) {
@@ -302,4 +304,26 @@ export const removeCategoriesFromMedia = async (path: string, categoryIds: strin
 
   media.categories = media.categories.filter((cat) => !categoryIds.includes(cat.id));
   return repository.save(media);
+};
+
+export const updateMediaTags = async (mediaId: string, tagIds: number[]): Promise<Media> => {
+  const dataSource = await db();
+  const mediaRepository = dataSource.getRepository(Media);
+  const tagRepository = dataSource.getRepository(Tag);
+
+  const media = await mediaRepository.findOne({
+    where: { id: mediaId },
+    relations: ["tags"],
+  });
+
+  if (!media) {
+    throw new Error("Media not found");
+  }
+
+  const tags = await tagRepository.find({
+    where: { id: In(tagIds) },
+  });
+  media.tags = tags;
+
+  return mediaRepository.save(media);
 };

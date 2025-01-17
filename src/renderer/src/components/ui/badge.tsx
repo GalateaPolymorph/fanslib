@@ -15,6 +15,8 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        halfSelected:
+          "relative overflow-hidden border-primary text-primary before:absolute before:inset-0 before:text-white before:flex before:items-center before:bg-primary before-clip-path-diagonal-30 before:content-[attr(data-content)] before:justify-center [&.size-default:before]:px-2.5 [&.size-default:before]:py-0.5 [&.size-sm:before]:px-2 [&.size-sm:before]:py-0.5 [&.size-lg:before]:px-3 [&.size-lg:before]:py-1",
       },
       size: {
         default: "px-2.5 py-0.5 text-xs",
@@ -31,6 +33,14 @@ const badgeVariants = cva(
 
 export type BadgeProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>;
 
-export const Badge = ({ className, variant, size, ...props }: BadgeProps) => {
-  return <div className={cn(badgeVariants({ variant, size }), className)} {...props} />;
+export const Badge = ({ className, variant, size = "default", children, ...props }: BadgeProps) => {
+  return (
+    <div
+      className={cn(badgeVariants({ variant, size }), `size-${size}`, className)}
+      data-content={children}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 };

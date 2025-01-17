@@ -144,3 +144,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  .before-clip-path-diagonal-30::before {
+    clip-path: polygon(0 0, 66% 0, 33% 100%, 0 100%);
+  }
+}

@@ -46,7 +46,7 @@ export type FileScanResult = {
 };
 
 export type UpdateMediaPayload = Partial<
-  Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia">
+  Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia" | "tags">
 > & { categoryIds?: string[] };
 
 const methods = [
@@ -58,6 +58,7 @@ const methods = [
   "delete",
   "onScanProgress",
   "onScanComplete",
+  "updateTags",
 ] as const;
 export type LibraryHandlers = {
   scan: (_: unknown) => Promise<LibraryScanResult>;
@@ -71,6 +72,7 @@ export type LibraryHandlers = {
     listener: (_: unknown, progress: LibraryScanProgress) => void
   ) => void;
   onScanComplete: (_: unknown, listener: (_: unknown, result: LibraryScanResult) => void) => void;
+  updateTags: (_: unknown, mediaId: string, tagIds: number[]) => Promise<Media>;
 };
 
 export const namespace = "library" as const;

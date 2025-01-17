@@ -2,6 +2,7 @@ import { cn } from "@renderer/lib/utils";
 import { X } from "lucide-react";
 import { Media } from "../../../../../features/library/entity";
 import { CategorySelect } from "../../../components/CategorySelect";
+import { TagSelect, TagSelectionState } from "../../../components/TagSelect";
 
 type GalleryActionBarProps = {
   selectedCount: number;
@@ -21,6 +22,23 @@ export const GalleryActionBar = ({
   const selectedCategories = selectedMedia.flatMap((media) =>
     media.categories.map((cat) => cat.id)
   );
+
+  const getTagStates = (): TagSelectionState[] => {
+    const tagCounts = new Map<number, number>();
+
+    // Count how many media items have each tag
+    selectedMedia.forEach((media) => {
+      media.tags.forEach((tag) => {
+        tagCounts.set(tag.id, (tagCounts.get(tag.id) ?? 0) + 1);
+      });
+    });
+
+    // Convert counts to states
+    return Array.from(tagCounts.entries()).map(([id, count]) => ({
+      id,
+      state: count === selectedMedia.length ? "selected" : "half-selected",
+    }));
+  };
 
   const handleCategoryChange = async (categoryIds: string[]) => {
     const lastChanged =
@@ -43,6 +61,29 @@ export const GalleryActionBar = ({
         return window.api["library:update"](media.id, {
           categoryIds: updatedCategoryIds,
         });
+      })
+    );
+
+    onUpdate();
+  };
+
+  const handleTagChange = async (
+    tagStates: TagSelectionState[] | undefined,
+    changedTagId: number
+  ) => {
+    if (!tagStates || selectedCount === 0 || changedTagId === -1) return;
+
+    const allHaveTag = selectedMedia.every((media) =>
+      media.tags.some((tag) => tag.id === changedTagId)
+    );
+
+    await Promise.all(
+      selectedMedia.map((media) => {
+        const updatedTagIds = allHaveTag
+          ? media.tags.filter((tag) => tag.id !== changedTagId).map((tag) => tag.id)
+          : [...media.tags.map((tag) => tag.id), changedTagId];
+
+        return window.api["library:updateTags"](media.id, updatedTagIds);
       })
     );
 
@@ -82,13 +123,19 @@ export const GalleryActionBar = ({
             Clear selection
           </button>
         </div>
-        <div className="space-y-2">
-          <div className="text-sm font-medium text-muted-foreground">Assign category</div>
-          <CategorySelect
-            value={selectedCategories}
-            onChange={handleCategoryChange}
-            multiple={true}
-          />
+        <div className="flex gap-6">
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-muted-foreground">Assign category</div>
+            <CategorySelect
+              value={selectedCategories}
+              onChange={handleCategoryChange}
+              multiple={true}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-muted-foreground">Assign tags</div>
+            <TagSelect value={getTagStates()} onChange={handleTagChange} multiple={true} />
+          </div>
         </div>
       </div>
     </div>

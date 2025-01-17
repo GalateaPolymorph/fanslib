@@ -22,5 +22,10 @@ export const MediaDetailCategorySelect = ({ media }: Props) => {
     }
   };
 
-  return <CategorySelect value={categories} onChange={handleChangeCategory} />;
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="text-lg font-medium">Categories</h3>
+      <CategorySelect value={categories} onChange={handleChangeCategory} />
+    </div>
+  );
 };

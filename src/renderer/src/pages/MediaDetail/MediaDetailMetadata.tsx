@@ -24,6 +24,7 @@ export const MediaDetailMetadata = ({ media }: Props) => {
 
   return (
     <div className="grid grid-cols-[1fr_3fr] gap-x-4 gap-y-2 text-sm">
+      <h3 className="text-lg font-medium col-span-2">Metadata</h3>
       <span className="text-muted-foreground">Type</span>
       <span className="capitalize">{media.type}</span>
 

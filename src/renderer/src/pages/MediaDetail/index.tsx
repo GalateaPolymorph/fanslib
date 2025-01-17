@@ -9,6 +9,7 @@ import { MediaDetailCategorySelect } from "./MediaDetailCategorySelect";
 import { MediaDetailDeleteButton } from "./MediaDetailDeleteButton";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
+import { MediaDetailTagSelect } from "./MediaDetailTagSelect";
 import { MediaPosts } from "./MediaPosts";
 
 export const MediaDetail = () => {
@@ -48,10 +49,7 @@ export const MediaDetail = () => {
             Back to gallery
           </Button>
           <div className="flex justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-semibold tracking-tight">{media.name}</h1>
-              <MediaDetailCategorySelect media={media} />
-            </div>
+            <h1 className="text-3xl font-semibold tracking-tight">{media.name}</h1>
             <div className="flex gap-2">
               <MediaDetailRevealInFinderButton path={media.path} />
               <MediaDetailDeleteButton id={media.id} mediaType={media.type} />
@@ -62,8 +60,10 @@ export const MediaDetail = () => {
             <div className="rounded-md bg-muted aspect-square overflow-hidden">
               <MediaView media={media} controls />
             </div>
-            <div className="grid grid-cols-[3fr_1fr] items-start gap-4">
+            <div className="flex flex-col gap-6">
               <MediaDetailMetadata media={media} />
+              <MediaDetailCategorySelect media={media} />
+              <MediaDetailTagSelect media={media} />
             </div>
           </div>
 
