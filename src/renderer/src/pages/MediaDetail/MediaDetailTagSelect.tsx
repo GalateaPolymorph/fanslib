@@ -33,7 +33,7 @@ export const MediaDetailTagSelect = ({ media }: MediaDetailTagSelectProps) => {
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-lg font-medium">Tags</h3>
-      <TagSelect value={tagStates} multiple onChange={updateTags} />
+      <TagSelect value={tagStates} multiple onChange={updateTags} size="lg" />
       {tagStates.length > 0 && (
         <div className="text-sm text-muted-foreground">
           {tagStates

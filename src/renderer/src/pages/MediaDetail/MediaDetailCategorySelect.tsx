@@ -1,22 +1,39 @@
 import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
-import { CategorySelect } from "../../components/CategorySelect";
+import { CategorySelect, CategorySelectionState } from "../../components/CategorySelect";
 
 type Props = {
   media: Media;
 };
 
 export const MediaDetailCategorySelect = ({ media }: Props) => {
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categoryStates, setCategoryStates] = useState<CategorySelectionState[]>([]);
 
   useEffect(() => {
-    setCategories((media.categories ?? []).map((cat) => cat.id));
+    setCategoryStates(
+      (media.categories ?? []).map((cat) => ({
+        id: cat.id,
+        state: "selected" as const,
+      }))
+    );
   }, [media]);
 
-  const handleChangeCategory = async (newCategories: string[]) => {
+  const handleChangeCategory = async (
+    newCategoryStates: CategorySelectionState[] | undefined,
+    _changedCategoryId: string
+  ) => {
     try {
-      await window.api["library:update"](media.id, { categoryIds: newCategories });
-      setCategories(newCategories);
+      const selectedCategoryIds = (newCategoryStates ?? [])
+        .filter((c) => c.state === "selected")
+        .map((c) => c.id);
+
+      await window.api["library:update"](media.id, { categoryIds: selectedCategoryIds });
+      setCategoryStates(
+        selectedCategoryIds.map((id) => ({
+          id,
+          state: "selected" as const,
+        }))
+      );
     } catch (error) {
       console.error("Failed to update media category:", error);
     }
@@ -25,7 +42,7 @@ export const MediaDetailCategorySelect = ({ media }: Props) => {
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-lg font-medium">Categories</h3>
-      <CategorySelect value={categories} onChange={handleChangeCategory} />
+      <CategorySelect value={categoryStates} onChange={handleChangeCategory} />
     </div>
   );
 };

@@ -68,6 +68,7 @@ export const ShootDetailMedia: FC<ShootDetailMediaProps> = ({
                   allMedias={allMedias}
                   className="w-full h-full"
                   withPreview
+                  withCategoryHint
                   withDragAndDrop
                   withSelection
                 />

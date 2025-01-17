@@ -2,11 +2,14 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 
 type Settings = {
   libraryPath: string | null;
+  theme: "light" | "dark";
+  defaultHashtags: string[];
 };
 
 type SettingsContextType = {
   settings: Settings | null;
   loading: boolean;
+  saveSettings: (updatedSettings: Partial<Settings>) => void;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -27,6 +30,12 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const saveSettings = (updatedSettings: Partial<Settings>) => {
+    const newSettings = { ...settings, ...updatedSettings };
+    setSettings(newSettings);
+    window.api["settings:save"](newSettings);
+  };
+
   useEffect(() => {
     window.api["settings:load"]().then((loadedSettings) => {
       setSettings(loadedSettings);
@@ -35,6 +44,8 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   }, []);
 
   return (
-    <SettingsContext.Provider value={{ settings, loading }}>{children}</SettingsContext.Provider>
+    <SettingsContext.Provider value={{ settings, loading, saveSettings }}>
+      {children}
+    </SettingsContext.Provider>
   );
 };

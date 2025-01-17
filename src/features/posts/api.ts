@@ -4,18 +4,18 @@ import { Post } from "./entity";
 import {
   createPost,
   deletePost,
-  fetchAllPosts,
   fetchPostById,
   fetchPostsByChannel,
   fetchPostsByMediaId,
   fetchPostsBySchedule,
+  getAllPosts,
   setFreePreview,
   updatePost,
 } from "./operations";
 
 export const handlers: PostHandlers = {
   create: (_, data, mediaIds) => createPost(data, mediaIds),
-  getAll: (_) => fetchAllPosts(),
+  getAll: (_) => getAllPosts(),
   byId: (_, id: string) => fetchPostById(id),
   bySchedule: (_, scheduleId: string) => fetchPostsBySchedule(scheduleId),
   byChannel: (_, channelId: string) => fetchPostsByChannel(channelId),

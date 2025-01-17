@@ -13,6 +13,7 @@ type TagSelectProps = {
   multiple?: boolean;
   disabledTags?: number[];
   includeNoneOption?: boolean;
+  size?: "default" | "sm" | "lg";
 };
 
 export const TagSelect = ({
@@ -21,6 +22,7 @@ export const TagSelect = ({
   multiple = true,
   disabledTags = [],
   includeNoneOption = false,
+  size = "default",
 }: TagSelectProps) => {
   const { tags, isLoading } = useTags();
 
@@ -71,8 +73,9 @@ export const TagSelect = ({
 
         return (
           <Badge
-            size="lg"
             key={tag.id}
+            size={size}
+            shape="tag"
             variant={
               state === "selected"
                 ? "default"

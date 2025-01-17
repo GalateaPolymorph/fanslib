@@ -23,7 +23,7 @@ export const SplitViewLayout = ({
   sideDefaultSize = 30,
   mainMinSize = 30,
   sideMinSize = 3,
-  sideMaxSize = 40,
+  sideMaxSize = 50,
 }: SplitViewLayoutProps) => {
   const panelGroupRef = useRef<ResizablePrimitive.ImperativePanelGroupHandle>(null);
 

@@ -2,7 +2,7 @@ import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { Media } from "../library/entity";
 import { PostCreateData } from "./api-type";
-import { Post, PostMedia, PostStatus } from "./entity";
+import { Post, PostMedia } from "./entity";
 
 export const createPost = async (postData: PostCreateData, mediaIds: string[]): Promise<Post> => {
   const dataSource = await db();
@@ -34,29 +34,6 @@ export const createPost = async (postData: PostCreateData, mediaIds: string[]): 
 
   const newPost = await getPostById(post.id);
   return newPost;
-};
-
-export const fetchAllPosts = async (): Promise<Post[]> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Post);
-
-  return repository.find({
-    relations: {
-      postMedia: {
-        media: true,
-      },
-      channel: {
-        type: true,
-      },
-      category: true,
-    },
-    order: {
-      date: "DESC",
-      postMedia: {
-        order: "ASC",
-      },
-    },
-  });
 };
 
 export const fetchPostById = async (id: string): Promise<Post | null> => {
@@ -173,30 +150,6 @@ export const fetchPostsBySchedule = async (scheduleId: string): Promise<Post[]> 
   });
 };
 
-export const fetchScheduledPosts = async (): Promise<Post[]> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Post);
-
-  return repository.find({
-    where: { status: "scheduled" },
-    relations: {
-      postMedia: {
-        media: true,
-      },
-      channel: {
-        type: true,
-      },
-      category: true,
-    },
-    order: {
-      date: "ASC",
-      postMedia: {
-        order: "ASC",
-      },
-    },
-  });
-};
-
 export const updatePost = async (
   id: string,
   updates: Partial<Omit<Post, "id" | "media" | "channel" | "category">>,
@@ -256,10 +209,6 @@ export const updatePost = async (
   return getPostById(id);
 };
 
-export const updatePostStatus = async (id: string, status: PostStatus): Promise<Post | null> => {
-  return updatePost(id, { status });
-};
-
 export const deletePost = async (id: string): Promise<void> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Post);
@@ -295,7 +244,9 @@ export const getAllPosts = async () => {
   return repository.find({
     relations: {
       postMedia: {
-        media: true,
+        media: {
+          tags: true,
+        },
       },
       channel: true,
       category: true,
