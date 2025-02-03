@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Media } from "../../../features/library/entity";
 
 export const useMedia = (id: string | undefined) => {
@@ -6,13 +6,7 @@ export const useMedia = (id: string | undefined) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!id) {
-      setMedia(null);
-      setIsLoading(false);
-      return;
-    }
-
+  const fetchMedia = useCallback(async () => {
     setIsLoading(true);
     window.api["library:get"](id)
       .then((result) => {
@@ -28,5 +22,14 @@ export const useMedia = (id: string | undefined) => {
       });
   }, [id]);
 
-  return { media, isLoading, error };
+  useEffect(() => {
+    if (!id) {
+      setMedia(null);
+      setIsLoading(false);
+      return;
+    }
+    fetchMedia();
+  }, [fetchMedia, id]);
+
+  return { media, isLoading, error, refetch: fetchMedia };
 };

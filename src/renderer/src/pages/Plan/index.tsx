@@ -89,6 +89,7 @@ export const PlanPage = () => {
 
   return (
     <SplitViewLayout
+      id="plan"
       mainContent={mainContent}
       sideContent={sideContent}
       sideContentHeader={sideContentHeader}

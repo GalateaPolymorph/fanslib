@@ -10,12 +10,13 @@ import { MediaDetailDeleteButton } from "./MediaDetailDeleteButton";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
 import { MediaDetailTagSelect } from "./MediaDetailTagSelect";
+import { MediaDetailTierSelect } from "./MediaDetailTierSelect";
 import { MediaPosts } from "./MediaPosts";
 
 export const MediaDetail = () => {
   const { mediaId } = useParams();
   const navigate = useNavigate();
-  const { media, isLoading, error } = useMedia(mediaId);
+  const { media, isLoading, error, refetch } = useMedia(mediaId);
   const [createPostDialogOpen, setCreatePostDialogOpen] = useState(false);
 
   if (isLoading) {
@@ -64,6 +65,7 @@ export const MediaDetail = () => {
               <MediaDetailMetadata media={media} />
               <MediaDetailCategorySelect media={media} />
               <MediaDetailTagSelect media={media} />
+              <MediaDetailTierSelect media={media} />
             </div>
           </div>
 

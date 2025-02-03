@@ -139,7 +139,7 @@ export const CategorySettings = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-destructive"
+                className="size-8"
                 onClick={() => handleDeleteCategory(category.id)}
               >
                 <Trash2 className="size-4" />

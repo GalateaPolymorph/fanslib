@@ -14,6 +14,7 @@ import { PostDetailDeleteButton } from "./PostDetailDeleteButton";
 import { PostDetailHead } from "./PostDetailHead";
 import { PostDetailMedia } from "./PostDetailMedia";
 import { PostDetailStatusButton } from "./PostDetailStatusButton";
+import { PostDetailTierSelect } from "./PostDetailTierSelect";
 import { usePostDetailDrag } from "./usePostDetailDrag";
 
 type PostDetailProps = {
@@ -100,6 +101,12 @@ export const PostDetail = ({ post, onUpdate, isOpen, onOpenChange }: PostDetailP
                   <PostDetailDateInput post={post} onUpdate={onUpdate} />
                   <PostDetailStatusButton post={post} onUpdate={onUpdate} />
                 </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h4 className="text-sm font-medium">Post Settings</h4>
+              <div className="flex flex-col @[600px]:flex-row gap-4">
+                <PostDetailTierSelect post={post} onUpdate={onUpdate} />
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { DateTimePicker } from "@renderer/components/DateTimePicker";
 import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTileLite } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
+import { TierSelect } from "@renderer/components/TierSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
   Dialog,
@@ -37,6 +38,7 @@ export const CreatePostDialog = ({
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate || new Date());
   const [status, setStatus] = useState<PostStatus>("draft");
   const [selectedMedia, setSelectedMedia] = useState<Media[]>(media);
+  const [tierId, setTierId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -86,6 +88,7 @@ export const CreatePostDialog = ({
           categoryId: media[0].categories[0]?.id,
           status,
           caption: "",
+          tierId: tierId ?? undefined,
         },
         selectedMedia.map((m) => m.id)
       );
@@ -103,7 +106,7 @@ export const CreatePostDialog = ({
         variant: "destructive",
       });
     }
-  }, [selectedChannel, selectedDate, status, media, selectedMedia, onOpenChange, toast]);
+  }, [selectedChannel, selectedDate, status, media, selectedMedia, onOpenChange, toast, tierId]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -131,6 +134,11 @@ export const CreatePostDialog = ({
                 <label className="text-sm font-medium">Date</label>
                 <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
               </div>
+              <TierSelect
+                selectedTierIds={tierId ? [tierId] : []}
+                onTierSelect={(ids) => setTierId(ids[0] ?? null)}
+                includeNoneOption
+              />
             </div>
 
             <div className="space-y-2">

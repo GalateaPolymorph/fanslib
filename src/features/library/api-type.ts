@@ -24,6 +24,7 @@ export type MediaFilters = {
   excludeShoots?: string[];
   shootId?: string;
   channelFilters?: ChannelPostFilter[];
+  tiers?: number[];
 };
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
@@ -59,6 +60,8 @@ const methods = [
   "onScanProgress",
   "onScanComplete",
   "updateTags",
+  "assignTierToMedia",
+  "assignTierToMedias",
 ] as const;
 export type LibraryHandlers = {
   scan: (_: unknown) => Promise<LibraryScanResult>;
@@ -73,6 +76,8 @@ export type LibraryHandlers = {
   ) => void;
   onScanComplete: (_: unknown, listener: (_: unknown, result: LibraryScanResult) => void) => void;
   updateTags: (_: unknown, mediaId: string, tagIds: number[]) => Promise<Media>;
+  assignTierToMedia: (_: unknown, mediaId: string, tierId: number) => Promise<Media>;
+  assignTierToMedias: (_: unknown, mediaIds: string[], tierId: number) => Promise<Media[]>;
 };
 
 export const namespace = "library" as const;

@@ -10,14 +10,23 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { Tier } from "src/features/tiers/entity";
 import { ContentSchedule } from "../../../features/content-schedules/entity";
 import { Post } from "../../../features/posts/entity";
 const SCHEDULE_HORIZON_MONTHS = 3; // Generate posts for next 3 months
 
-export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt"> & {
+export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt" | "postMedia"> & {
   isVirtual: true;
   scheduleId: string;
   virtualId: string;
+  postMedia: VirtualPostMedia[];
+};
+
+export type VirtualPostMedia = {
+  media: {
+    tier: Tier;
+    tierId: number;
+  };
 };
 
 export const isVirtualPost = (post: Post | VirtualPost): post is VirtualPost => {
@@ -33,9 +42,9 @@ const generateScheduleDates = (schedule: ContentSchedule, startDate: Date = new 
       const postsPerDay = schedule.postsPerTimeframe || 1;
 
       const dates = days.flatMap((day, i) => {
-        return new Array(postsPerDay).fill(0).map((_) => {
+        return new Array(postsPerDay).fill(0).map((_, j) => {
           const date = new Date(day);
-          const time = schedule.preferredTimes.at(i % schedule.preferredTimes.length);
+          const time = schedule.preferredTimes.at(j % schedule.preferredTimes.length);
           date.setHours(Number(time?.split(":")[0]) || 12);
           date.setMinutes(Number(time?.split(":")[1]) || 0);
           return date;
@@ -94,6 +103,7 @@ export const generateVirtualPosts = (
   existingPosts: Post[] = [],
   currentTime: Date = new Date()
 ): VirtualPost[] => {
+  console.log("schedules", schedules);
   return schedules.flatMap((schedule) => {
     const dates = generateScheduleDates(schedule, currentTime);
 
@@ -116,7 +126,14 @@ export const generateVirtualPosts = (
       caption: "",
       date: format(scheduleDate, "yyyy-MM-dd'T'HH:mm:ssXXX"),
       status: "draft" as const,
-      postMedia: [],
+      postMedia: [
+        {
+          media: {
+            tier: schedule.tier,
+            tierId: schedule.tierId,
+          },
+        },
+      ],
     }));
   });
 };

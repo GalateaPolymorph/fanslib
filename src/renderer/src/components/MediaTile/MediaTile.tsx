@@ -6,6 +6,7 @@ import { MediaTileCategoryHint } from "./MediaTileCategoryHint";
 import { MediaTileImage } from "./MediaTileImage";
 import { MediaTilePostsPopover } from "./MediaTilePostsPopover";
 import { MediaTileSelectionCircle } from "./MediaTileSelectionCircle";
+import { MediaTileTierHint } from "./MediaTileTierHint";
 import { MediaTileTypeIcon } from "./MediaTileTypeIcon";
 import { MediaTileVideo } from "./MediaTileVideo";
 import { MediaTileProps } from "./types";
@@ -25,6 +26,7 @@ export const MediaTile = (props: MediaTileProps) => {
   const withDragAndDrop = props.withDragAndDrop ?? false;
   const withDuration = props.withDuration ?? false;
   const withTypeIcon = props.withTypeIcon ?? false;
+  const withTier = props.withTier ?? false;
 
   const activatePreview = () => {
     if (!withPreview) return;
@@ -82,6 +84,7 @@ export const MediaTile = (props: MediaTileProps) => {
       <div className="absolute bottom-1 left-1 flex gap-1 z-10">
         {withPostsPopover && <MediaTilePostsPopover media={media} />}
         {withCategoryHint && <MediaTileCategoryHint media={media} />}
+        {withTier && <MediaTileTierHint media={media} />}
         {withTypeIcon && <MediaTileTypeIcon media={media} />}
       </div>
     </div>

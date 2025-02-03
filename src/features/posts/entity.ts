@@ -11,6 +11,7 @@ import {
 import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
 import { Media } from "../library/entity";
+import { Tier } from "../tiers/entity";
 
 export type PostStatus = "draft" | "scheduled" | "posted";
 
@@ -78,8 +79,15 @@ export class Post {
   @Column("varchar", { nullable: true })
   categoryId?: string;
 
+  @Column("int", { nullable: true })
+  tierId?: number;
+
+  @ManyToOne(() => Tier)
+  @JoinColumn({ name: "tierId" })
+  tier?: Tier;
+
   @OneToMany(() => PostMedia, (mediaOrder) => mediaOrder.post)
   postMedia!: PostMedia[];
 }
 
-export type PostWithoutRelations = Omit<Post, "channel" | "category" | "media">;
+export type PostWithoutRelations = Omit<Post, "channel" | "category" | "media" | "tier">;

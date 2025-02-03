@@ -1,3 +1,5 @@
+import { CategorySelect, CategorySelectionState } from "@renderer/components/CategorySelect";
+import { TierSelect } from "@renderer/components/TierSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
   Select,
@@ -12,7 +14,6 @@ import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
-import { CategorySelect } from "../../components/CategorySelect";
 
 type ContentScheduleFormProps = {
   schedule?: ContentSchedule;
@@ -30,9 +31,10 @@ export const ContentScheduleForm = ({
   onCancel,
 }: ContentScheduleFormProps) => {
   const [type, setType] = useState<ContentSchedule["type"]>(schedule?.type || "daily");
-  const [categoryId, setCategoryId] = useState<string[]>(
-    schedule?.categoryId ? [schedule.categoryId] : []
+  const [categoryId, setCategoryId] = useState<CategorySelectionState[]>(
+    schedule?.categoryId ? [{ id: schedule.categoryId, state: "selected" }] : []
   );
+  const [tierId, setTierId] = useState<number | null>(schedule?.tierId ?? null);
   const [postsPerTimeframe, setPostsPerTimeframe] = useState(schedule?.postsPerTimeframe || 1);
   const [preferredDays, setPreferredDays] = useState<string[]>(
     schedule?.preferredDays?.map((d) => d.toString()) || []
@@ -60,16 +62,28 @@ export const ContentScheduleForm = ({
     .map((s) => s.categoryId);
 
   const handleSubmit = () => {
-    if (categoryId.length === 0) return;
+    const selectedCategory = categoryId.find((cat) => cat.state === "selected");
 
     onSubmit({
       channelId,
-      categoryId: categoryId[0],
+      categoryId: selectedCategory?.id ?? null,
       type,
       postsPerTimeframe,
       preferredTimes,
+      tierId: tierId ?? null,
       ...(type !== "daily" ? { preferredDays } : {}),
     });
+  };
+
+  const handleCategoryChange = (
+    newCategories: CategorySelectionState[] | undefined,
+    changedCategoryId: string
+  ) => {
+    if (!newCategories || newCategories.length === 0) {
+      setCategoryId([]);
+      return;
+    }
+    setCategoryId(newCategories);
   };
 
   const handleDayToggle = (dayIndex: number) => {
@@ -109,9 +123,19 @@ export const ContentScheduleForm = ({
           <h4 className="text-sm">Category</h4>
           <CategorySelect
             value={categoryId}
-            onChange={setCategoryId}
+            onChange={handleCategoryChange}
             multiple={false}
             disabledCategories={disabledCategories}
+            includeNoneOption
+          />
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="text-sm">Minimum Tier</h4>
+          <TierSelect
+            selectedTierIds={tierId ? [tierId] : []}
+            onTierSelect={(ids) => setTierId(ids[0] ?? null)}
+            includeNoneOption
           />
         </div>
 
@@ -207,9 +231,7 @@ export const ContentScheduleForm = ({
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={categoryId?.length === 0}>
-          Save
-        </Button>
+        <Button onClick={handleSubmit}>Save</Button>
       </div>
     </div>
   );

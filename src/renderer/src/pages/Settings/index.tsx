@@ -5,6 +5,7 @@ import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { CategorySettings } from "./CategorySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
 import { TagSettings } from "./TagSettings";
+import { TierSettings } from "./TierSettings";
 
 export const SettingsPage = () => {
   return (
@@ -16,7 +17,7 @@ export const SettingsPage = () => {
 
       <Separator />
 
-      <div className="space-y-8">
+      <div className="space-y-16">
         <SettingsSection
           title="Library"
           description="Configure your library location and organization preferences."
@@ -24,6 +25,7 @@ export const SettingsPage = () => {
           <LibraryPathInput />
           <CategorySettings />
           <TagSettings />
+          <TierSettings />
         </SettingsSection>
 
         <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">

@@ -1,5 +1,7 @@
 import { nanoid } from "nanoid";
 import { db } from "../../lib/db";
+import { Category } from "../categories/entity";
+import { Tier } from "../tiers/entity";
 import { ContentScheduleCreateData } from "./api-type";
 import { ContentSchedule } from "./entity";
 
@@ -39,6 +41,7 @@ export const fetchContentScheduleById = async (id: string): Promise<ContentSched
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
   });
 };
@@ -54,6 +57,7 @@ export const fetchContentSchedulesByChannel = async (
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
     order: {
       createdAt: "DESC",
@@ -72,6 +76,7 @@ export const fetchContentSchedulesByCategory = async (
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
     order: {
       createdAt: "DESC",
@@ -87,6 +92,7 @@ export const fetchAllContentSchedules = async (): Promise<ContentSchedule[]> => 
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
     order: {
       createdAt: "DESC",
@@ -96,8 +102,11 @@ export const fetchAllContentSchedules = async (): Promise<ContentSchedule[]> => 
 
 export const updateContentSchedule = async (
   id: string,
-  updates: Partial<Omit<ContentSchedule, "id" | "createdAt" | "updatedAt" | "channel" | "category">>
+  updates: Partial<
+    Omit<ContentSchedule, "id" | "createdAt" | "updatedAt" | "channel" | "category" | "tier">
+  >
 ): Promise<ContentSchedule | null> => {
+  console.log("updates", updates);
   const dataSource = await db();
   const repository = dataSource.getRepository(ContentSchedule);
 
@@ -106,6 +115,7 @@ export const updateContentSchedule = async (
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
   });
 
@@ -117,17 +127,38 @@ export const updateContentSchedule = async (
     updatedAt: new Date().toISOString(),
   });
 
+  if (updates.categoryId) {
+    schedule.category = await dataSource.getRepository(Category).findOne({
+      where: { id: updates.categoryId },
+    });
+  }
+  if (updates.categoryId === null) {
+    schedule.category = null;
+  }
+  if (updates.tierId) {
+    schedule.tier = await dataSource.getRepository(Tier).findOne({
+      where: { id: updates.tierId },
+    });
+  }
+  if (updates.tierId === null) {
+    schedule.tier = null;
+  }
+
   // Save the entity
   await repository.save(schedule);
 
   // Return with relations
-  return repository.findOne({
+  const r = repository.findOne({
     where: { id },
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
   });
+
+  console.log("r", await r);
+  return r;
 };
 
 export const deleteContentSchedule = async (id: string): Promise<void> => {

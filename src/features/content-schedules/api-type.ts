@@ -4,11 +4,21 @@ import { ContentSchedule } from "./entity";
 
 export type ContentScheduleCreateData = {
   channelId: string;
-  categoryId: string;
+  categoryId?: string;
   type: "daily" | "weekly" | "monthly";
   postsPerTimeframe?: number;
   preferredDays?: string[];
   preferredTimes?: string[];
+  tierId?: number;
+};
+
+export type ContentScheduleUpdateData = {
+  categoryId?: string | null;
+  type?: "daily" | "weekly" | "monthly";
+  postsPerTimeframe?: number;
+  preferredDays?: string[];
+  preferredTimes?: string[];
+  tierId?: number | null;
 };
 
 const methods = ["getAll", "getByChannel", "create", "update", "delete"] as const;
@@ -19,7 +29,7 @@ export type ContentScheduleHandlers = {
   update: (
     _: any,
     id: ContentSchedule["id"],
-    updates: Partial<Omit<ContentSchedule, "id" | "createdAt" | "updatedAt">>
+    updates: ContentScheduleUpdateData
   ) => Promise<ContentSchedule | null>;
   delete: (_: any, id: ContentSchedule["id"]) => Promise<void>;
 };

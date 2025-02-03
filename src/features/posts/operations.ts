@@ -246,6 +246,7 @@ export const getAllPosts = async () => {
       postMedia: {
         media: {
           tags: true,
+          tier: true,
         },
       },
       channel: true,

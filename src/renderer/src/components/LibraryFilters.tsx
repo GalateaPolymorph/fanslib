@@ -4,6 +4,7 @@ import { CategorySelect } from "./CategorySelect";
 import { ChannelPostFilter } from "./ChannelPostFilter";
 import { SearchInput } from "./SearchInput";
 import { ShootSelect } from "./ShootSelect";
+import { TierSelect } from "./TierSelect";
 import { Button } from "./ui/button";
 
 type LibraryFiltersProps = {
@@ -28,15 +29,25 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
               placeholder="Search media paths..."
             />
             <CategorySelect
-              value={value.categories}
+              value={(value.categories ?? []).map((id) => ({ id, state: "selected" as const }))}
               onChange={(categories) => {
                 onFilterChange({
                   ...value,
-                  categories,
+                  categories: categories?.filter((c) => c.state === "selected").map((c) => c.id),
                 });
               }}
               multiple={true}
               includeNoneOption
+            />
+            <TierSelect
+              selectedTierIds={(value.tiers ?? []).map(Number)}
+              onTierSelect={(tierIds) => {
+                onFilterChange({
+                  ...value,
+                  tiers: tierIds.length > 0 ? tierIds.map(String) : undefined,
+                });
+              }}
+              multiple
             />
           </div>
 
@@ -82,6 +93,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
           value.search ||
           value.excludeShoots ||
           value.shootId ||
+          value.tiers ||
           value.channelFilters) && (
           <Button
             variant="ghost"
@@ -93,6 +105,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
                 excludeShoots: undefined,
                 shootId: undefined,
                 channelFilters: undefined,
+                tiers: undefined,
               })
             }
             className="text-muted-foreground"

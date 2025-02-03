@@ -4,6 +4,7 @@ import { db } from "../../lib/db";
 import { PaginatedResponse } from "../_common/pagination";
 import { Category } from "../categories/entity";
 import { Tag } from "../tags/entity";
+import { Tier } from "../tiers/entity";
 import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 
@@ -44,7 +45,7 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
   const database = await db();
   return database.manager.findOne(Media, {
     where: { id },
-    relations: ["categories", "postMedia", "tags"],
+    relations: ["categories", "postMedia", "tags", "tier"],
   });
 };
 
@@ -62,7 +63,8 @@ export const fetchAllMedia = async (
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
     .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("media.tags", "tags");
+    .leftJoinAndSelect("media.tags", "tags")
+    .leftJoinAndSelect("media.tier", "tier");
 
   // Apply category filter
   if (params?.categories?.length) {
@@ -152,6 +154,11 @@ export const fetchAllMedia = async (
         );
       }
     });
+  }
+
+  // Apply tier filters
+  if (params?.tiers?.length) {
+    queryBuilder.andWhere("tier.id IN (:...tiers)", { tiers: params.tiers });
   }
 
   // Apply sorting
@@ -317,13 +324,66 @@ export const updateMediaTags = async (mediaId: string, tagIds: number[]): Promis
   });
 
   if (!media) {
-    throw new Error("Media not found");
+    throw new Error(`Media with id ${mediaId} not found`);
   }
 
-  const tags = await tagRepository.find({
-    where: { id: In(tagIds) },
-  });
+  const tags = await tagRepository.findBy({ id: In(tagIds) });
   media.tags = tags;
 
   return mediaRepository.save(media);
+};
+
+export const assignTierToMedia = async (mediaId: string, tierId: number): Promise<Media> => {
+  const dataSource = await db();
+  const mediaRepository = dataSource.getRepository(Media);
+  const tierRepository = dataSource.getRepository(Tier);
+
+  const media = await mediaRepository.findOne({
+    where: { id: mediaId },
+    relations: ["tier"],
+  });
+
+  if (!media) {
+    throw new Error(`Media with id ${mediaId} not found`);
+  }
+
+  let tier: Tier | null = null;
+  if (tierId !== -1) {
+    tier = await tierRepository.findOne({ where: { id: tierId } });
+    if (!tier) {
+      throw new Error(`Tier with id ${tierId} not found`);
+    }
+  }
+
+  media.tier = tier;
+  return mediaRepository.save(media);
+};
+
+export const assignTierToMedias = async (mediaIds: string[], tierId: number): Promise<Media[]> => {
+  const dataSource = await db();
+  const mediaRepository = dataSource.getRepository(Media);
+  const tierRepository = dataSource.getRepository(Tier);
+
+  const medias = await mediaRepository.find({
+    where: { id: In(mediaIds) },
+    relations: ["tier"],
+  });
+
+  if (medias.length === 0) {
+    throw new Error("No media found with the provided ids");
+  }
+
+  let tier: Tier | null = null;
+  if (tierId !== -1) {
+    tier = await tierRepository.findOne({ where: { id: tierId } });
+    if (!tier) {
+      throw new Error(`Tier with id ${tierId} not found`);
+    }
+  }
+
+  medias.forEach((media) => {
+    media.tier = tier;
+  });
+
+  return mediaRepository.save(medias);
 };

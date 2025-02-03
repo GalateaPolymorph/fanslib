@@ -13,4 +13,5 @@ export type MediaTileProps = {
   withDragAndDrop?: boolean;
   withDuration?: boolean;
   withTypeIcon?: boolean;
+  withTier?: boolean;
 };

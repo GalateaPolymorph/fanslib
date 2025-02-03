@@ -1,9 +1,12 @@
+import { CreateShootDialog } from "@renderer/components/Shoots/CreateShootDialog";
 import { Button } from "@renderer/components/ui/button";
 import { cn } from "@renderer/lib/utils";
-import { X } from "lucide-react";
+import { Camera, X } from "lucide-react";
+import { useState } from "react";
 import { Media } from "../../../../../../features/library/entity";
 import { GalleryCategorySelect } from "./GalleryCategorySelect";
 import { GalleryTagSelect } from "./GalleryTagSelect";
+import { GalleryTierSelect } from "./GalleryTierSelect";
 
 type GalleryActionBarProps = {
   selectedCount: number;
@@ -18,6 +21,8 @@ export const GalleryActionBar = ({
   onClearSelection,
   onUpdate,
 }: GalleryActionBarProps) => {
+  const [isCreateShootDialogOpen, setIsCreateShootDialogOpen] = useState(false);
+
   if (selectedCount === 0) return null;
 
   return (
@@ -37,6 +42,19 @@ export const GalleryActionBar = ({
         <div className="flex gap-4 row-span-2">
           <GalleryTagSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <GalleryCategorySelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
+          <GalleryTierSelect
+            selectedMedia={selectedMedia}
+            onUpdate={onUpdate}
+            onClearSelection={onClearSelection}
+          />
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => setIsCreateShootDialogOpen(true)}
+          >
+            <Camera className="h-4 w-4" />
+            Create Shoot
+          </Button>
         </div>
         <div className="flex items-center justify-end gap-3 w-full">
           <div className="text-sm text-muted-foreground">
@@ -47,6 +65,13 @@ export const GalleryActionBar = ({
           </Button>
         </div>
       </div>
+
+      <CreateShootDialog
+        open={isCreateShootDialogOpen}
+        onOpenChange={setIsCreateShootDialogOpen}
+        selectedMedia={selectedMedia}
+        onSuccess={onClearSelection}
+      />
     </div>
   );
 };

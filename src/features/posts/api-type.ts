@@ -7,6 +7,7 @@ export type PostCreateData = {
   categoryId?: string;
   caption?: string;
   status: PostStatus;
+  tierId?: number;
 };
 
 export const methods = [
@@ -39,7 +40,12 @@ export type PostHandlers = {
   delete: (_: any, id: string) => Promise<void>;
   addMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
   removeMedia: (_: any, postId: string, mediaPaths: string[]) => Promise<Post | null>;
-  setFreePreview: (_: any, postId: string, mediaId: string, isFreePreview: boolean) => Promise<Post | null>;
+  setFreePreview: (
+    _: any,
+    postId: string,
+    mediaId: string,
+    isFreePreview: boolean
+  ) => Promise<Post | null>;
 };
 
 export const namespace = "post" as const;

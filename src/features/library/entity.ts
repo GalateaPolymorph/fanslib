@@ -4,6 +4,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,6 +13,7 @@ import { Category } from "../categories/entity";
 import { PostMedia } from "../posts/entity";
 import { Shoot } from "../shoots/entity";
 import { Tag } from "../tags/entity";
+import { Tier } from "../tiers/entity";
 
 export type MediaType = "image" | "video";
 
@@ -73,6 +75,9 @@ export class Media {
     inverseJoinColumn: { name: "tag_id", referencedColumnName: "id" },
   })
   tags!: Tag[];
+
+  @ManyToOne(() => Tier, (tier) => tier.media)
+  tier?: Tier;
 }
 
 export type MediaWithoutRelations = Omit<Media, "id" | "categories">;

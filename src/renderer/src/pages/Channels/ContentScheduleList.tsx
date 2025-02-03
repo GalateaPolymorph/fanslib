@@ -1,3 +1,5 @@
+import { TierBadge } from "@renderer/components/TierBadge";
+import { useTiers } from "@renderer/hooks/useTiers";
 import { Edit, Trash2 } from "lucide-react";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { CategoryBadge } from "../../components/CategoryBadge";
@@ -23,6 +25,7 @@ type ContentScheduleListProps = {
 
 export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentScheduleListProps) => {
   const { categories } = useCategories();
+  const { tiers } = useTiers();
 
   const formatDays = (schedule: ContentSchedule) => {
     return schedule.type !== "daily" && schedule.preferredDays?.length
@@ -42,11 +45,13 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
     <div className="flex flex-col gap-2 divide-y">
       {schedules.map((schedule) => {
         const category = categories.find((c) => c.id === schedule.categoryId);
+        const tier = tiers.find((t) => t.id === schedule.tierId);
         return (
           <div key={schedule.id} className="pb-3">
             <div className="flex items-center justify-between">
               <p className="text-sm">
-                {schedule.postsPerTimeframe} <CategoryBadge category={category} /> post
+                {schedule.postsPerTimeframe} {tier && <TierBadge tier={tier} />}{" "}
+                {category && <CategoryBadge category={category} />} post
                 {schedule.postsPerTimeframe > 1 && "s"} per{" "}
                 {schedule.type === "daily" ? "day" : schedule.type === "weekly" ? "week" : "month"}
               </p>

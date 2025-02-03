@@ -62,13 +62,8 @@ export const TagSettings = () => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-4">
-        <header>
-          <h3 className="text-lg font-medium">Default Hashtags</h3>
-          <p className="text-sm text-muted-foreground">
-            These hashtags will be automatically added to all media.
-          </p>
-        </header>
+      <div className="space-y-3">
+        <h3 className="text-lg font-medium">Default Hashtags</h3>
         <HashtagInput
           hashtags={settings?.defaultHashtags ?? []}
           onChange={updateDefaultHashtags}
@@ -136,7 +131,7 @@ export const TagSettings = () => {
                 )}
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center">
                 {editingTag?.id !== tag.id && (
                   <Button
                     variant="ghost"
