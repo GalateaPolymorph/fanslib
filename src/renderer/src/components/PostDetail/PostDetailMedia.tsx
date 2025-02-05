@@ -11,8 +11,8 @@ import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext
 import { cn } from "@renderer/lib/utils";
 import { EyeIcon, EyeOffIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { Post } from "../../../../../features/posts/entity";
 import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
+import { Post } from "src/features/posts/entity";
 
 type PostDetailMediaProps = {
   post: Post;

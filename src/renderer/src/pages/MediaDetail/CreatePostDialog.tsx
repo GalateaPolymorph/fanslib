@@ -1,9 +1,9 @@
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
+import { HashtagButton } from "@renderer/components/HashtagButton";
 import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTileLite } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
-import { TierSelect } from "@renderer/components/TierSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
   Dialog,
@@ -13,7 +13,9 @@ import {
   DialogTitle,
 } from "@renderer/components/ui/dialog";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
@@ -35,17 +37,24 @@ export const CreatePostDialog = ({
   const { toast } = useToast();
   const { channels } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(initialDate || new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (initialDate) {
+      return new Date(initialDate);
+    }
+    const now = new Date();
+    now.setHours(12);
+    now.setMinutes(0);
+    return now;
+  });
   const [status, setStatus] = useState<PostStatus>("draft");
   const [selectedMedia, setSelectedMedia] = useState<Media[]>(media);
-  const [tierId, setTierId] = useState<number | null>(null);
+  const [caption, setCaption] = useState("");
+  const [isMediaSelectionOpen, setIsMediaSelectionOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    if (selectedMedia.length === 0) {
-      setSelectedMedia(media);
-    }
-  }, [open, media, selectedMedia.length]);
+    setSelectedMedia(media);
+  }, [open, media]);
 
   useEffect(() => {
     if (!channels.length || channels.length > 1) return;
@@ -87,8 +96,7 @@ export const CreatePostDialog = ({
           channelId: selectedChannel[0],
           categoryId: media[0].categories[0]?.id,
           status,
-          caption: "",
-          tierId: tierId ?? undefined,
+          caption,
         },
         selectedMedia.map((m) => m.id)
       );
@@ -106,11 +114,11 @@ export const CreatePostDialog = ({
         variant: "destructive",
       });
     }
-  }, [selectedChannel, selectedDate, status, media, selectedMedia, onOpenChange, toast, tierId]);
+  }, [selectedChannel, selectedDate, status, media, selectedMedia, onOpenChange, toast, caption]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Create Post</DialogTitle>
         </DialogHeader>
@@ -134,11 +142,23 @@ export const CreatePostDialog = ({
                 <label className="text-sm font-medium">Date</label>
                 <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
               </div>
-              <TierSelect
-                selectedTierIds={tierId ? [tierId] : []}
-                onTierSelect={(ids) => setTierId(ids[0] ?? null)}
-                includeNoneOption
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Caption</label>
+                <div className="relative">
+                  <Textarea
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    placeholder="Write your post caption..."
+                    className="min-h-[100px] resize-none pr-10"
+                  />
+                  <HashtagButton
+                    media={selectedMedia}
+                    caption={caption}
+                    onCaptionChange={setCaption}
+                    className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -155,13 +175,28 @@ export const CreatePostDialog = ({
             </div>
           </div>
 
-          <div className="flex flex-col flex-1 min-h-0 border-t mt-4">
-            <MediaSelection
-              selectedMedia={selectedMedia}
-              onMediaSelect={handleMediaSelect}
-              referenceMedia={media[0]}
-              excludeMediaIds={media.map((m) => m.id)}
-            />
+          <div className="flex flex-col flex-1 min-h-0">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 self-start my-2"
+              onClick={() => setIsMediaSelectionOpen(!isMediaSelectionOpen)}
+            >
+              {isMediaSelectionOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+              {isMediaSelectionOpen ? "Hide Media Selection" : "Add more media"}
+            </Button>
+
+            {isMediaSelectionOpen && (
+              <MediaSelection
+                selectedMedia={selectedMedia}
+                onMediaSelect={handleMediaSelect}
+                referenceMedia={media[0]}
+                excludeMediaIds={media.map((m) => m.id)}
+              />
+            )}
           </div>
         </div>
 

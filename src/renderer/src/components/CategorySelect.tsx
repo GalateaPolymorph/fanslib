@@ -8,7 +8,7 @@ export type CategorySelectionState = {
 };
 
 type CategorySelectProps = {
-  value?: CategorySelectionState[];
+  value?: CategorySelectionState[] | undefined; // undefined means nothing selected, empty array means "None" selected
   onChange: (
     categoryStates: CategorySelectionState[] | undefined,
     changedCategoryId: string
@@ -19,7 +19,7 @@ type CategorySelectProps = {
 };
 
 export const CategorySelect = ({
-  value = [],
+  value,
   onChange,
   multiple = true,
   disabledCategories = [],
@@ -27,8 +27,12 @@ export const CategorySelect = ({
 }: CategorySelectProps) => {
   const { categories, isLoading } = useCategories();
 
-  const getCategoryState = (id: string): "selected" | "half-selected" | "unselected" => {
-    const categoryState = value.find((t) => t.id === id);
+  const getCategoryState = (id: "NONE" | string): "selected" | "half-selected" | "unselected" => {
+    if (id === "NONE") {
+      return Array.isArray(value) && value.length === 0 ? "selected" : "unselected";
+    }
+
+    const categoryState = value?.find((t) => t.id === id);
     return categoryState?.state ?? "unselected";
   };
 
@@ -39,15 +43,15 @@ export const CategorySelect = ({
     const newState: CategorySelectionState["state"] =
       currentState === "unselected" || currentState === "half-selected" ? "selected" : "unselected";
 
-    const otherCategories = value.filter((t) => t.id !== id);
+    const otherCategories = value?.filter((t) => t.id !== id) ?? [];
 
     if (newState === "unselected") {
       if (otherCategories.length === 0) {
         if (multiple) {
-          onChange([{ id, state: "unselected" }], id);
+          onChange(undefined, id);
           return;
         }
-        onChange(undefined, id);
+        onChange([], id);
         return;
       }
       onChange(otherCategories, id);
@@ -84,7 +88,7 @@ export const CategorySelect = ({
             }
             className={cn(
               "transition-colors cursor-pointer",
-              !multiple && value.length > 0 && state === "unselected" && "opacity-50",
+              !multiple && value?.length > 0 && state === "unselected" && "opacity-50",
               isDisabled && "opacity-30 cursor-not-allowed"
             )}
             style={{
@@ -105,20 +109,17 @@ export const CategorySelect = ({
       })}
       {includeNoneOption && (
         <Badge
-          variant={value?.length === 0 ? "default" : "outline"}
+          variant={getCategoryState("NONE") === "selected" ? "default" : "outline"}
           className={cn(
             "transition-colors cursor-pointer text-muted-foreground",
             !multiple && value?.length > 0 && "opacity-50"
           )}
           onClick={() => {
-            if (Array.isArray(value)) {
-              onChange(undefined, "");
-              return;
-            }
-            onChange([], "");
+            onChange(getCategoryState("NONE") === "selected" ? undefined : [], "");
           }}
           style={{
-            backgroundColor: value?.length === 0 ? "hsl(var(--muted))" : "transparent",
+            backgroundColor:
+              getCategoryState("NONE") === "selected" ? "hsl(var(--muted))" : "transparent",
             borderColor: "hsl(var(--muted))",
           }}
         >

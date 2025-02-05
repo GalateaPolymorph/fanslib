@@ -1,3 +1,4 @@
+import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { CategorySelect, CategorySelectionState } from "../../components/CategorySelect";
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export const MediaDetailCategorySelect = ({ media }: Props) => {
+  const { refetch } = useLibrary();
   const [categoryStates, setCategoryStates] = useState<CategorySelectionState[]>([]);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export const MediaDetailCategorySelect = ({ media }: Props) => {
           state: "selected" as const,
         }))
       );
+      refetch();
     } catch (error) {
       console.error("Failed to update media category:", error);
     }

@@ -1,7 +1,7 @@
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useEffect, useState } from "react";
-import { Post } from "../../../../../features/posts/entity";
+import { Post } from "src/features/posts/entity";
 
 type PostDetailDateInputProps = {
   post: Post;

@@ -40,6 +40,7 @@ const defaultPreferences: LibraryPreferences = {
     search: "",
     excludeShoots: [],
     channelFilters: [],
+    categories: undefined,
   },
   sort: {
     field: "fileModificationDate",

@@ -12,9 +12,9 @@ import { useToast } from "@renderer/components/ui/use-toast";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Media } from "../../../../../features/library/entity";
-import { Post } from "../../../../../features/posts/entity";
-import { MediaTileLite } from "../../../components/MediaTile/MediaTileLite";
+import { Media } from "src/features/library/entity";
+import { Post } from "src/features/posts/entity";
+import { MediaTileLite } from "../MediaTile";
 
 type PostDetailAddMediaButtonProps = {
   post: Post;

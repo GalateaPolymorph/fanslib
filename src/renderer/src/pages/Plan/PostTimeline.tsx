@@ -1,10 +1,9 @@
+import { PostDetail } from "@renderer/components/PostDetail/PostDetail";
 import { useState } from "react";
 import { type Post } from "../../../../features/posts/entity";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { cn } from "../../lib/utils";
 import { isVirtualPost, VirtualPost } from "../../lib/virtual-posts";
-import { PostDetail } from "../MediaDetail/PostDetail/PostDetail";
-import { PostTimelineDropZone } from "./PostTimelineDropZone";
 
 type PostTimelineProps = {
   posts: (Post | VirtualPost)[];
@@ -28,14 +27,12 @@ export const PostTimeline = ({ posts, className, onUpdate }: PostTimelineProps) 
 
           return (
             <div key={id} className="space-y-4">
-              {previousPost && (
-                <PostTimelineDropZone previousPostDate={new Date(previousPost.date)} />
-              )}
               <PostDetail
                 post={post}
                 onUpdate={onUpdate}
                 isOpen={openPostId === id}
                 onOpenChange={(isOpen) => setOpenPostId(isOpen ? id : null)}
+                previousPostInList={previousPost}
               />
             </div>
           );

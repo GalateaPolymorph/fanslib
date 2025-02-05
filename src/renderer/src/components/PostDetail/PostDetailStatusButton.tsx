@@ -7,8 +7,8 @@ import {
 } from "@renderer/components/ui/tooltip";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { CalendarDays, Check, Info, Undo2 } from "lucide-react";
-import { Post } from "../../../../../features/posts/entity";
-import { StatusBadge } from "../../../components/StatusBadge";
+import { Post } from "src/features/posts/entity";
+import { StatusBadge } from "../StatusBadge";
 
 type PostDetailStatusButtonProps = {
   post: Post;

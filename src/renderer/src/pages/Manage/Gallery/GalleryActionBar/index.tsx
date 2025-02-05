@@ -1,7 +1,8 @@
 import { CreateShootDialog } from "@renderer/components/Shoots/CreateShootDialog";
 import { Button } from "@renderer/components/ui/button";
 import { cn } from "@renderer/lib/utils";
-import { Camera, X } from "lucide-react";
+import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
+import { Camera, Send, X } from "lucide-react";
 import { useState } from "react";
 import { Media } from "../../../../../../features/library/entity";
 import { GalleryCategorySelect } from "./GalleryCategorySelect";
@@ -22,6 +23,7 @@ export const GalleryActionBar = ({
   onUpdate,
 }: GalleryActionBarProps) => {
   const [isCreateShootDialogOpen, setIsCreateShootDialogOpen] = useState(false);
+  const [isCreatePostDialogOpen, setIsCreatePostDialogOpen] = useState(false);
 
   if (selectedCount === 0) return null;
 
@@ -39,7 +41,7 @@ export const GalleryActionBar = ({
             : "translate-y-full opacity-0 pointer-events-none"
         )}
       >
-        <div className="flex gap-4 row-span-2">
+        <div className="flex gap-4 row-span-2 items-center">
           <GalleryTagSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <GalleryCategorySelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <GalleryTierSelect
@@ -54,6 +56,14 @@ export const GalleryActionBar = ({
           >
             <Camera className="h-4 w-4" />
             Create Shoot
+          </Button>
+          <Button
+            variant="default"
+            className="flex items-center gap-2"
+            onClick={() => setIsCreatePostDialogOpen(true)}
+          >
+            <Send className="h-4 w-4" />
+            Create Post
           </Button>
         </div>
         <div className="flex items-center justify-end gap-3 w-full">
@@ -71,6 +81,12 @@ export const GalleryActionBar = ({
         onOpenChange={setIsCreateShootDialogOpen}
         selectedMedia={selectedMedia}
         onSuccess={onClearSelection}
+      />
+
+      <CreatePostDialog
+        open={isCreatePostDialogOpen}
+        onOpenChange={setIsCreatePostDialogOpen}
+        media={selectedMedia}
       />
     </div>
   );

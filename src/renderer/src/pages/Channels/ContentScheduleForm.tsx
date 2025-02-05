@@ -75,11 +75,8 @@ export const ContentScheduleForm = ({
     });
   };
 
-  const handleCategoryChange = (
-    newCategories: CategorySelectionState[] | undefined,
-    changedCategoryId: string
-  ) => {
-    if (!newCategories || newCategories.length === 0) {
+  const handleCategoryChange = (newCategories: CategorySelectionState[] | null | undefined) => {
+    if (!newCategories) {
       setCategoryId([]);
       return;
     }

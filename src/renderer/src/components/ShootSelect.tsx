@@ -91,14 +91,16 @@ export const ShootSelect = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-full max-h-[400px] overflow-y-auto p-0 pt-9">
         <Command>
-          <CommandInput
-            placeholder={placeholder}
-            className="h-9"
-            value={search}
-            onValueChange={setSearch}
-          />
+          <div className="fixed top-0 w-full bg-background z-10">
+            <CommandInput
+              placeholder={placeholder}
+              className="h-9 w-full"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
           <CommandEmpty>No shoots found.</CommandEmpty>
           {filteredShoots.map((shoot) => (
             <CommandItem

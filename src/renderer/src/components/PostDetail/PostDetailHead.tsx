@@ -1,15 +1,14 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { StatusBadge } from "@renderer/components/StatusBadge";
 import { TierBadge } from "@renderer/components/TierBadge";
+import { VirtualPost, VirtualPostMedia } from "@renderer/lib/virtual-posts";
 import { format } from "date-fns";
-import { Post, PostMedia } from "../../../../../features/posts/entity";
-import { CategoryBadge } from "../../../components/CategoryBadge";
-import { VirtualPost, VirtualPostMedia } from "../../../lib/virtual-posts";
+import { Post, PostMedia } from "src/features/posts/entity";
+import { CategoryBadge } from "../CategoryBadge";
 
 const getUniqueTiers = (postMedia?: PostMedia[] | VirtualPostMedia[]) => {
   if (!postMedia) return [];
 
-  console.log(postMedia);
   const tiers = postMedia
     .map((pm) => pm.media.tier)
     .filter((tier): tier is NonNullable<typeof tier> => !!tier);

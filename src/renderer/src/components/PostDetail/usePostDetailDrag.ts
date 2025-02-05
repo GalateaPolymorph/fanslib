@@ -1,8 +1,9 @@
 import { useToast } from "@renderer/components/ui/use-toast";
+import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
+import { VirtualPost, isVirtualPost } from "@renderer/lib/virtual-posts";
 import { useRef, useState } from "react";
-import { Post } from "../../../../../features/posts/entity";
-import { VirtualPost, isVirtualPost } from "../../../lib/virtual-posts";
+import { Post } from "src/features/posts/entity";
 
 type UsePostDetailDragProps = {
   post: Post | VirtualPost;
@@ -17,6 +18,7 @@ export const usePostDetailDrag = ({
   onOpenChange,
   onUpdate,
 }: UsePostDetailDragProps) => {
+  const { refetch } = useLibrary();
   const { toast } = useToast();
   const { draggedMedias, endMediaDrag, isDragging } = useMediaDrag();
   const wasClosedRef = useRef(false);
@@ -24,8 +26,8 @@ export const usePostDetailDrag = ({
   const [isDraggedOver, setIsDraggedOver] = useState(false);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
     if (isDragging && draggedMedias.length > 0) {
-      e.preventDefault();
       e.dataTransfer.dropEffect = "copy";
       setIsDraggedOver(true);
     }
@@ -33,20 +35,23 @@ export const usePostDetailDrag = ({
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     if (isDragging && draggedMedias.length > 0) {
-      e.preventDefault();
-      dragEnterCountRef.current++;
-      if (dragEnterCountRef.current === 1) {
-        wasClosedRef.current = !isOpen;
-        onOpenChange(true);
-        setIsDraggedOver(true);
+      const relatedTarget = e.relatedTarget as Node | null;
+      if (!e.currentTarget.contains(relatedTarget)) {
+        dragEnterCountRef.current++;
+        if (dragEnterCountRef.current === 1) {
+          wasClosedRef.current = !isOpen;
+          onOpenChange(true);
+          setIsDraggedOver(true);
+        }
       }
     }
   };
 
-  const handleDragLeave = (_: React.DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     if (isDragging && draggedMedias.length > 0) {
-      dragEnterCountRef.current--;
-      if (dragEnterCountRef.current === 0) {
+      const relatedTarget = e.relatedTarget as Node | null;
+      if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+        dragEnterCountRef.current = 0;
         if (wasClosedRef.current) {
           onOpenChange(false);
         }
@@ -56,6 +61,7 @@ export const usePostDetailDrag = ({
   };
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    console.log("Dropped");
     e.preventDefault();
     dragEnterCountRef.current = 0;
     setIsDraggedOver(false);
@@ -82,6 +88,7 @@ export const usePostDetailDrag = ({
           title: "Post created",
         });
         endMediaDrag();
+        refetch();
         return;
       }
 
@@ -97,6 +104,7 @@ export const usePostDetailDrag = ({
             : `${draggedMedias.length} media items added to post`,
       });
       endMediaDrag();
+      refetch();
     } catch (error) {
       console.error("Failed to add media to post:", error);
       toast({

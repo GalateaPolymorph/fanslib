@@ -29,11 +29,18 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
               placeholder="Search media paths..."
             />
             <CategorySelect
-              value={(value.categories ?? []).map((id) => ({ id, state: "selected" as const }))}
+              value={
+                !value.categories
+                  ? undefined
+                  : value.categories.map((id) => ({ id, state: "selected" as const }))
+              }
               onChange={(categories) => {
                 onFilterChange({
                   ...value,
-                  categories: categories?.filter((c) => c.state === "selected").map((c) => c.id),
+                  categories:
+                    categories === undefined
+                      ? undefined
+                      : categories.filter((c) => c.state === "selected").map((c) => c.id),
                 });
               }}
               multiple={true}
