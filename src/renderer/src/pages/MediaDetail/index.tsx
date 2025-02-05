@@ -31,7 +31,7 @@ export const MediaDetail = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-2xl font-semibold mb-4">Media not found</h1>
-        <Button onClick={() => navigate("/")}>Back to gallery</Button>
+        <Button onClick={() => navigate(-1)}>Back</Button>
       </div>
     );
   }
@@ -45,9 +45,9 @@ export const MediaDetail = () => {
       />
       <div className="overflow-y-auto">
         <div className="max-w-[1280px] px-8 mx-auto pt-8 pb-12">
-          <Button className="mb-2" variant="ghost" onClick={() => navigate("/")}>
+          <Button className="mb-2" variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to gallery
+            Back
           </Button>
           <div className="flex justify-between">
             <h1 className="text-3xl font-semibold tracking-tight">{media.name}</h1>

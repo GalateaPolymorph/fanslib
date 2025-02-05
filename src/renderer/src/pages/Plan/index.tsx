@@ -1,5 +1,7 @@
+import { useChannels } from "@renderer/contexts/ChannelContext";
 import { addMonths, startOfMonth } from "date-fns";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Post } from "../../../../features/posts/entity";
 import { Library } from "../../components/Library";
 import { Shoots } from "../../components/Shoots/Shoots";
@@ -9,6 +11,7 @@ import { generateVirtualPosts, VirtualPost } from "../../lib/virtual-posts";
 import { PostTimeline } from "./PostTimeline";
 
 export const PlanPage = () => {
+  const { channels } = useChannels();
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
 
   const tabs = [
@@ -66,21 +69,30 @@ export const PlanPage = () => {
     fetchPosts();
   }, []);
 
-  const mainContent = (
-    <div className="h-full w-full overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between py-6 pl-6 pr-4 flex-none">
-        <h1 className="text-2xl font-bold">Plan</h1>
-      </div>
-      <div className="flex-1 overflow-hidden px-6">
-        <PostTimeline posts={posts} onUpdate={fetchPosts} />
-      </div>
-    </div>
-  );
-
   return (
     <SplitViewLayout
       id="plan"
-      mainContent={mainContent}
+      mainContent={
+        <div className="h-full w-full overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between py-6 pl-6 pr-4 flex-none">
+            <h1 className="text-2xl font-bold">Plan</h1>
+          </div>
+          <div className="flex-1 overflow-hidden px-6">
+            {!channels.length && (
+              <div className="text-center text-muted-foreground py-8">
+                You don&apos;t have any channels to post your content to yet.
+                <br />
+                Go to the{" "}
+                <Link to="/channels" className="underline">
+                  channels page
+                </Link>{" "}
+                to add one.
+              </div>
+            )}
+            <PostTimeline posts={posts} onUpdate={fetchPosts} />
+          </div>
+        </div>
+      }
       sideContent={activeTab?.content}
       sideContentHeader={
         <TabNavigation tabs={tabs} activeTabId={activeTabId} onTabChange={updateActiveTab} />
