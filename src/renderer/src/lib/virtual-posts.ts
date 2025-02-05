@@ -103,7 +103,6 @@ export const generateVirtualPosts = (
   existingPosts: Post[] = [],
   currentTime: Date = new Date()
 ): VirtualPost[] => {
-  console.log("schedules", schedules);
   return schedules.flatMap((schedule) => {
     const dates = generateScheduleDates(schedule, currentTime);
 

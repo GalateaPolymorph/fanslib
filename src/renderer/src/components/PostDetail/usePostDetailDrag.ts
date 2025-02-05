@@ -61,7 +61,6 @@ export const usePostDetailDrag = ({
   };
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    console.log("Dropped");
     e.preventDefault();
     dragEnterCountRef.current = 0;
     setIsDraggedOver(false);

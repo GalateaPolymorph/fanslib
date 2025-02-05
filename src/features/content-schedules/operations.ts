@@ -106,7 +106,6 @@ export const updateContentSchedule = async (
     Omit<ContentSchedule, "id" | "createdAt" | "updatedAt" | "channel" | "category" | "tier">
   >
 ): Promise<ContentSchedule | null> => {
-  console.log("updates", updates);
   const dataSource = await db();
   const repository = dataSource.getRepository(ContentSchedule);
 
@@ -148,7 +147,7 @@ export const updateContentSchedule = async (
   await repository.save(schedule);
 
   // Return with relations
-  const r = repository.findOne({
+  return repository.findOne({
     where: { id },
     relations: {
       channel: true,
@@ -156,9 +155,6 @@ export const updateContentSchedule = async (
       tier: true,
     },
   });
-
-  console.log("r", await r);
-  return r;
 };
 
 export const deleteContentSchedule = async (id: string): Promise<void> => {
