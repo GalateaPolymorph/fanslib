@@ -46,15 +46,13 @@ const ShootsContent: FC<ShootsProps> = ({ className }) => {
         <div className="flex-1 min-h-0">
           <ScrollArea className="h-full" ref={scrollRef}>
             <div className="flex flex-col px-6 pt-4 gap-2 pb-48">
-              {shoots.length === 0 ? (
-                !isDragging && (
-                  <div className="text-center text-muted-foreground py-8">
-                    Drag media here to create your first shoot
-                  </div>
-                )
-              ) : (
-                <>
-                  {shoots.map((shoot) => (
+              {shoots.length === 0
+                ? !isDragging && (
+                    <div className="text-center text-muted-foreground py-8">
+                      Drag media here to create your first shoot
+                    </div>
+                  )
+                : shoots.map((shoot) => (
                     <ShootDetail
                       key={shoot.id}
                       shoot={shoot}
@@ -72,9 +70,7 @@ const ShootsContent: FC<ShootsProps> = ({ className }) => {
                       }}
                     />
                   ))}
-                  <ShootCreateDropZone className="h-24" />
-                </>
-              )}
+              <ShootCreateDropZone className="h-24" />
             </div>
           </ScrollArea>
         </div>
