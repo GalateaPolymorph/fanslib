@@ -24,8 +24,8 @@ export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt" | "postMed
 
 export type VirtualPostMedia = {
   media: {
-    tier: Tier;
-    tierId: number;
+    tier?: Tier;
+    tierId?: number;
   };
 };
 

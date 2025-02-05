@@ -1,11 +1,9 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { format } from "date-fns";
-import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
-import { cn } from "../../lib/utils";
 import { ChannelBadge } from "../ChannelBadge";
 import { ChannelTypeId } from "../ChannelTypeIcon";
-import { Button } from "../ui/button";
+import { StatusSticker } from "../StatusSticker";
 import { MediaTileProps } from "./types";
 
 type PostsByChannel = Record<
@@ -64,23 +62,15 @@ export const MediaTilePostsPopover = ({ media }: PostsPopoverProps) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <Button
-          size="icon"
-          className={cn(
-            "p-0 h-5 w-5 bg-black/50 hover:bg-black/70 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 z-20",
-            mediaHasBeenPosted ? "text-green-400" : "text-blue-400"
-          )}
-          onMouseEnter={handlePopoverOpen}
-          onMouseLeave={handlePopoverClose}
-        >
-          <Check className="h-3 w-3" />
-        </Button>
+        <div onMouseEnter={handlePopoverOpen} onMouseLeave={handlePopoverClose}>
+          <StatusSticker status={mediaHasBeenPosted ? "posted" : "scheduled"} className="w-5" />
+        </div>
       </PopoverTrigger>
       <PopoverContent
         side="left"
         align="start"
         sideOffset={5}
-        className="z-50 w-[200px] p-2 bg-popover text-popover-foreground shadow-lg rounded-md border outline-none"
+        className="z-50 p-2 bg-popover text-popover-foreground shadow-lg rounded-md border outline-none"
         avoidCollisions={true}
         collisionPadding={20}
         sticky="always"
@@ -89,7 +79,11 @@ export const MediaTilePostsPopover = ({ media }: PostsPopoverProps) => {
           {Object.entries(postsByChannel).map(
             ([channelId, { channelName, channelTypeId, count, lastPostDate }]) => (
               <div key={channelId} className="text-xs flex items-center gap-2">
-                <ChannelBadge name={channelName} typeId={channelTypeId as ChannelTypeId} />
+                <ChannelBadge
+                  size="sm"
+                  name={channelName}
+                  typeId={channelTypeId as ChannelTypeId}
+                />
                 <span className="text-muted-foreground">
                   {count}× · {format(lastPostDate, "MMM d")}
                 </span>

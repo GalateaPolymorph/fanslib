@@ -2,7 +2,7 @@ import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
 import { HashtagButton } from "@renderer/components/HashtagButton";
 import { MediaSelection } from "@renderer/components/MediaSelection";
-import { MediaTileLite } from "@renderer/components/MediaTile";
+import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
@@ -125,7 +125,7 @@ export const CreatePostDialog = ({
 
         <div className="flex flex-col overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4 pl-1">
               <div className="flex flex-col space-y-2">
                 <label className="text-sm font-medium">Channel</label>
                 <ChannelSelect
@@ -134,15 +134,15 @@ export const CreatePostDialog = ({
                   multiple={false}
                 />
               </div>
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Status</label>
                 <StatusSelect value={status} onChange={setStatus} />
               </div>
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Date</label>
                 <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
               </div>
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Caption</label>
                 <div className="relative">
                   <Textarea
@@ -165,9 +165,15 @@ export const CreatePostDialog = ({
               <label className="text-sm font-medium">Selected Media ({selectedMedia.length})</label>
               <ScrollArea className="h-[200px] border rounded-md p-2">
                 <div className="grid grid-cols-3 gap-2">
-                  {selectedMedia.map((item) => (
+                  {selectedMedia.map((item, index) => (
                     <div key={item.id} className="relative aspect-square">
-                      <MediaTileLite media={item} isActivePreview={false} />
+                      <MediaTile
+                        media={item}
+                        allMedias={selectedMedia}
+                        index={index}
+                        withTier
+                        withCategoryHint
+                      />
                     </div>
                   ))}
                 </div>

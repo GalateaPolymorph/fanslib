@@ -14,15 +14,17 @@ import {
 import { de } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { Post } from "../../../../features/posts/entity";
-import { Button } from "../../components/ui/button";
-import { ScrollArea } from "../../components/ui/scroll-area";
-import { cn } from "../../lib/utils";
+import { Post } from "../../../../../features/posts/entity";
+import { Button } from "../../../components/ui/button";
+import { ScrollArea } from "../../../components/ui/scroll-area";
+import { cn } from "../../../lib/utils";
+import { isVirtualPost, VirtualPost } from "../../../lib/virtual-posts";
 import { PostCalendarPost } from "./PostCalendarPost";
 
 type PostCalendarProps = {
   className?: string;
-  posts: Post[];
+  posts: (Post | VirtualPost)[];
+  onUpdate: () => void;
 };
 
 export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
@@ -62,7 +64,7 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
   };
 
   return (
-    <div className={cn("w-full flex flex-col", className)}>
+    <div className={cn("w-full h-full flex flex-col", className)}>
       <div className="flex items-center justify-between flex-none">
         <h2 className="font-semibold">{format(firstDayCurrentMonth, "MMMM yyyy")}</h2>
         <div className="space-x-2">
@@ -80,7 +82,7 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
           <div key={i}>{day}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0">
+      <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0 overflow-auto">
         {days.map((day, dayIdx) => {
           const dayPosts = posts.filter((post) => isSameDay(new Date(post.date), day));
 
@@ -89,7 +91,7 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
               key={day.toString()}
               className={cn(
                 dayIdx === 0 && colStartClasses[getDayOffset(day)],
-                "py-2 px-1 flex flex-col min-h-0"
+                "py-2 px-1 flex flex-col"
               )}
             >
               <button
@@ -103,9 +105,14 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
               </button>
               {dayPosts.length > 0 && (
                 <ScrollArea className="flex-1 mt-1 min-h-0">
-                  {dayPosts.map((post) => (
-                    <PostCalendarPost key={post.id} post={post} />
-                  ))}
+                  {dayPosts.map((post) => {
+                    return (
+                      <PostCalendarPost
+                        key={isVirtualPost(post) ? post.virtualId : post.id}
+                        post={post}
+                      />
+                    );
+                  })}
                 </ScrollArea>
               )}
             </div>

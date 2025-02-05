@@ -90,7 +90,9 @@ export const fetchAllContentSchedules = async (): Promise<ContentSchedule[]> => 
 
   return repository.find({
     relations: {
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
       tier: true,
     },

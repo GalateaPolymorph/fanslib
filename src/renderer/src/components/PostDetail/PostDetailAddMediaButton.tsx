@@ -20,12 +20,14 @@ type PostDetailAddMediaButtonProps = {
   post: Post;
   onUpdate: () => Promise<void>;
   isDraggingMedia?: boolean;
+  variant?: "default" | "detail";
 };
 
 export const PostDetailAddMediaButton = ({
   post,
   onUpdate,
   isDraggingMedia = false,
+  variant = "default",
 }: PostDetailAddMediaButtonProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -71,7 +73,13 @@ export const PostDetailAddMediaButton = ({
   return (
     <Dialog open={open} onOpenChange={updateDialogOpen}>
       <DialogTrigger asChild>
-        <div className="relative aspect-square cursor-pointer rounded-lg overflow-hidden">
+        <div
+          className={cn(
+            "relative cursor-pointer rounded-lg overflow-hidden",
+            variant === "detail" && "col-span-2 min-h-24",
+            variant === "default" && "aspect-square"
+          )}
+        >
           <div
             className={cn(
               "absolute inset-0 z-10 border-2 border-dashed rounded-lg flex items-center justify-center transition-colors duration-200",

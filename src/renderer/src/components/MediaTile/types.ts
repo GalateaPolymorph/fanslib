@@ -7,11 +7,15 @@ export type MediaTileProps = {
   className?: string;
 
   withPostsPopover?: boolean;
-  withCategoryHint?: boolean;
   withSelection?: boolean;
-  withPreview?: boolean;
+  withNavigation?: boolean;
   withDragAndDrop?: boolean;
+  withPreview?: boolean;
+
   withDuration?: boolean;
   withTypeIcon?: boolean;
   withTier?: boolean;
+  withCategoryHint?: boolean;
+
+  cover?: boolean;
 };

@@ -2,12 +2,12 @@ import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { useMediaSelection } from "@renderer/contexts/MediaSelectionContext";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../lib/utils";
-import { MediaTileCategoryHint } from "./MediaTileCategoryHint";
+import { MediaTileCategorySticker } from "./MediaTileCategorySticker";
 import { MediaTileImage } from "./MediaTileImage";
 import { MediaTilePostsPopover } from "./MediaTilePostsPopover";
 import { MediaTileSelectionCircle } from "./MediaTileSelectionCircle";
-import { MediaTileTierHint } from "./MediaTileTierHint";
-import { MediaTileTypeIcon } from "./MediaTileTypeIcon";
+import { MediaTileTierSticker } from "./MediaTileTierSticker";
+import { MediaTileTypeSticker } from "./MediaTileTypeSticker";
 import { MediaTileVideo } from "./MediaTileVideo";
 import { MediaTileProps } from "./types";
 
@@ -27,6 +27,8 @@ export const MediaTile = (props: MediaTileProps) => {
   const withDuration = props.withDuration ?? false;
   const withTypeIcon = props.withTypeIcon ?? false;
   const withTier = props.withTier ?? false;
+  const withNavigation = props.withNavigation ?? false;
+  const cover = props.cover ?? false;
 
   const activatePreview = () => {
     if (!withPreview) return;
@@ -45,7 +47,7 @@ export const MediaTile = (props: MediaTileProps) => {
     }
 
     const isSelectionCircleClicked = (e.target as HTMLElement).closest(".selection-circle");
-    if (!isSelectionCircleClicked) {
+    if (!isSelectionCircleClicked && withNavigation) {
       navigate(`/content/${encodeURIComponent(media.id)}`);
     }
   };
@@ -66,10 +68,11 @@ export const MediaTile = (props: MediaTileProps) => {
   return (
     <div
       className={cn(
-        "relative aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer group",
-        props.className,
+        "relative aspect-square bg-muted rounded-lg overflow-hidden group",
+        (withNavigation || (withSelection && selectedMediaIds.size > 0)) && "cursor-pointer",
         isHighlighted(media.id) && "ring-2 ring-primary/50",
-        isSelected && "ring-2 ring-primary/50"
+        isSelected && "ring-2 ring-primary/50",
+        props.className
       )}
       onMouseEnter={activatePreview}
       onMouseLeave={deactivatePreview}
@@ -77,15 +80,20 @@ export const MediaTile = (props: MediaTileProps) => {
       {...dragAndDropProps}
     >
       {media.type === "video" && (
-        <MediaTileVideo media={media} withPreview={withPreview} withDuration={withDuration} />
+        <MediaTileVideo
+          media={media}
+          withPreview={withPreview}
+          withDuration={withDuration}
+          cover={cover}
+        />
       )}
-      {media.type === "image" && <MediaTileImage media={media} />}
+      {media.type === "image" && <MediaTileImage media={media} cover={cover} />}
       {withSelection && <MediaTileSelectionCircle mediaId={media.id} />}
       <div className="absolute bottom-1 left-1 flex gap-1 z-10">
         {withPostsPopover && <MediaTilePostsPopover media={media} />}
-        {withCategoryHint && <MediaTileCategoryHint media={media} />}
-        {withTier && <MediaTileTierHint media={media} />}
-        {withTypeIcon && <MediaTileTypeIcon media={media} />}
+        {withCategoryHint && <MediaTileCategorySticker media={media} />}
+        {withTier && <MediaTileTierSticker media={media} />}
+        {withTypeIcon && <MediaTileTypeSticker media={media} />}
       </div>
     </div>
   );

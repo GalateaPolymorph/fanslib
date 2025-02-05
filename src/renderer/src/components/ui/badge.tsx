@@ -22,10 +22,11 @@ const badgeVariants = cva(
       shape: {
         default: "rounded-full",
         tag: "",
+        iconOnly: "rounded aspect-square p-0.5 size-5",
       },
       size: {
         default: "px-2.5 py-0.5 text-xs",
-        sm: "px-2 py-0.5 text-2xs",
+        sm: "px-1 py-0.5 text-2xs",
         lg: "px-3 py-1 text-sm",
       },
     },
@@ -39,7 +40,7 @@ const badgeVariants = cva(
 
 export type BadgeProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof badgeVariants> & {
-    shape?: "default" | "tag";
+    shape?: "default" | "tag" | "iconOnly";
   };
 
 export const Badge = ({

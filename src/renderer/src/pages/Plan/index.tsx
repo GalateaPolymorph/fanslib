@@ -1,17 +1,22 @@
 import { useChannels } from "@renderer/contexts/ChannelContext";
+import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { addMonths, startOfMonth } from "date-fns";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Post } from "../../../../features/posts/entity";
 import { Library } from "../../components/Library";
 import { Shoots } from "../../components/Shoots/Shoots";
 import { SplitViewLayout } from "../../components/SplitViewLayout";
 import { TabNavigation, useTabNavigation } from "../../components/TabNavigation";
+import { PlanPreferencesProvider, usePlanPreferences } from "../../contexts/PlanPreferencesContext";
 import { generateVirtualPosts, VirtualPost } from "../../lib/virtual-posts";
+import { PlanEmptyState } from "./PlanEmptyState";
+import { PlanViewSettings } from "./PlanViewSettings";
+import { PostCalendar } from "./PostCalendar/PostCalendar";
 import { PostTimeline } from "./PostTimeline";
 
-export const PlanPage = () => {
+const PlanPageContent = () => {
   const { channels } = useChannels();
+  const { preferences } = usePlanPreferences();
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
 
   const tabs = [
@@ -76,20 +81,16 @@ export const PlanPage = () => {
         <div className="h-full w-full overflow-hidden flex flex-col">
           <div className="flex items-center justify-between py-6 pl-6 pr-4 flex-none">
             <h1 className="text-2xl font-bold">Plan</h1>
+            <PlanViewSettings />
           </div>
           <div className="flex-1 overflow-hidden px-6">
-            {!channels.length && (
-              <div className="text-center text-muted-foreground py-8">
-                You don&apos;t have any channels to post your content to yet.
-                <br />
-                Go to the{" "}
-                <Link to="/channels" className="underline">
-                  channels page
-                </Link>{" "}
-                to add one.
-              </div>
+            {!channels.length && <PlanEmptyState />}
+            {channels.length && preferences.view.viewType === "timeline" && (
+              <PostTimeline posts={posts} onUpdate={fetchPosts} />
             )}
-            <PostTimeline posts={posts} onUpdate={fetchPosts} />
+            {channels.length && preferences.view.viewType === "calendar" && (
+              <PostCalendar posts={posts} onUpdate={fetchPosts} />
+            )}
           </div>
         </div>
       }
@@ -100,3 +101,11 @@ export const PlanPage = () => {
     />
   );
 };
+
+export const PlanPage = () => (
+  <PlanPreferencesProvider>
+    <MediaSelectionProvider media={[]}>
+      <PlanPageContent />
+    </MediaSelectionProvider>
+  </PlanPreferencesProvider>
+);

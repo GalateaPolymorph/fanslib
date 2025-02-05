@@ -1,5 +1,6 @@
-import { DateTimePicker } from "@renderer/components/DateTimePicker";
+import { Calendar } from "@renderer/components/ui/calendar";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { cn } from "@renderer/lib/utils";
 import { useEffect, useState } from "react";
 import { Post } from "src/features/posts/entity";
 
@@ -16,10 +17,20 @@ export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps
     setDate(new Date(post.date));
   }, [post.date]);
 
-  const handleDateChange = async (newDate: Date) => {
+  const handleDateChange = async (newDate: Date | undefined) => {
+    if (!newDate) return;
+
     try {
-      await window.api["post:update"](post.id, { date: newDate.toISOString() });
+      // Keep the original time when updating the date
+      const updatedDate = new Date(newDate);
+      updatedDate.setHours(date.getHours());
+      updatedDate.setMinutes(date.getMinutes());
+      updatedDate.setSeconds(date.getSeconds());
+
+      await window.api["post:update"](post.id, { date: updatedDate.toISOString() });
       await onUpdate();
+      setDate(updatedDate);
+
       toast({
         title: "Post date updated",
         duration: 2000,
@@ -33,5 +44,18 @@ export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps
     }
   };
 
-  return <DateTimePicker date={date} setDate={handleDateChange} />;
+  return (
+    <div className="relative">
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={handleDateChange}
+        selectedClassNames={cn({
+          "bg-blue-500": post.status === "scheduled",
+          "bg-green-500": post.status === "posted",
+          "bg-gray-500": post.status === "draft",
+        })}
+      />
+    </div>
+  );
 };

@@ -59,7 +59,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
     if (post.status === "draft") {
       return (
         <>
-          <StatusBadge status={post.status} className="mr-2" />
+          <StatusBadge status={post.status} className="justify-self-start" />
           <Button
             variant="outline"
             onClick={() => handleUpdateStatus("scheduled")}
@@ -83,7 +83,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
     if (post.status === "scheduled") {
       return (
         <>
-          <StatusBadge status={post.status} className="mr-2" />
+          <StatusBadge status={post.status} className="justify-self-start" />
           <Button
             variant="outline"
             onClick={() => handleUpdateStatus("draft")}
@@ -107,7 +107,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
     if (post.status === "posted") {
       return (
         <>
-          <StatusBadge status={post.status} className="mr-2" />
+          <StatusBadge status={post.status} className="justify-self-start" />
           <Button
             variant="outline"
             onClick={() => handleUpdateStatus("draft")}
@@ -126,7 +126,9 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
 
   return (
     <TooltipProvider>
-      <div className="flex items-center gap-2">{renderButtons()}</div>
+      <div className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-2">
+        {renderButtons()}
+      </div>
     </TooltipProvider>
   );
 };

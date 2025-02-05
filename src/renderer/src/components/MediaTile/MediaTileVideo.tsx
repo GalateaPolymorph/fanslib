@@ -8,9 +8,15 @@ type MediaTileVideoProps = {
   media: Media;
   withPreview: boolean;
   withDuration: boolean;
+  cover?: boolean;
 };
 
-export const MediaTileVideo = ({ media, withPreview, withDuration }: MediaTileVideoProps) => {
+export const MediaTileVideo = ({
+  media,
+  withPreview,
+  withDuration,
+  cover,
+}: MediaTileVideoProps) => {
   const { currentHoveredMediaId } = useMediaSelection();
   const isPreviewActive = withPreview && currentHoveredMediaId === media.id;
   const { videoRef } = useVideoPreview({
@@ -24,7 +30,10 @@ export const MediaTileVideo = ({ media, withPreview, withDuration }: MediaTileVi
         <img
           src={`thumbnail://${media.id}`}
           alt={media.name}
-          className="absolute inset-0 w-full h-full object-contain"
+          className={cn(
+            "absolute inset-0 w-full h-full",
+            cover ? "object-cover" : "object-contain"
+          )}
           loading="lazy"
           draggable={false}
         />
@@ -33,7 +42,8 @@ export const MediaTileVideo = ({ media, withPreview, withDuration }: MediaTileVi
         ref={videoRef}
         src={`media://${media.path}`}
         className={cn(
-          "absolute inset-0 w-full h-full object-contain",
+          "absolute inset-0 w-full h-full",
+          cover ? "object-cover" : "object-contain",
           !isPreviewActive && "hidden"
         )}
         preload="none"

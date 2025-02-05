@@ -3,11 +3,14 @@ import { cn } from "@renderer/lib/utils";
 import * as React from "react";
 import { DayPicker } from "react-day-picker";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  selectedClassNames?: string;
+};
 
 export const Calendar = ({
   className,
   classNames,
+  selectedClassNames,
   showOutsideDays = true,
   ...props
 }: CalendarProps) => {
@@ -27,8 +30,10 @@ export const Calendar = ({
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
         day_button: "h-9 w-9 p-0 z-10 cursor-pointer",
-        selected:
+        selected: cn(
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+          selectedClassNames
+        ),
         today: "bg-accent text-accent-foreground",
         disabled: "text-muted-foreground opacity-50",
         button_next: cn(buttonVariants({ variant: "ghost" }), "px-2 mr-3"),

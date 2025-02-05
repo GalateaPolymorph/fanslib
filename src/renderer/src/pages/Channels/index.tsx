@@ -1,38 +1,26 @@
 import { Button } from "@renderer/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/dialog";
+import { useChannels } from "@renderer/contexts/ChannelContext";
 import { PlusCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Channel } from "../../../../features/channels/entity";
 import { ChannelView } from "./ChannelView";
 import { CreateChannelForm } from "./CreateChannelForm";
 
 export const ChannelsPage = () => {
-  const [channels, setChannels] = useState<Channel[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingChannelId, setEditingChannelId] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadChannels();
-  }, []);
-
-  const loadChannels = async () => {
-    const channels = await window.api["channel:getAll"]();
-    setChannels(channels);
-  };
+  const { channels, refetch } = useChannels();
 
   const handleNewChannel = (channel: Channel) => {
-    setChannels((prev) => [...prev, channel]);
+    refetch();
     setIsCreateDialogOpen(false);
     setEditingChannelId(channel.id);
   };
 
-  const handleChannelUpdate = (updatedChannel: Channel) => {
-    setChannels((prev) => prev.map((ch) => (ch.id === updatedChannel.id ? updatedChannel : ch)));
-  };
-
   const handleChannelDelete = async (channel: Channel) => {
     await window.api["channel:delete"](channel.id);
-    setChannels((prev) => prev.filter((ch) => ch.id !== channel.id));
+    refetch();
     if (editingChannelId === channel.id) {
       setEditingChannelId(null);
     }
@@ -60,7 +48,7 @@ export const ChannelsPage = () => {
           <div key={channel.id} className="p-6">
             <ChannelView
               channel={channel}
-              onUpdate={handleChannelUpdate}
+              onUpdate={refetch}
               onDelete={handleChannelDelete}
               isEditing={channel.id === editingChannelId}
               onEditingChange={(editing) => setEditingChannelId(editing ? channel.id : null)}

@@ -6,19 +6,31 @@ import React from "react";
 type TimePickerProps = {
   date: Date;
   setDate: (hours: number, minutes: number) => void;
+  hourLabel?: string;
+  minuteLabel?: string;
+  noLabel?: boolean;
   className?: string;
 };
 
-export const TimePicker = ({ date, setDate, className }: TimePickerProps) => {
+export const TimePicker = ({
+  date,
+  setDate,
+  hourLabel,
+  minuteLabel,
+  noLabel,
+  className,
+}: TimePickerProps) => {
   const minuteRef = React.useRef<HTMLInputElement>(null);
   const hourRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <div className={cn("flex items-end gap-2", className)}>
       <div className="grid gap-1 text-center">
-        <Label htmlFor="hours" className="text-xs">
-          Hours
-        </Label>
+        {!noLabel && (
+          <Label htmlFor="hours" className="text-xs">
+            {hourLabel ?? "Hours"}
+          </Label>
+        )}
         <Input
           id="hours"
           className="w-16 text-center"
@@ -36,9 +48,11 @@ export const TimePicker = ({ date, setDate, className }: TimePickerProps) => {
         />
       </div>
       <div className="grid gap-1 text-center">
-        <Label htmlFor="minutes" className="text-xs">
-          Minutes
-        </Label>
+        {!noLabel && (
+          <Label htmlFor="minutes" className="text-xs">
+            {minuteLabel ?? "Minutes"}
+          </Label>
+        )}
         <Input
           id="minutes"
           className="w-16 text-center"

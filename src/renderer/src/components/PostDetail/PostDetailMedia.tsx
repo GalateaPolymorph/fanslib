@@ -9,37 +9,27 @@ import {
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { cn } from "@renderer/lib/utils";
-import { EyeIcon, EyeOffIcon, Trash2Icon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
 import { Post } from "src/features/posts/entity";
+import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
 
 type PostDetailMediaProps = {
   post: Post;
   onUpdate: () => Promise<void>;
   isDraggingMedia?: boolean;
+  variant?: "default" | "detail";
 };
 
 export const PostDetailMedia = ({
   post,
   onUpdate,
   isDraggingMedia = false,
+  variant = "default",
 }: PostDetailMediaProps) => {
   const { toast } = useToast();
+  console.log(post);
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
-
-  const handleToggleFreePreview = async (mediaId: string, isFreePreview: boolean) => {
-    try {
-      await window.api["post:setFreePreview"](post.id, mediaId, !isFreePreview);
-      await onUpdate();
-    } catch (error) {
-      console.error("Failed to toggle free preview:", error);
-      toast({
-        title: "Failed to toggle free preview",
-        variant: "destructive",
-      });
-    }
-  };
 
   const removeMediaFromPost = async (postMediaId: string) => {
     try {
@@ -60,16 +50,18 @@ export const PostDetailMedia = ({
   return (
     <TooltipProvider>
       <MediaSelectionProvider media={post.postMedia.map((pm) => pm.media)}>
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 pt-1">
+        <div
+          className={cn(
+            "grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 pt-1",
+            variant === "detail" && "grid-cols-1 sm:grid-cols-1 md:grid-cols-2"
+          )}
+        >
           {post.postMedia.map((postMedia, index) => (
             <Tooltip key={postMedia.id} delayDuration={0}>
               <TooltipTrigger asChild>
                 <div className="group relative aspect-square cursor-pointer rounded-lg overflow-hidden">
                   <div
-                    className={cn(
-                      "absolute inset-0 z-10 border-2 border-transparent rounded-lg",
-                      postMedia.isFreePreview && "border-dashed border-border"
-                    )}
+                    className={cn("absolute inset-0 z-10 border-2 border-transparent rounded-lg")}
                   >
                     <MediaTile
                       media={postMedia.media}
@@ -77,6 +69,8 @@ export const PostDetailMedia = ({
                       allMedias={post.postMedia.map((pm) => pm.media)}
                       withPreview
                       withDuration
+                      withTier
+                      withNavigation
                     />
                   </div>
                 </div>
@@ -85,17 +79,6 @@ export const PostDetailMedia = ({
                 side="top"
                 className="flex gap-1 p-1.5 bg-background border border-border"
               >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleFreePreview(postMedia.media.id, postMedia.isFreePreview);
-                  }}
-                >
-                  {postMedia.isFreePreview ? <EyeOffIcon size={14} /> : <EyeIcon size={14} />}
-                </Button>
                 <Button
                   variant="ghost"
                   size={confirmingDelete === postMedia.id ? "default" : "icon"}
@@ -126,6 +109,7 @@ export const PostDetailMedia = ({
             post={post}
             onUpdate={onUpdate}
             isDraggingMedia={isDraggingMedia}
+            variant={variant}
           />
         </div>
       </MediaSelectionProvider>

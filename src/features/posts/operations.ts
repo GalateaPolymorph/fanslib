@@ -44,7 +44,10 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
     where: { id },
     relations: {
       postMedia: {
-        media: true,
+        media: {
+          tags: true,
+          tier: true,
+        },
       },
       channel: {
         type: true,
@@ -224,7 +227,10 @@ export const getPostById = async (id: string) => {
     where: { id },
     relations: {
       postMedia: {
-        media: true,
+        media: {
+          tags: true,
+          tier: true,
+        },
       },
       channel: true,
       category: true,
@@ -249,7 +255,9 @@ export const getAllPosts = async () => {
           tier: true,
         },
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       category: true,
     },
     order: {
