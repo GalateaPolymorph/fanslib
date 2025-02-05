@@ -4,14 +4,31 @@ import { Post } from "../../../../features/posts/entity";
 import { Library } from "../../components/Library";
 import { Shoots } from "../../components/Shoots/Shoots";
 import { SplitViewLayout } from "../../components/SplitViewLayout";
+import { TabNavigation, useTabNavigation } from "../../components/TabNavigation";
 import { generateVirtualPosts, VirtualPost } from "../../lib/virtual-posts";
 import { PostTimeline } from "./PostTimeline";
 
-type SideContentView = "shoots" | "library";
-
 export const PlanPage = () => {
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
-  const [sideContentView, setSideContentView] = useState<SideContentView>("shoots");
+
+  const tabs = [
+    {
+      id: "shoots" as const,
+      label: "Shoots",
+      content: <Shoots />,
+    },
+    {
+      id: "library" as const,
+      label: "Library",
+      content: <Library showHeader={false} />,
+    },
+  ];
+
+  const { activeTabId, activeTab, updateActiveTab } = useTabNavigation({
+    tabs,
+    storageKey: "plan-side-content-view",
+    defaultTabId: "shoots",
+  });
 
   const fetchPosts = async () => {
     try {
@@ -60,39 +77,14 @@ export const PlanPage = () => {
     </div>
   );
 
-  const sideContentHeader = (
-    <div className="flex items-center gap-4">
-      <button
-        onClick={() => setSideContentView("shoots")}
-        className={`text-2xl font-bold ${
-          sideContentView === "shoots"
-            ? "text-foreground"
-            : "text-muted-foreground hover:text-foreground/80"
-        }`}
-      >
-        Shoots
-      </button>
-      <button
-        onClick={() => setSideContentView("library")}
-        className={`text-2xl font-bold ${
-          sideContentView === "library"
-            ? "text-foreground"
-            : "text-muted-foreground hover:text-foreground/80"
-        }`}
-      >
-        Library
-      </button>
-    </div>
-  );
-
-  const sideContent = sideContentView === "shoots" ? <Shoots /> : <Library showHeader={false} />;
-
   return (
     <SplitViewLayout
       id="plan"
       mainContent={mainContent}
-      sideContent={sideContent}
-      sideContentHeader={sideContentHeader}
+      sideContent={activeTab?.content}
+      sideContentHeader={
+        <TabNavigation tabs={tabs} activeTabId={activeTabId} onTabChange={updateActiveTab} />
+      }
     />
   );
 };
