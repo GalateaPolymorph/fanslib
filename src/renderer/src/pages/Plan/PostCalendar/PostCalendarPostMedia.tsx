@@ -12,8 +12,8 @@ export const PostCalendarPostMedia = ({ postMedia, isVirtual }: PostCalendarPost
   const allMedias = isVirtual ? [] : postMedia.map((pm) => pm.media);
 
   return (
-    <div className={cn("grid gap-1 aspect-square grid-rows-2 grid-cols-2")}>
-      {Array.from({ length: postMedia.length > 1 ? 4 : 1 }).map((_, i) => {
+    <div className={cn("grid gap-1 grid-rows-1 grid-cols-2")}>
+      {Array.from({ length: 2 }).map((_, i) => {
         const media = !isVirtual ? (postMedia as PostMedia[])[i]?.media : null;
 
         return (
@@ -24,14 +24,14 @@ export const PostCalendarPostMedia = ({ postMedia, isVirtual }: PostCalendarPost
                 allMedias={allMedias}
                 index={i}
                 className="rounded-md"
-                withDuration
                 withPreview
+                cover
               />
             )}
             {!media && <div className="w-full h-full"></div>}
-            {i === 3 && postMedia.length > 4 && (
+            {i === 1 && postMedia.length > 2 && (
               <div className="absolute inset-0 bg-muted/50 flex items-center justify-center">
-                + {postMedia.length - 4}
+                + {postMedia.length - 2}
               </div>
             )}
           </div>

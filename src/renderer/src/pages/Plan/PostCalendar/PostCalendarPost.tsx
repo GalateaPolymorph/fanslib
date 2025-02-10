@@ -22,16 +22,16 @@ export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
   const content = (
     <div
       className={cn(
-        "grid [grid-template-areas:'stickers_time''stickers_media'] grid-cols-[auto_1fr]",
-        "gap-x-2 gap-y-0.5",
-        "border p-2 rounded-md",
+        "grid [grid-template-areas:'stickers_time''media_media'] grid-cols-[auto_1fr]",
+        "gap-x-2 gap-y-2",
+        "border p-3 rounded-md",
         {
           "opacity-50": isVirtualPost(post),
           "hover:bg-muted/50 transition-colors": !isVirtualPost(post),
         }
       )}
     >
-      <div className="[grid-area:stickers] flex flex-col gap-1">
+      <div className="[grid-area:stickers] flex gap-1">
         <ChannelBadge noName name={""} typeId={post.channel.type.id} size="sm" />
         {tier && <Sticker className="text-xs w-5">{printTier(tier)}</Sticker>}
         {!isVirtualPost(post) && <StatusSticker status={post.status} variant="inverted" />}

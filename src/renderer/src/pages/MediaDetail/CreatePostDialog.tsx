@@ -6,6 +6,11 @@ import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
 import { Button } from "@renderer/components/ui/button";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@renderer/components/ui/collapsible";
+import {
   Dialog,
   DialogContent,
   DialogFooter,
@@ -17,7 +22,7 @@ import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
@@ -27,6 +32,8 @@ type CreatePostDialogProps = {
   onOpenChange: (open: boolean) => void;
   media: Media[];
   initialDate?: Date;
+  initialChannelId?: string;
+  initialCaption?: string;
 };
 
 export const CreatePostDialog = ({
@@ -34,6 +41,8 @@ export const CreatePostDialog = ({
   onOpenChange,
   media,
   initialDate,
+  initialChannelId,
+  initialCaption,
 }: CreatePostDialogProps) => {
   const { toast } = useToast();
   const { channels } = useChannels();
@@ -49,8 +58,16 @@ export const CreatePostDialog = ({
   });
   const [status, setStatus] = useState<PostStatus>("draft");
   const [selectedMedia, setSelectedMedia] = useState<Media[]>(media);
-  const [caption, setCaption] = useState("");
+  const [caption, setCaption] = useState(initialCaption || "");
   const [isMediaSelectionOpen, setIsMediaSelectionOpen] = useState(false);
+  const [isOtherCaptionsOpen, setIsOtherCaptionsOpen] = useState(false);
+
+  const otherCaptions = useMemo(() => {
+    const captions = selectedMedia
+      .flatMap((media) => media.postMedia?.map((pm) => pm.post?.caption))
+      .filter((caption): caption is string => Boolean(caption) && caption !== initialCaption);
+    return [...new Set(captions)];
+  }, [selectedMedia, initialCaption]);
 
   useEffect(() => {
     if (!open) return;
@@ -58,9 +75,20 @@ export const CreatePostDialog = ({
   }, [open, media]);
 
   useEffect(() => {
-    if (!channels.length || channels.length > 1) return;
-    setSelectedChannel([channels[0].id]);
-  }, [channels]);
+    if (!open) return;
+    setCaption(initialCaption);
+  }, [open, initialCaption]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (initialChannelId) {
+      setSelectedChannel([initialChannelId]);
+    } else if (!channels.length || channels.length > 1) {
+      setSelectedChannel([]);
+    } else {
+      setSelectedChannel([channels[0].id]);
+    }
+  }, [channels, initialChannelId, open]);
 
   useEffect(() => {
     if (initialDate) {
@@ -95,7 +123,6 @@ export const CreatePostDialog = ({
         {
           date: selectedDate.toISOString(),
           channelId: selectedChannel[0],
-          categoryId: media[0].categories[0]?.id,
           status,
           caption,
         },
@@ -115,7 +142,7 @@ export const CreatePostDialog = ({
         variant: "destructive",
       });
     }
-  }, [selectedChannel, selectedDate, status, media, selectedMedia, onOpenChange, toast, caption]);
+  }, [selectedChannel, selectedDate, status, selectedMedia, onOpenChange, toast, caption]);
 
   return (
     <MediaSelectionProvider media={selectedMedia}>
@@ -165,6 +192,50 @@ export const CreatePostDialog = ({
                       className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
                     />
                   </div>
+                  {otherCaptions.length > 0 && (
+                    <Collapsible
+                      open={isOtherCaptionsOpen}
+                      onOpenChange={setIsOtherCaptionsOpen}
+                      className="mt-2"
+                    >
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex w-full items-center justify-between p-2 text-sm font-medium"
+                        >
+                          Captions from other posts using this media
+                          {isOtherCaptionsOpen ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <ScrollArea className="h-[200px] rounded-md border p-2">
+                          <div className="space-y-2">
+                            {otherCaptions.map((otherCaption, index) => (
+                              <div
+                                key={index}
+                                className="group relative rounded-md border p-2 hover:bg-muted"
+                              >
+                                <p className="text-sm text-muted-foreground">{otherCaption}</p>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-2 top-2 opacity-0 group-hover:opacity-100"
+                                  onClick={() => setCaption(otherCaption)}
+                                >
+                                  Use
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
                 </div>
               </div>
 
