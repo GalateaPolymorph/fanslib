@@ -138,7 +138,12 @@ export const CreatePostDialog = ({
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">Status</label>
-                  <StatusSelect value={status} onChange={setStatus} />
+                  <StatusSelect
+                    value={[status]}
+                    onChange={(statuses) => {
+                      setStatus(statuses[0] as PostStatus);
+                    }}
+                  />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">Date</label>

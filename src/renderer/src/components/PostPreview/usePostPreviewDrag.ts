@@ -5,19 +5,19 @@ import { VirtualPost, isVirtualPost } from "@renderer/lib/virtual-posts";
 import { useRef, useState } from "react";
 import { Post } from "src/features/posts/entity";
 
-type UsePostDetailDragProps = {
+type UsePostPreviewDragProps = {
   post: Post | VirtualPost;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onUpdate: () => Promise<void>;
 };
 
-export const usePostDetailDrag = ({
+export const usePostPreviewDrag = ({
   post,
   isOpen,
   onOpenChange,
   onUpdate,
-}: UsePostDetailDragProps) => {
+}: UsePostPreviewDragProps) => {
   const { refetch } = useLibrary();
   const { toast } = useToast();
   const { draggedMedias, endMediaDrag, isDragging } = useMediaDrag();

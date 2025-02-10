@@ -71,6 +71,7 @@ export const ShootDetailMedia: FC<ShootDetailMediaProps> = ({
                   withCategoryHint
                   withDragAndDrop
                   withSelection
+                  withTier
                 />
               </div>
             </Link>

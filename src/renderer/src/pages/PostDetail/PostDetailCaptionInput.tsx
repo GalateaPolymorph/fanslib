@@ -2,7 +2,7 @@ import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { Post } from "src/features/posts/entity";
-import { HashtagButton } from "../HashtagButton";
+import { HashtagButton } from "../../components/HashtagButton";
 
 type PostDetailCaptionInputProps = {
   post: Post;

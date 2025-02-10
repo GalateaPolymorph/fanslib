@@ -1,11 +1,11 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
-import { PostDetailCaptionInput } from "@renderer/components/PostDetail/PostDetailCaptionInput";
-import { PostDetailDateInput } from "@renderer/components/PostDetail/PostDetailDateInput";
-import { PostDetailDeleteButton } from "@renderer/components/PostDetail/PostDetailDeleteButton";
-import { PostDetailMedia } from "@renderer/components/PostDetail/PostDetailMedia";
-import { PostDetailStatusButton } from "@renderer/components/PostDetail/PostDetailStatusButton";
-import { PostDetailTimeInput } from "@renderer/components/PostDetail/PostDetailTimeInput";
 import { Button } from "@renderer/components/ui/button";
+import { PostDetailCaptionInput } from "@renderer/pages/PostDetail/PostDetailCaptionInput";
+import { PostDetailDateInput } from "@renderer/pages/PostDetail/PostDetailDateInput";
+import { PostDetailDeleteButton } from "@renderer/pages/PostDetail/PostDetailDeleteButton";
+import { PostDetailMedia } from "@renderer/pages/PostDetail/PostDetailMedia";
+import { PostDetailStatusButton } from "@renderer/pages/PostDetail/PostDetailStatusButton";
+import { PostDetailTimeInput } from "@renderer/pages/PostDetail/PostDetailTimeInput";
 import { ArrowLeft } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

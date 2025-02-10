@@ -14,7 +14,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Media } from "src/features/library/entity";
 import { Post } from "src/features/posts/entity";
-import { MediaTileLite } from "../MediaTile";
+import { MediaTileLite } from "../../components/MediaTile";
 
 type PostDetailAddMediaButtonProps = {
   post: Post;

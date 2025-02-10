@@ -33,10 +33,7 @@ export const StatusSelect = ({
       return;
     }
 
-    if (values.length === 0) {
-      onChange([status]);
-      return;
-    }
+    onChange([status]);
   };
 
   return (

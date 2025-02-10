@@ -35,10 +35,6 @@ export const PostFilters = ({ value, onFilterChange }: PostFiltersProps) => {
               value={value.statuses}
               multiple
               onChange={(statuses) => {
-                console.log({
-                  value,
-                  statuses,
-                });
                 onFilterChange({
                   statuses: statuses ? (statuses as PostStatus[]) : undefined,
                 });

@@ -12,12 +12,7 @@ export const PostCalendarPostMedia = ({ postMedia, isVirtual }: PostCalendarPost
   const allMedias = isVirtual ? [] : postMedia.map((pm) => pm.media);
 
   return (
-    <div
-      className={cn("grid gap-1 aspect-square", {
-        "grid-rows-1 grid-cols-1": postMedia.length === 1,
-        "grid-rows-2 grid-cols-2": postMedia.length > 1,
-      })}
-    >
+    <div className={cn("grid gap-1 aspect-square grid-rows-2 grid-cols-2")}>
       {Array.from({ length: postMedia.length > 1 ? 4 : 1 }).map((_, i) => {
         const media = !isVirtual ? (postMedia as PostMedia[])[i]?.media : null;
 

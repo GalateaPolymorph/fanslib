@@ -1,4 +1,4 @@
-import { PostDetail } from "@renderer/components/PostDetail/PostDetail";
+import { PostPreview } from "@renderer/components/PostPreview/PostPreview";
 import { useCallback, useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 
@@ -56,7 +56,7 @@ export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
   return (
     <div className="flex flex-col gap-2">
       {posts.map((post) => (
-        <PostDetail
+        <PostPreview
           key={post.id}
           post={post}
           onUpdate={fetchPosts}

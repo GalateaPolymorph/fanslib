@@ -1,4 +1,4 @@
-import { PostDetail } from "@renderer/components/PostDetail/PostDetail";
+import { PostPreview } from "@renderer/components/PostPreview/PostPreview";
 import { useState } from "react";
 import { type Post } from "../../../../features/posts/entity";
 import { ScrollArea } from "../../components/ui/scroll-area";
@@ -27,7 +27,7 @@ export const PostTimeline = ({ posts, className, onUpdate }: PostTimelineProps) 
 
           return (
             <div key={id} className="space-y-4">
-              <PostDetail
+              <PostPreview
                 post={post}
                 onUpdate={onUpdate}
                 isOpen={openPostId === id}
