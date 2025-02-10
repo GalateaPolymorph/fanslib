@@ -17,7 +17,7 @@ export const PostCalendarPostMedia = ({ postMedia, isVirtual }: PostCalendarPost
         const media = !isVirtual ? (postMedia as PostMedia[])[i]?.media : null;
 
         return (
-          <div className="relative bg-muted/50 rounded-md" key={i}>
+          <div className="relative rounded-md" key={i}>
             {media && (
               <MediaTile
                 media={media}

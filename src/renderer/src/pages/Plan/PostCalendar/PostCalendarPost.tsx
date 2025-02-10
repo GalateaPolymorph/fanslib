@@ -1,5 +1,4 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
-import { StatusSticker } from "@renderer/components/StatusSticker";
 import { Sticker } from "@renderer/components/ui/sticker";
 import { maximumTier, printTier } from "@renderer/lib/tier";
 import { cn } from "@renderer/lib/utils";
@@ -22,19 +21,19 @@ export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
   const content = (
     <div
       className={cn(
-        "grid [grid-template-areas:'stickers_time''media_media'] grid-cols-[auto_1fr]",
+        "grid [grid-template-areas:'stickers_time''media_media'] grid-cols-[auto_1fr] transition-colors",
         "gap-x-2 gap-y-2",
-        "border p-3 rounded-md",
+        "p-3 rounded-md",
         {
-          "opacity-50": isVirtualPost(post),
-          "hover:bg-muted/50 transition-colors": !isVirtualPost(post),
+          "bg-green-200/50": post.status === "posted",
+          "bg-blue-200/50": post.status === "scheduled",
+          "bg-gray-200/50": post.status === "draft",
         }
       )}
     >
       <div className="[grid-area:stickers] flex gap-1">
         <ChannelBadge noName name={""} typeId={post.channel.type.id} size="sm" />
         {tier && <Sticker className="text-xs w-5">{printTier(tier)}</Sticker>}
-        {!isVirtualPost(post) && <StatusSticker status={post.status} variant="inverted" />}
       </div>
       <div className="[grid-area:time] text-xs text-muted-foreground">{time}</div>
       <div className="[grid-area:media] relative">

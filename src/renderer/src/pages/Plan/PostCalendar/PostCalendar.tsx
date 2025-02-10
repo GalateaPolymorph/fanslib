@@ -115,7 +115,7 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
           <div key={i}>{day}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0 overflow-auto">
+      <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0 overflow-auto gap-y-8 gap-x-2">
         {days.map((day, dayIdx) => {
           const dayPosts = posts.filter((post) => isSameDay(new Date(post.date), day));
 
@@ -127,15 +127,18 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
                 "py-2 px-1 flex flex-col"
               )}
             >
-              <button
-                type="button"
-                className={cn(
-                  "mx-auto flex h-8 w-8 items-center justify-center rounded-full flex-none",
-                  isToday(day) && "text-white bg-primary"
-                )}
-              >
-                <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, "d")}</time>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className={cn(
+                    "flex h-12 w-12 items-center justify-center rounded-full flex-none text-xl font-bold",
+                    isToday(day) && "text-white bg-primary"
+                  )}
+                >
+                  <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, "d")}</time>
+                </button>
+                <span className="text-xs text-muted-foreground">{format(day, "EEEE")}</span>
+              </div>
               {dayPosts.length > 0 && (
                 <div className="flex-1 mt-1 min-h-0 flex flex-col gap-2">
                   {dayPosts.map((post) => {
