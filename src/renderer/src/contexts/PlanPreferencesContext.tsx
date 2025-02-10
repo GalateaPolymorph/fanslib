@@ -1,20 +1,40 @@
 import { DeepPartial } from "@renderer/lib/deep-partial";
+import { addMonths, startOfMonth } from "date-fns";
 import { mergeDeepRight } from "ramda";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { PostStatus } from "src/features/posts/entity";
 
 export type PlanViewType = "timeline" | "calendar";
 
-type ViewPreferences = {
-  viewType: PlanViewType;
+export type PlanFilterPreferences = {
+  search?: string;
+  channels?: string[];
+  statuses?: PostStatus[];
+  dateRange?: {
+    startDate: string;
+    endDate: string;
+  };
 };
 
 export type PlanPreferences = {
-  view: ViewPreferences;
+  view: {
+    viewType: PlanViewType;
+  };
+  filter: PlanFilterPreferences;
 };
 
-const defaultPreferences: PlanPreferences = {
+export const defaultPreferences: PlanPreferences = {
   view: {
     viewType: "timeline",
+  },
+  filter: {
+    search: undefined,
+    channels: undefined,
+    statuses: undefined,
+    dateRange: {
+      startDate: startOfMonth(new Date()).toISOString(),
+      endDate: addMonths(startOfMonth(new Date()), 3).toISOString(),
+    },
   },
 };
 
@@ -25,7 +45,7 @@ type PlanPreferencesContextValue = {
 
 const PlanPreferencesContext = createContext<PlanPreferencesContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "planPreferences";
+const STORAGE_KEY = "postPreferences";
 
 export const PlanPreferencesProvider = ({ children }: { children: React.ReactNode }) => {
   const [preferences, setPreferences] = useState<PlanPreferences>(() => {
@@ -34,7 +54,7 @@ export const PlanPreferencesProvider = ({ children }: { children: React.ReactNod
       try {
         return mergeDeepRight(defaultPreferences, JSON.parse(stored));
       } catch (error) {
-        console.error("Failed to parse plan preferences:", error);
+        console.error("Failed to parse post preferences:", error);
         return defaultPreferences;
       }
     }

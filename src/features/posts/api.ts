@@ -15,7 +15,7 @@ import {
 
 export const handlers: PostHandlers = {
   create: (_, data, mediaIds) => createPost(data, mediaIds),
-  getAll: (_) => getAllPosts(),
+  getAll: (_, filters) => getAllPosts(filters),
   byId: (_, id: string) => fetchPostById(id),
   bySchedule: (_, scheduleId: string) => fetchPostsBySchedule(scheduleId),
   byChannel: (_, channelId: string) => fetchPostsByChannel(channelId),

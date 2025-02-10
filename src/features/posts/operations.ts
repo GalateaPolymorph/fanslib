@@ -1,7 +1,7 @@
 import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { Media } from "../library/entity";
-import { PostCreateData } from "./api-type";
+import { PostCreateData, PostFilters } from "./api-type";
 import { Post, PostMedia } from "./entity";
 
 export const createPost = async (postData: PostCreateData, mediaIds: string[]): Promise<Post> => {
@@ -243,30 +243,48 @@ export const getPostById = async (id: string) => {
   });
 };
 
-export const getAllPosts = async () => {
+export const getAllPosts = async (filters?: PostFilters) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Post);
 
-  return repository.find({
-    relations: {
-      postMedia: {
-        media: {
-          tags: true,
-          tier: true,
-        },
-      },
-      channel: {
-        type: true,
-      },
-      category: true,
-    },
-    order: {
-      date: "DESC",
-      postMedia: {
-        order: "ASC",
-      },
-    },
-  });
+  const queryBuilder = repository
+    .createQueryBuilder("post")
+    .leftJoinAndSelect("post.postMedia", "postMedia")
+    .leftJoinAndSelect("postMedia.media", "media")
+    .leftJoinAndSelect("media.tags", "tags")
+    .leftJoinAndSelect("media.tier", "tier")
+    .leftJoinAndSelect("post.channel", "channel")
+    .leftJoinAndSelect("channel.type", "channelType")
+    .leftJoinAndSelect("post.category", "category")
+    .orderBy("post.date", "DESC")
+    .addOrderBy("postMedia.order", "ASC");
+
+  if (filters?.search) {
+    queryBuilder.andWhere("LOWER(post.caption) LIKE LOWER(:search)", {
+      search: `%${filters.search}%`,
+    });
+  }
+
+  if (filters?.channels?.length) {
+    queryBuilder.andWhere("channel.id IN (:...channelIds)", {
+      channelIds: filters.channels,
+    });
+  }
+
+  if (filters?.statuses?.length) {
+    queryBuilder.andWhere("post.status IN (:...statuses)", {
+      statuses: filters.statuses,
+    });
+  }
+
+  if (filters?.dateRange) {
+    queryBuilder.andWhere("post.date >= :startDate AND post.date <= :endDate", {
+      startDate: filters.dateRange.startDate,
+      endDate: filters.dateRange.endDate,
+    });
+  }
+
+  return queryBuilder.getMany();
 };
 
 export const setFreePreview = async (

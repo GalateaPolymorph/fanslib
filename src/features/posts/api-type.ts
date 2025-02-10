@@ -1,6 +1,16 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 import { Post, PostStatus } from "./entity";
 
+export type PostFilters = {
+  search?: string;
+  channels?: string[];
+  statuses?: PostStatus[];
+  dateRange?: {
+    startDate: string;
+    endDate: string;
+  };
+};
+
 export type PostCreateData = {
   date: string;
   channelId: string;
@@ -26,7 +36,7 @@ export const methods = [
 
 export type PostHandlers = {
   create: (_: any, data: PostCreateData, mediaIds: string[]) => Promise<Post>;
-  getAll: (_: any) => Promise<Post[]>;
+  getAll: (_: any, filters?: PostFilters) => Promise<Post[]>;
   byId: (_: any, id: string) => Promise<Post | null>;
   bySchedule: (_: any, scheduleId: string) => Promise<Post[]>;
   byChannel: (_: any, channelId: string) => Promise<Post[]>;

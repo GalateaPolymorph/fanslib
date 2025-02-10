@@ -28,7 +28,6 @@ export const PostDetailMedia = ({
   variant = "default",
 }: PostDetailMediaProps) => {
   const { toast } = useToast();
-  console.log(post);
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
   const removeMediaFromPost = async (postMediaId: string) => {

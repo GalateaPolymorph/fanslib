@@ -1,13 +1,16 @@
+import { PostFilters } from "@renderer/components/PostFilters";
 import { useChannels } from "@renderer/contexts/ChannelContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
-import { addMonths, startOfMonth } from "date-fns";
-import { useEffect, useState } from "react";
+import {
+  PlanPreferencesProvider,
+  usePlanPreferences,
+} from "@renderer/contexts/PlanPreferencesContext";
+import { useCallback, useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 import { Library } from "../../components/Library";
 import { Shoots } from "../../components/Shoots/Shoots";
 import { SplitViewLayout } from "../../components/SplitViewLayout";
 import { TabNavigation, useTabNavigation } from "../../components/TabNavigation";
-import { PlanPreferencesProvider, usePlanPreferences } from "../../contexts/PlanPreferencesContext";
 import { generateVirtualPosts, VirtualPost } from "../../lib/virtual-posts";
 import { PlanEmptyState } from "./PlanEmptyState";
 import { PlanViewSettings } from "./PlanViewSettings";
@@ -16,7 +19,7 @@ import { PostTimeline } from "./PostTimeline";
 
 const PlanPageContent = () => {
   const { channels } = useChannels();
-  const { preferences } = usePlanPreferences();
+  const { preferences, updatePreferences } = usePlanPreferences();
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
 
   const tabs = [
@@ -38,26 +41,35 @@ const PlanPageContent = () => {
     defaultTabId: "shoots",
   });
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
-      // Fetch posts for the next 3 months
-      const startDate = startOfMonth(new Date());
-      const endDate = addMonths(startDate, 3);
-
       // Posts are already enriched with channel and category data
-      const [allPosts, schedules] = await Promise.all([
-        window.api["post:getAll"](),
+      const [filteredPosts, allPosts, schedules] = await Promise.all([
+        window.api["post:getAll"]({
+          search: preferences.filter.search,
+          channels: preferences.filter.channels,
+          statuses: preferences.filter.statuses,
+          dateRange: preferences.filter.dateRange,
+        }),
+        window.api["post:getAll"]({
+          dateRange: preferences.filter.dateRange,
+        }),
         window.api["content-schedule:getAll"](),
       ]);
 
-      // Filter posts within the date range
-      const filteredPosts = allPosts.filter((post) => {
-        const postDate = new Date(post.date);
-        return postDate >= startDate && postDate <= endDate;
-      });
+      const shouldShowDraftPosts =
+        !preferences.filter.statuses || preferences.filter.statuses.includes("draft");
 
       // Generate virtual posts from schedules
-      const virtualPosts = generateVirtualPosts(schedules, filteredPosts);
+      const virtualPosts = shouldShowDraftPosts
+        ? generateVirtualPosts(
+            schedules.filter(
+              (s) =>
+                !preferences.filter.channels || preferences.filter.channels?.includes(s.channel.id)
+            ),
+            allPosts
+          )
+        : [];
 
       // Combine and sort all posts by date
       const allPostsCombined = [...filteredPosts, ...virtualPosts].sort(
@@ -68,20 +80,28 @@ const PlanPageContent = () => {
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
-  };
+  }, [preferences.filter]);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   return (
     <SplitViewLayout
       id="plan"
       mainContent={
         <div className="h-full w-full overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between py-6 pl-6 pr-4 flex-none">
+          <div className="flex gap-12 flex-col py-6 pl-6 pr-4 flex-none">
             <h1 className="text-2xl font-bold">Plan</h1>
-            <PlanViewSettings />
+            <div className="flex items-center justify-between gap-4">
+              <PostFilters
+                value={preferences.filter}
+                onFilterChange={(filter) => {
+                  updatePreferences({ filter });
+                }}
+              />
+              <PlanViewSettings />
+            </div>
           </div>
           <div className="flex-1 overflow-hidden px-6">
             {!channels.length && <PlanEmptyState />}

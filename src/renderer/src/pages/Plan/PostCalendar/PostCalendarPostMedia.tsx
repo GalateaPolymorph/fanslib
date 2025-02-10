@@ -29,7 +29,8 @@ export const PostCalendarPostMedia = ({ postMedia, isVirtual }: PostCalendarPost
                 allMedias={allMedias}
                 index={i}
                 className="rounded-md"
-                cover
+                withDuration
+                withPreview
               />
             )}
             {!media && <div className="w-full h-full"></div>}

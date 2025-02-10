@@ -1,3 +1,4 @@
+import { PlanViewType, usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import { CalendarDays, LayoutList, Settings2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
@@ -8,8 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
-import { PlanViewType, usePlanPreferences } from "../../contexts/PlanPreferencesContext";
-
 export const PlanViewSettings = () => {
   const { preferences, updatePreferences } = usePlanPreferences();
 

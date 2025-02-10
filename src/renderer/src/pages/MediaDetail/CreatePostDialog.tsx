@@ -15,6 +15,7 @@ import {
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
@@ -117,104 +118,109 @@ export const CreatePostDialog = ({
   }, [selectedChannel, selectedDate, status, media, selectedMedia, onOpenChange, toast, caption]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>Create Post</DialogTitle>
-        </DialogHeader>
+    <MediaSelectionProvider media={selectedMedia}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Create Post</DialogTitle>
+          </DialogHeader>
 
-        <div className="flex flex-col overflow-y-auto flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-4 pl-1">
-              <div className="flex flex-col space-y-2">
-                <label className="text-sm font-medium">Channel</label>
-                <ChannelSelect
-                  value={selectedChannel}
-                  onChange={setSelectedChannel}
-                  multiple={false}
+          <div className="flex flex-col overflow-y-auto flex-1">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4 pl-1">
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium">Channel</label>
+                  <ChannelSelect
+                    value={selectedChannel}
+                    onChange={setSelectedChannel}
+                    multiple={false}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium">Status</label>
+                  <StatusSelect value={status} onChange={setStatus} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium">Date</label>
+                  <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium">Caption</label>
+                  <div className="relative">
+                    <Textarea
+                      value={caption}
+                      onChange={(e) => setCaption(e.target.value)}
+                      placeholder="Write your post caption..."
+                      className="min-h-[100px] resize-none pr-10"
+                    />
+                    <HashtagButton
+                      media={selectedMedia}
+                      caption={caption}
+                      onCaptionChange={setCaption}
+                      className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Selected Media ({selectedMedia.length})
+                </label>
+                <ScrollArea className="h-[200px] border rounded-md p-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    {selectedMedia.map((item, index) => (
+                      <div key={item.id} className="relative aspect-square">
+                        <MediaTile
+                          media={item}
+                          allMedias={selectedMedia}
+                          index={index}
+                          withTier
+                          withCategoryHint
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+
+            <div className="flex flex-col flex-1 min-h-0">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 self-start my-2"
+                onClick={() => setIsMediaSelectionOpen(!isMediaSelectionOpen)}
+              >
+                {isMediaSelectionOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+                {isMediaSelectionOpen ? "Hide Media Selection" : "Add more media"}
+              </Button>
+
+              {isMediaSelectionOpen && (
+                <MediaSelection
+                  selectedMedia={selectedMedia}
+                  onMediaSelect={handleMediaSelect}
+                  referenceMedia={media[0]}
+                  excludeMediaIds={media.map((m) => m.id)}
                 />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Status</label>
-                <StatusSelect value={status} onChange={setStatus} />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Date</label>
-                <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Caption</label>
-                <div className="relative">
-                  <Textarea
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                    placeholder="Write your post caption..."
-                    className="min-h-[100px] resize-none pr-10"
-                  />
-                  <HashtagButton
-                    media={selectedMedia}
-                    caption={caption}
-                    onCaptionChange={setCaption}
-                    className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Selected Media ({selectedMedia.length})</label>
-              <ScrollArea className="h-[200px] border rounded-md p-2">
-                <div className="grid grid-cols-3 gap-2">
-                  {selectedMedia.map((item, index) => (
-                    <div key={item.id} className="relative aspect-square">
-                      <MediaTile
-                        media={item}
-                        allMedias={selectedMedia}
-                        index={index}
-                        withTier
-                        withCategoryHint
-                      />
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
-
-          <div className="flex flex-col flex-1 min-h-0">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 self-start my-2"
-              onClick={() => setIsMediaSelectionOpen(!isMediaSelectionOpen)}
-            >
-              {isMediaSelectionOpen ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
               )}
-              {isMediaSelectionOpen ? "Hide Media Selection" : "Add more media"}
-            </Button>
-
-            {isMediaSelectionOpen && (
-              <MediaSelection
-                selectedMedia={selectedMedia}
-                onMediaSelect={handleMediaSelect}
-                referenceMedia={media[0]}
-                excludeMediaIds={media.map((m) => m.id)}
-              />
-            )}
+            </div>
           </div>
-        </div>
 
-        <DialogFooter className="border-t py-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleCreatePost}>
-            Create Post with {selectedMedia.length} {selectedMedia.length === 1 ? "item" : "items"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter className="border-t py-4">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreatePost}>
+              Create Post with {selectedMedia.length}{" "}
+              {selectedMedia.length === 1 ? "item" : "items"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </MediaSelectionProvider>
   );
 };

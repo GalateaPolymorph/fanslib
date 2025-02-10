@@ -110,7 +110,7 @@ export const generateVirtualPosts = (
     const filteredDates = dates.filter((date) => {
       return !existingPosts.some((post) => {
         const postDate = new Date(post.date);
-        return isSameMinute(postDate, date);
+        return isSameMinute(postDate, date) && schedule.channelId === post.channelId;
       });
     });
 

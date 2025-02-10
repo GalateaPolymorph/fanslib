@@ -1,3 +1,4 @@
+import { usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import {
   add,
   eachDayOfInterval,
@@ -13,10 +14,9 @@ import {
 } from "date-fns";
 import { de } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Post } from "../../../../../features/posts/entity";
 import { Button } from "../../../components/ui/button";
-import { ScrollArea } from "../../../components/ui/scroll-area";
 import { cn } from "../../../lib/utils";
 import { isVirtualPost, VirtualPost } from "../../../lib/virtual-posts";
 import { PostCalendarPost } from "./PostCalendarPost";
@@ -28,8 +28,12 @@ type PostCalendarProps = {
 };
 
 export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
-  const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
+  const { preferences, updatePreferences } = usePlanPreferences();
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    // Initialize with the preferences start date
+    return format(new Date(preferences.filter.dateRange?.startDate || new Date()), "MMM-yyyy");
+  });
+
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
 
   // Get locale-specific week start
@@ -47,14 +51,43 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
   });
 
   const previousMonth = () => {
-    const firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
-    setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
+    const firstDayPreviousMonth = add(firstDayCurrentMonth, { months: -1 });
+
+    setCurrentMonth(format(firstDayPreviousMonth, "MMM-yyyy"));
+
+    // Update the date range in preferences
+    updatePreferences({
+      filter: {
+        dateRange: {
+          startDate: startOfMonth(firstDayPreviousMonth).toISOString(),
+          endDate: preferences.filter.dateRange?.endDate,
+        },
+      },
+    });
   };
 
   const nextMonth = () => {
     const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
+
     setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
+
+    // Update the date range in preferences
+    updatePreferences({
+      filter: {
+        dateRange: {
+          startDate: startOfMonth(firstDayNextMonth).toISOString(),
+          endDate: preferences.filter.dateRange?.endDate,
+        },
+      },
+    });
   };
+
+  // Update current month when preferences change
+  useEffect(() => {
+    if (preferences.filter.dateRange?.startDate) {
+      setCurrentMonth(format(new Date(preferences.filter.dateRange.startDate), "MMM-yyyy"));
+    }
+  }, [preferences.filter.dateRange?.startDate]);
 
   // Get the day offset based on locale's start of week
   const getDayOffset = (date: Date) => {
@@ -104,7 +137,7 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
                 <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, "d")}</time>
               </button>
               {dayPosts.length > 0 && (
-                <ScrollArea className="flex-1 mt-1 min-h-0">
+                <div className="flex-1 mt-1 min-h-0 flex flex-col gap-2">
                   {dayPosts.map((post) => {
                     return (
                       <PostCalendarPost
@@ -113,7 +146,7 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
                       />
                     );
                   })}
-                </ScrollArea>
+                </div>
               )}
             </div>
           );

@@ -74,6 +74,7 @@ export const ChannelSelect = ({
             <ChannelBadge
               name={channel.name}
               typeId={channel.typeId}
+              selectable
               selected={isSelected}
               disabled={isDisabled}
               onClick={() => handleToggleChannel(channel.id)}
