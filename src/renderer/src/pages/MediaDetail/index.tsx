@@ -1,3 +1,4 @@
+import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,7 +17,7 @@ import { MediaPosts } from "./MediaPosts";
 export const MediaDetail = () => {
   const { mediaId } = useParams();
   const navigate = useNavigate();
-  const { media, isLoading, error, refetch } = useMedia(mediaId);
+  const { media, isLoading, error } = useMedia(mediaId);
   const [createPostDialogOpen, setCreatePostDialogOpen] = useState(false);
 
   if (isLoading) {
@@ -37,7 +38,7 @@ export const MediaDetail = () => {
   }
 
   return (
-    <>
+    <MediaSelectionProvider media={[media]}>
       <CreatePostDialog
         open={createPostDialogOpen}
         onOpenChange={setCreatePostDialogOpen}
@@ -82,6 +83,6 @@ export const MediaDetail = () => {
           </div>
         </div>
       </div>
-    </>
+    </MediaSelectionProvider>
   );
 };

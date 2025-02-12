@@ -9,7 +9,7 @@ import {
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { cn } from "@renderer/lib/utils";
-import { Trash2Icon } from "lucide-react";
+import { Folder, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { Post } from "src/features/posts/entity";
 import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
@@ -41,6 +41,18 @@ export const PostDetailMedia = ({
       console.error("Failed to remove media from post:", error);
       toast({
         title: "Failed to remove media from post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const revealInFinder = async (path: string) => {
+    try {
+      await window.api["os:revealInFinder"](path);
+    } catch (error) {
+      console.error("Failed to reveal in finder:", error);
+      toast({
+        title: "Failed to reveal in finder",
         variant: "destructive",
       });
     }
@@ -78,6 +90,17 @@ export const PostDetailMedia = ({
                 side="top"
                 className="flex gap-1 p-1.5 bg-background border border-border"
               >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-accent-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    revealInFinder(postMedia.media.path);
+                  }}
+                >
+                  <Folder size={14} />
+                </Button>
                 <Button
                   variant="ghost"
                   size={confirmingDelete === postMedia.id ? "default" : "icon"}
