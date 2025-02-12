@@ -1,5 +1,6 @@
 import {
   BlueSkyIcon,
+  Clips4SaleIcon,
   FanslyIcon,
   InstagramIcon,
   ManyVidsIcon,
@@ -18,6 +19,7 @@ const CHANNEL_ICONS: Record<string, React.ComponentType<React.SVGProps<SVGSVGEle
   bluesky: BlueSkyIcon,
   x: XIcon,
   reddit: RedditIcon,
+  clips4sale: Clips4SaleIcon,
 };
 
 export type ChannelTypeId = keyof typeof CHANNEL_TYPES;

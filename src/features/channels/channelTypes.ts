@@ -34,4 +34,9 @@ export const CHANNEL_TYPES = {
     name: "Reddit",
     color: "#FF4500",
   },
+  clips4sale: {
+    id: "clips4sale",
+    name: "Clips4Sale",
+    color: "#9447ff",
+  },
 } as const;
