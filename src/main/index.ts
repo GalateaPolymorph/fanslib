@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import icon from "../../assets/icons/icon.png?asset";
+import { startCronJobs, stopCronJobs } from "../features/_common/cron";
 import { loadChannelTypeFixtures } from "../features/channels/fixtures";
 import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
@@ -43,6 +44,8 @@ const createWindow = () => {
       mainWindow.showInactive();
     } else {
       mainWindow.show();
+
+      startCronJobs();
     }
   });
 
@@ -86,6 +89,7 @@ app.whenReady().then(async () => {
 });
 
 app.on("window-all-closed", () => {
+  stopCronJobs();
   if (process.platform !== "darwin") {
     app.quit();
   }

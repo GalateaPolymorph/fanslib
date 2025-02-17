@@ -1,4 +1,5 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
+import { NotificationListener } from "./components/NotificationListener";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -7,6 +8,7 @@ import { ChannelProvider } from "./contexts/ChannelContext";
 import { LibraryProvider } from "./contexts/LibraryContext";
 import { LibraryPreferencesProvider } from "./contexts/LibraryPreferencesContext";
 import { MediaDragProvider } from "./contexts/MediaDragContext";
+import { PostDragProvider } from "./contexts/PostDragContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { ShootProvider } from "./contexts/ShootContext";
 import { TagProvider } from "./contexts/TagContext";
@@ -29,21 +31,24 @@ const App = () => {
                 <LibraryPreferencesProvider>
                   <LibraryProvider>
                     <MediaDragProvider>
-                      <TooltipProvider delayDuration={0}>
-                        <HashRouter>
-                          <Routes>
-                            <Route path="/" element={<Layout />}>
-                              <Route index element={<ManagePage />} />
-                              <Route path="content/:mediaId" element={<MediaDetail />} />
-                              <Route path="posts" element={<PlanPage />} />
-                              <Route path="posts/:postId" element={<PostDetailPage />} />
-                              <Route path="channels" element={<ChannelsPage />} />
-                              <Route path="settings" element={<SettingsPage />} />
-                            </Route>
-                          </Routes>
-                        </HashRouter>
-                        <Toaster />
-                      </TooltipProvider>
+                      <PostDragProvider>
+                        <TooltipProvider delayDuration={0}>
+                          <HashRouter>
+                            <Routes>
+                              <Route path="/" element={<Layout />}>
+                                <Route index element={<ManagePage />} />
+                                <Route path="content/:mediaId" element={<MediaDetail />} />
+                                <Route path="posts" element={<PlanPage />} />
+                                <Route path="posts/:postId" element={<PostDetailPage />} />
+                                <Route path="channels" element={<ChannelsPage />} />
+                                <Route path="settings" element={<SettingsPage />} />
+                              </Route>
+                            </Routes>
+                          </HashRouter>
+                          <NotificationListener />
+                          <Toaster />
+                        </TooltipProvider>
+                      </PostDragProvider>
                     </MediaDragProvider>
                   </LibraryProvider>
                 </LibraryPreferencesProvider>

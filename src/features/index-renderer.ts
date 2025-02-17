@@ -6,6 +6,11 @@ import {
   contentScheduleMethods,
 } from "./content-schedules/api-type";
 import { LibraryIpcChannel, LibraryIpcHandlers, libraryMethods } from "./library/api-type";
+import {
+  NotificationIpcChannel,
+  NotificationIpcHandlers,
+  notificationMethods,
+} from "./notifications/api-type";
 import { OsIpcChannel, OsIpcHandlers, osMethods } from "./os/api-type";
 import { PostIpcChannel, PostIpcHandlers, postMethods } from "./posts/api-type";
 import { SettingsIpcChannel, SettingsIpcHandlers, settingsMethods } from "./settings/api-type";
@@ -17,6 +22,7 @@ export type IpcHandlers = CategoryIpcHandlers &
   ChannelIpcHandlers &
   ContentScheduleIpcHandlers &
   LibraryIpcHandlers &
+  NotificationIpcHandlers &
   OsIpcHandlers &
   PostIpcHandlers &
   SettingsIpcHandlers &
@@ -29,6 +35,7 @@ export const ipcMethods = [
   ...channelMethods,
   ...contentScheduleMethods,
   ...libraryMethods,
+  ...notificationMethods,
   ...osMethods,
   ...postMethods,
   ...settingsMethods,
@@ -36,11 +43,13 @@ export const ipcMethods = [
   ...tagMethods,
   ...tierMethods,
 ];
+
 export type IpcChannel =
   | CategoryIpcChannel
   | ChannelIpcChannel
   | ContentScheduleIpcChannel
   | LibraryIpcChannel
+  | NotificationIpcChannel
   | OsIpcChannel
   | PostIpcChannel
   | SettingsIpcChannel

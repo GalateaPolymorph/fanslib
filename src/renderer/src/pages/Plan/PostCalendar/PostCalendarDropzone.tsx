@@ -1,5 +1,6 @@
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
+import { usePostDrag } from "@renderer/contexts/PostDragContext";
 import { useDragOver } from "@renderer/hooks/useDragOver";
 import { cn } from "@renderer/lib/utils";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
@@ -15,37 +16,52 @@ type PostCalendarDropzoneProps = {
 };
 
 export const PostCalendarDropzone = ({ post, children }: PostCalendarDropzoneProps) => {
-  const { isDragging, draggedMedias, endMediaDrag } = useMediaDrag();
-  const [createMedia, setCreateMedia] = useState<Media[]>([]);
+  const { isDragging: isMediaDragging, draggedMedias, endMediaDrag } = useMediaDrag();
+  const { isDragging: isPostDragging, draggedPost, endPostDrag } = usePostDrag();
+  const [createPostData, setCreatePostData] = useState<{
+    media: Media[];
+    caption?: string;
+  } | null>(null);
   const { toast } = useToast();
+
+  const isDragging = isMediaDragging || isPostDragging;
 
   const { isOver, dragHandlers } = useDragOver({
     onDrop: async () => {
-      if (draggedMedias.length === 0) return;
-
-      if (isVirtualPost(post)) {
-        setCreateMedia(draggedMedias);
-      } else {
-        try {
-          const mediaIds = draggedMedias.map((media) => media.id);
-          await window.api["post:addMedia"](post.id, mediaIds);
-          toast({
-            title:
-              draggedMedias.length === 1
-                ? "Media added to post"
-                : `${draggedMedias.length} media items added to post`,
-          });
-        } catch (error) {
-          console.error("Failed to add media to post:", error);
-          toast({
-            title: "Failed to add media to post",
-            variant: "destructive",
-          });
+      if (!isVirtualPost(post)) {
+        if (isMediaDragging && draggedMedias.length > 0) {
+          try {
+            const mediaIds = draggedMedias.map((media) => media.id);
+            await window.api["post:addMedia"](post.id, mediaIds);
+            toast({
+              title:
+                draggedMedias.length === 1
+                  ? "Media added to post"
+                  : `${draggedMedias.length} media items added to post`,
+            });
+          } catch (error) {
+            console.error("Failed to add media to post:", error);
+            toast({
+              title: "Failed to add media to post",
+              variant: "destructive",
+            });
+          }
+          endMediaDrag();
         }
+        return;
       }
-      setTimeout(() => {
+
+      // Handle drops on virtual posts
+      if (isMediaDragging && draggedMedias.length > 0) {
+        setCreatePostData({ media: draggedMedias });
         endMediaDrag();
-      });
+      } else if (isPostDragging && draggedPost && isVirtualPost(post)) {
+        setCreatePostData({
+          media: draggedPost.postMedia.map((pm) => pm.media),
+          caption: draggedPost.caption,
+        });
+        endPostDrag();
+      }
     },
   });
 
@@ -71,14 +87,16 @@ export const PostCalendarDropzone = ({ post, children }: PostCalendarDropzonePro
         )}
       </div>
       <CreatePostDialog
-        open={createMedia.length > 0}
+        open={createPostData !== null}
         onOpenChange={(open) => {
           if (!open) {
-            setCreateMedia([]);
+            setCreatePostData(null);
           }
         }}
-        media={createMedia}
+        media={createPostData?.media ?? []}
         initialDate={new Date(post.date)}
+        initialChannelId={post.channel.id}
+        initialCaption={createPostData?.caption}
       />
     </>
   );

@@ -1,5 +1,6 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { Sticker } from "@renderer/components/ui/sticker";
+import { usePostDrag } from "@renderer/contexts/PostDragContext";
 import { maximumTier, printTier } from "@renderer/lib/tier";
 import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
@@ -15,11 +16,21 @@ type PostCalendarPostProps = {
 };
 
 export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
+  const { startPostDrag, endPostDrag } = usePostDrag();
   const time = format(new Date(post.date), "h:mm a");
   const tier = maximumTier(post);
 
+  const dragProps = !isVirtualPost(post)
+    ? {
+        draggable: true,
+        onDragStart: (e: React.DragEvent<HTMLDivElement>) => startPostDrag(e, post),
+        onDragEnd: endPostDrag,
+      }
+    : {};
+
   const content = (
     <div
+      {...dragProps}
       className={cn(
         "grid [grid-template-areas:'stickers_time''media_media'] grid-cols-[auto_1fr] transition-colors",
         "gap-x-2 gap-y-2",
@@ -28,6 +39,7 @@ export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
           "bg-green-200/50": post.status === "posted",
           "bg-blue-200/50": post.status === "scheduled",
           "bg-gray-200/50": post.status === "draft",
+          "cursor-grab active:cursor-grabbing": !isVirtualPost(post),
         }
       )}
     >
@@ -47,7 +59,7 @@ export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
       {isVirtualPost(post) ? (
         content
       ) : (
-        <Link to={`/posts/${post.id}`} className="block">
+        <Link to={`/posts/${post.id}`} className="block" draggable={false}>
           {content}
         </Link>
       )}
