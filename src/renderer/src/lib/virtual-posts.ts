@@ -41,7 +41,7 @@ const generateScheduleDates = (schedule: ContentSchedule, startDate: Date = new 
       const days = eachDayOfInterval({ start: startDate, end: endDate });
       const postsPerDay = schedule.postsPerTimeframe || 1;
 
-      const dates = days.flatMap((day, i) => {
+      const dates = days.flatMap((day) => {
         return new Array(postsPerDay).fill(0).map((_, j) => {
           const date = new Date(day);
           const time = schedule.preferredTimes.at(j % schedule.preferredTimes.length);

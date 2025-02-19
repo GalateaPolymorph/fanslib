@@ -8,10 +8,10 @@ import { ChannelProvider } from "./contexts/ChannelContext";
 import { LibraryProvider } from "./contexts/LibraryContext";
 import { LibraryPreferencesProvider } from "./contexts/LibraryPreferencesContext";
 import { MediaDragProvider } from "./contexts/MediaDragContext";
+import { NicheProvider } from "./contexts/NicheContext";
 import { PostDragProvider } from "./contexts/PostDragContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { ShootProvider } from "./contexts/ShootContext";
-import { TagProvider } from "./contexts/TagContext";
 import { Layout } from "./Layout";
 import { ChannelsPage } from "./pages/Channels";
 import { ManagePage } from "./pages/Manage";
@@ -19,13 +19,14 @@ import { MediaDetail } from "./pages/MediaDetail";
 import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
 import { SettingsPage } from "./pages/Settings";
+import { TagsPage } from "./pages/Tags";
 
 const App = () => {
   return (
     <ThemeProvider>
       <SettingsProvider>
         <CategoryProvider>
-          <TagProvider>
+          <NicheProvider>
             <ChannelProvider>
               <ShootProvider>
                 <LibraryPreferencesProvider>
@@ -41,6 +42,7 @@ const App = () => {
                                 <Route path="posts" element={<PlanPage />} />
                                 <Route path="posts/:postId" element={<PostDetailPage />} />
                                 <Route path="channels" element={<ChannelsPage />} />
+                                <Route path="tags" element={<TagsPage />} />
                                 <Route path="settings" element={<SettingsPage />} />
                               </Route>
                             </Routes>
@@ -54,7 +56,7 @@ const App = () => {
                 </LibraryPreferencesProvider>
               </ShootProvider>
             </ChannelProvider>
-          </TagProvider>
+          </NicheProvider>
         </CategoryProvider>
       </SettingsProvider>
     </ThemeProvider>

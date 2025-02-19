@@ -6,12 +6,13 @@ import {
   TooltipTrigger,
 } from "@renderer/components/ui/tooltip";
 import { useToast } from "@renderer/components/ui/use-toast";
-import { useSettings } from "@renderer/contexts/SettingsContext";
 import { Hash } from "lucide-react";
+import { Channel } from "src/features/channels/entity";
 import { Media } from "../../../features/library/entity";
 
 type HashtagButtonProps = {
   media: Media[];
+  channel: Channel;
   caption: string;
   onCaptionChange: (caption: string) => void;
   className?: string;
@@ -19,27 +20,29 @@ type HashtagButtonProps = {
 
 export const HashtagButton = ({
   media,
+  channel,
   caption,
   onCaptionChange,
   className,
 }: HashtagButtonProps) => {
   const { toast } = useToast();
-  const { settings } = useSettings();
 
   const collectHashtags = () => {
-    const defaultHashtags = settings?.defaultHashtags ?? [];
-
-    // Get all unique hashtags from all media tags
+    // Get all unique hashtags from all media niches
     const mediaHashtags = media
-      .map((m) => m.tags ?? [])
+      .map((m) => m.niches ?? [])
       .flat()
-      .map((tag) => tag.hashtags ?? [])
+      .map((niche) => niche.hashtags ?? [])
       .flat();
 
-    // Combine and deduplicate hashtags
-    const uniqueHashtags = Array.from(new Set([...defaultHashtags, ...mediaHashtags]));
+    const channelHashtags = channel.defaultHashtags;
 
-    return uniqueHashtags.map((hashtag) => (hashtag.startsWith("#") ? hashtag : `#${hashtag}`));
+    // Deduplicate hashtags
+    const uniqueHashtags = Array.from(new Set([...mediaHashtags, ...channelHashtags]));
+
+    return uniqueHashtags.map((hashtag) =>
+      hashtag.name.startsWith("#") ? hashtag.name : `#${hashtag.name}`
+    );
   };
 
   const addHashtags = () => {
@@ -47,7 +50,7 @@ export const HashtagButton = ({
     if (hashtags.length === 0) {
       toast({
         title: "No hashtags found",
-        description: "Add hashtags to your settings or media tags first",
+        description: "Add hashtags to your media niches first",
         variant: "destructive",
       });
       return;
@@ -67,7 +70,7 @@ export const HashtagButton = ({
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">
-          Adds the default hashtags and all media tags to the caption
+          Adds all media niche and channel default hashtags to the caption
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

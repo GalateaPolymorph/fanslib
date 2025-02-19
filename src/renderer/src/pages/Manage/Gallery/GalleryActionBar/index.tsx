@@ -6,7 +6,7 @@ import { Camera, Send, X } from "lucide-react";
 import { useState } from "react";
 import { Media } from "../../../../../../features/library/entity";
 import { GalleryCategorySelect } from "./GalleryCategorySelect";
-import { GalleryTagSelect } from "./GalleryTagSelect";
+import { GalleryNicheSelect } from "./GalleryNicheSelect";
 import { GalleryTierSelect } from "./GalleryTierSelect";
 
 type GalleryActionBarProps = {
@@ -42,7 +42,7 @@ export const GalleryActionBar = ({
         )}
       >
         <div className="flex gap-4 row-span-2 items-center">
-          <GalleryTagSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
+          <GalleryNicheSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <GalleryCategorySelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <GalleryTierSelect
             selectedMedia={selectedMedia}

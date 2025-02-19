@@ -1,4 +1,4 @@
-import { FileText, LayoutGrid, Settings, Share2 } from "lucide-react";
+import { FileText, Hash, LayoutGrid, Settings, Share2 } from "lucide-react";
 
 type NavItem = {
   title: string;
@@ -21,6 +21,11 @@ export const navItems: NavItem[] = [
     title: "Channels",
     url: "/channels",
     icon: Share2,
+  },
+  {
+    title: "Tags",
+    url: "/tags",
+    icon: Hash,
   },
   {
     title: "Settings",

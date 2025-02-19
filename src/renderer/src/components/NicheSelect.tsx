@@ -1,47 +1,46 @@
 import { Badge } from "@renderer/components/ui/badge";
-import { useTags } from "../contexts/TagContext";
+import { useNiches } from "../contexts/NicheContext";
 import { cn } from "../lib/utils";
-
-export type TagSelectionState = {
+export type NicheSelectionState = {
   id: number;
   state: "selected" | "half-selected" | "unselected";
 };
 
-type TagSelectProps = {
-  value?: TagSelectionState[];
-  onChange: (tagStates: TagSelectionState[] | undefined, changedTagId: number) => void;
+type NicheSelectProps = {
+  value?: NicheSelectionState[];
+  onChange: (nicheStates: NicheSelectionState[] | undefined, changedNicheId: number) => void;
   multiple?: boolean;
-  disabledTags?: number[];
+  disabledNiches?: number[];
   includeNoneOption?: boolean;
   size?: "default" | "sm" | "lg";
 };
 
-export const TagSelect = ({
+export const NicheSelect = ({
   value = [],
   onChange,
   multiple = true,
-  disabledTags = [],
+  disabledNiches = [],
   includeNoneOption = false,
   size = "default",
-}: TagSelectProps) => {
-  const { tags, isLoading } = useTags();
+}: NicheSelectProps) => {
+  const { niches, isLoading } = useNiches();
 
-  const getTagState = (id: number): "selected" | "half-selected" | "unselected" => {
-    const tagState = value.find((t) => t.id === id);
-    return tagState?.state ?? "unselected";
+  const getNicheState = (id: number): "selected" | "half-selected" | "unselected" => {
+    const nicheState = value.find((n) => n.id === id);
+    return nicheState?.state ?? "unselected";
   };
 
-  const handleToggleTag = (id: number) => {
-    if (disabledTags.includes(id)) return;
+  const toggleNiche = (id: number) => {
+    if (disabledNiches.includes(id)) return;
 
-    const currentState = getTagState(id);
-    const newState: TagSelectionState["state"] =
+    const currentState = getNicheState(id);
+    const newState: NicheSelectionState["state"] =
       currentState === "unselected" || currentState === "half-selected" ? "selected" : "unselected";
 
-    const otherTags = value.filter((t) => t.id !== id);
+    const otherNiches = value.filter((n) => n.id !== id);
 
     if (newState === "unselected") {
-      if (otherTags.length === 0) {
+      if (otherNiches.length === 0) {
         if (multiple) {
           onChange([{ id, state: "unselected" }], id);
           return;
@@ -49,12 +48,12 @@ export const TagSelect = ({
         onChange(undefined, id);
         return;
       }
-      onChange(otherTags, id);
+      onChange(otherNiches, id);
       return;
     }
 
     if (multiple) {
-      onChange([...otherTags, { id, state: newState }], id);
+      onChange([...otherNiches, { id, state: newState }], id);
       return;
     }
 
@@ -62,18 +61,18 @@ export const TagSelect = ({
   };
 
   if (isLoading) {
-    return <div className="text-sm text-muted-foreground">Loading tags...</div>;
+    return <div className="text-sm text-muted-foreground">Loading niches...</div>;
   }
 
   return (
     <div className="flex flex-wrap gap-2">
-      {tags.map((tag) => {
-        const isDisabled = disabledTags.includes(tag.id);
-        const state = getTagState(tag.id);
+      {niches.map((niche) => {
+        const isDisabled = disabledNiches.includes(niche.id);
+        const state = getNicheState(niche.id);
 
         return (
           <Badge
-            key={tag.id}
+            key={niche.id}
             size={size}
             shape="tag"
             variant={
@@ -88,9 +87,9 @@ export const TagSelect = ({
               !multiple && value.length > 0 && state === "unselected" && "opacity-50",
               isDisabled && "opacity-30 cursor-not-allowed"
             )}
-            onClick={() => handleToggleTag(tag.id)}
+            onClick={() => toggleNiche(niche.id)}
           >
-            {tag.name}
+            {niche.name}
           </Badge>
         );
       })}

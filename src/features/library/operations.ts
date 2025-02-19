@@ -3,7 +3,7 @@ import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { PaginatedResponse } from "../_common/pagination";
 import { Category } from "../categories/entity";
-import { Tag } from "../tags/entity";
+import { Niche } from "../niches/entity";
 import { Tier } from "../tiers/entity";
 import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
@@ -45,7 +45,7 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
   const database = await db();
   return database.manager.findOne(Media, {
     where: { id },
-    relations: ["categories", "postMedia", "tags", "tier"],
+    relations: ["categories", "postMedia", "niches", "tier"],
   });
 };
 
@@ -63,7 +63,8 @@ export const fetchAllMedia = async (
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
     .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("media.tags", "tags")
+    .leftJoinAndSelect("media.niches", "niches")
+    .leftJoinAndSelect("niches.hashtags", "hashtags")
     .leftJoinAndSelect("media.tier", "tier");
 
   // Apply category filter
@@ -313,23 +314,21 @@ export const removeCategoriesFromMedia = async (path: string, categoryIds: strin
   return repository.save(media);
 };
 
-export const updateMediaTags = async (mediaId: string, tagIds: number[]): Promise<Media> => {
+export const updateMediaNiches = async (mediaId: string, nicheIds: number[]): Promise<Media> => {
   const dataSource = await db();
   const mediaRepository = dataSource.getRepository(Media);
-  const tagRepository = dataSource.getRepository(Tag);
+  const nicheRepository = dataSource.getRepository(Niche);
 
   const media = await mediaRepository.findOne({
     where: { id: mediaId },
-    relations: ["tags"],
+    relations: { niches: true },
   });
 
   if (!media) {
     throw new Error(`Media with id ${mediaId} not found`);
   }
 
-  const tags = await tagRepository.findBy({ id: In(tagIds) });
-  media.tags = tags;
-
+  media.niches = await nicheRepository.findBy({ id: In(nicheIds) });
   return mediaRepository.save(media);
 };
 

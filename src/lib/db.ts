@@ -6,10 +6,11 @@ import { DataSource } from "typeorm";
 import { Category } from "../features/categories/entity";
 import { Channel, ChannelType } from "../features/channels/entity";
 import { ContentSchedule } from "../features/content-schedules/entity";
+import { Hashtag, HashtagChannelStats } from "../features/hashtags/entity";
 import { Media } from "../features/library/entity";
+import { Niche } from "../features/niches/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
-import { Tag } from "../features/tags/entity";
 import { Tier } from "../features/tiers/entity";
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
@@ -20,13 +21,15 @@ export const AppDataSource = new DataSource({
     Category,
     Channel,
     ChannelType,
+    Hashtag,
+    HashtagChannelStats,
     Media,
     Post,
     PostMedia,
     ContentSchedule,
     Shoot,
-    Tag,
     Tier,
+    Niche,
   ],
   synchronize: true,
   logging: false,

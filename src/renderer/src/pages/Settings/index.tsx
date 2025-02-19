@@ -4,7 +4,6 @@ import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButto
 import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { CategorySettings } from "./CategorySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
-import { TagSettings } from "./TagSettings";
 import { TierSettings } from "./TierSettings";
 
 export const SettingsPage = () => {
@@ -24,7 +23,6 @@ export const SettingsPage = () => {
         >
           <LibraryPathInput />
           <CategorySettings />
-          <TagSettings />
           <TierSettings />
         </SettingsSection>
 

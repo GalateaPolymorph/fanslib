@@ -8,7 +8,7 @@ import {
   fetchAllMedia,
   getMediaById,
   updateMedia,
-  updateMediaTags,
+  updateMediaNiches,
 } from "./operations";
 import { scanFile, scanLibrary } from "./scan";
 
@@ -43,8 +43,8 @@ export const handlers: LibraryHandlers = {
     return deleteMedia(id, deleteFile);
   },
 
-  updateTags: async (_, mediaId: string, tagIds: number[]) => {
-    return updateMediaTags(mediaId, tagIds);
+  updateNiches: async (_, mediaId: string, nicheIds: number[]) => {
+    return updateMediaNiches(mediaId, nicheIds);
   },
 
   assignTierToMedia: async (_, mediaId: string, tierId: number) => {

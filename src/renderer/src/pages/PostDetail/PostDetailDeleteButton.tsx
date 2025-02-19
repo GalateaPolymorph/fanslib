@@ -12,7 +12,7 @@ import {
 import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { Trash2 } from "lucide-react";
-import { Post } from "../../../../../features/posts/entity";
+import { Post } from "src/features/posts/entity";
 
 type PostDetailDeleteButtonProps = {
   post: Post;

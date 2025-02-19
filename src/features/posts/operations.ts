@@ -45,12 +45,13 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
     relations: {
       postMedia: {
         media: {
-          tags: true,
+          niches: true,
           tier: true,
         },
       },
       channel: {
         type: true,
+        defaultHashtags: true,
       },
       category: true,
     },
@@ -228,7 +229,7 @@ export const getPostById = async (id: string) => {
     relations: {
       postMedia: {
         media: {
-          tags: true,
+          niches: true,
           tier: true,
         },
       },
@@ -251,10 +252,11 @@ export const getAllPosts = async (filters?: PostFilters) => {
     .createQueryBuilder("post")
     .leftJoinAndSelect("post.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("media.tags", "tags")
+    .leftJoinAndSelect("media.niches", "niches")
     .leftJoinAndSelect("media.tier", "tier")
     .leftJoinAndSelect("post.channel", "channel")
     .leftJoinAndSelect("channel.type", "channelType")
+    .leftJoinAndSelect("channel.defaultHashtags", "defaultHashtags")
     .leftJoinAndSelect("post.category", "category")
     .orderBy("post.date", "DESC")
     .addOrderBy("postMedia.order", "ASC");

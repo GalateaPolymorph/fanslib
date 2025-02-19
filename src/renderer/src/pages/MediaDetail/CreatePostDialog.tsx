@@ -187,6 +187,7 @@ export const CreatePostDialog = ({
                     />
                     <HashtagButton
                       media={selectedMedia}
+                      channel={channels.find((c) => c.id === selectedChannel[0])}
                       caption={caption}
                       onCaptionChange={setCaption}
                       className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"

@@ -9,8 +9,8 @@ import { CreatePostDialog } from "./CreatePostDialog";
 import { MediaDetailCategorySelect } from "./MediaDetailCategorySelect";
 import { MediaDetailDeleteButton } from "./MediaDetailDeleteButton";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
+import { MediaDetailNicheSelect } from "./MediaDetailNicheSelect";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
-import { MediaDetailTagSelect } from "./MediaDetailTagSelect";
 import { MediaDetailTierSelect } from "./MediaDetailTierSelect";
 import { MediaPosts } from "./MediaPosts";
 
@@ -65,7 +65,7 @@ export const MediaDetail = () => {
             <div className="flex flex-col gap-6">
               <MediaDetailMetadata media={media} />
               <MediaDetailCategorySelect media={media} />
-              <MediaDetailTagSelect media={media} />
+              <MediaDetailNicheSelect media={media} />
               <MediaDetailTierSelect media={media} />
             </div>
           </div>

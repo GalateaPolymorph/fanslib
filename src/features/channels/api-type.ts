@@ -2,7 +2,17 @@ import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/name
 import { Channel, ChannelType, ChannelWithoutRelations } from "./entity";
 
 export type ChannelCreatePayload = Omit<ChannelWithoutRelations, "id">;
-const methods = ["create", "getAll", "getById", "delete", "update", "getTypes"] as const;
+const methods = [
+  "create",
+  "getAll",
+  "getById",
+  "delete",
+  "update",
+  "getTypes",
+  "addDefaultHashtag",
+  "removeDefaultHashtag",
+] as const;
+
 export type ChannelHandlers = {
   create: (_: any, data: ChannelCreatePayload) => Promise<Channel>;
   getAll: (_: any) => Promise<Channel[]>;
@@ -14,6 +24,8 @@ export type ChannelHandlers = {
     updates: Partial<Omit<ChannelWithoutRelations, "id">>
   ) => Promise<Channel | null>;
   getTypes: (_: any) => ChannelType[];
+  addDefaultHashtag: (_: any, channelId: string, hashtagId: number) => Promise<void>;
+  removeDefaultHashtag: (_: any, channelId: string, hashtagId: number) => Promise<void>;
 };
 
 export const namespace = "channel" as const;

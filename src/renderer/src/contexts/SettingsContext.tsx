@@ -3,7 +3,6 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 type Settings = {
   libraryPath: string | null;
   theme: "light" | "dark";
-  defaultHashtags: string[];
 };
 
 type SettingsContextType = {

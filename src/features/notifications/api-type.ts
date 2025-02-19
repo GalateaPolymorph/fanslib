@@ -5,7 +5,7 @@ export type NotificationPayload = {
   body: string;
 };
 
-const methods = ["listenNotifications", "onNotify"] as const;
+const methods = ["onNotify"] as const;
 export type NotificationHandlers = {
   onNotify: (_: any, listener: (_: any, notification: NotificationPayload) => void) => void;
 };

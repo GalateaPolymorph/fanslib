@@ -15,7 +15,7 @@ export type FilterPreferences = {
   shootId?: string;
   excludeShoots?: string[];
   channelFilters?: ChannelPostFilter[];
-  tiers?: string[];
+  tiers?: number[];
 };
 
 type SortPreferences = MediaSort;

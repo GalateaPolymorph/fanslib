@@ -52,6 +52,7 @@ export const PostDetailCaptionInput = ({ post, onUpdate }: PostDetailCaptionInpu
         />
         <HashtagButton
           media={post.postMedia.map((pm) => pm.media)}
+          channel={post.channel}
           caption={caption}
           onCaptionChange={setCaption}
           className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"

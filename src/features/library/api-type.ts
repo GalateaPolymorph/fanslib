@@ -47,7 +47,7 @@ export type FileScanResult = {
 };
 
 export type UpdateMediaPayload = Partial<
-  Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia" | "tags">
+  Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia" | "niches">
 > & { categoryIds?: string[] };
 
 const methods = [
@@ -59,7 +59,7 @@ const methods = [
   "delete",
   "onScanProgress",
   "onScanComplete",
-  "updateTags",
+  "updateNiches",
   "assignTierToMedia",
   "assignTierToMedias",
 ] as const;
@@ -75,7 +75,7 @@ export type LibraryHandlers = {
     listener: (_: unknown, progress: LibraryScanProgress) => void
   ) => void;
   onScanComplete: (_: unknown, listener: (_: unknown, result: LibraryScanResult) => void) => void;
-  updateTags: (_: unknown, mediaId: string, tagIds: number[]) => Promise<Media>;
+  updateNiches: (_: unknown, mediaId: string, nicheIds: number[]) => Promise<Media>;
   assignTierToMedia: (_: unknown, mediaId: string, tierId: number) => Promise<Media>;
   assignTierToMedias: (_: unknown, mediaIds: string[], tierId: number) => Promise<Media[]>;
 };

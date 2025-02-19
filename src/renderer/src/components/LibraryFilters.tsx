@@ -51,7 +51,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
               onTierSelect={(tierIds) => {
                 onFilterChange({
                   ...value,
-                  tiers: tierIds.length > 0 ? tierIds.map(String) : undefined,
+                  tiers: tierIds.length > 0 ? tierIds : undefined,
                 });
               }}
               multiple
