@@ -7,8 +7,6 @@ export const NotificationListener = () => {
 
   useEffect(() => {
     const handler = (_: unknown, notification: NotificationPayload) => {
-      console.log("Notification received", notification);
-
       toast({
         title: notification.title,
         description: notification.body,

@@ -28,7 +28,6 @@ export const HashtagButton = ({
   const { toast } = useToast();
 
   const collectHashtags = () => {
-    console.log(media);
     // Get all unique hashtags from all media niches
     const mediaHashtags = media
       .map((m) => m.niches ?? [])

@@ -2,6 +2,7 @@ import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { Post } from "src/features/posts/entity";
+import { CaptionPreview } from "../../components/CaptionPreview";
 import { HashtagButton } from "../../components/HashtagButton";
 
 type PostDetailCaptionInputProps = {
@@ -48,7 +49,7 @@ export const PostDetailCaptionInput = ({ post, onUpdate }: PostDetailCaptionInpu
           placeholder="Add a caption..."
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          className="min-h-[200px] pr-10"
+          className="min-h-[100px] pr-10"
         />
         <HashtagButton
           media={post.postMedia.map((pm) => pm.media)}
@@ -58,6 +59,7 @@ export const PostDetailCaptionInput = ({ post, onUpdate }: PostDetailCaptionInpu
           className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
         />
       </div>
+      <CaptionPreview caption={caption} channel={post.channel} />
     </div>
   );
 };

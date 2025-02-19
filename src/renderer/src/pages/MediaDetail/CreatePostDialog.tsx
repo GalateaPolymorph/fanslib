@@ -1,3 +1,4 @@
+import { CaptionPreview } from "@renderer/components/CaptionPreview";
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
 import { HashtagButton } from "@renderer/components/HashtagButton";
@@ -183,7 +184,7 @@ export const CreatePostDialog = ({
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
                       placeholder="Write your post caption..."
-                      className="min-h-[100px] resize-none pr-10"
+                      className="min-h-[50px] resize-none pr-10"
                     />
                     <HashtagButton
                       media={selectedMedia}
@@ -193,6 +194,12 @@ export const CreatePostDialog = ({
                       className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
                     />
                   </div>
+                  {selectedChannel[0] && (
+                    <CaptionPreview
+                      caption={caption}
+                      channel={channels.find((c) => c.id === selectedChannel[0])!}
+                    />
+                  )}
                   {otherCaptions.length > 0 && (
                     <Collapsible
                       open={isOtherCaptionsOpen}

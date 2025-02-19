@@ -10,7 +10,6 @@ export const TaggingPage = () => {
   const loadHashtags = async () => {
     try {
       const allHashtags = await window.api["hashtag:list"]();
-      console.log(allHashtags);
       setHashtags(allHashtags);
     } catch (error) {
       console.error("Failed to load hashtags", error);

@@ -25,7 +25,6 @@ export const NicheTable = ({ onNicheUpdated }: NicheTableProps) => {
 
   const updateNiche = async (niche: EditingNiche) => {
     if (!niche) return;
-    console.log("updating", niche);
 
     try {
       await window.api["niche:update"](niche.id, {
