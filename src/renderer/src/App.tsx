@@ -19,7 +19,7 @@ import { MediaDetail } from "./pages/MediaDetail";
 import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
 import { SettingsPage } from "./pages/Settings";
-import { TagsPage } from "./pages/Tags";
+import { TaggingPage } from "./pages/Tagging";
 
 const App = () => {
   return (
@@ -42,7 +42,7 @@ const App = () => {
                                 <Route path="posts" element={<PlanPage />} />
                                 <Route path="posts/:postId" element={<PostDetailPage />} />
                                 <Route path="channels" element={<ChannelsPage />} />
-                                <Route path="tags" element={<TagsPage />} />
+                                <Route path="tagging" element={<TaggingPage />} />
                                 <Route path="settings" element={<SettingsPage />} />
                               </Route>
                             </Routes>

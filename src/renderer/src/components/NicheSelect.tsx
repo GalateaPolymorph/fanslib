@@ -74,7 +74,6 @@ export const NicheSelect = ({
           <Badge
             key={niche.id}
             size={size}
-            shape="tag"
             variant={
               state === "selected"
                 ? "default"

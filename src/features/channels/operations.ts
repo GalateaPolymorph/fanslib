@@ -1,5 +1,5 @@
 import { db } from "../../lib/db";
-import { Hashtag } from "../hashtags/entity";
+import { findOrCreateHashtags } from "../hashtags/operations";
 import { ChannelCreatePayload } from "./api-type";
 import { Channel, ChannelType } from "./entity";
 
@@ -102,42 +102,22 @@ export const deleteChannel = async (id: string): Promise<void> => {
   await repository.delete({ id });
 };
 
-export const addDefaultHashtag = async (channelId: string, hashtagId: number): Promise<void> => {
+export const updateDefaultHashtags = async (
+  channelId: string,
+  hashtags: string[]
+): Promise<void> => {
   const dataSource = await db();
-  const channelRepo = dataSource.getRepository(Channel);
-  const hashtagRepo = dataSource.getRepository(Hashtag);
+  const channelRepository = dataSource.getRepository(Channel);
 
-  const channel = await channelRepo.findOne({
-    where: { id: channelId },
-    relations: { defaultHashtags: true },
-  });
-  const hashtag = await hashtagRepo.findOne({ where: { id: hashtagId } });
-
-  if (!channel || !hashtag) {
-    throw new Error("Channel or hashtag not found");
-  }
-
-  if (!channel.defaultHashtags) {
-    channel.defaultHashtags = [];
-  }
-
-  channel.defaultHashtags.push(hashtag);
-  await channelRepo.save(channel);
-};
-
-export const removeDefaultHashtag = async (channelId: string, hashtagId: number): Promise<void> => {
-  const dataSource = await db();
-  const channelRepo = dataSource.getRepository(Channel);
-
-  const channel = await channelRepo.findOne({
+  const channel = await channelRepository.findOne({
     where: { id: channelId },
     relations: { defaultHashtags: true },
   });
 
   if (!channel) {
-    throw new Error("Channel not found");
+    throw new Error(`Channel with id ${channelId} not found`);
   }
 
-  channel.defaultHashtags = channel.defaultHashtags.filter((h) => h.id !== hashtagId);
-  await channelRepo.save(channel);
+  channel.defaultHashtags = await findOrCreateHashtags(hashtags);
+  await channelRepository.save(channel);
 };

@@ -1,4 +1,6 @@
-import { Table, TableBody, TableCell, TableRow } from "@renderer/components/ui/table";
+import { Badge } from "@renderer/components/ui/badge";
+import { cn } from "@renderer/lib/utils";
+import { CSSProperties } from "react";
 import { HashtagWithStats } from "../../../../../features/hashtags/api-type";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { useChannels } from "../../../contexts/ChannelContext";
@@ -37,37 +39,44 @@ export const HashtagTable = ({
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="space-y-4">
+      <header>
+        <h3 className="text-lg font-medium">Hashtags</h3>
+      </header>
+      <div className="rounded-md border">
         <HashtagTableHeader channels={channels} />
-        <TableBody>
-          {hashtags.map((hashtag) => (
-            <TableRow key={hashtag.id}>
-              <TableCell>{hashtag.name}</TableCell>
+        {hashtags.map((hashtag, i) => (
+          <div
+            key={hashtag.id}
+            className={cn("grid grid-cols-[1fr_5fr_auto]", i % 2 === 0 && "bg-muted/50")}
+          >
+            <div className="p-2 pl-4 h-12 flex items-center">
+              <Badge variant="secondary">{hashtag.name}</Badge>
+            </div>
+            <div
+              className="grid grid-cols-[repeat(var(--channel-count),_1fr)]"
+              style={{ "--channel-count": channels.length } as CSSProperties}
+            >
               {channels.map((channel) => (
-                <TableCell key={channel.id}>
+                <div key={channel.id} className="p-2 h-12 max-w-48 flex items-center justify-start">
                   <HashtagViewInput
                     initialValue={getViewCount(hashtag, channel.id)}
                     onViewCountChange={(newValue) =>
                       onStatsChange(hashtag.id, channel.id, newValue)
                     }
                   />
-                </TableCell>
+                </div>
               ))}
-              <TableCell>
-                <DeleteHashtagButton
-                  hashtagId={hashtag.id}
-                  hashtagName={hashtag.name}
-                  onHashtagDeleted={onHashtagDeleted}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-          <TableRow className="hover:bg-muted/50">
-            <NewHashtagRow channelCount={channels.length} onHashtagCreated={onHashtagCreated} />
-          </TableRow>
-        </TableBody>
-      </Table>
+            </div>
+            <DeleteHashtagButton
+              hashtagId={hashtag.id}
+              hashtagName={hashtag.name}
+              onHashtagDeleted={onHashtagDeleted}
+            />
+          </div>
+        ))}
+        <NewHashtagRow channelCount={channels.length} onHashtagCreated={onHashtagCreated} />
+      </div>
     </div>
   );
 };

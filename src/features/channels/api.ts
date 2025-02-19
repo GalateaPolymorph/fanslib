@@ -2,13 +2,12 @@ import { prefixNamespaceObject } from "../../lib/namespace";
 import { ChannelHandlers, namespace } from "./api-type";
 import { CHANNEL_TYPES } from "./channelTypes";
 import {
-  addDefaultHashtag,
   createChannel,
   deleteChannel,
   fetchAllChannels,
   fetchChannelById,
-  removeDefaultHashtag,
   updateChannel,
+  updateDefaultHashtags,
 } from "./operations";
 
 const handlers: ChannelHandlers = {
@@ -18,8 +17,7 @@ const handlers: ChannelHandlers = {
   delete: (_, id) => deleteChannel(id),
   update: (_, id, updates) => updateChannel(id, updates),
   getTypes: () => Object.values(CHANNEL_TYPES),
-  addDefaultHashtag: (_, channelId, hashtagId) => addDefaultHashtag(channelId, hashtagId),
-  removeDefaultHashtag: (_, channelId, hashtagId) => removeDefaultHashtag(channelId, hashtagId),
+  updateDefaultHashtags: (_, channelId, hashtags) => updateDefaultHashtags(channelId, hashtags),
 };
 
 export const channelHandlers = prefixNamespaceObject(namespace, handlers);

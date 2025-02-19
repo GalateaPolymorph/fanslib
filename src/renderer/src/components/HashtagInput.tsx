@@ -1,3 +1,4 @@
+import { cn } from "@renderer/lib/utils";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "./ui/badge";
@@ -32,16 +33,15 @@ export const HashtagInput = ({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex space-x-2">
-        <Input
-          placeholder={placeholder}
-          value={newHashtag}
-          onChange={(e) => setNewHashtag(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addHashtag()}
-        />
-        <Button onClick={addHashtag}>Add</Button>
-      </div>
+    <div className={cn("flex-1 flex flex-col", hashtags.length > 0 && "gap-2")}>
+      <Input
+        placeholder={placeholder}
+        value={newHashtag}
+        onChange={(e) => setNewHashtag(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && addHashtag()}
+        variant="ghost"
+        className="h-8"
+      />
       <div className="flex flex-wrap gap-2">
         {hashtags.map((hashtag) => (
           <Badge key={hashtag} variant="secondary" className="pr-1.5">

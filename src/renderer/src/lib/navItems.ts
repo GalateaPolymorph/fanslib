@@ -23,8 +23,8 @@ export const navItems: NavItem[] = [
     icon: Share2,
   },
   {
-    title: "Tags",
-    url: "/tags",
+    title: "Tagging",
+    url: "/tagging",
     icon: Hash,
   },
   {

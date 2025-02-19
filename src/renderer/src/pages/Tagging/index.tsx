@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { HashtagWithStats } from "../../../../features/hashtags/api-type";
+import { ChannelHashtagTable } from "./ChannelHashtagTable";
 import { HashtagTable } from "./HashtagTable";
-import { NicheSettings } from "./Niches";
+import { NicheTable } from "./NicheTable";
 
-export const TagsPage = () => {
+export const TaggingPage = () => {
   const [hashtags, setHashtags] = useState<HashtagWithStats[]>([]);
 
   const loadHashtags = async () => {
@@ -23,28 +24,27 @@ export const TagsPage = () => {
   const updateHashtagStats = async (hashtagId: number, channelId: string, viewCount: number) => {
     try {
       await window.api["hashtag:stats:set"](hashtagId, channelId, viewCount);
-      loadHashtags(); // Reload data after update
+      loadHashtags();
     } catch (error) {
       console.error("Failed to update hashtag stats", error);
     }
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="px-6 py-6 space-y-8">
       <div className="space-y-4">
-        <h2 className="text-3xl font-bold">Niches</h2>
-        <NicheSettings />
+        <h2 className="text-2xl font-bold">Tagging</h2>
+        <NicheTable onNicheUpdated={loadHashtags} />
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Hashtag Statistics</h3>
-        <HashtagTable
-          hashtags={hashtags}
-          onStatsChange={updateHashtagStats}
-          onHashtagCreated={loadHashtags}
-          onHashtagDeleted={loadHashtags}
-        />
-      </div>
+      <ChannelHashtagTable />
+
+      <HashtagTable
+        hashtags={hashtags}
+        onStatsChange={updateHashtagStats}
+        onHashtagCreated={loadHashtags}
+        onHashtagDeleted={loadHashtags}
+      />
     </div>
   );
 };

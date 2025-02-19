@@ -45,7 +45,14 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
   const database = await db();
   return database.manager.findOne(Media, {
     where: { id },
-    relations: ["categories", "postMedia", "niches", "tier"],
+    relations: {
+      categories: true,
+      postMedia: true,
+      niches: {
+        hashtags: true,
+      },
+      tier: true,
+    },
   });
 };
 

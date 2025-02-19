@@ -21,13 +21,14 @@ type HashtagButtonProps = {
 export const HashtagButton = ({
   media,
   channel,
-  caption,
+  caption = "",
   onCaptionChange,
   className,
 }: HashtagButtonProps) => {
   const { toast } = useToast();
 
   const collectHashtags = () => {
+    console.log(media);
     // Get all unique hashtags from all media niches
     const mediaHashtags = media
       .map((m) => m.niches ?? [])
@@ -56,8 +57,32 @@ export const HashtagButton = ({
       return;
     }
 
-    const hashtagString = hashtags.join(" ");
-    const newCaption = caption ? `${caption}\n\n${hashtagString}` : hashtagString;
+    const newHashtags = hashtags.filter((hashtag) => !caption.includes(hashtag));
+    if (newHashtags.length === 0) {
+      toast({
+        title: "No new hashtags",
+        description: "All available hashtags are already in the caption",
+      });
+      return;
+    }
+
+    const hashtagString = newHashtags.join(" ");
+    const lastHashtagIndex = caption.lastIndexOf("#");
+
+    if (lastHashtagIndex === -1) {
+      // No hashtags in caption, add to the end with a newline
+      const newCaption = caption ? `${caption}\n\n${hashtagString}` : hashtagString;
+      onCaptionChange(newCaption);
+      return;
+    }
+
+    // Find the end of the last hashtag block
+    const afterLastHashtag = caption.slice(lastHashtagIndex);
+    const endOfLastHashtagBlock = afterLastHashtag.search(/[^\s#\w]/);
+    const insertPosition =
+      endOfLastHashtagBlock === -1 ? caption.length : lastHashtagIndex + endOfLastHashtagBlock;
+
+    const newCaption = `${caption.slice(0, insertPosition)} ${hashtagString}${caption.slice(insertPosition)}`;
     onCaptionChange(newCaption);
   };
 

@@ -38,7 +38,12 @@ export const MediaDetailNicheSelect = ({ media }: MediaDetailNicheSelectProps) =
         <div className="text-sm text-muted-foreground">
           {nicheStates
             .filter((n) => n.state === "selected")
-            .map((n) => niches.find((niche) => niche.id === n.id)?.hashtags.join(" "))
+            .map((n) =>
+              niches
+                .find((niche) => niche.id === n.id)
+                ?.hashtags.map((h) => `${h.name}`)
+                .join(" ")
+            )
             .filter(Boolean)
             .join(" ")}
         </div>

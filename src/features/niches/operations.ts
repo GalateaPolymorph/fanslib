@@ -46,7 +46,9 @@ export const updateNiche = async (id: number, dto: UpdateNicheDto): Promise<Nich
 
   // Update hashtags if provided
   if (dto.hashtags !== undefined) {
+    console.log(dto.hashtags);
     niche.hashtags = await findOrCreateHashtags(dto.hashtags);
+    console.log(niche.hashtags);
   }
 
   // Save the updated niche

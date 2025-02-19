@@ -42,7 +42,7 @@ export const HashtagViewInput = ({
       onFocus={startEditing}
       onChange={(e) => setValue(e.target.value)}
       onBlur={commitEdit}
-      className="h-8 w-24 text-right"
+      className="text-center"
     />
   );
 };

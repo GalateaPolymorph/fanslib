@@ -9,8 +9,7 @@ const methods = [
   "delete",
   "update",
   "getTypes",
-  "addDefaultHashtag",
-  "removeDefaultHashtag",
+  "updateDefaultHashtags",
 ] as const;
 
 export type ChannelHandlers = {
@@ -24,8 +23,7 @@ export type ChannelHandlers = {
     updates: Partial<Omit<ChannelWithoutRelations, "id">>
   ) => Promise<Channel | null>;
   getTypes: (_: any) => ChannelType[];
-  addDefaultHashtag: (_: any, channelId: string, hashtagId: number) => Promise<void>;
-  removeDefaultHashtag: (_: any, channelId: string, hashtagId: number) => Promise<void>;
+  updateDefaultHashtags: (_: any, channelId: string, hashtags: string[]) => Promise<void>;
 };
 
 export const namespace = "channel" as const;

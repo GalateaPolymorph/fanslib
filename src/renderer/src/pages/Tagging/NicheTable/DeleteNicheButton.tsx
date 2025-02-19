@@ -12,23 +12,23 @@ import {
 } from "../../../components/ui/alert-dialog";
 import { Button } from "../../../components/ui/button";
 
-type DeleteHashtagButtonProps = {
-  hashtagId: number;
-  hashtagName: string;
-  onHashtagDeleted: () => void;
+type DeleteNicheButtonProps = {
+  nicheId: number;
+  nicheName: string;
+  onNicheDeleted: () => void;
 };
 
-export const DeleteHashtagButton = ({
-  hashtagId,
-  hashtagName,
-  onHashtagDeleted,
-}: DeleteHashtagButtonProps) => {
-  const deleteHashtag = async () => {
+export const DeleteNicheButton = ({
+  nicheId,
+  nicheName,
+  onNicheDeleted,
+}: DeleteNicheButtonProps) => {
+  const deleteNiche = async () => {
     try {
-      await window.api["hashtag:delete"](hashtagId);
-      onHashtagDeleted();
+      await window.api["niche:delete"](nicheId);
+      onNicheDeleted();
     } catch (error) {
-      console.error("Failed to delete hashtag", error);
+      console.error("Failed to delete niche", error);
     }
   };
 
@@ -45,16 +45,16 @@ export const DeleteHashtagButton = ({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Hashtag</AlertDialogTitle>
+          <AlertDialogTitle>Delete Niche</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete {hashtagName}? This action cannot be undone.
+            Are you sure you want to delete {nicheName}? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            onClick={deleteHashtag}
+            onClick={deleteNiche}
           >
             Delete
           </AlertDialogAction>
