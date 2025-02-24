@@ -1,8 +1,6 @@
 import { TimePicker } from "@renderer/components/TimePicker";
-import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useDebounce } from "@renderer/hooks/useDebounce";
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { Post } from "../../../../features/posts/entity";
@@ -66,38 +64,17 @@ export const PostDetailTimeInput = ({ post, onUpdate }: PostDetailTimeInputProps
     setSelectedDate(newDate);
   };
 
-  const setTimeFromString = (timeString: string) => {
-    const [hours, minutes] = timeString.split(":").map(Number);
-    updateTime(hours, minutes);
-  };
-
-  // Get unique preferred times from all schedules
   const preferredTimes = Array.from(
     new Set(schedules.flatMap((schedule) => schedule.preferredTimes))
   ).sort();
 
-  const currentTime = format(selectedDate, "HH:mm");
-
   return (
-    <div className="flex flex-col gap-2 pt-11">
-      <span className="text-sm">Channel preferred times</span>
-      <div className="flex flex-wrap gap-2">
-        {preferredTimes.map((time) => (
-          <Button
-            key={time}
-            size="sm"
-            variant={time === currentTime ? "default" : "outline"}
-            onClick={() => setTimeFromString(time)}
-          >
-            {time}
-          </Button>
-        ))}
-      </div>
-      <span className="text-sm mt-2">or custom</span>
+    <div className="flex flex-col gap-2 pt-4">
+      <label className="text-sm font-medium">Time</label>
       <TimePicker
-        noLabel
         date={selectedDate}
         setDate={(hours, minutes) => updateTime(hours, minutes)}
+        preferredTimes={preferredTimes}
       />
     </div>
   );

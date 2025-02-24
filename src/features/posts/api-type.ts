@@ -18,6 +18,7 @@ export type PostCreateData = {
   caption?: string;
   status: PostStatus;
   tierId?: number;
+  url?: string;
 };
 
 export const methods = [

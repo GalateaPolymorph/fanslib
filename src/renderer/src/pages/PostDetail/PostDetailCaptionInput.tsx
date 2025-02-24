@@ -43,7 +43,10 @@ export const PostDetailCaptionInput = ({ post, onUpdate }: PostDetailCaptionInpu
   }, [caption, post.id, post.caption, onUpdate, toast]);
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-2">
+      <label htmlFor="post-url" className="text-sm font-medium">
+        Caption
+      </label>
       <div className="relative">
         <Textarea
           placeholder="Add a caption..."
@@ -59,7 +62,9 @@ export const PostDetailCaptionInput = ({ post, onUpdate }: PostDetailCaptionInpu
           className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
         />
       </div>
-      <CaptionPreview caption={caption} channel={post.channel} />
+      {caption && caption.includes("#") && (
+        <CaptionPreview caption={caption} channel={post.channel} />
+      )}
     </div>
   );
 };

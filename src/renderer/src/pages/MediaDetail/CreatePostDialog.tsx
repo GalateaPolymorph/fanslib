@@ -184,7 +184,7 @@ export const CreatePostDialog = ({
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
                       placeholder="Write your post caption..."
-                      className="min-h-[50px] resize-none pr-10"
+                      className="min-h-[50px] pr-10"
                     />
                     <HashtagButton
                       media={selectedMedia}

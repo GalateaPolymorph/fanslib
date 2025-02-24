@@ -50,7 +50,7 @@ export const HashtagButton = ({
     if (hashtags.length === 0) {
       toast({
         title: "No hashtags found",
-        description: "Add hashtags to your media niches first",
+        description: "Add hashtags to your media niches or the channel first",
         variant: "destructive",
       });
       return;
@@ -84,6 +84,8 @@ export const HashtagButton = ({
     const newCaption = `${caption.slice(0, insertPosition)} ${hashtagString}${caption.slice(insertPosition)}`;
     onCaptionChange(newCaption);
   };
+
+  if (collectHashtags().length === 0) return null;
 
   return (
     <TooltipProvider>

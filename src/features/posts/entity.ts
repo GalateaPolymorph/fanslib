@@ -61,6 +61,9 @@ export class Post {
   @Column("varchar")
   date!: string;
 
+  @Column("varchar", { nullable: true })
+  url?: string;
+
   @Column({
     type: "varchar",
     enum: ["draft", "scheduled", "posted"],

@@ -8,6 +8,7 @@ import { PostDetailDeleteButton } from "@renderer/pages/PostDetail/PostDetailDel
 import { PostDetailMedia } from "@renderer/pages/PostDetail/PostDetailMedia";
 import { PostDetailStatusButton } from "@renderer/pages/PostDetail/PostDetailStatusButton";
 import { PostDetailTimeInput } from "@renderer/pages/PostDetail/PostDetailTimeInput";
+import { PostDetailUrlInput } from "@renderer/pages/PostDetail/PostDetailUrlInput";
 import { ArrowLeft } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -124,12 +125,13 @@ export const PostDetailPage = () => {
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <PostDetailStatusButton post={post} onUpdate={fetchPost} />
-              <div className="border rounded-md p-2 grid w-auto grid-cols-[auto_1fr] gap-2">
+              <div className="border rounded-md p-2 grid w-auto grid-cols-[2fr_1fr] gap-2">
                 <PostDetailDateInput post={post} onUpdate={fetchPost} />
                 <PostDetailTimeInput post={post} onUpdate={fetchPost} />
               </div>
+              <PostDetailUrlInput post={post} onUpdate={fetchPost} />
               <PostDetailCaptionInput post={post} onUpdate={fetchPost} />
             </div>
           </div>
