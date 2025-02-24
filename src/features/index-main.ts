@@ -10,6 +10,7 @@ import { postHandlers } from "./posts/api";
 import { settingsHandlers } from "./settings/api";
 import { shootHandlers } from "./shoots/api";
 import { tierHandlers } from "./tiers/api";
+import { apiRedGIFsHandlers } from "./api-redgifs/api";
 export * from "./index-renderer";
 
 export const handlers = {
@@ -25,4 +26,5 @@ export const handlers = {
   ...tierHandlers,
   ...hashtagHandlers,
   ...nicheHandlers,
+  ...apiRedGIFsHandlers,
 };

@@ -11,7 +11,7 @@ type CreateChannelFormProps = {
 export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFormProps) => {
   const handleTypeSelect = async (typeId: keyof typeof CHANNEL_TYPES) => {
     const channel = await window.api["channel:create"]({
-      name: "New Channel",
+      name: CHANNEL_TYPES[typeId].name,
       description: "",
       typeId,
       defaultHashtags: [],

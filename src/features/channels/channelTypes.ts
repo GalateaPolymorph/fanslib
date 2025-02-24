@@ -39,4 +39,9 @@ export const CHANNEL_TYPES = {
     name: "Clips4Sale",
     color: "#9447ff",
   },
+  redgifs: {
+    id: "redgifs",
+    name: "RedGIFs",
+    color: "#B9199F",
+  },
 } as const;

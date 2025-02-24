@@ -1,3 +1,8 @@
+import {
+  APIRedGIFsIpcChannel,
+  APIRedGIFsIpcHandlers,
+  apiRedGIFsMethods,
+} from "./api-redgifs/api-type";
 import { CategoryIpcChannel, CategoryIpcHandlers, categoryMethods } from "./categories/api-type";
 import { ChannelIpcChannel, ChannelIpcHandlers, channelMethods } from "./channels/api-type";
 import {
@@ -30,7 +35,8 @@ export type IpcHandlers = CategoryIpcHandlers &
   ShootIpcHandlers &
   HashtagIpcHandlers &
   TierIpcHandlers &
-  NicheIpcHandlers;
+  NicheIpcHandlers &
+  APIRedGIFsIpcHandlers;
 
 export const ipcMethods = [
   ...categoryMethods,
@@ -45,6 +51,7 @@ export const ipcMethods = [
   ...tierMethods,
   ...hashtagMethods,
   ...nicheMethods,
+  ...apiRedGIFsMethods,
 ];
 
 export type IpcChannel =
@@ -59,4 +66,5 @@ export type IpcChannel =
   | ShootIpcChannel
   | TierIpcChannel
   | HashtagIpcChannel
-  | NicheIpcChannel;
+  | NicheIpcChannel
+  | APIRedGIFsIpcChannel;

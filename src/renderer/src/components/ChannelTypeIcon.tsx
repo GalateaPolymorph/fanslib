@@ -6,6 +6,7 @@ import {
   ManyVidsIcon,
   OnlyFansIcon,
   RedditIcon,
+  RedGifsIcon,
   XIcon,
 } from "@renderer/components/icons";
 import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
@@ -20,6 +21,7 @@ const CHANNEL_ICONS: Record<string, React.ComponentType<React.SVGProps<SVGSVGEle
   x: XIcon,
   reddit: RedditIcon,
   clips4sale: Clips4SaleIcon,
+  redgifs: RedGifsIcon,
 };
 
 export type ChannelTypeId = keyof typeof CHANNEL_TYPES;
