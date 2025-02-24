@@ -35,7 +35,7 @@ export const HashtagButton = ({
       .map((niche) => niche.hashtags ?? [])
       .flat();
 
-    const channelHashtags = channel.defaultHashtags;
+    const channelHashtags = channel?.defaultHashtags ?? [];
 
     // Deduplicate hashtags
     const uniqueHashtags = Array.from(new Set([...mediaHashtags, ...channelHashtags]));

@@ -95,12 +95,12 @@ export const PostDetailAddMediaButton = ({
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col overflow-hidden">
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col min-h-0 overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Media to Post</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1">
           <div className="space-y-2">
             <ScrollArea className="border rounded-md p-2">
               <div className="grid grid-cols-5 min-h-[160px] gap-2">

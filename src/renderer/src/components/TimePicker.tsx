@@ -91,11 +91,23 @@ export const TimePicker = ({ date, setDate, className, preferredTimes = [] }: Ti
             <DialogTitle>Select Time</DialogTitle>
           </DialogHeader>
 
-          <span className="text-5xl font-bold text-muted-foreground/50">
-            {tempDate ? format(tempDate, "HH:mm") : "--:--"}
+          <span className="text-5xl font-bold text-muted-foreground/50 text-center">
+            <button
+              onClick={() => setView("hours")}
+              className="hover:bg-muted hover:text-foreground rounded-sm p-1 transition-all cursor-pointer"
+            >
+              {tempDate ? format(tempDate, "HH") : "--"}
+            </button>
+            :
+            <button
+              onClick={() => setView("minutes")}
+              className="hover:bg-muted hover:text-foreground rounded-sm p-1 transition-all cursor-pointer"
+            >
+              {tempDate ? format(tempDate, "mm") : "--"}
+            </button>
           </span>
 
-          <div className="flex">
+          <div className="flex items-center justify-center">
             <div className={cn("flex flex-col items-center", view === "hours" && "pb-8")}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <TimeClock

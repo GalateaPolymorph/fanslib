@@ -91,82 +91,88 @@ export const MediaSelection = ({
   };
 
   return (
-    <div className={cn("flex flex-col flex-1 min-h-0 h-full", className)}>
-      <div className="flex flex-col gap-4 py-4">
-        <div className="flex justify-end items-center">
-          <span className="text-xs text-muted-foreground">
-            {isLoading ? "Loading..." : `${mediaData.total} items available`}
-          </span>
-        </div>
-        <LibraryFilters value={filters} onFilterChange={handleFilterChange} />
-      </div>
-      <ScrollArea className="flex-1 border rounded-md">
-        <div className="p-4">
-          <div className="grid grid-cols-4 lg:grid-cols-5 gap-4">
-            {mediaData.items.map((item) => (
-              <div
-                key={item.id}
-                className={cn(
-                  "relative aspect-square cursor-pointer rounded-lg overflow-hidden transition-all",
-                  selectedMedia.some((m) => m.id === item.id)
-                    ? "ring-2 ring-primary"
-                    : "hover:ring-2 hover:ring-primary/50"
-                )}
-                onClick={() => onMediaSelect(item)}
-                onMouseEnter={() => {
-                  if (item.type === "video") {
-                    setActivePreviewId(item.id);
-                  }
-                }}
-                onMouseLeave={() => {
-                  if (item.type === "video") {
-                    setActivePreviewId(null);
-                  }
-                }}
-              >
-                <MediaTileLite media={item} isActivePreview={item.id === activePreviewId} />
-              </div>
-            ))}
-            {isLoading && (
-              <div className="col-span-full text-center py-8 text-muted-foreground">
-                Loading related media...
-              </div>
-            )}
-            {!isLoading && mediaData.items.length === 0 && (
-              <div className="col-span-full text-center py-8 text-muted-foreground">
-                No related media found
-              </div>
-            )}
+    <div className={cn("flex flex-col h-full", className)}>
+      <div className="flex-shrink-0">
+        <div className="flex flex-col gap-4 py-4">
+          <div className="flex justify-end items-center">
+            <span className="text-xs text-muted-foreground">
+              {isLoading ? "Loading..." : `${mediaData.total} items available`}
+            </span>
           </div>
-          {mediaData.totalPages > 1 && (
-            <div className="flex justify-between items-center mt-4 pt-4">
-              <div className="text-sm text-muted-foreground">
-                Page {mediaData.page} of {mediaData.totalPages}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrevPage}
-                  disabled={currentPage <= 1 || isLoading}
-                  className="px-2 h-8"
-                >
-                  <ChevronLeftIcon size={16} />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={currentPage >= mediaData.totalPages || isLoading}
-                  className="px-2 h-8"
-                >
-                  <ChevronRightIcon size={16} />
-                </Button>
-              </div>
-            </div>
-          )}
+          <LibraryFilters value={filters} onFilterChange={handleFilterChange} />
         </div>
-      </ScrollArea>
+      </div>
+
+      <div className="flex-1 min-h-0">
+        <ScrollArea className="h-full border rounded-md">
+          <div className="p-4">
+            <div className="grid grid-cols-4 lg:grid-cols-5 gap-4">
+              {mediaData.items.map((item) => (
+                <div
+                  key={item.id}
+                  className={cn(
+                    "relative aspect-square cursor-pointer rounded-lg overflow-hidden transition-all",
+                    selectedMedia.some((m) => m.id === item.id)
+                      ? "ring-2 ring-primary"
+                      : "hover:ring-2 hover:ring-primary/50"
+                  )}
+                  onClick={() => onMediaSelect(item)}
+                  onMouseEnter={() => {
+                    if (item.type === "video") {
+                      setActivePreviewId(item.id);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (item.type === "video") {
+                      setActivePreviewId(null);
+                    }
+                  }}
+                >
+                  <MediaTileLite media={item} isActivePreview={item.id === activePreviewId} />
+                </div>
+              ))}
+              {isLoading && (
+                <div className="col-span-full text-center py-8 text-muted-foreground">
+                  Loading related media...
+                </div>
+              )}
+              {!isLoading && mediaData.items.length === 0 && (
+                <div className="col-span-full text-center py-8 text-muted-foreground">
+                  No related media found
+                </div>
+              )}
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
+
+      {mediaData.totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4 pt-4 flex-shrink-0">
+          <div className="text-sm text-muted-foreground">
+            Page {mediaData.page} of {mediaData.totalPages}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrevPage}
+              disabled={currentPage <= 1 || isLoading}
+              className="px-2 h-8"
+            >
+              <ChevronLeftIcon size={16} />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={currentPage >= mediaData.totalPages || isLoading}
+              className="px-2 h-8"
+            >
+              <ChevronRightIcon size={16} />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

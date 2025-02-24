@@ -1,16 +1,17 @@
 import { CaptionPreview } from "@renderer/components/CaptionPreview";
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
-import { DateTimePicker } from "@renderer/components/DateTimePicker";
 import { HashtagButton } from "@renderer/components/HashtagButton";
 import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
+import { TimePicker } from "@renderer/components/TimePicker";
 import { Button } from "@renderer/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@renderer/components/ui/collapsible";
+import { DatePicker } from "@renderer/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -173,9 +174,23 @@ export const CreatePostDialog = ({
                     }}
                   />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">Date</label>
-                  <DateTimePicker date={selectedDate} setDate={setSelectedDate} />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium">Date</label>
+                    <DatePicker date={selectedDate} setDate={setSelectedDate} />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium">Time</label>
+                    <TimePicker
+                      date={selectedDate}
+                      setDate={(hours, minutes) => {
+                        const newDate = new Date(selectedDate);
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+                        setSelectedDate(newDate);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">Caption</label>
