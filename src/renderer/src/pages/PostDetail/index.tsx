@@ -6,6 +6,7 @@ import { PostDetailCaptionInput } from "@renderer/pages/PostDetail/PostDetailCap
 import { PostDetailDateInput } from "@renderer/pages/PostDetail/PostDetailDateInput";
 import { PostDetailDeleteButton } from "@renderer/pages/PostDetail/PostDetailDeleteButton";
 import { PostDetailMedia } from "@renderer/pages/PostDetail/PostDetailMedia";
+import { PostDetailPostponeButton } from "@renderer/pages/PostDetail/PostDetailPostponeButton";
 import { PostDetailStatusButton } from "@renderer/pages/PostDetail/PostDetailStatusButton";
 import { PostDetailTimeInput } from "@renderer/pages/PostDetail/PostDetailTimeInput";
 import { PostDetailUrlInput } from "@renderer/pages/PostDetail/PostDetailUrlInput";
@@ -124,6 +125,7 @@ export const PostDetailPage = () => {
                   ))}
                 </div>
               )}
+              <PostDetailPostponeButton post={post} />
             </div>
             <div className="flex flex-col gap-3">
               <PostDetailStatusButton post={post} onUpdate={fetchPost} />

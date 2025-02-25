@@ -1,4 +1,9 @@
 import {
+  APIPostponeIpcChannel,
+  APIPostponeIpcHandlers,
+  apiPostponeMethods,
+} from "./api-postpone/api-type";
+import {
   APIRedGIFsIpcChannel,
   APIRedGIFsIpcHandlers,
   apiRedGIFsMethods,
@@ -36,7 +41,8 @@ export type IpcHandlers = CategoryIpcHandlers &
   HashtagIpcHandlers &
   TierIpcHandlers &
   NicheIpcHandlers &
-  APIRedGIFsIpcHandlers;
+  APIRedGIFsIpcHandlers &
+  APIPostponeIpcHandlers;
 
 export const ipcMethods = [
   ...categoryMethods,
@@ -52,6 +58,7 @@ export const ipcMethods = [
   ...hashtagMethods,
   ...nicheMethods,
   ...apiRedGIFsMethods,
+  ...apiPostponeMethods,
 ];
 
 export type IpcChannel =
@@ -67,4 +74,5 @@ export type IpcChannel =
   | TierIpcChannel
   | HashtagIpcChannel
   | NicheIpcChannel
-  | APIRedGIFsIpcChannel;
+  | APIRedGIFsIpcChannel
+  | APIPostponeIpcChannel;

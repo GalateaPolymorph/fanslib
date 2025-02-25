@@ -28,6 +28,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
+import { CreatePostAndPostponeButton } from "./CreatePostAndPostponeButton";
 
 type CreatePostDialogProps = {
   open: boolean;
@@ -309,13 +310,16 @@ export const CreatePostDialog = ({
             </div>
           </div>
 
-          <DialogFooter className="border-t py-4">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreatePost}>
-              Create Post with {selectedMedia.length}{" "}
-              {selectedMedia.length === 1 ? "item" : "items"}
+          <DialogFooter className="flex gap-2">
+            <CreatePostAndPostponeButton
+              selectedChannel={channels.find((c) => c.id === selectedChannel[0])}
+              selectedDate={selectedDate}
+              caption={caption}
+              selectedMedia={selectedMedia}
+              onOpenChange={onOpenChange}
+            />
+            <Button onClick={handleCreatePost} className="w-full">
+              Create post
             </Button>
           </DialogFooter>
         </DialogContent>

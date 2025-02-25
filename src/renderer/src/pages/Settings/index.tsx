@@ -4,6 +4,7 @@ import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButto
 import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { CategorySettings } from "./CategorySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
+import { PostponeSettings } from "./PostponeSettings";
 import { TierSettings } from "./TierSettings";
 
 export const SettingsPage = () => {
@@ -28,6 +29,13 @@ export const SettingsPage = () => {
 
         <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">
           <ThemeSwitch />
+        </SettingsSection>
+
+        <SettingsSection
+          title="Postpone"
+          description="Configure your Postpone integration settings."
+        >
+          <PostponeSettings />
         </SettingsSection>
 
         <SettingsSection
