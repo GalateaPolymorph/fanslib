@@ -3,11 +3,6 @@ import {
   APIPostponeIpcHandlers,
   apiPostponeMethods,
 } from "./api-postpone/api-type";
-import {
-  APIRedGIFsIpcChannel,
-  APIRedGIFsIpcHandlers,
-  apiRedGIFsMethods,
-} from "./api-redgifs/api-type";
 import { CategoryIpcChannel, CategoryIpcHandlers, categoryMethods } from "./categories/api-type";
 import { ChannelIpcChannel, ChannelIpcHandlers, channelMethods } from "./channels/api-type";
 import {
@@ -41,7 +36,6 @@ export type IpcHandlers = CategoryIpcHandlers &
   HashtagIpcHandlers &
   TierIpcHandlers &
   NicheIpcHandlers &
-  APIRedGIFsIpcHandlers &
   APIPostponeIpcHandlers;
 
 export const ipcMethods = [
@@ -57,7 +51,6 @@ export const ipcMethods = [
   ...tierMethods,
   ...hashtagMethods,
   ...nicheMethods,
-  ...apiRedGIFsMethods,
   ...apiPostponeMethods,
 ];
 
@@ -74,5 +67,4 @@ export type IpcChannel =
   | TierIpcChannel
   | HashtagIpcChannel
   | NicheIpcChannel
-  | APIRedGIFsIpcChannel
   | APIPostponeIpcChannel;

@@ -1,5 +1,4 @@
 import { apiPostponeHandlers } from "./api-postpone/api";
-import { apiRedGIFsHandlers } from "./api-redgifs/api";
 import { categoryHandlers } from "./categories/api";
 import { channelHandlers } from "./channels/api";
 import { contentScheduleHandlers } from "./content-schedules/api";
@@ -27,6 +26,5 @@ export const handlers = {
   ...tierHandlers,
   ...hashtagHandlers,
   ...nicheHandlers,
-  ...apiRedGIFsHandlers,
   ...apiPostponeHandlers,
 };

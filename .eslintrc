@@ -20,7 +20,12 @@
     },
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": ["./tsconfig.json", "./tsconfig.web.json", "./tsconfig.node.json"],
+    "project": [
+      "./tsconfig.json",
+      "./tsconfig.web.json",
+      "./tsconfig.node.json",
+      "./tsconfig.scripts.json",
+    ],
   },
   "plugins": ["react", "@typescript-eslint", "functional"],
   "rules": {

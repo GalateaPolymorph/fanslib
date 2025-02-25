@@ -8,7 +8,8 @@
     "!src/features/**/renderer.ts",
     "!src/features/**/renderer/**/*.ts",
     "src/lib/database/**/*",
-    "src/lib/**/*"
+    "src/lib/**/*",
+    "src/graphql/postpone/**/*"
   ],
   "compilerOptions": {
     "composite": true,

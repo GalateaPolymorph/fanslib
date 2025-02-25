@@ -1,8 +1,10 @@
+import { print } from "graphql";
 import { db } from "../../lib/db";
 import { CHANNEL_TYPES } from "../channels/channelTypes";
 import { Post } from "../posts/entity";
 import { loadSettings } from "../settings/load";
 import { PostponeBlueskyDraftPayload } from "./api-type";
+import { SCHEDULE_BLUESKY_POST } from "./gql/schedule-bluesky-post";
 
 export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
   // Get database connection
@@ -19,7 +21,12 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
   // Fetch post with all relations
   const post = await postRepository.findOne({
     where: { id: data.postId },
-    relations: ["channel"],
+    relations: {
+      channel: true,
+      postMedia: {
+        media: true,
+      },
+    },
   });
 
   if (!post) {
@@ -31,14 +38,7 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
     throw new Error("Post is not for Bluesky channel");
   }
 
-  // Prepare the GraphQL mutation
-  const mutation = `
-    mutation ScheduleBlueskyPost($input: ScheduleBlueskyPostInput!) {
-      scheduleBlueskyPost(input: $input) {
-        success
-      }
-    }
-  `;
+  const media = post.postMedia[0];
 
   // Prepare the variables for the mutation
   const variables = {
@@ -52,10 +52,18 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
           order: 1,
           contentWarning: "PORN",
           languages: ["en"],
+          mediaName: media?.media.name,
         },
       ],
     },
   };
+
+  const body = JSON.stringify({
+    query: print(SCHEDULE_BLUESKY_POST),
+    variables,
+  });
+
+  console.log(body);
 
   // Make the GraphQL request to Postpone API
   const response = await fetch("https://api.postpone.app/gql", {
@@ -64,15 +72,12 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${settings.postponeToken}`,
     },
-    body: JSON.stringify({
-      query: mutation,
-      variables,
-    }),
+    body,
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to create Bluesky draft: ${response.statusText}`);
-    console.error(response);
+    const body = await response.text();
+    throw new Error(body);
   }
 
   const result = await response.json();
