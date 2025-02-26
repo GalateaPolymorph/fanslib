@@ -4,6 +4,7 @@ import { CategorySelect } from "./CategorySelect";
 import { ChannelPostFilter } from "./ChannelPostFilter";
 import { SearchInput } from "./SearchInput";
 import { ShootSelect } from "./ShootSelect";
+import { SubredditPostFilter } from "./SubredditPostFilter";
 import { TierSelect } from "./TierSelect";
 import { Button } from "./ui/button";
 
@@ -68,6 +69,15 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
                 });
               }}
             />
+            <SubredditPostFilter
+              value={value.subredditFilters ?? []}
+              onChange={(subredditFilters) => {
+                onFilterChange({
+                  ...omit(["subredditFilters"], value),
+                  subredditFilters,
+                });
+              }}
+            />
             <ShootSelect
               value={[value.shootId]}
               onChange={(shootIds) => {
@@ -101,7 +111,8 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
           value.excludeShoots ||
           value.shootId ||
           value.tiers ||
-          value.channelFilters) && (
+          value.channelFilters ||
+          value.subredditFilters) && (
           <Button
             variant="ghost"
             size="sm"
@@ -112,6 +123,7 @@ export const LibraryFilters = ({ value, onFilterChange }: LibraryFiltersProps) =
                 excludeShoots: undefined,
                 shootId: undefined,
                 channelFilters: undefined,
+                subredditFilters: undefined,
                 tiers: undefined,
               })
             }

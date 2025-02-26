@@ -70,6 +70,7 @@ export const fetchAllMedia = async (
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
     .leftJoinAndSelect("post.channel", "channel")
+    .leftJoinAndSelect("post.subreddit", "subreddit")
     .leftJoinAndSelect("media.niches", "niches")
     .leftJoinAndSelect("niches.hashtags", "hashtags")
     .leftJoinAndSelect("media.tier", "tier");
@@ -159,6 +160,35 @@ export const fetchAllMedia = async (
             AND p.channelId = :channelId${index}
           )`,
           { [`channelId${index}`]: filter.channelId }
+        );
+      }
+    });
+  }
+
+  // Apply subreddit filters
+  if (params?.subredditFilters?.length) {
+    params.subredditFilters.forEach((filter, index) => {
+      if (filter.posted) {
+        // Media that HAS been posted in the specific subreddit
+        queryBuilder.andWhere(
+          `EXISTS (
+            SELECT 1 FROM post_media pm
+            JOIN post p ON p.id = pm.postId
+            WHERE pm.mediaId = media.id
+            AND p.subredditId = :subredditId${index}
+          )`,
+          { [`subredditId${index}`]: filter.subredditId }
+        );
+      } else {
+        // Media that has NOT been posted in the specific subreddit
+        queryBuilder.andWhere(
+          `NOT EXISTS (
+            SELECT 1 FROM post_media pm
+            JOIN post p ON p.id = pm.postId
+            WHERE pm.mediaId = media.id
+            AND p.subredditId = :subredditId${index}
+          )`,
+          { [`subredditId${index}`]: filter.subredditId }
         );
       }
     });

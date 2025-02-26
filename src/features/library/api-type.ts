@@ -15,6 +15,11 @@ export type ChannelPostFilter = {
   posted: boolean;
 };
 
+export type SubredditPostFilter = {
+  subredditId: string;
+  posted: boolean;
+};
+
 export type MediaFilters = {
   categories?: string[] | undefined;
   unposted?: boolean;
@@ -24,6 +29,7 @@ export type MediaFilters = {
   excludeShoots?: string[];
   shootId?: string;
   channelFilters?: ChannelPostFilter[];
+  subredditFilters?: SubredditPostFilter[];
   tiers?: number[];
 };
 

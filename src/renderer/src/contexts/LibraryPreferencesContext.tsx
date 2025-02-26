@@ -1,7 +1,11 @@
 import { DeepPartial } from "@renderer/lib/deep-partial";
 import { mergeDeepRight } from "ramda";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { ChannelPostFilter, MediaSort } from "../../../features/library/api-type";
+import {
+  ChannelPostFilter,
+  MediaSort,
+  SubredditPostFilter,
+} from "../../../features/library/api-type";
 
 export type GridSize = "small" | "large";
 
@@ -15,6 +19,7 @@ export type FilterPreferences = {
   shootId?: string;
   excludeShoots?: string[];
   channelFilters?: ChannelPostFilter[];
+  subredditFilters?: SubredditPostFilter[];
   tiers?: number[];
 };
 
@@ -40,6 +45,7 @@ const defaultPreferences: LibraryPreferences = {
     search: "",
     excludeShoots: [],
     channelFilters: [],
+    subredditFilters: [],
     categories: undefined,
   },
   sort: {
