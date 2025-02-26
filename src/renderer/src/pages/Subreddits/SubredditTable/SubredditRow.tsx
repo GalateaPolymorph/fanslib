@@ -13,7 +13,6 @@ type SubredditRowProps = {
 };
 
 export const SubredditRow = ({ subreddit, onEdit, onSubredditDeleted }: SubredditRowProps) => {
-  console.log(subreddit);
   return (
     <>
       <div className="p-2 pl-4 min-h-12 flex items-center">

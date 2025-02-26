@@ -4,6 +4,7 @@ import { HashtagButton } from "@renderer/components/HashtagButton";
 import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
+import { SubredditSelect } from "@renderer/components/SubredditSelect";
 import { TimePicker } from "@renderer/components/TimePicker";
 import { Button } from "@renderer/components/ui/button";
 import { Checkbox } from "@renderer/components/ui/checkbox";
@@ -54,6 +55,7 @@ export const CreatePostDialog = ({
   const navigate = useNavigate();
   const { channels } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
+  const [selectedSubreddits, setSelectedSubreddits] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     if (initialDate) {
       return new Date(initialDate);
@@ -79,6 +81,9 @@ export const CreatePostDialog = ({
       .filter((caption): caption is string => Boolean(caption) && caption !== initialCaption);
     return [...new Set(captions)];
   }, [selectedMedia, initialCaption]);
+
+  const selectedChannelData = channels.find((c) => c.id === selectedChannel[0]);
+  const isRedditChannel = selectedChannelData?.type.id === "reddit";
 
   useEffect(() => {
     if (!open) return;
@@ -107,6 +112,12 @@ export const CreatePostDialog = ({
     }
   }, [initialDate]);
 
+  useEffect(() => {
+    if (!isRedditChannel) {
+      setSelectedSubreddits([]);
+    }
+  }, [isRedditChannel]);
+
   const handleMediaSelect = (mediaItem: Media) => {
     setSelectedMedia((prev) => {
       const isSelected = prev.some((m) => m.id === mediaItem.id);
@@ -129,6 +140,14 @@ export const CreatePostDialog = ({
       return;
     }
 
+    if (isRedditChannel && selectedSubreddits.length === 0) {
+      toast({
+        title: "Please select a subreddit",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const newPost = await window.api["post:create"](
         {
@@ -136,6 +155,7 @@ export const CreatePostDialog = ({
           channelId: selectedChannel[0],
           status,
           caption,
+          subredditId: isRedditChannel ? selectedSubreddits[0] : undefined,
         },
         selectedMedia.map((m) => m.id)
       );
@@ -168,6 +188,8 @@ export const CreatePostDialog = ({
     caption,
     navigate,
     shouldRedirect,
+    isRedditChannel,
+    selectedSubreddits,
   ]);
 
   return (
@@ -189,6 +211,16 @@ export const CreatePostDialog = ({
                     multiple={false}
                   />
                 </div>
+                {isRedditChannel && (
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-sm font-medium">Subreddit</label>
+                    <SubredditSelect
+                      value={selectedSubreddits}
+                      onChange={setSelectedSubreddits}
+                      multiple={false}
+                    />
+                  </div>
+                )}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">Status</label>
                   <StatusSelect

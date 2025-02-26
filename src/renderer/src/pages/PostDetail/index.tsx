@@ -98,8 +98,12 @@ export const PostDetailPage = () => {
 
           <div className="grid grid-cols-2 gap-4 py-6">
             <div className="flex flex-col gap-2">
-              <div className="self-start">
-                <ChannelBadge name={post.channel.name} typeId={post.channel.type.id} size="lg" />
+              <div className="self-start flex items-center gap-2 group">
+                <ChannelBadge
+                  name={post.subreddit ? `r/${post.subreddit.name}` : post.channel.name}
+                  typeId={post.subreddit ? "reddit" : post.channel.type.id}
+                  size="lg"
+                />
               </div>
               <PostDetailMedia post={post} onUpdate={fetchPost} variant="detail" />
               {otherChannels.length > 0 && (

@@ -70,6 +70,7 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
         type: true,
         defaultHashtags: true,
       },
+      subreddit: true,
       category: true,
     },
     order: {
@@ -262,6 +263,7 @@ export const getPostById = async (id: string) => {
         },
       },
       channel: true,
+      subreddit: true,
       category: true,
     },
     order: {
