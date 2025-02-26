@@ -6,6 +6,7 @@ import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
 import { TimePicker } from "@renderer/components/TimePicker";
 import { Button } from "@renderer/components/ui/button";
+import { Checkbox } from "@renderer/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
@@ -23,8 +24,10 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
+import { STORAGE_KEYS, useLocalStorageState } from "@renderer/lib/local-storage";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
@@ -48,6 +51,7 @@ export const CreatePostDialog = ({
   initialCaption,
 }: CreatePostDialogProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { channels } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
@@ -64,6 +68,10 @@ export const CreatePostDialog = ({
   const [caption, setCaption] = useState(initialCaption || "");
   const [isMediaSelectionOpen, setIsMediaSelectionOpen] = useState(false);
   const [isOtherCaptionsOpen, setIsOtherCaptionsOpen] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useLocalStorageState(
+    STORAGE_KEYS.REDIRECT_TO_POST_DETAIL,
+    true
+  );
 
   const otherCaptions = useMemo(() => {
     const captions = selectedMedia
@@ -122,7 +130,7 @@ export const CreatePostDialog = ({
     }
 
     try {
-      await window.api["post:create"](
+      const newPost = await window.api["post:create"](
         {
           date: selectedDate.toISOString(),
           channelId: selectedChannel[0],
@@ -137,7 +145,12 @@ export const CreatePostDialog = ({
       });
 
       onOpenChange(false);
-      window.location.reload();
+
+      if (shouldRedirect) {
+        navigate(`/posts/${newPost.id}`);
+      } else {
+        window.location.reload();
+      }
     } catch (error) {
       toast({
         title: "Failed to create post",
@@ -145,7 +158,17 @@ export const CreatePostDialog = ({
         variant: "destructive",
       });
     }
-  }, [selectedChannel, selectedDate, status, selectedMedia, onOpenChange, toast, caption]);
+  }, [
+    selectedChannel,
+    selectedDate,
+    status,
+    selectedMedia,
+    onOpenChange,
+    toast,
+    caption,
+    navigate,
+    shouldRedirect,
+  ]);
 
   return (
     <MediaSelectionProvider media={selectedMedia}>
@@ -310,6 +333,20 @@ export const CreatePostDialog = ({
             </div>
           </div>
 
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="redirect-checkbox"
+              checked={shouldRedirect}
+              onCheckedChange={(checked) => setShouldRedirect(checked as boolean)}
+            />
+            <label
+              htmlFor="redirect-checkbox"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Redirect to post detail after creation
+            </label>
+          </div>
+
           <DialogFooter className="flex gap-2">
             <CreatePostAndPostponeButton
               selectedChannel={channels.find((c) => c.id === selectedChannel[0])}
@@ -317,6 +354,7 @@ export const CreatePostDialog = ({
               caption={caption}
               selectedMedia={selectedMedia}
               onOpenChange={onOpenChange}
+              shouldRedirect={shouldRedirect}
             />
             <Button onClick={handleCreatePost} className="w-full">
               Create post

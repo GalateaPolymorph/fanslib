@@ -1,8 +1,10 @@
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
+import { STORAGE_KEYS, useLocalStorageState } from "@renderer/lib/local-storage";
 import { VirtualPost, isVirtualPost } from "@renderer/lib/virtual-posts";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Post } from "src/features/posts/entity";
 
 type UsePostPreviewDragProps = {
@@ -20,10 +22,12 @@ export const usePostPreviewDrag = ({
 }: UsePostPreviewDragProps) => {
   const { refetch } = useLibrary();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { draggedMedias, endMediaDrag, isDragging } = useMediaDrag();
   const wasClosedRef = useRef(false);
   const dragEnterCountRef = useRef(0);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
+  const [shouldRedirect] = useLocalStorageState(STORAGE_KEYS.REDIRECT_TO_POST_DETAIL, true);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -72,7 +76,7 @@ export const usePostPreviewDrag = ({
 
     try {
       if (isVirtualPost(post)) {
-        await window.api["post:create"](
+        const newPost = await window.api["post:create"](
           {
             date: post.date,
             categoryId: post.categoryId,
@@ -88,6 +92,10 @@ export const usePostPreviewDrag = ({
         });
         endMediaDrag();
         refetch();
+
+        if (shouldRedirect) {
+          navigate(`/posts/${newPost.id}`);
+        }
         return;
       }
 

@@ -15,8 +15,8 @@ export const PostDetailPostponeButton = ({ post }: PostDetailPostponeButtonProps
 
   if (
     post.channel.typeId !== CHANNEL_TYPES.bluesky.id ||
-    !settings.postponeToken ||
-    !settings.blueskyUsername ||
+    !settings?.postponeToken ||
+    !settings?.blueskyUsername ||
     post.status !== "draft"
   ) {
     return null;

@@ -60,6 +60,7 @@ export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps
       <Calendar
         mode="single"
         selected={selectedDate}
+        defaultMonth={selectedDate}
         onSelect={updateSelectedDate}
         selectedClassNames={cn({
           "bg-blue-500": post.status === "scheduled",

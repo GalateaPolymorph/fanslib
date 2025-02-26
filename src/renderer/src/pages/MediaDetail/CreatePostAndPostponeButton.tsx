@@ -2,6 +2,7 @@ import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Channel } from "../../../../features/channels/entity";
 import { Media } from "../../../../features/library/entity";
@@ -12,6 +13,7 @@ type CreatePostAndPostponeButtonProps = {
   caption: string;
   selectedMedia: Media[];
   onOpenChange: (open: boolean) => void;
+  shouldRedirect?: boolean;
 };
 
 export const CreatePostAndPostponeButton = ({
@@ -20,9 +22,11 @@ export const CreatePostAndPostponeButton = ({
   caption,
   selectedMedia,
   onOpenChange,
+  shouldRedirect = true,
 }: CreatePostAndPostponeButtonProps) => {
   const { toast } = useToast();
   const { settings } = useSettings();
+  const navigate = useNavigate();
 
   if (
     !selectedChannel ||
@@ -55,7 +59,12 @@ export const CreatePostAndPostponeButton = ({
       });
 
       onOpenChange(false);
-      window.location.reload();
+
+      if (shouldRedirect) {
+        navigate(`/posts/${post.id}`);
+      } else {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Failed to create post and send to Postpone:", error);
       toast({

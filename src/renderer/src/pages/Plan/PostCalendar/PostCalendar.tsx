@@ -30,17 +30,14 @@ type PostCalendarProps = {
 export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
   const { preferences, updatePreferences } = usePlanPreferences();
   const [currentMonth, setCurrentMonth] = useState(() => {
-    // Initialize with the preferences start date
     return format(new Date(preferences.filter.dateRange?.startDate || new Date()), "MMM-yyyy");
   });
 
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
 
-  // Get locale-specific week start
   const weekStart = startOfWeek(firstDayCurrentMonth, { locale: de });
   const weekEnd = endOfWeek(firstDayCurrentMonth, { locale: de });
 
-  // Get weekday names in locale order
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd }).map((day) =>
     format(day, "EEEEE", { locale: de })
   );
@@ -54,8 +51,6 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
     const firstDayPreviousMonth = add(firstDayCurrentMonth, { months: -1 });
 
     setCurrentMonth(format(firstDayPreviousMonth, "MMM-yyyy"));
-
-    // Update the date range in preferences
     updatePreferences({
       filter: {
         dateRange: {
@@ -70,8 +65,6 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
     const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 
     setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
-
-    // Update the date range in preferences
     updatePreferences({
       filter: {
         dateRange: {
@@ -82,14 +75,15 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
     });
   };
 
-  // Update current month when preferences change
   useEffect(() => {
     if (preferences.filter.dateRange?.startDate) {
-      setCurrentMonth(format(new Date(preferences.filter.dateRange.startDate), "MMM-yyyy"));
+      const newMonth = format(new Date(preferences.filter.dateRange.startDate), "MMM-yyyy");
+      if (newMonth !== currentMonth) {
+        setCurrentMonth(newMonth);
+      }
     }
-  }, [preferences.filter.dateRange?.startDate]);
+  }, [preferences.filter.dateRange?.startDate, currentMonth]);
 
-  // Get the day offset based on locale's start of week
   const getDayOffset = (date: Date) => {
     const firstDayOffset = getDay(weekStart);
     const currentDayOffset = getDay(date);
