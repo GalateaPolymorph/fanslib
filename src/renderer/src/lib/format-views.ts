@@ -17,7 +17,7 @@ export const formatViewCount = (views: number): string => {
 
 export const parseViewCount = (input: string): number | null => {
   // Remove any commas and spaces
-  const cleanInput = input.replace(/[,\s]/g, "").toUpperCase();
+  const cleanInput = input.replaceAll(",", ".").toUpperCase();
 
   // Try to parse millions
   if (cleanInput.endsWith("M")) {

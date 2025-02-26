@@ -19,6 +19,7 @@ import { MediaDetail } from "./pages/MediaDetail";
 import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
 import { SettingsPage } from "./pages/Settings";
+import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
                                 <Route path="posts" element={<PlanPage />} />
                                 <Route path="posts/:postId" element={<PostDetailPage />} />
                                 <Route path="channels" element={<ChannelsPage />} />
+                                <Route path="subreddits" element={<SubredditsPage />} />
                                 <Route path="tagging" element={<TaggingPage />} />
                                 <Route path="settings" element={<SettingsPage />} />
                               </Route>

@@ -1,5 +1,6 @@
 import { In } from "typeorm";
 import { db } from "../../lib/db";
+import { CHANNEL_TYPES } from "../channels/channelTypes";
 import { Media } from "../library/entity";
 import { PostCreateData, PostFilters } from "./api-type";
 import { Post, PostMedia } from "./entity";
@@ -9,6 +10,22 @@ export const createPost = async (postData: PostCreateData, mediaIds: string[]): 
   const postRepo = dataSource.getRepository(Post);
   const mediaRepo = dataSource.getRepository(Media);
   const postMediaRepo = dataSource.getRepository(PostMedia);
+
+  // Get channel type to check if it's Reddit
+  const channel = await dataSource
+    .createQueryBuilder("Channel", "channel")
+    .leftJoinAndSelect("channel.type", "type")
+    .where("channel.id = :channelId", { channelId: postData.channelId })
+    .getOne();
+
+  if (!channel) {
+    throw new Error("Channel not found");
+  }
+
+  // Validate subreddit for Reddit posts
+  if (channel.type.id === CHANNEL_TYPES.reddit.id && !postData.subredditId) {
+    throw new Error("Subreddit is required for Reddit posts");
+  }
 
   // Create post
   const post = postRepo.create({
@@ -170,11 +187,22 @@ export const updatePost = async (
       postMedia: {
         media: true,
       },
+      channel: {
+        type: true,
+      },
     },
   });
 
   if (!post) {
     throw new Error("Post not found");
+  }
+
+  // Validate subreddit for Reddit posts
+  if (post.channel.type.id === CHANNEL_TYPES.reddit.id) {
+    const updatedSubredditId = updates.subredditId ?? post.subredditId;
+    if (!updatedSubredditId) {
+      throw new Error("Subreddit is required for Reddit posts");
+    }
   }
 
   // Update basic post data

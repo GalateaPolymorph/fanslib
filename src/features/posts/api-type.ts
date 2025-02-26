@@ -19,6 +19,7 @@ export type PostCreateData = {
   status: PostStatus;
   tierId?: number;
   url?: string;
+  subredditId?: string;
 };
 
 export const methods = [

@@ -1,7 +1,9 @@
 import { db } from "../../lib/db";
 import { findOrCreateHashtags } from "../hashtags/operations";
-import { ChannelCreatePayload } from "./api-type";
+import { ChannelCreatePayload, SubredditCreatePayload, SubredditUpdatePayload } from "./api-type";
 import { Channel, ChannelType } from "./entity";
+import { Subreddit } from "./subreddit";
+import { VERIFICATION_STATUS } from "./type";
 
 export const createChannel = async ({
   name,
@@ -22,6 +24,58 @@ export const createChannel = async ({
     where: { id },
     relations: { type: true, defaultHashtags: true },
   });
+};
+
+export const createSubreddit = async (data: SubredditCreatePayload): Promise<Subreddit> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Subreddit);
+
+  const subreddit = repository.create({
+    name: data.name,
+    maxPostFrequencyHours: data.maxPostFrequencyHours,
+    memberCount: data.memberCount,
+    notes: data.notes,
+    verificationStatus: data.verificationStatus ?? VERIFICATION_STATUS.UNKNOWN,
+  });
+
+  await repository.save(subreddit);
+  return subreddit;
+};
+
+export const listSubreddits = async (): Promise<Subreddit[]> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Subreddit);
+
+  return repository.find({
+    order: {
+      name: "ASC",
+    },
+  });
+};
+
+export const updateSubreddit = async (
+  id: string,
+  updates: SubredditUpdatePayload
+): Promise<Subreddit> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Subreddit);
+
+  const subreddit = await repository.findOne({ where: { id } });
+  if (!subreddit) {
+    throw new Error(`Subreddit with id ${id} not found`);
+  }
+
+  Object.assign(subreddit, updates);
+  await repository.save(subreddit);
+
+  return subreddit;
+};
+
+export const deleteSubreddit = async (id: string): Promise<void> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Subreddit);
+
+  await repository.delete(id);
 };
 
 export const createChannelType = async (
@@ -46,15 +100,6 @@ export const fetchChannelById = async (id: string): Promise<Channel | null> => {
 
   return repository.findOne({
     where: { id },
-    relations: { type: true, defaultHashtags: true },
-  });
-};
-
-export const fetchAllChannels = async (): Promise<Channel[]> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(Channel);
-
-  return repository.find({
     relations: { type: true, defaultHashtags: true },
   });
 };

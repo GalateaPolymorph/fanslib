@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
+import { Subreddit } from "../channels/subreddit";
 import { Media } from "../library/entity";
 import { Tier } from "../tiers/entity";
 
@@ -76,6 +77,12 @@ export class Post {
   @Column("varchar")
   channelId!: string;
 
+  @ManyToOne(() => Subreddit)
+  @JoinColumn({ name: "subredditId" })
+  subreddit?: Subreddit;
+  @Column("varchar", { nullable: true })
+  subredditId?: string;
+
   @ManyToOne(() => Category)
   @JoinColumn({ name: "categoryId", referencedColumnName: "id" })
   category?: Category;
@@ -93,4 +100,7 @@ export class Post {
   postMedia!: PostMedia[];
 }
 
-export type PostWithoutRelations = Omit<Post, "channel" | "category" | "media" | "tier">;
+export type PostWithoutRelations = Omit<
+  Post,
+  "channel" | "category" | "media" | "tier" | "subreddit"
+>;

@@ -1,7 +1,30 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 import { Channel, ChannelType, ChannelWithoutRelations } from "./entity";
+import { Subreddit } from "./subreddit";
+import { VerificationStatus } from "./type";
 
-export type ChannelCreatePayload = Omit<ChannelWithoutRelations, "id">;
+export type ChannelCreatePayload = {
+  name: string;
+  typeId: string;
+  description?: string;
+};
+
+export type SubredditCreatePayload = {
+  name: string;
+  maxPostFrequencyHours?: number;
+  notes?: string;
+  memberCount?: number;
+  verificationStatus?: VerificationStatus;
+};
+
+export type SubredditUpdatePayload = {
+  name: string;
+  maxPostFrequencyHours?: number;
+  notes?: string;
+  memberCount?: number;
+  verificationStatus?: VerificationStatus;
+};
+
 const methods = [
   "create",
   "getAll",
@@ -10,6 +33,10 @@ const methods = [
   "update",
   "getTypes",
   "updateDefaultHashtags",
+  "subreddit-create",
+  "subreddit-list",
+  "subreddit-update",
+  "subreddit-delete",
 ] as const;
 
 export type ChannelHandlers = {
@@ -24,6 +51,10 @@ export type ChannelHandlers = {
   ) => Promise<Channel | null>;
   getTypes: (_: any) => ChannelType[];
   updateDefaultHashtags: (_: any, channelId: string, hashtags: string[]) => Promise<void>;
+  "subreddit-create": (_: any, data: SubredditCreatePayload) => Promise<Subreddit>;
+  "subreddit-list": (_: any) => Promise<Subreddit[]>;
+  "subreddit-update": (_: any, id: string, updates: SubredditUpdatePayload) => Promise<Subreddit>;
+  "subreddit-delete": (_: any, id: string) => Promise<void>;
 };
 
 export const namespace = "channel" as const;

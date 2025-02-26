@@ -1,3 +1,4 @@
+import { RedditIcon } from "@renderer/components/icons";
 import { FileText, Hash, LayoutGrid, Settings, Share2 } from "lucide-react";
 
 type NavItem = {
@@ -21,6 +22,11 @@ export const navItems: NavItem[] = [
     title: "Channels",
     url: "/channels",
     icon: Share2,
+  },
+  {
+    title: "Subreddits",
+    url: "/subreddits",
+    icon: RedditIcon,
   },
   {
     title: "Tagging",

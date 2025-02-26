@@ -5,6 +5,7 @@ import { join } from "path";
 import { DataSource } from "typeorm";
 import { Category } from "../features/categories/entity";
 import { Channel, ChannelType } from "../features/channels/entity";
+import { Subreddit } from "../features/channels/subreddit";
 import { ContentSchedule } from "../features/content-schedules/entity";
 import { Hashtag, HashtagChannelStats } from "../features/hashtags/entity";
 import { Media } from "../features/library/entity";
@@ -30,6 +31,7 @@ export const AppDataSource = new DataSource({
     Shoot,
     Tier,
     Niche,
+    Subreddit,
   ],
   synchronize: true,
   logging: false,
