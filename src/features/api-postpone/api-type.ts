@@ -8,13 +8,22 @@ export type PostponeBlueskyDraftResponse = {
   success: boolean;
 };
 
-const methods = ["draftBlueskyPost"] as const;
+export type FindRedgifsURLPayload = {
+  mediaId: string;
+};
+
+export type FindRedgifsURLResponse = {
+  url: string;
+};
+
+const methods = ["draftBlueskyPost", "findRedgifsURL"] as const;
 
 export type APIPostponeHandlers = {
   draftBlueskyPost: (
     _: any,
     data: PostponeBlueskyDraftPayload
   ) => Promise<PostponeBlueskyDraftResponse>;
+  findRedgifsURL: (_: any, data: FindRedgifsURLPayload) => Promise<FindRedgifsURLResponse>;
 };
 
 export const namespace = "api-postpone" as const;

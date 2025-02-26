@@ -29,6 +29,7 @@ export const methods = [
   "bySchedule",
   "byChannel",
   "byMediaId",
+  "byUrl",
   "update",
   "delete",
   "addMedia",
@@ -43,6 +44,7 @@ export type PostHandlers = {
   bySchedule: (_: any, scheduleId: string) => Promise<Post[]>;
   byChannel: (_: any, channelId: string) => Promise<Post[]>;
   byMediaId: (_: any, mediaPath: string) => Promise<Post[]>;
+  byUrl: (_: any, url: string) => Promise<Post | null>;
   update: (
     _: any,
     id: string,

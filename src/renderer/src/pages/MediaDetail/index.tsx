@@ -13,6 +13,7 @@ import { MediaDetailNicheSelect } from "./MediaDetailNicheSelect";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
 import { MediaDetailTierSelect } from "./MediaDetailTierSelect";
 import { MediaPosts } from "./MediaPosts";
+import { PostponeRedgifsButton } from "./PostponeRedgifsButton";
 
 export const MediaDetail = () => {
   const { mediaId } = useParams();
@@ -80,6 +81,7 @@ export const MediaDetail = () => {
             >
               Create new post with this media
             </Button>
+            <PostponeRedgifsButton media={media} />
           </div>
         </div>
       </div>

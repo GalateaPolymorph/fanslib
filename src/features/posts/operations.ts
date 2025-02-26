@@ -347,3 +347,31 @@ export const setFreePreview = async (
 
   return getPostById(postId);
 };
+
+export const fetchPostsByUrl = async (url: string): Promise<Post | null> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
+
+  return repository.findOne({
+    where: { url },
+    relations: {
+      postMedia: {
+        media: {
+          niches: true,
+          tier: true,
+        },
+      },
+      channel: {
+        type: true,
+        defaultHashtags: true,
+      },
+      subreddit: true,
+      category: true,
+    },
+    order: {
+      postMedia: {
+        order: "ASC",
+      },
+    },
+  });
+};

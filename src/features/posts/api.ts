@@ -8,6 +8,7 @@ import {
   fetchPostsByChannel,
   fetchPostsByMediaId,
   fetchPostsBySchedule,
+  fetchPostsByUrl,
   getAllPosts,
   setFreePreview,
   updatePost,
@@ -20,6 +21,7 @@ export const handlers: PostHandlers = {
   bySchedule: (_, scheduleId: string) => fetchPostsBySchedule(scheduleId),
   byChannel: (_, channelId: string) => fetchPostsByChannel(channelId),
   byMediaId: (_, mediaId: string) => fetchPostsByMediaId(mediaId),
+  byUrl: (_, url: string) => fetchPostsByUrl(url),
   update: (_, id: string, updates: Partial<Post>, newMediaPathsInOrder?: string[]) =>
     updatePost(id, updates, newMediaPathsInOrder),
   delete: (_, id) => deletePost(id),

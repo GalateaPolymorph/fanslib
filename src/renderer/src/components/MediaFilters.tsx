@@ -234,7 +234,7 @@ export const MediaFilters = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-9">
-                Eligible in
+                Eligible in channel
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[180px] p-4">

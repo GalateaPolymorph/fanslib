@@ -1,24 +1,23 @@
-import { print } from "graphql";
+import { FindRedgifsUrlQuery, FindRedgifsUrlQueryVariables } from "src/graphql/postpone/types";
 import { db } from "../../lib/db";
 import { CHANNEL_TYPES } from "../channels/channelTypes";
+import { Media } from "../library/entity";
 import { Post } from "../posts/entity";
 import { loadSettings } from "../settings/load";
-import { PostponeBlueskyDraftPayload } from "./api-type";
+import { FindRedgifsURLPayload, PostponeBlueskyDraftPayload } from "./api-type";
+import { fetchPostpone } from "./fetch";
+import { FIND_REDGIFS_URL } from "./gql/find-redgifs-url";
 import { SCHEDULE_BLUESKY_POST } from "./gql/schedule-bluesky-post";
 
 export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
-  // Get database connection
   const dataSource = await db();
   const postRepository = dataSource.getRepository(Post);
 
-  // Load settings to get Bluesky credentials
   const settings = await loadSettings();
-
-  if (!settings.blueskyUsername || !settings.postponeToken) {
-    throw new Error("Bluesky credentials not configured. Please add them in Settings.");
+  if (!settings.blueskyUsername) {
+    throw new Error("Bluesky username not configured. Please add it in Settings.");
   }
 
-  // Fetch post with all relations
   const post = await postRepository.findOne({
     where: { id: data.postId },
     relations: {
@@ -33,15 +32,13 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
     throw new Error(`Post with id ${data.postId} not found`);
   }
 
-  // Ensure this is a Bluesky post
   if (post.channel.typeId !== CHANNEL_TYPES.bluesky.id) {
     throw new Error("Post is not for Bluesky channel");
   }
 
   const media = post.postMedia[0];
 
-  // Prepare the variables for the mutation
-  const variables = {
+  return fetchPostpone<{ scheduleBlueskyPost: { success: boolean } }>(SCHEDULE_BLUESKY_POST, {
     input: {
       username: settings.blueskyUsername,
       postAt: new Date(post.date).toISOString(),
@@ -56,37 +53,27 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
         },
       ],
     },
-  };
+  }).then((result) => ({ success: result.scheduleBlueskyPost.success }));
+};
 
-  const body = JSON.stringify({
-    query: print(SCHEDULE_BLUESKY_POST),
-    variables,
-  });
+export const findRedgifsURL = async (data: FindRedgifsURLPayload) => {
+  const dataSource = await db();
+  const mediaRepository = dataSource.getRepository(Media);
+  const media = await mediaRepository.findOne({ where: { id: data.mediaId } });
 
-  console.log(body);
-
-  // Make the GraphQL request to Postpone API
-  const response = await fetch("https://api.postpone.app/gql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${settings.postponeToken}`,
-    },
-    body,
-  });
-
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(body);
+  if (!media) {
+    throw new Error(`Media with id ${data.mediaId} not found`);
   }
 
-  const result = await response.json();
+  return fetchPostpone<FindRedgifsUrlQuery, FindRedgifsUrlQueryVariables>(FIND_REDGIFS_URL, {
+    filename: media.name,
+  }).then((result) => {
+    const media = result.media.objects[0];
+    if (!media) return { url: null };
 
-  if (result.errors) {
-    throw new Error(`GraphQL Error: ${result.errors[0].message}`);
-  }
+    const isRedgifsUrl = media.hostedUrl.includes("redgifs.com");
+    if (!isRedgifsUrl) return { url: null };
 
-  return {
-    success: result.data.scheduleBlueskyPost.success,
-  };
+    return { url: media.hostedUrl ?? null };
+  });
 };

@@ -4247,9 +4247,16 @@ export type _ResultType = {
   url: Maybe<Scalars['String']['output']>;
 };
 
+export type FindRedgifsUrlQueryVariables = Exact<{
+  filename: Scalars['String']['input'];
+}>;
+
+
+export type FindRedgifsUrlQuery = { media: { objects: Array<{ name: string, hostedUrl: string } | null> | null } | null };
+
 export type ScheduleBlueskyPostMutationVariables = Exact<{
   input: ScheduleBlueskyPostInput;
 }>;
 
 
-export type ScheduleBlueskyPostMutation = { scheduleBlueskyPost: { success: boolean | null } | null };
+export type ScheduleBlueskyPostMutation = { scheduleBlueskyPost: { success: boolean | null, errors: Array<{ message: string | null } | null> | null } | null };
