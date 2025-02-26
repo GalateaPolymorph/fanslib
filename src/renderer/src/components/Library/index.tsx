@@ -5,7 +5,7 @@ import { Gallery } from "../../pages/Manage/Gallery/Gallery";
 import { GalleryPagination } from "../../pages/Manage/Gallery/GalleryPagination";
 import { GalleryViewSettings } from "../../pages/Manage/Gallery/GalleryViewSettings";
 import { LibrarySortOptions } from "../../pages/Manage/Gallery/LibrarySortOptions";
-import { LibraryFilters } from "../LibraryFilters";
+import { MediaFilters as MediaFiltersComponent } from "../MediaFilters";
 import { ScanButton } from "./Scan/ScanButton";
 import { ScanProgress } from "./Scan/ScanProgress";
 import { useScan } from "./Scan/useScan";
@@ -35,9 +35,9 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
       <div className="flex-1 min-h-0 p-6 flex flex-col">
         <div className="flex justify-between items-center mb-4 flex-none">
           <div className="flex items-center w-full justify-between gap-4">
-            <LibraryFilters
+            <MediaFiltersComponent
               value={preferences.filter}
-              onFilterChange={(filters) => {
+              onChange={(filters) => {
                 updatePreferences({
                   filter: filters,
                   pagination: { page: 1 },

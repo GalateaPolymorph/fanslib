@@ -119,6 +119,9 @@ export const PostDetailAddMediaButton = ({
             className="mt-4"
             referenceMedia={post.postMedia[0]?.media}
             excludeMediaIds={post.postMedia.map((pm) => pm.media.id)}
+            eligibleMediaFilter={
+              post.subreddit?.eligibleMediaFilter ?? post.channel?.eligibleMediaFilter
+            }
           />
 
           <div className="flex justify-end gap-2 pt-4 border-t mt-4">

@@ -31,7 +31,7 @@ export const ChannelBadge = ({
       shape={name === "" ? "iconOnly" : "default"}
       size={size}
       className={cn(
-        "flex items-center",
+        "flex items-center cursor-pointer",
         {
           "gap-2": size === "default",
           "gap-1": size === "sm",

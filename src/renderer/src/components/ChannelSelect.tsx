@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useChannels } from "@renderer/contexts/ChannelContext";
 import { cn } from "../lib/utils";
 import { ChannelBadge } from "./ChannelBadge";
 
@@ -7,6 +7,8 @@ type ChannelSelectProps = {
   onChange: (value: string[]) => void;
   multiple?: boolean;
   disabledChannels?: string[];
+  selectable?: boolean;
+  className?: string;
 };
 
 export const ChannelSelect = ({
@@ -14,24 +16,10 @@ export const ChannelSelect = ({
   onChange,
   multiple = true,
   disabledChannels = [],
+  selectable = true,
+  className,
 }: ChannelSelectProps) => {
-  const [channels, setChannels] = useState<Array<{ id: string; name: string; typeId: string }>>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadChannels = async () => {
-      try {
-        const allChannels = await window.api["channel:getAll"]();
-        setChannels(allChannels);
-      } catch (error) {
-        console.error("Failed to load channels:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadChannels();
-  }, []);
+  const { channels } = useChannels();
 
   const handleToggleChannel = (channelId: string) => {
     if (disabledChannels.includes(channelId)) return;
@@ -46,10 +34,6 @@ export const ChannelSelect = ({
       }
     }
   };
-
-  if (isLoading) {
-    return <div className="text-sm text-muted-foreground">Loading channels...</div>;
-  }
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -69,12 +53,12 @@ export const ChannelSelect = ({
         return (
           <div
             key={channel.id}
-            className={cn(!multiple && value.length > 0 && !isSelected && "opacity-50")}
+            className={cn(!multiple && value.length > 0 && !isSelected && "opacity-50", className)}
           >
             <ChannelBadge
               name={channel.name}
               typeId={channel.typeId}
-              selectable
+              selectable={selectable}
               selected={isSelected}
               disabled={isDisabled}
               onClick={() => handleToggleChannel(channel.id)}

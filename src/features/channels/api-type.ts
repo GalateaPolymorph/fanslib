@@ -1,4 +1,5 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
+import type { MediaFilters } from "../library/api-type";
 import { Channel, ChannelType, ChannelWithoutRelations } from "./entity";
 import { Subreddit } from "./subreddit";
 import { VerificationStatus } from "./type";
@@ -7,6 +8,7 @@ export type ChannelCreatePayload = {
   name: string;
   typeId: string;
   description?: string;
+  eligibleMediaFilter?: MediaFilters;
 };
 
 export type SubredditCreatePayload = {
@@ -15,6 +17,7 @@ export type SubredditCreatePayload = {
   notes?: string;
   memberCount?: number;
   verificationStatus?: VerificationStatus;
+  eligibleMediaFilter?: MediaFilters;
 };
 
 export type SubredditUpdatePayload = {
@@ -23,6 +26,7 @@ export type SubredditUpdatePayload = {
   notes?: string;
   memberCount?: number;
   verificationStatus?: VerificationStatus;
+  eligibleMediaFilter?: MediaFilters;
 };
 
 const methods = [

@@ -1,4 +1,5 @@
 import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
+import { MediaFilters as MediaFiltersComponent } from "@renderer/components/MediaFilters";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +21,7 @@ import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Channel } from "../../../../features/channels/entity";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
+import type { MediaFilters } from "../../../../features/library/api-type";
 import { ContentScheduleForm } from "./ContentScheduleForm";
 import { ContentScheduleList } from "./ContentScheduleList";
 
@@ -42,6 +44,9 @@ export const ChannelView = ({
 }: ChannelViewProps) => {
   const [name, setName] = useState(channel.name);
   const [description, setDescription] = useState(channel.description || "");
+  const [eligibleMediaFilter, setEligibleMediaFilter] = useState<MediaFilters | undefined>(
+    channel.eligibleMediaFilter || {}
+  );
   const [schedules, setSchedules] = useState<ContentSchedule[]>([]);
   const [isAddingSchedule, setIsAddingSchedule] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ContentSchedule | null>(null);
@@ -54,6 +59,7 @@ export const ChannelView = ({
   useEffect(() => {
     setName(channel.name);
     setDescription(channel.description || "");
+    setEligibleMediaFilter(channel.eligibleMediaFilter || {});
     loadSchedules();
   }, [channel, loadSchedules]);
 
@@ -61,6 +67,7 @@ export const ChannelView = ({
     const updatedChannel = await window.api["channel:update"](channel.id, {
       name,
       description,
+      eligibleMediaFilter,
     });
 
     onUpdate?.(updatedChannel);
@@ -70,6 +77,7 @@ export const ChannelView = ({
   const handleCancel = () => {
     setName(channel.name);
     setDescription(channel.description || "");
+    setEligibleMediaFilter(channel.eligibleMediaFilter);
     onEditingChange?.(false);
   };
 
@@ -109,6 +117,13 @@ export const ChannelView = ({
                 className="text-sm resize-none"
                 placeholder="Channel description (optional)"
                 rows={2}
+              />
+              <MediaFiltersComponent
+                value={eligibleMediaFilter}
+                onChange={setEligibleMediaFilter}
+                showClearButton={false}
+                vertical
+                noEligibleIn
               />
             </div>
             <div>

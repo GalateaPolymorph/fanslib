@@ -29,6 +29,7 @@ import { STORAGE_KEYS, useLocalStorageState } from "@renderer/lib/local-storage"
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MediaFilters } from "src/features/library/api-type";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
@@ -70,6 +71,7 @@ export const CreatePostDialog = ({
   const [caption, setCaption] = useState(initialCaption || "");
   const [isMediaSelectionOpen, setIsMediaSelectionOpen] = useState(false);
   const [isOtherCaptionsOpen, setIsOtherCaptionsOpen] = useState(false);
+  const [eligibleMediaFilter, setEligibleMediaFilter] = useState<MediaFilters | undefined>();
   const [shouldRedirect, setShouldRedirect] = useLocalStorageState(
     STORAGE_KEYS.REDIRECT_TO_POST_DETAIL,
     true
@@ -84,6 +86,24 @@ export const CreatePostDialog = ({
 
   const selectedChannelData = channels.find((c) => c.id === selectedChannel[0]);
   const isRedditChannel = selectedChannelData?.type.id === "reddit";
+
+  const selectedSubredditData = useMemo(async () => {
+    if (!selectedSubreddits[0]) return null;
+    return window.api["channel:subreddit-get"](selectedSubreddits[0]);
+  }, [selectedSubreddits]);
+
+  useEffect(() => {
+    const loadEligibleMediaFilter = async () => {
+      if (isRedditChannel && selectedSubreddits[0]) {
+        const subreddit = await selectedSubredditData;
+        setEligibleMediaFilter(subreddit?.eligibleMediaFilter);
+      } else {
+        setEligibleMediaFilter(selectedChannelData?.eligibleMediaFilter);
+      }
+    };
+
+    loadEligibleMediaFilter();
+  }, [isRedditChannel, selectedChannelData, selectedSubreddits, selectedSubredditData]);
 
   useEffect(() => {
     if (!open) return;
@@ -360,6 +380,7 @@ export const CreatePostDialog = ({
                   onMediaSelect={handleMediaSelect}
                   referenceMedia={media[0]}
                   excludeMediaIds={media.map((m) => m.id)}
+                  eligibleMediaFilter={eligibleMediaFilter}
                 />
               )}
             </div>

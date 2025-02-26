@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PaginatedResponse } from "../../../features/_common/pagination";
 import { MediaFilters } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
-import { LibraryFilters } from "./LibraryFilters";
+import { MediaFilters as MediaFiltersComponent } from "./MediaFilters";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -15,6 +15,7 @@ type MediaSelectionProps = {
   className?: string;
   referenceMedia?: Media;
   excludeMediaIds?: string[];
+  eligibleMediaFilter?: MediaFilters;
 };
 
 export const MediaSelection = ({
@@ -23,6 +24,7 @@ export const MediaSelection = ({
   className,
   referenceMedia,
   excludeMediaIds = [],
+  eligibleMediaFilter,
 }: MediaSelectionProps) => {
   const [mediaData, setMediaData] = useState<PaginatedResponse<Media>>({
     items: [],
@@ -34,7 +36,11 @@ export const MediaSelection = ({
   const [isLoading, setIsLoading] = useState(false);
   const [activePreviewId, setActivePreviewId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<MediaFilters>({});
+  const [filters, setFilters] = useState<MediaFilters>(eligibleMediaFilter || {});
+
+  useEffect(() => {
+    setFilters(eligibleMediaFilter || {});
+  }, [eligibleMediaFilter]);
 
   useEffect(() => {
     const fetchRelatedMedia = async () => {
@@ -85,7 +91,7 @@ export const MediaSelection = ({
   const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, mediaData.totalPages));
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
-  const handleFilterChange = (newFilters: { categories?: string[]; unposted?: boolean }) => {
+  const handleFilterChange = (newFilters: MediaFilters) => {
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -99,7 +105,11 @@ export const MediaSelection = ({
               {isLoading ? "Loading..." : `${mediaData.total} items available`}
             </span>
           </div>
-          <LibraryFilters value={filters} onFilterChange={handleFilterChange} />
+          <MediaFiltersComponent
+            value={filters}
+            onChange={handleFilterChange}
+            showClearButton={true}
+          />
         </div>
       </div>
 

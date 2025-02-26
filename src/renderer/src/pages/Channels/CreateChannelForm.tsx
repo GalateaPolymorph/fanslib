@@ -14,7 +14,6 @@ export const CreateChannelForm = ({ onSubmit, className = "" }: CreateChannelFor
       name: CHANNEL_TYPES[typeId].name,
       description: "",
       typeId,
-      defaultHashtags: [],
     });
     onSubmit(channel);
   };

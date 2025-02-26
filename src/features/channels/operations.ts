@@ -9,6 +9,7 @@ export const createChannel = async ({
   name,
   typeId,
   description,
+  eligibleMediaFilter,
 }: ChannelCreatePayload): Promise<Channel> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Channel);
@@ -17,6 +18,7 @@ export const createChannel = async ({
   channel.name = name;
   channel.typeId = typeId;
   channel.description = description;
+  channel.eligibleMediaFilter = eligibleMediaFilter;
 
   // Save and return with type relation loaded
   const { id } = await repository.save(channel);
@@ -36,6 +38,7 @@ export const createSubreddit = async (data: SubredditCreatePayload): Promise<Sub
     memberCount: data.memberCount,
     notes: data.notes,
     verificationStatus: data.verificationStatus ?? VERIFICATION_STATUS.UNKNOWN,
+    eligibleMediaFilter: data.eligibleMediaFilter,
   });
 
   await repository.save(subreddit);

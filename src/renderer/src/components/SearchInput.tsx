@@ -9,6 +9,8 @@ type SearchInputProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   debounceMs?: number;
+  alwaysOpen?: boolean;
+  className?: string;
 };
 
 export const SearchInput = ({
@@ -16,10 +18,14 @@ export const SearchInput = ({
   onChange,
   placeholder = "Search...",
   debounceMs = 300,
+  alwaysOpen = false,
+  className,
 }: SearchInputProps) => {
-  const [isOpen, setIsOpen] = useState(Boolean(value));
+  const [isOpen, setIsOpen] = useState(Boolean(value) || alwaysOpen);
   const [localValue, setLocalValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const open = alwaysOpen || isOpen;
 
   // Sync external value changes and expand if value is set
   useEffect(() => {
@@ -53,7 +59,12 @@ export const SearchInput = ({
   };
 
   return (
-    <div className="flex items-center border rounded-md border-border transition-colors hover:bg-accent hover:text-accent-foreground">
+    <div
+      className={cn(
+        "flex items-center border rounded-md border-border transition-colors hover:bg-accent hover:text-accent-foreground",
+        className
+      )}
+    >
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -70,7 +81,7 @@ export const SearchInput = ({
       <div
         className={cn(
           "relative transition-all duration-200 overflow-hidden",
-          isOpen ? "w-64" : "w-0"
+          open ? "auto" : "w-0"
         )}
       >
         <div className="relative">

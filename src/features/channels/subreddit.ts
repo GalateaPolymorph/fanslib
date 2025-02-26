@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import type { MediaFilters } from "../library/api-type";
 import { VERIFICATION_STATUS, type VerificationStatus } from "./type";
 
 @Entity()
@@ -17,6 +18,9 @@ export class Subreddit {
 
   @Column("int", { nullable: true })
   memberCount?: number;
+
+  @Column("simple-json", { nullable: true })
+  eligibleMediaFilter?: MediaFilters;
 
   @Column("varchar", { default: VERIFICATION_STATUS.UNKNOWN })
   verificationStatus!: VerificationStatus;

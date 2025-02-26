@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Hashtag } from "../hashtags/entity";
+import type { MediaFilters } from "../library/api-type";
 
 @Entity()
 export class ChannelType {
@@ -35,6 +36,9 @@ export class Channel {
 
   @Column("varchar")
   typeId!: string;
+
+  @Column("simple-json", { nullable: true })
+  eligibleMediaFilter?: MediaFilters;
 
   @ManyToOne(() => ChannelType)
   @JoinColumn({ name: "typeId" })

@@ -1,3 +1,4 @@
+import { MediaFilters as MediaFiltersComponent } from "@renderer/components/MediaFilters";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import {
@@ -24,7 +25,10 @@ type EditingSubredditRowProps = {
 };
 
 export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRowProps) => {
-  const [editingSubreddit, setEditingSubreddit] = useState<EditingSubreddit>(subreddit);
+  const [editingSubreddit, setEditingSubreddit] = useState<EditingSubreddit>({
+    ...subreddit,
+    eligibleMediaFilter: subreddit.eligibleMediaFilter || {},
+  });
   const [unparsedMemberCount, setUnparsedMemberCount] = useState<string>(
     subreddit.memberCount ? formatViewCount(subreddit.memberCount) : ""
   );
@@ -37,16 +41,16 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
         notes: editingSubreddit.notes,
         memberCount: parseViewCount(unparsedMemberCount.replaceAll(",", ".")),
         verificationStatus: editingSubreddit.verificationStatus,
+        eligibleMediaFilter: editingSubreddit.eligibleMediaFilter,
       });
       onUpdate();
-      setEditingSubreddit(null);
     } catch (error) {
       console.error("Failed to update subreddit", error);
     }
   };
 
   return (
-    <>
+    <div className="contents">
       <div className="p-2 pl-4 min-h-12 flex items-center">
         <Input
           value={editingSubreddit.name}
@@ -108,6 +112,16 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
           <Check className="h-4 w-4" />
         </Button>
       </div>
-    </>
+      <div className="col-span-full p-4 border-t">
+        <MediaFiltersComponent
+          value={editingSubreddit.eligibleMediaFilter}
+          onChange={(filter) =>
+            setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
+          }
+          noEligibleIn
+          vertical
+        />
+      </div>
+    </div>
   );
 };
