@@ -27,6 +27,7 @@ import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { STORAGE_KEYS, useLocalStorageState } from "@renderer/lib/local-storage";
+import { cn } from "@renderer/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +35,7 @@ import { MediaFilters } from "src/features/library/api-type";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
 import { useChannels } from "../../contexts/ChannelContext";
+import { captionMaxLength } from "../../lib/caption-max-length";
 import { CreatePostAndPostponeButton } from "./CreatePostAndPostponeButton";
 
 type CreatePostDialogProps = {
@@ -90,6 +92,11 @@ export const CreatePostDialog = ({
 
   const selectedChannelData = channels.find((c) => c.id === selectedChannel[0]);
   const isRedditChannel = selectedChannelData?.type.id === "reddit";
+  const channelCaptionMaxLength = selectedChannelData
+    ? captionMaxLength(selectedChannelData.type)
+    : undefined;
+
+  const disabled = channelCaptionMaxLength && caption?.length >= channelCaptionMaxLength;
 
   const selectedSubredditData = useMemo(async () => {
     if (!selectedSubreddits[0]) return null;
@@ -276,24 +283,32 @@ export const CreatePostDialog = ({
                   <label className="text-sm font-medium">Caption</label>
                   <div className="relative">
                     <Textarea
+                      maxLength={channelCaptionMaxLength}
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
                       placeholder="Write your post caption..."
                       className="min-h-[50px] pr-10"
                     />
+                    {channelCaptionMaxLength && channelCaptionMaxLength !== Infinity && (
+                      <p
+                        className={cn(
+                          "text-xs text-muted-foreground absolute right-2 bottom-2",
+                          caption?.length >= channelCaptionMaxLength && "text-destructive"
+                        )}
+                      >
+                        {caption?.length} / {channelCaptionMaxLength}
+                      </p>
+                    )}
                     <HashtagButton
                       media={selectedMedia}
-                      channel={channels.find((c) => c.id === selectedChannel[0])}
+                      channel={selectedChannelData}
                       caption={caption}
                       onCaptionChange={setCaption}
                       className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
                     />
                   </div>
                   {selectedChannel[0] && (
-                    <CaptionPreview
-                      caption={caption}
-                      channel={channels.find((c) => c.id === selectedChannel[0])!}
-                    />
+                    <CaptionPreview caption={caption} channel={selectedChannelData} />
                   )}
                 </div>
               </div>
@@ -420,7 +435,7 @@ export const CreatePostDialog = ({
               onOpenChange={onOpenChange}
               shouldRedirect={shouldRedirect}
             />
-            <Button onClick={handleCreatePost} className="w-full">
+            <Button onClick={handleCreatePost} className="w-full" disabled={disabled}>
               Create post
             </Button>
           </DialogFooter>
