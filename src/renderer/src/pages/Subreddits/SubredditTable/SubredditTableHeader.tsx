@@ -1,15 +1,16 @@
-import { cn } from "@renderer/lib/utils";
 import { gridClasses } from "./table";
 
 export const SubredditTableHeader = () => {
   return (
-    <div className={cn(gridClasses, "border-b")}>
-      <div className="p-2 pl-4 h-12 flex items-center text-muted-foreground">Name</div>
-      <div className="p-2 h-12 flex items-center text-muted-foreground">Members</div>
-      <div className="p-2 h-12 flex items-center text-muted-foreground">Post Frequency (hrs)</div>
-      <div className="p-2 h-12 flex items-center text-muted-foreground">Verification</div>
-      <div className="p-2 h-12 flex items-center text-muted-foreground">Notes</div>
-      <div></div>
+    <div className={gridClasses}>
+      <div className="p-2 pl-4 font-medium"></div>
+      <div className="p-2 pl-4 font-medium">Name</div>
+      <div className="p-2 font-medium">Members</div>
+      <div className="p-2 font-medium">Post Frequency (hours)</div>
+      <div className="p-2 font-medium">Post Status</div>
+      <div className="p-2 font-medium">Verification</div>
+      <div className="p-2 font-medium">Notes</div>
+      <div className="p-2 pr-4 font-medium"></div>
     </div>
   );
 };

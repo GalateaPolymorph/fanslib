@@ -47,7 +47,12 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
     where: { id },
     relations: {
       categories: true,
-      postMedia: true,
+      postMedia: {
+        post: {
+          channel: true,
+          subreddit: true,
+        },
+      },
       niches: {
         hashtags: true,
       },
@@ -147,6 +152,7 @@ export const fetchAllMedia = async (
             JOIN post p ON p.id = pm.postId
             WHERE pm.mediaId = media.id
             AND p.channelId = :channelId${index}
+            AND p.status = 'posted'
           )`,
           { [`channelId${index}`]: filter.channelId }
         );
@@ -158,6 +164,7 @@ export const fetchAllMedia = async (
             JOIN post p ON p.id = pm.postId
             WHERE pm.mediaId = media.id
             AND p.channelId = :channelId${index}
+            AND p.status = 'posted'
           )`,
           { [`channelId${index}`]: filter.channelId }
         );
@@ -176,6 +183,7 @@ export const fetchAllMedia = async (
             JOIN post p ON p.id = pm.postId
             WHERE pm.mediaId = media.id
             AND p.subredditId = :subredditId${index}
+            AND p.status = 'posted'
           )`,
           { [`subredditId${index}`]: filter.subredditId }
         );
@@ -186,6 +194,7 @@ export const fetchAllMedia = async (
             SELECT 1 FROM post_media pm
             JOIN post p ON p.id = pm.postId
             WHERE pm.mediaId = media.id
+            AND p.status = 'posted'
             AND p.subredditId = :subredditId${index}
           )`,
           { [`subredditId${index}`]: filter.subredditId }
@@ -219,6 +228,9 @@ export const fetchAllMedia = async (
             "lastPostDate"
           )
           .orderBy("lastPostDate", direction, "NULLS LAST");
+        break;
+      case "random":
+        queryBuilder.orderBy("RANDOM() * unixepoch()", direction);
         break;
     }
   } else {

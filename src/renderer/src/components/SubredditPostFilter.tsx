@@ -60,6 +60,16 @@ export const SubredditPostFilter = ({ value, onChange }: SubredditPostFilterProp
     setSearchOpen(false);
   };
 
+  const selectedFiltersFormatted = value.slice(0, 2).map((f) => {
+    const subreddit = subreddits.find((s) => s.id === f.subredditId);
+    return (
+      <div className="flex text-2xs items-center" key={f.subredditId}>
+        {f.posted ? "Posted " : "Not posted "} in{" "}
+        <strong className="ml-1">r/{subreddit?.name}</strong>
+      </div>
+    );
+  });
+
   const displayedSubreddits = subreddits.filter((s) => displayedSubredditIds.includes(s.id));
   const availableSubreddits = subreddits.filter((s) => !displayedSubredditIds.includes(s.id));
 
@@ -67,7 +77,16 @@ export const SubredditPostFilter = ({ value, onChange }: SubredditPostFilterProp
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[180px]">
-          Subreddit
+          {selectedFiltersFormatted.length > 0 ? (
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-0.5">{selectedFiltersFormatted}</div>
+              {value.length > 2 && (
+                <div className="text-2xs text-muted-foreground">+{value.length - 2} more</div>
+              )}
+            </div>
+          ) : (
+            "Subreddit"
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-4">

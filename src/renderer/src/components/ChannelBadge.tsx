@@ -12,6 +12,7 @@ type ChannelBadgeProps = {
   selectable?: boolean;
   disabled?: boolean;
   onClick?: () => void;
+  className?: string;
 };
 
 export const ChannelBadge = ({
@@ -22,6 +23,7 @@ export const ChannelBadge = ({
   selectable = false,
   disabled = false,
   onClick,
+  className,
 }: ChannelBadgeProps) => {
   const channelType = CHANNEL_TYPES[typeId as ChannelTypeId];
 
@@ -38,7 +40,8 @@ export const ChannelBadge = ({
           "gap-3": size === "lg",
         },
         onClick || (selectable && "transition-colors cursor-pointer"),
-        disabled && "opacity-30 cursor-not-allowed"
+        disabled && "opacity-30 cursor-not-allowed",
+        className
       )}
       style={{
         backgroundColor:

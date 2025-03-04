@@ -51,6 +51,7 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
 
   return (
     <div className="contents">
+      <div />
       <div className="p-2 pl-4 min-h-12 flex items-center">
         <Input
           value={editingSubreddit.name}
@@ -81,6 +82,7 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
           className="h-8"
         />
       </div>
+      <div />
       <div className="p-2 min-h-12 flex items-center">
         <Select
           value={editingSubreddit.verificationStatus}

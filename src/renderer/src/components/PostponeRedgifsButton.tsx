@@ -3,19 +3,24 @@ import { useToast } from "@renderer/components/ui/use-toast";
 import { useChannels } from "@renderer/contexts/ChannelContext";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
-import { Media } from "../../../../features/library/entity";
+import { Post } from "src/features/posts/entity";
+import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
+import { Media } from "../../../features/library/entity";
 
 type PostponeRedgifsButtonProps = {
   media: Media;
+  onPostCreatedOrFound?: (post: Post) => void;
+  className?: string;
 };
 
-export const PostponeRedgifsButton = ({ media }: PostponeRedgifsButtonProps) => {
+export const PostponeRedgifsButton = ({
+  media,
+  onPostCreatedOrFound,
+  className,
+}: PostponeRedgifsButtonProps) => {
   const { toast } = useToast();
   const { settings } = useSettings();
   const { channels } = useChannels();
-  const navigate = useNavigate();
 
   const findRedgifsUrlAndCreatePost = async () => {
     try {
@@ -36,7 +41,7 @@ export const PostponeRedgifsButton = ({ media }: PostponeRedgifsButtonProps) => 
           title: "Post already exists",
           description: "A post with this RedGIFs URL already exists",
         });
-        navigate(`/posts/${existingPost.id}`);
+        onPostCreatedOrFound?.(existingPost);
         return;
       }
 
@@ -67,7 +72,7 @@ export const PostponeRedgifsButton = ({ media }: PostponeRedgifsButtonProps) => 
         title: "Post created successfully",
       });
 
-      navigate(`/posts/${post.id}`);
+      onPostCreatedOrFound?.(post);
     } catch (error) {
       console.error("Failed to find RedGIFs URL and create post:", error);
       toast({
@@ -85,7 +90,7 @@ export const PostponeRedgifsButton = ({ media }: PostponeRedgifsButtonProps) => 
   }
 
   return (
-    <Button onClick={findRedgifsUrlAndCreatePost} className="self-center" variant="ghost">
+    <Button onClick={findRedgifsUrlAndCreatePost} className={className} variant="ghost">
       <Search className="h-4 w-4" />
       Check Postpone for RedGIFs URL
     </Button>

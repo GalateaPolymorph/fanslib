@@ -62,7 +62,7 @@ export const CreateSubredditDialog = ({
     try {
       await window.api["channel:subreddit-create"]({
         name: nameWithoutR,
-        maxPostFrequencyHours: maxPostFrequencyHours ? parseInt(maxPostFrequencyHours) : undefined,
+        maxPostFrequencyHours: maxPostFrequencyHours ? parseInt(maxPostFrequencyHours) : 24,
         notes: notes.trim() || undefined,
         memberCount: memberCount ? parseViewCount(memberCount) : undefined,
         verificationStatus,
@@ -125,7 +125,7 @@ export const CreateSubredditDialog = ({
               type="number"
               value={maxPostFrequencyHours}
               onChange={(e) => setMaxPostFrequencyHours(e.target.value)}
-              placeholder="e.g., 24"
+              placeholder="e.g., 12 (default is 24)"
             />
           </div>
 

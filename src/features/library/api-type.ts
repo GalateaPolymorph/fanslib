@@ -2,7 +2,7 @@ import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/name
 import { PaginatedResponse, PaginationParams } from "../_common/pagination";
 import { Media } from "./entity";
 
-export type SortField = "fileModificationDate" | "fileCreationDate" | "lastPosted";
+export type SortField = "fileModificationDate" | "fileCreationDate" | "lastPosted" | "random";
 export type SortDirection = "ASC" | "DESC";
 
 export type MediaSort = {

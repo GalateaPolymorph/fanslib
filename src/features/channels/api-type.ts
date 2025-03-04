@@ -41,6 +41,7 @@ const methods = [
   "subreddit-list",
   "subreddit-update",
   "subreddit-delete",
+  "subreddit-last-post-dates",
 ] as const;
 
 export type ChannelHandlers = {
@@ -59,6 +60,7 @@ export type ChannelHandlers = {
   "subreddit-list": (_: any) => Promise<Subreddit[]>;
   "subreddit-update": (_: any, id: string, updates: SubredditUpdatePayload) => Promise<Subreddit>;
   "subreddit-delete": (_: any, id: string) => Promise<void>;
+  "subreddit-last-post-dates": (_: any, subredditIds: string[]) => Promise<Record<string, string>>;
 };
 
 export const namespace = "channel" as const;

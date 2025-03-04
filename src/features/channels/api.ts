@@ -9,6 +9,7 @@ import {
   deleteChannel,
   deleteSubreddit,
   fetchChannelById,
+  fetchLastPostDatesForSubreddits,
   listSubreddits,
   updateChannel,
   updateDefaultHashtags,
@@ -33,6 +34,8 @@ export const handlers: ChannelHandlers = {
   "subreddit-list": () => listSubreddits(),
   "subreddit-update": (_, id, updates) => updateSubreddit(id, updates),
   "subreddit-delete": (_, id) => deleteSubreddit(id),
+  "subreddit-last-post-dates": (_, subredditIds: string[]) =>
+    fetchLastPostDatesForSubreddits(subredditIds),
 };
 
 export const channelHandlers = prefixNamespaceObject(namespace, handlers);

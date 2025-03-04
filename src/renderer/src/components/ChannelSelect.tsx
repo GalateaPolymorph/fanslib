@@ -1,4 +1,5 @@
 import { useChannels } from "@renderer/contexts/ChannelContext";
+import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { ChannelBadge } from "./ChannelBadge";
 
@@ -40,9 +41,9 @@ export const ChannelSelect = ({
       {channels.length === 0 && (
         <>
           <div className="text-sm text-muted-foreground">No channels found.</div>
-          <a href="/channels" className="text-sm hover:underline">
+          <Link to="/channels" className="text-sm hover:underline">
             Create a channel
-          </a>
+          </Link>
         </>
       )}
 

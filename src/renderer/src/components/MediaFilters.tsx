@@ -85,8 +85,7 @@ export const MediaFilters = ({
   };
 
   const isFilterActive = (key: FilterType): boolean => {
-    if (key === "shoots") return !!value.shootId;
-    if (key === "excludeShoots") return !!value.excludeShoots?.length;
+    if (key === "shoots") return value.shootId !== undefined;
     if (key === "search") return value.search !== undefined;
     return !!value[key];
   };
@@ -199,7 +198,7 @@ export const MediaFilters = ({
               onChange({
                 ...value,
                 shootId: shootIds[0],
-                excludeShoots: [],
+                excludeShoots: undefined,
               });
             }}
             multiple={false}
@@ -288,22 +287,15 @@ export const MediaFilters = ({
 
         <div
           className={cn(
-            "grid flex-1",
-            !vertical && "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4",
-            vertical && "grid-cols-1 gap-2"
+            "flex flex-1 gap-x-4 gap-y-2",
+            !vertical && "flex-row",
+            vertical && "flex-col"
           )}
         >
           {getActiveFilters().map((filter) => (
-            <div
-              key={filter.key}
-              className={cn(
-                "flex items-center gap-2 w-full flex-grow",
-                filter.key === "categories" && "col-span-3",
-                filter.key === "tiers" && "col-span-2"
-              )}
-            >
+            <div key={filter.key} className={cn("flex shrink-0 items-center gap-2 group")}>
               {renderFilterContent(filter.key)}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="icon"

@@ -14,7 +14,7 @@ type VerificationStatusProps = {
 const verificationStatusColor = {
   [VERIFICATION_STATUS.UNKNOWN]: "text-muted-foreground",
   [VERIFICATION_STATUS.NOT_NEEDED]: "text-blue-500",
-  [VERIFICATION_STATUS.NEEDED]: "text-yellow-500",
+  [VERIFICATION_STATUS.NEEDED]: "text-red-500",
   [VERIFICATION_STATUS.APPLIED]: "text-orange-500",
   [VERIFICATION_STATUS.REJECTED]: "text-red-500",
   [VERIFICATION_STATUS.VERIFIED]: "text-green-500",

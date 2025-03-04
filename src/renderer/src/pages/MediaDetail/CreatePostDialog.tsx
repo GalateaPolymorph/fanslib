@@ -1,4 +1,5 @@
 import { CaptionPreview } from "@renderer/components/CaptionPreview";
+import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { HashtagButton } from "@renderer/components/HashtagButton";
 import { MediaSelection } from "@renderer/components/MediaSelection";
@@ -78,11 +79,14 @@ export const CreatePostDialog = ({
   );
 
   const otherCaptions = useMemo(() => {
-    const captions = selectedMedia
-      .flatMap((media) => media.postMedia?.map((pm) => pm.post?.caption))
-      .filter((caption): caption is string => Boolean(caption) && caption !== initialCaption);
+    const captions = selectedMedia.flatMap((media) => {
+      return media.postMedia?.map((pm) => ({
+        caption: pm.post?.caption,
+        channel: pm.post?.channel,
+      }));
+    });
     return [...new Set(captions)];
-  }, [selectedMedia, initialCaption]);
+  }, [selectedMedia]);
 
   const selectedChannelData = channels.find((c) => c.id === selectedChannel[0]);
   const isRedditChannel = selectedChannelData?.type.id === "reddit";
@@ -291,72 +295,79 @@ export const CreatePostDialog = ({
                       channel={channels.find((c) => c.id === selectedChannel[0])!}
                     />
                   )}
-                  {otherCaptions.length > 0 && (
-                    <Collapsible
-                      open={isOtherCaptionsOpen}
-                      onOpenChange={setIsOtherCaptionsOpen}
-                      className="mt-2"
-                    >
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex w-full items-center justify-between p-2 text-sm font-medium"
-                        >
-                          Captions from other posts using this media
-                          {isOtherCaptionsOpen ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <ScrollArea className="h-[200px] rounded-md border p-2">
-                          <div className="space-y-2">
-                            {otherCaptions.map((otherCaption, index) => (
-                              <div
-                                key={index}
-                                className="group relative rounded-md border p-2 hover:bg-muted"
-                              >
-                                <p className="text-sm text-muted-foreground">{otherCaption}</p>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="absolute right-2 top-2 opacity-0 group-hover:opacity-100"
-                                  onClick={() => setCaption(otherCaption)}
-                                >
-                                  Use
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </ScrollArea>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Selected Media ({selectedMedia.length})
-                </label>
-                <ScrollArea className="h-[200px] border rounded-md p-2">
-                  <div className="grid grid-cols-3 gap-2">
-                    {selectedMedia.map((item, index) => (
-                      <div key={item.id} className="relative aspect-square">
-                        <MediaTile
-                          media={item}
-                          allMedias={selectedMedia}
-                          index={index}
-                          withTier
-                          withCategoryHint
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium">
+                    Selected Media ({selectedMedia.length})
+                  </label>
+                  <ScrollArea className="h-[200px] border rounded-md p-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      {selectedMedia.map((item, index) => (
+                        <div key={item.id} className="relative aspect-square">
+                          <MediaTile
+                            media={item}
+                            allMedias={selectedMedia}
+                            index={index}
+                            withTier
+                            withCategoryHint
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+                {otherCaptions.length > 0 && (
+                  <Collapsible
+                    open={isOtherCaptionsOpen}
+                    onOpenChange={setIsOtherCaptionsOpen}
+                    className="mt-2"
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex w-full items-center justify-between p-2 text-sm font-medium"
+                      >
+                        Captions from other posts using this media
+                        {isOtherCaptionsOpen ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <ScrollArea className="h-[200px] rounded-md border p-2">
+                        <div className="space-y-2">
+                          {otherCaptions.map((otherCaption, index) => (
+                            <div
+                              key={index}
+                              className="group relative min-h-8 flex flex-col rounded-md border p-2"
+                            >
+                              <ChannelBadge
+                                className="self-start"
+                                name={otherCaption.channel?.name}
+                                typeId={otherCaption.channel?.typeId}
+                              />
+                              <p className="text-sm pt-2">{otherCaption.caption}</p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="absolute right-2 top-1 opacity-0 group-hover:opacity-100"
+                                onClick={() => setCaption(otherCaption.caption)}
+                              >
+                                Use
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
               </div>
             </div>
 
