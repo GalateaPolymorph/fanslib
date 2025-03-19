@@ -357,27 +357,29 @@ export const CreatePostDialog = ({
                     <CollapsibleContent>
                       <ScrollArea className="h-[200px] rounded-md border p-2">
                         <div className="space-y-2">
-                          {otherCaptions.map((otherCaption, index) => (
-                            <div
-                              key={index}
-                              className="group relative min-h-8 flex flex-col rounded-md border p-2"
-                            >
-                              <ChannelBadge
-                                className="self-start"
-                                name={otherCaption.channel?.name}
-                                typeId={otherCaption.channel?.typeId}
-                              />
-                              <p className="text-sm pt-2">{otherCaption.caption}</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="absolute right-2 top-1 opacity-0 group-hover:opacity-100"
-                                onClick={() => setCaption(otherCaption.caption)}
+                          {otherCaptions.map((otherCaption, index) =>
+                            !otherCaption?.caption ? null : (
+                              <div
+                                key={index}
+                                className="group relative min-h-8 flex flex-col rounded-md border p-2"
                               >
-                                Use
-                              </Button>
-                            </div>
-                          ))}
+                                <ChannelBadge
+                                  className="self-start"
+                                  name={otherCaption.channel?.name}
+                                  typeId={otherCaption.channel?.typeId}
+                                />
+                                <p className="text-sm pt-2">{otherCaption.caption}</p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="absolute right-2 top-1 opacity-0 group-hover:opacity-100"
+                                  onClick={() => setCaption(otherCaption.caption)}
+                                >
+                                  Use
+                                </Button>
+                              </div>
+                            )
+                          )}
                         </div>
                       </ScrollArea>
                     </CollapsibleContent>

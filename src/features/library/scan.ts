@@ -9,6 +9,7 @@ import { FileScanResult, LibraryScanProgress, LibraryScanResult } from "./api-ty
 import { Media } from "./entity";
 import { createMedia, deleteMedia, fetchMediaByPath, updateMedia } from "./operations";
 import { generateThumbnail, thumbnailExists } from "./thumbnail";
+import { repairUppercaseExtension } from "./uppercase-extensions";
 
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov", ".avi", ".mkv"]);
@@ -195,7 +196,7 @@ class LibraryScanner {
 
       // Second pass: process files
       for (let i = 0; i < filesToProcess.length; i++) {
-        const filePath = filesToProcess[i];
+        const filePath = await repairUppercaseExtension(filesToProcess[i]);
         processedPaths.add(filePath);
 
         try {
