@@ -3,6 +3,7 @@ import { useMediaSelection } from "@renderer/contexts/MediaSelectionContext";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { MediaTileCategorySticker } from "./MediaTileCategorySticker";
+import { MediaFileFilenameTooltip } from "./MediaTileFilenameTooltip";
 import { MediaTileImage } from "./MediaTileImage";
 import { MediaTilePostsPopover } from "./MediaTilePostsPopover";
 import { MediaTileSelectionCircle } from "./MediaTileSelectionCircle";
@@ -28,6 +29,7 @@ export const MediaTile = (props: MediaTileProps) => {
   const withTypeIcon = props.withTypeIcon ?? false;
   const withTier = props.withTier ?? false;
   const withNavigation = props.withNavigation ?? false;
+  const withFileName = props.withFileName ?? false;
   const cover = props.cover ?? false;
 
   const activatePreview = () => {
@@ -65,7 +67,7 @@ export const MediaTile = (props: MediaTileProps) => {
     onDragEnd: endMediaDrag,
   };
 
-  return (
+  const content = (
     <div
       className={cn(
         "relative aspect-square bg-muted rounded-lg overflow-hidden group",
@@ -96,5 +98,11 @@ export const MediaTile = (props: MediaTileProps) => {
         {withTypeIcon && <MediaTileTypeSticker media={media} />}
       </div>
     </div>
+  );
+
+  return withFileName ? (
+    <MediaFileFilenameTooltip media={media}>{content}</MediaFileFilenameTooltip>
+  ) : (
+    content
   );
 };

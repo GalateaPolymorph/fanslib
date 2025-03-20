@@ -16,6 +16,7 @@ export type MediaTileProps = {
   withTypeIcon?: boolean;
   withTier?: boolean;
   withCategoryHint?: boolean;
+  withFileName?: boolean;
 
   cover?: boolean;
 };

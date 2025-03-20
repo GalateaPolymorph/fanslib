@@ -6,10 +6,9 @@ import { Media } from "src/features/library/entity";
 type Props = {
   selectedMedia: Media[];
   onUpdate: () => void;
-  onClearSelection: () => void;
 };
 
-export const GalleryTierSelect = ({ selectedMedia, onUpdate, onClearSelection }: Props) => {
+export const GalleryTierSelect = ({ selectedMedia, onUpdate }: Props) => {
   const { tiers, assignTierToMedias } = useTiers();
 
   const selectTier = async (tierId: number | null) => {
@@ -18,8 +17,9 @@ export const GalleryTierSelect = ({ selectedMedia, onUpdate, onClearSelection }:
       tierId ?? -1
     );
     onUpdate();
-    onClearSelection();
   };
+
+  const selectedTiers = selectedMedia.map((media) => media.tier?.id);
 
   return (
     <div className="space-y-2">
@@ -28,10 +28,10 @@ export const GalleryTierSelect = ({ selectedMedia, onUpdate, onClearSelection }:
         {tiers.map((tier) => (
           <Button
             key={tier.id}
-            variant="ghost"
+            variant={selectedTiers.includes(tier.id) ? "outline" : "ghost"}
             size="sm"
             onClick={() => selectTier(tier.id)}
-            className="min-w-[3rem] border border-transparent flex gap-2"
+            className="min-w-[3rem] flex gap-2"
           >
             <span>{tier.name}</span>
             <span>{printTier(tier)}</span>

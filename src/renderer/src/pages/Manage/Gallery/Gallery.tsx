@@ -59,6 +59,7 @@ const GalleryContent = ({ medias, error, libraryPath, onScan, onUpdate }: Galler
               withPostsPopover
               withTier
               withNavigation
+              withFileName
               index={index}
             />
           ))}
