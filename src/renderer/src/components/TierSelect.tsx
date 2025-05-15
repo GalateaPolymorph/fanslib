@@ -3,8 +3,8 @@ import { TierBadge } from "./TierBadge";
 import { Button } from "./ui/button";
 
 type TierSelectProps = {
-  selectedTierIds: number[];
-  onTierSelect: (tierIds: number[]) => void;
+  selectedTierIds: number[] | undefined;
+  onTierSelect: (tierIds: number[] | undefined) => void;
   label?: string;
   includeNoneOption?: boolean;
   multiple?: boolean;
@@ -34,12 +34,12 @@ export const TierSelect = ({
     <div className="flex flex-wrap gap-2">
       {includeNoneOption && (
         <Button
-          variant={selectedTierIds.length === 0 ? "default" : "outline"}
+          variant={selectedTierIds && selectedTierIds.length === 0 ? "default" : "ghost"}
           size="sm"
           className="min-w-[3rem] border border-transparent flex gap-2"
           onClick={() => onTierSelect([])}
         >
-          Any
+          None
         </Button>
       )}
       {tiers.map((tier) => (

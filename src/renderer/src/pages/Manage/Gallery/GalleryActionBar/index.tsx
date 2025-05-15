@@ -44,11 +44,7 @@ export const GalleryActionBar = ({
         <div className="flex gap-4 row-span-2 items-center">
           <GalleryNicheSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <GalleryCategorySelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
-          <GalleryTierSelect
-            selectedMedia={selectedMedia}
-            onUpdate={onUpdate}
-            onClearSelection={onClearSelection}
-          />
+          <GalleryTierSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <Button
             variant="outline"
             className="flex items-center gap-2"

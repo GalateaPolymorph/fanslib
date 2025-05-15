@@ -20,7 +20,6 @@ export const PostDetailPage = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
@@ -30,14 +29,11 @@ export const PostDetailPage = () => {
     if (!postId) return;
 
     try {
-      setIsLoading(true);
       const fetchedPost = await window.api["post:byId"](postId);
       setPost(fetchedPost);
     } catch (err) {
       setError("Failed to load post");
       console.error("Failed to load post:", err);
-    } finally {
-      setIsLoading(false);
     }
   }, [postId]);
 
@@ -49,14 +45,6 @@ export const PostDetailPage = () => {
     setSelectedChannelId(channelId);
     setIsCreateDialogOpen(true);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-lg text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
 
   if (error || !post) {
     return (

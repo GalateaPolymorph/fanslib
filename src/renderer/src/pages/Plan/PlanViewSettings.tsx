@@ -1,3 +1,4 @@
+import { Switch } from "@renderer/components/ui/switch";
 import { PlanViewType, usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import { CalendarDays, LayoutList, Settings2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -42,6 +43,15 @@ export const PlanViewSettings = () => {
               Calendar
             </ToggleGroupItem>
           </ToggleGroup>
+        </div>
+        <div className="p-2">
+          <div className="mb-2 text-sm font-medium">Show Captions</div>
+          <Switch
+            checked={preferences.view.showCaptions}
+            onCheckedChange={(checked) => {
+              updatePreferences({ view: { showCaptions: checked } });
+            }}
+          />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

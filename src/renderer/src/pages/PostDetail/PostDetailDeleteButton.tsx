@@ -12,6 +12,7 @@ import {
 import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Post } from "src/features/posts/entity";
 
 type PostDetailDeleteButtonProps = {
@@ -21,6 +22,7 @@ type PostDetailDeleteButtonProps = {
 
 export const PostDetailDeleteButton = ({ post, onUpdate }: PostDetailDeleteButtonProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const deletePost = async () => {
     try {
@@ -29,6 +31,7 @@ export const PostDetailDeleteButton = ({ post, onUpdate }: PostDetailDeleteButto
       toast({
         title: "Post deleted successfully",
       });
+      navigate("/posts");
     } catch (err) {
       toast({
         title: "Failed to delete post",

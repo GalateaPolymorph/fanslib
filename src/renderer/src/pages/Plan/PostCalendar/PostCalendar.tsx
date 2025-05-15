@@ -19,15 +19,16 @@ import { Post } from "../../../../../features/posts/entity";
 import { Button } from "../../../components/ui/button";
 import { cn } from "../../../lib/utils";
 import { isVirtualPost, VirtualPost } from "../../../lib/virtual-posts";
+import { PostCalendarDayDropzone } from "./PostCalendarDayDropzone";
 import { PostCalendarPost } from "./PostCalendarPost";
 
 type PostCalendarProps = {
   className?: string;
   posts: (Post | VirtualPost)[];
-  onUpdate: () => void;
+  onUpdate: () => Promise<void>;
 };
 
-export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
+export const PostCalendar = ({ className, posts, onUpdate }: PostCalendarProps) => {
   const { preferences, updatePreferences } = usePlanPreferences();
   const [currentMonth, setCurrentMonth] = useState(() => {
     return format(new Date(preferences.filter.dateRange?.startDate || new Date()), "MMM-yyyy");
@@ -139,12 +140,14 @@ export const PostCalendar = ({ className, posts }: PostCalendarProps) => {
                     return (
                       <PostCalendarPost
                         key={isVirtualPost(post) ? post.virtualId : post.id}
+                        onUpdate={onUpdate}
                         post={post}
                       />
                     );
                   })}
                 </div>
               )}
+              <PostCalendarDayDropzone date={day} onUpdate={onUpdate} />
             </div>
           );
         })}

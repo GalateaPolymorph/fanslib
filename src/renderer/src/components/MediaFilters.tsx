@@ -156,11 +156,12 @@ export const MediaFilters = ({
       case "tiers":
         return (
           <TierSelect
-            selectedTierIds={(value.tiers ?? []).map(Number)}
+            includeNoneOption
+            selectedTierIds={value.tiers ? value.tiers.map(Number) : undefined}
             onTierSelect={(tierIds) => {
               onChange({
                 ...value,
-                tiers: tierIds.length > 0 ? tierIds : [],
+                tiers: tierIds === undefined ? [] : tierIds,
               });
             }}
             multiple
@@ -228,7 +229,7 @@ export const MediaFilters = ({
 
   return (
     <div className={`flex flex-col gap-4 w-full ${className}`}>
-      <div className={cn("grid grid-cols-[auto_auto_1fr_auto] gap-4", vertical && "flex flex-col")}>
+      <div className={cn("flex flex-wrap gap-4", vertical && "flex flex-col")}>
         {!noEligibleIn && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

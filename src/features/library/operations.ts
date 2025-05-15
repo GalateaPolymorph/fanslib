@@ -152,7 +152,6 @@ export const fetchAllMedia = async (
             JOIN post p ON p.id = pm.postId
             WHERE pm.mediaId = media.id
             AND p.channelId = :channelId${index}
-            AND p.status = 'posted'
           )`,
           { [`channelId${index}`]: filter.channelId }
         );
@@ -164,7 +163,6 @@ export const fetchAllMedia = async (
             JOIN post p ON p.id = pm.postId
             WHERE pm.mediaId = media.id
             AND p.channelId = :channelId${index}
-            AND p.status = 'posted'
           )`,
           { [`channelId${index}`]: filter.channelId }
         );
@@ -206,6 +204,11 @@ export const fetchAllMedia = async (
   // Apply tier filters
   if (params?.tiers?.length) {
     queryBuilder.andWhere("tier.id IN (:...tiers)", { tiers: params.tiers });
+  }
+
+  // Apply tier none filter
+  if (params?.tiers?.length === 0) {
+    queryBuilder.andWhere("tier.id IS NULL");
   }
 
   // Apply sorting

@@ -56,8 +56,8 @@ export class Post {
   @Column("varchar", { nullable: true })
   scheduleId?: string;
 
-  @Column("varchar")
-  caption!: string;
+  @Column("varchar", { nullable: true })
+  caption?: string;
 
   @Column("varchar")
   date!: string;

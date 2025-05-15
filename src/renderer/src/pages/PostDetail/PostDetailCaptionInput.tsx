@@ -52,7 +52,7 @@ export const PostDetailCaptionInput = ({ post, onUpdate }: PostDetailCaptionInpu
           placeholder="Add a caption..."
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          className="min-h-[100px] pr-10"
+          className="min-h-[600px] pr-10"
         />
         <HashtagButton
           media={post.postMedia.map((pm) => pm.media)}

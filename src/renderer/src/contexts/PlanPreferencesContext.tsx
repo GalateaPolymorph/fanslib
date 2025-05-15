@@ -19,6 +19,7 @@ export type PlanFilterPreferences = {
 export type PlanPreferences = {
   view: {
     viewType: PlanViewType;
+    showCaptions: boolean;
   };
   filter: PlanFilterPreferences;
 };
@@ -26,6 +27,7 @@ export type PlanPreferences = {
 export const defaultPreferences: PlanPreferences = {
   view: {
     viewType: "timeline",
+    showCaptions: false,
   },
   filter: {
     search: undefined,

@@ -1,5 +1,6 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { Sticker } from "@renderer/components/ui/sticker";
+import { usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import { usePostDrag } from "@renderer/contexts/PostDragContext";
 import { maximumTier, printTier } from "@renderer/lib/tier";
 import { cn } from "@renderer/lib/utils";
@@ -15,10 +16,11 @@ type PostCalendarPostProps = {
   onUpdate?: () => Promise<void>;
 };
 
-export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
+export const PostCalendarPost = ({ post, onUpdate }: PostCalendarPostProps) => {
   const { startPostDrag, endPostDrag } = usePostDrag();
   const time = format(new Date(post.date), "h:mm a");
   const tier = maximumTier(post);
+  const { preferences } = usePlanPreferences();
 
   const dragProps = !isVirtualPost(post)
     ? {
@@ -32,14 +34,18 @@ export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
     <div
       {...dragProps}
       className={cn(
-        "grid [grid-template-areas:'stickers_time''media_media'] grid-cols-[auto_1fr] transition-colors",
+        "grid align-start [grid-template-areas:'stickers_time''media_media''captions_captions'] grid-cols-[auto_1fr] transition-colors",
         "gap-x-2 gap-y-2",
-        "p-3 rounded-md",
+        "p-3 rounded-md border-1 border-muted border-b-3 shadow-sm hover:shadow-lg transition-all hover:scale-101",
         {
-          "bg-green-200/50": post.status === "posted",
-          "bg-blue-200/50": post.status === "scheduled",
-          "bg-gray-200/50": post.status === "draft",
+          "border-b-green-400": post.status === "posted",
+          "border-b-blue-400": post.status === "scheduled",
+          "border-b-gray-400": post.status === "draft",
           "cursor-grab active:cursor-grabbing": !isVirtualPost(post),
+        },
+        {
+          "min-h-24 grid-rows-[auto_1fr]": !preferences.view.showCaptions,
+          "min-h-48 grid-rows-[auto_1.5fr_1fr]": preferences.view.showCaptions,
         }
       )}
     >
@@ -51,11 +57,17 @@ export const PostCalendarPost = ({ post }: PostCalendarPostProps) => {
       <div className="[grid-area:media] relative">
         <PostCalendarPostMedia postMedia={post.postMedia} isVirtual={isVirtualPost(post)} />
       </div>
+      {preferences.view.showCaptions && (
+        <div className="[grid-area:captions] text-xs text-muted-foreground">
+          {post.caption?.slice(0, 50)}
+          {post.caption?.length > 50 && "..."}
+        </div>
+      )}
     </div>
   );
 
   return (
-    <PostCalendarDropzone post={post}>
+    <PostCalendarDropzone post={post} onUpdate={onUpdate}>
       {isVirtualPost(post) ? (
         content
       ) : (

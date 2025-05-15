@@ -8,7 +8,7 @@ type NewHashtagRowProps = {
   onHashtagCreated: () => void;
 };
 
-export const NewHashtagRow = ({ channelCount, onHashtagCreated }: NewHashtagRowProps) => {
+export const NewHashtagRow = ({ onHashtagCreated }: NewHashtagRowProps) => {
   const [newHashtagName, setNewHashtagName] = useState("");
 
   const createHashtag = async () => {

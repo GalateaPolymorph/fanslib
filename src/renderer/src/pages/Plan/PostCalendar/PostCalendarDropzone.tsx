@@ -12,10 +12,11 @@ import { isVirtualPost, VirtualPost } from "../../../lib/virtual-posts";
 
 type PostCalendarDropzoneProps = {
   post: Post | VirtualPost;
+  onUpdate?: () => Promise<void>;
   children: React.ReactNode;
 };
 
-export const PostCalendarDropzone = ({ post, children }: PostCalendarDropzoneProps) => {
+export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarDropzoneProps) => {
   const { isDragging: isMediaDragging, draggedMedias, endMediaDrag } = useMediaDrag();
   const { isDragging: isPostDragging, draggedPost, endPostDrag } = usePostDrag();
   const [createPostData, setCreatePostData] = useState<{
@@ -39,6 +40,7 @@ export const PostCalendarDropzone = ({ post, children }: PostCalendarDropzonePro
                   ? "Media added to post"
                   : `${draggedMedias.length} media items added to post`,
             });
+            await onUpdate?.();
           } catch (error) {
             console.error("Failed to add media to post:", error);
             toast({

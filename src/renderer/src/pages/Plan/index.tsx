@@ -1,5 +1,6 @@
 import { PostFilters } from "@renderer/components/PostFilters";
 import { useChannels } from "@renderer/contexts/ChannelContext";
+import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import {
   PlanPreferencesProvider,
@@ -21,6 +22,8 @@ const PlanPageContent = () => {
   const { channels } = useChannels();
   const { preferences, updatePreferences } = usePlanPreferences();
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
+
+  const { refetch: refetchLibrary } = useLibrary();
 
   const tabs = [
     {
@@ -82,6 +85,10 @@ const PlanPageContent = () => {
     }
   }, [preferences.filter]);
 
+  const refetchPostsAndLibrary = useCallback(async () => {
+    Promise.all([refetchLibrary(), fetchPosts()]);
+  }, [refetchLibrary, fetchPosts]);
+
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
@@ -106,10 +113,10 @@ const PlanPageContent = () => {
           <div className="flex-1 overflow-hidden px-6">
             {!channels.length && <PlanEmptyState />}
             {channels.length && preferences.view.viewType === "timeline" && (
-              <PostTimeline posts={posts} onUpdate={fetchPosts} />
+              <PostTimeline posts={posts} onUpdate={refetchPostsAndLibrary} />
             )}
             {channels.length && preferences.view.viewType === "calendar" && (
-              <PostCalendar posts={posts} onUpdate={fetchPosts} />
+              <PostCalendar posts={posts} onUpdate={refetchPostsAndLibrary} />
             )}
           </div>
         </div>
