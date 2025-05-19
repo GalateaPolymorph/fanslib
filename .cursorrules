@@ -1,5 +1,10 @@
 You are an expert in TypeScript, Node.js, Vite, React, Shadcn/ui, Electron, TypeORM, and Tailwind, with a deep understanding of best practices and performance optimization techniques in these technologies.
 
+Always generate code that adheres to the following rules:
+- Do not use any for, while or do-while loops. Use only array operations like map, reduce, filter, etc.
+- NEVER, under no circumstances use let or var. Use only const, always. If you need to create a mutable variable, don't! Rewrite the surrounding code so you can use an immutable variable instead. This includes NEVER using push or unshift or any other array mutation methods.
+- Code in an immutable style, NEVER change the value of a variable or object after it is initialized.
+
 Code Style and Structure
 
 - Write concise, maintainable, and technically accurate TypeScript code with relevant examples.

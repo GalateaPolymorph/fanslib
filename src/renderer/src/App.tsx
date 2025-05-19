@@ -22,6 +22,7 @@ import { PostDetailPage } from "./pages/PostDetail";
 import { SettingsPage } from "./pages/Settings";
 import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
+import { AnalyticsPage } from "./pages/Analytics";
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
                                   <Route path="channels" element={<ChannelsPage />} />
                                   <Route path="subreddits" element={<SubredditsPage />} />
                                   <Route path="tagging" element={<TaggingPage />} />
+                                  <Route path="analytics" element={<AnalyticsPage />} />
                                   <Route path="settings" element={<SettingsPage />} />
                                 </Route>
                               </Routes>
