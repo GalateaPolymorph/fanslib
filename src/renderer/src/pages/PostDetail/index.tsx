@@ -2,6 +2,7 @@ import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { Button } from "@renderer/components/ui/button";
 import { useChannels } from "@renderer/contexts/ChannelContext";
 import { cn } from "@renderer/lib/utils";
+import { PostDetailAnalytics } from "@renderer/pages/PostDetail/PostDetailAnalytics";
 import { PostDetailCaptionInput } from "@renderer/pages/PostDetail/PostDetailCaptionInput";
 import { PostDetailDateInput } from "@renderer/pages/PostDetail/PostDetailDateInput";
 import { PostDetailDeleteButton } from "@renderer/pages/PostDetail/PostDetailDeleteButton";
@@ -31,6 +32,7 @@ export const PostDetailPage = () => {
     try {
       const fetchedPost = await window.api["post:byId"](postId);
       setPost(fetchedPost);
+      console.log(fetchedPost);
     } catch (err) {
       setError("Failed to load post");
       console.error("Failed to load post:", err);
@@ -39,7 +41,7 @@ export const PostDetailPage = () => {
 
   useEffect(() => {
     fetchPost();
-  }, [fetchPost]);
+  }, [fetchPost, postId]);
 
   const openCreateDialog = (channelId: string) => {
     setSelectedChannelId(channelId);
@@ -72,10 +74,13 @@ export const PostDetailPage = () => {
       />
       <div className="overflow-y-auto">
         <div className="max-w-[1280px] px-8 mx-auto pt-8 pb-12">
-          <Button className="mb-2" variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="ghost" onClick={() => navigate(-1)}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <div className="flex-1" />
+          </div>
 
           <div className="flex justify-between">
             <h1 className="text-3xl font-semibold tracking-tight">Post</h1>
@@ -128,6 +133,9 @@ export const PostDetailPage = () => {
               <PostDetailUrlInput post={post} onUpdate={fetchPost} />
               <PostDetailCaptionInput post={post} onUpdate={fetchPost} />
             </div>
+          </div>
+          <div className="mt-8">
+            <PostDetailAnalytics post={post} />
           </div>
         </div>
       </div>

@@ -35,6 +35,7 @@ export const methods = [
   "addMedia",
   "removeMedia",
   "setFreePreview",
+  "adjacentPosts",
 ] as const;
 
 export type PostHandlers = {
@@ -60,6 +61,7 @@ export type PostHandlers = {
     mediaId: string,
     isFreePreview: boolean
   ) => Promise<Post | null>;
+  adjacentPosts: (_: any, postId: string) => Promise<{ previous: Post | null; next: Post | null }>;
 };
 
 export const namespace = "post" as const;

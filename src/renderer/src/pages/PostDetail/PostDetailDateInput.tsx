@@ -11,17 +11,17 @@ type PostDetailDateInputProps = {
 };
 
 export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps) => {
-  const [selectedDate, setSelectedDate] = useState(new Date(post.date));
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const debouncedDate = useDebounce(selectedDate, 500);
   const { toast } = useToast();
 
   useEffect(() => {
     setSelectedDate(new Date(post.date));
-  }, [post.date]);
+  }, [post.id, post.date]);
 
   useEffect(() => {
     const updateDate = async () => {
-      if (debouncedDate.getTime() === new Date(post.date).getTime()) return;
+      if (!debouncedDate || debouncedDate.getTime() === new Date(post.date).getTime()) return;
 
       try {
         await window.api["post:update"](post.id, { date: debouncedDate.toISOString() });
@@ -37,6 +37,7 @@ export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps
           variant: "destructive",
         });
         console.error("Failed to update post date:", err);
+        setSelectedDate(new Date(post.date));
       }
     };
 
@@ -48,12 +49,16 @@ export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps
 
     // Keep the original time when updating the date
     const updatedDate = new Date(newDate);
-    updatedDate.setHours(selectedDate.getHours());
-    updatedDate.setMinutes(selectedDate.getMinutes());
-    updatedDate.setSeconds(selectedDate.getSeconds());
+    if (selectedDate) {
+      updatedDate.setHours(selectedDate.getHours());
+      updatedDate.setMinutes(selectedDate.getMinutes());
+      updatedDate.setSeconds(selectedDate.getSeconds());
+    }
 
     setSelectedDate(updatedDate);
   };
+
+  if (!selectedDate) return null;
 
   return (
     <div className="relative">

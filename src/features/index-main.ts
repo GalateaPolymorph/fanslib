@@ -1,3 +1,4 @@
+import { analyticsHandlers } from "./analytics/api";
 import { apiPostponeHandlers } from "./api-postpone/api";
 import { categoryHandlers } from "./categories/api";
 import { channelHandlers } from "./channels/api";
@@ -27,4 +28,5 @@ export const handlers = {
   ...hashtagHandlers,
   ...nicheHandlers,
   ...apiPostponeHandlers,
+  ...analyticsHandlers,
 };

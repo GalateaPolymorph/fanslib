@@ -8,12 +8,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { FanslyAnalyticsDatapoint } from "../analytics/entity";
 import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
 import { Subreddit } from "../channels/subreddit";
 import { Media } from "../library/entity";
 import { Tier } from "../tiers/entity";
-
 export type PostStatus = "draft" | "scheduled" | "posted";
 
 @Entity()
@@ -98,6 +98,9 @@ export class Post {
 
   @OneToMany(() => PostMedia, (mediaOrder) => mediaOrder.post)
   postMedia!: PostMedia[];
+
+  @OneToMany(() => FanslyAnalyticsDatapoint, (dp) => dp.post)
+  fanslyAnalyticsDatapoints!: FanslyAnalyticsDatapoint[];
 }
 
 export type PostWithoutRelations = Omit<

@@ -1,4 +1,4 @@
-import { In } from "typeorm";
+import { In, LessThan, MoreThan } from "typeorm";
 import { db } from "../../lib/db";
 import { CHANNEL_TYPES } from "../channels/channelTypes";
 import { Media } from "../library/entity";
@@ -72,6 +72,7 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
       },
       subreddit: true,
       category: true,
+      fanslyAnalyticsDatapoints: true,
     },
     order: {
       postMedia: {
@@ -265,6 +266,7 @@ export const getPostById = async (id: string) => {
       channel: true,
       subreddit: true,
       category: true,
+      fanslyAnalyticsDatapoints: true,
     },
     order: {
       postMedia: {
@@ -374,4 +376,63 @@ export const fetchPostsByUrl = async (url: string): Promise<Post | null> => {
       },
     },
   });
+};
+
+export const findAdjacentPosts = async (
+  postId: string
+): Promise<{ previous: Post | null; next: Post | null }> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Post);
+
+  const currentPost = await repository.findOne({
+    where: { id: postId },
+    relations: {
+      channel: true,
+    },
+  });
+
+  if (!currentPost) {
+    return { previous: null, next: null };
+  }
+
+  const [previous, next] = await Promise.all([
+    // Find the previous post (earlier date)
+    repository.findOne({
+      where: {
+        channelId: currentPost.channelId,
+        date: LessThan(currentPost.date),
+      },
+      relations: {
+        postMedia: {
+          media: true,
+        },
+        channel: {
+          type: true,
+        },
+      },
+      order: {
+        date: "DESC",
+      },
+    }),
+    // Find the next post (later date)
+    repository.findOne({
+      where: {
+        channelId: currentPost.channelId,
+        date: MoreThan(currentPost.date),
+      },
+      relations: {
+        postMedia: {
+          media: true,
+        },
+        channel: {
+          type: true,
+        },
+      },
+      order: {
+        date: "ASC",
+      },
+    }),
+  ]);
+
+  return { previous, next };
 };

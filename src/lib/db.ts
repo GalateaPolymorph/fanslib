@@ -3,6 +3,7 @@ import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import { join } from "path";
 import { DataSource } from "typeorm";
+import { FanslyAnalyticsDatapoint } from "../features/analytics/entity";
 import { Category } from "../features/categories/entity";
 import { Channel, ChannelType } from "../features/channels/entity";
 import { Subreddit } from "../features/channels/subreddit";
@@ -32,6 +33,7 @@ export const AppDataSource = new DataSource({
     Tier,
     Niche,
     Subreddit,
+    FanslyAnalyticsDatapoint,
   ],
   synchronize: true,
   logging: false,

@@ -18,7 +18,7 @@ export const PostDetailTimeInput = ({ post, onUpdate }: PostDetailTimeInputProps
 
   useEffect(() => {
     setSelectedDate(new Date(post.date));
-  }, [post.date]);
+  }, [post.id]);
 
   useEffect(() => {
     const loadSchedules = async () => {
@@ -35,7 +35,8 @@ export const PostDetailTimeInput = ({ post, onUpdate }: PostDetailTimeInputProps
 
   useEffect(() => {
     const updateDate = async () => {
-      if (debouncedDate.getTime() === new Date(post.date).getTime()) return;
+      const currentPostDate = new Date(post.date);
+      if (debouncedDate.getTime() === currentPostDate.getTime()) return;
 
       try {
         await window.api["post:update"](post.id, { date: debouncedDate.toISOString() });
@@ -55,7 +56,7 @@ export const PostDetailTimeInput = ({ post, onUpdate }: PostDetailTimeInputProps
     };
 
     updateDate();
-  }, [debouncedDate, post.id, post.date, onUpdate, toast]);
+  }, [debouncedDate, post.id, onUpdate, toast]);
 
   const updateTime = (hours: number, minutes: number) => {
     const newDate = new Date(selectedDate);

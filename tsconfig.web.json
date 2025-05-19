@@ -11,7 +11,8 @@
     "src/features/categories/colors.ts",
     "src/features/channels/channelTypes.ts",
     "src/lib/namespace.ts",
-    "src/lib/tail.ts"
+    "src/lib/tail.ts",
+    "src/lib/fansly-analytics/**/*"
   ],
   "compilerOptions": {
     "composite": true,

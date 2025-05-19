@@ -9,6 +9,7 @@ import {
   fetchPostsByMediaId,
   fetchPostsBySchedule,
   fetchPostsByUrl,
+  findAdjacentPosts,
   getAllPosts,
   setFreePreview,
   updatePost,
@@ -43,6 +44,7 @@ export const handlers: PostHandlers = {
   },
   setFreePreview: (_, postId: string, mediaId: string, isFreePreview: boolean) =>
     setFreePreview(postId, mediaId, isFreePreview),
+  adjacentPosts: (_, postId: string) => findAdjacentPosts(postId),
 };
 
 export const postHandlers = prefixNamespaceObject(namespace, handlers);

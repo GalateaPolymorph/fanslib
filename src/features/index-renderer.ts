@@ -1,3 +1,4 @@
+import { AnalyticsIpcChannel, AnalyticsIpcHandlers, analyticsMethods } from "./analytics/api-type";
 import {
   APIPostponeIpcChannel,
   APIPostponeIpcHandlers,
@@ -36,7 +37,8 @@ export type IpcHandlers = CategoryIpcHandlers &
   HashtagIpcHandlers &
   TierIpcHandlers &
   NicheIpcHandlers &
-  APIPostponeIpcHandlers;
+  APIPostponeIpcHandlers &
+  AnalyticsIpcHandlers;
 
 export const ipcMethods = [
   ...categoryMethods,
@@ -52,6 +54,7 @@ export const ipcMethods = [
   ...hashtagMethods,
   ...nicheMethods,
   ...apiPostponeMethods,
+  ...analyticsMethods,
 ];
 
 export type IpcChannel =
@@ -67,4 +70,5 @@ export type IpcChannel =
   | TierIpcChannel
   | HashtagIpcChannel
   | NicheIpcChannel
-  | APIPostponeIpcChannel;
+  | APIPostponeIpcChannel
+  | AnalyticsIpcChannel;
