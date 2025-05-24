@@ -1,4 +1,4 @@
-import { useChannels } from "@renderer/contexts/ChannelContext";
+import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { ChannelBadge } from "./ChannelBadge";
@@ -20,7 +20,7 @@ export const ChannelSelect = ({
   selectable = true,
   className,
 }: ChannelSelectProps) => {
-  const { channels } = useChannels();
+  const { data: channels = [] } = useChannels();
 
   const handleToggleChannel = (channelId: string) => {
     if (disabledChannels.includes(channelId)) return;

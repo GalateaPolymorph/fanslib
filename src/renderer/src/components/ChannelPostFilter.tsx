@@ -1,6 +1,6 @@
+import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Check, X } from "lucide-react";
 import type { ChannelPostFilter as ChannelPostFilterType } from "../../../features/library/api-type";
-import { useChannels } from "../contexts/ChannelContext";
 import { ChannelTypeIcon, ChannelTypeId } from "./ChannelTypeIcon";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -12,7 +12,7 @@ type ChannelPostFilterProps = {
 };
 
 export const ChannelPostFilter = ({ value, onChange }: ChannelPostFilterProps) => {
-  const { channels } = useChannels();
+  const { data: channels = [] } = useChannels();
 
   const toggleFilter = (channelId: string, toggleValue: string | null) => {
     const target = toggleValue === "true" ? true : toggleValue === "false" ? false : undefined;

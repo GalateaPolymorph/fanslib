@@ -1,33 +1,18 @@
-import { PostPreview } from "@renderer/components/PostPreview/PostPreview";
-import { useCallback, useEffect, useState } from "react";
-import { Post } from "../../../../features/posts/entity";
+import { usePostsByMediaId } from "@renderer/hooks";
+import { useState } from "react";
+import { PostPreview } from "../../components/PostPreview/PostPreview";
 
 type MediaPostsProps = {
   mediaId: string;
 };
 
 export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: posts = [], isLoading, error, refetch } = usePostsByMediaId(mediaId);
   const [openPostIds, setOpenPostIds] = useState<Set<string>>(new Set());
 
-  const fetchPosts = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const posts = await window.api["post:byMediaId"](mediaId);
-      setPosts(posts);
-    } catch (err) {
-      setError("Failed to load posts");
-      console.error("Failed to load posts:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [mediaId]);
-
-  useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+  const handleUpdate = async () => {
+    await refetch();
+  };
 
   const handleTogglePost = (postId: string, isOpen: boolean) => {
     setOpenPostIds((prev) => {
@@ -46,7 +31,7 @@ export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
   }
 
   if (error) {
-    return <div className="text-destructive">{error}</div>;
+    return <div className="text-destructive">Failed to load posts</div>;
   }
 
   if (posts.length === 0) {
@@ -59,7 +44,7 @@ export const MediaPosts = ({ mediaId }: MediaPostsProps) => {
         <PostPreview
           key={post.id}
           post={post}
-          onUpdate={fetchPosts}
+          onUpdate={handleUpdate}
           isOpen={openPostIds.has(post.id)}
           onOpenChange={(isOpen) => handleTogglePost(post.id, isOpen)}
         />

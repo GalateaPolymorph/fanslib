@@ -1,10 +1,10 @@
+import { useDragOver } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { type FC } from "react";
 import { ShootWithMedia } from "../../../../features/shoots/api-type";
 import { useLibrary } from "../../contexts/LibraryContext";
 import { useMediaDrag } from "../../contexts/MediaDragContext";
-import { useDragOver } from "../../hooks/useDragOver";
 
 type ShootDetailDropZoneProps = {
   shoot: ShootWithMedia;

@@ -1,4 +1,4 @@
-import { useTiers } from "../hooks/useTiers";
+import { useTiers } from "@renderer/hooks";
 import { TierBadge } from "./TierBadge";
 import { Button } from "./ui/button";
 
@@ -16,7 +16,11 @@ export const TierSelect = ({
   includeNoneOption = false,
   multiple = false,
 }: TierSelectProps) => {
-  const { tiers } = useTiers();
+  const { data: tiers = [], isLoading } = useTiers();
+
+  if (isLoading) {
+    return <div className="text-sm text-muted-foreground">Loading tiers...</div>;
+  }
 
   const toggleTier = (tierId: number) => {
     if (multiple) {

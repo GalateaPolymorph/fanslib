@@ -19,6 +19,7 @@ export type PostCreateData = {
   status: PostStatus;
   tierId?: number;
   url?: string;
+  fanslyStatisticsId?: string;
   subredditId?: string;
 };
 

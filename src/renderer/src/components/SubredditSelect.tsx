@@ -1,8 +1,8 @@
+import { useSubreddits } from "@renderer/hooks/api/useChannels";
 import { formatViewCount } from "@renderer/lib/format-views";
 import { cn } from "@renderer/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Subreddit } from "src/features/channels/subreddit";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -15,26 +15,7 @@ type SubredditSelectProps = {
 
 export const SubredditSelect = ({ value, onChange, multiple = false }: SubredditSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [subreddits, setSubreddits] = useState<Subreddit[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  console.log(subreddits);
-
-  const loadSubreddits = async () => {
-    try {
-      setIsLoading(true);
-      const fetchedSubreddits = await window.api["channel:subreddit-list"]();
-      setSubreddits(fetchedSubreddits);
-    } catch (error) {
-      console.error("Failed to load subreddits:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadSubreddits();
-  }, []);
+  const { data: subreddits = [], isLoading } = useSubreddits();
 
   const selectedSubreddits = subreddits.filter((subreddit) => value.includes(subreddit.id));
 

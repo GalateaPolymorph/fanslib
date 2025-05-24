@@ -11,6 +11,7 @@ import {
   AlertDialogTrigger,
 } from "../../../components/ui/alert-dialog";
 import { Button } from "../../../components/ui/button";
+import { useDeleteHashtag } from "../../../hooks/api/useHashtags";
 
 type DeleteHashtagButtonProps = {
   hashtagId: number;
@@ -23,9 +24,11 @@ export const DeleteHashtagButton = ({
   hashtagName,
   onHashtagDeleted,
 }: DeleteHashtagButtonProps) => {
+  const deleteHashtagMutation = useDeleteHashtag();
+
   const deleteHashtag = async () => {
     try {
-      await window.api["hashtag:delete"](hashtagId);
+      await deleteHashtagMutation.mutateAsync(hashtagId);
       onHashtagDeleted();
     } catch (error) {
       console.error("Failed to delete hashtag", error);

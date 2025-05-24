@@ -1,6 +1,7 @@
 import { Badge } from "@renderer/components/ui/badge";
-import { useNiches } from "../contexts/NicheContext";
+import { useNiches } from "@renderer/hooks";
 import { cn } from "../lib/utils";
+
 export type NicheSelectionState = {
   id: number;
   state: "selected" | "half-selected" | "unselected";
@@ -23,7 +24,7 @@ export const NicheSelect = ({
   includeNoneOption = false,
   size = "default",
 }: NicheSelectProps) => {
-  const { niches, isLoading } = useNiches();
+  const { data: niches = [], isLoading } = useNiches();
 
   const getNicheState = (id: number): "selected" | "half-selected" | "unselected" => {
     const nicheState = value.find((n) => n.id === id);

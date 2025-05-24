@@ -1,9 +1,9 @@
+import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
+import { useDragOver } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { type FC, useState } from "react";
 import { Media } from "../../../../features/library/entity";
-import { useMediaDrag } from "../../contexts/MediaDragContext";
-import { useDragOver } from "../../hooks/useDragOver";
 import { CreatePostDialog } from "../MediaDetail/CreatePostDialog";
 
 type PostTimelineDropZoneProps = {

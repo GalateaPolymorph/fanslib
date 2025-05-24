@@ -1,4 +1,4 @@
-import { usePostFrequencyStatus } from "@renderer/hooks/usePostFrequencyStatus";
+import { usePostFrequencyStatus } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { CheckCircle, Timer } from "lucide-react";
 

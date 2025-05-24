@@ -20,6 +20,14 @@ export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt" | "postMed
   scheduleId: string;
   virtualId: string;
   postMedia: VirtualPostMedia[];
+  fanslyAnalyticsDatapoints: any[];
+  fanslyStatisticsId: string | null;
+  url: string | null;
+  subreddit: string | null;
+  subredditId: string | null;
+  tierId: number;
+  tier: Tier;
+  fanslyAnalyticsAggregate: undefined;
 };
 
 export type VirtualPostMedia = {
@@ -125,6 +133,14 @@ export const generateVirtualPosts = (
       caption: "",
       date: format(scheduleDate, "yyyy-MM-dd'T'HH:mm:ssXXX"),
       status: "draft" as const,
+      url: null,
+      fanslyStatisticsId: null,
+      subreddit: null,
+      subredditId: null,
+      tierId: schedule.tierId,
+      tier: schedule.tier,
+      fanslyAnalyticsAggregate: undefined,
+      fanslyAnalyticsDatapoints: [],
       postMedia: [
         {
           media: {

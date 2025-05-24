@@ -1,7 +1,7 @@
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { usePostDrag } from "@renderer/contexts/PostDragContext";
-import { useDragOver } from "@renderer/hooks/useDragOver";
+import { useDragOver } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
 import { Plus } from "lucide-react";

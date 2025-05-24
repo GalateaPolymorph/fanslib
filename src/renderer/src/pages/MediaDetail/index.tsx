@@ -1,24 +1,24 @@
+import { Button } from "@renderer/components/ui/button";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
+import { useMedia } from "@renderer/hooks";
+import { MediaDetailDeleteButton } from "@renderer/pages/MediaDetail/MediaDetailDeleteButton";
+import { MediaDetailTierSelect } from "@renderer/pages/MediaDetail/MediaDetailTierSelect";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MediaView } from "../../components/MediaView";
 import { PostponeRedgifsButton } from "../../components/PostponeRedgifsButton";
-import { Button } from "../../components/ui/button";
-import { useMedia } from "../../hooks/useMedia";
 import { CreatePostDialog } from "./CreatePostDialog";
 import { MediaDetailCategorySelect } from "./MediaDetailCategorySelect";
-import { MediaDetailDeleteButton } from "./MediaDetailDeleteButton";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
 import { MediaDetailNicheSelect } from "./MediaDetailNicheSelect";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
-import { MediaDetailTierSelect } from "./MediaDetailTierSelect";
 import { MediaPosts } from "./MediaPosts";
 
 export const MediaDetail = () => {
   const { mediaId } = useParams();
   const navigate = useNavigate();
-  const { media, isLoading, error } = useMedia(mediaId);
+  const { data: media, isLoading, error } = useMedia(mediaId);
   const [createPostDialogOpen, setCreatePostDialogOpen] = useState(false);
 
   if (isLoading) {

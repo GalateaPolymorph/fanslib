@@ -1,7 +1,7 @@
 import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
-import { useChannels } from "@renderer/contexts/ChannelContext";
 import { useSettings } from "@renderer/contexts/SettingsContext";
+import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Search } from "lucide-react";
 import { Post } from "src/features/posts/entity";
 import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
@@ -20,7 +20,7 @@ export const PostponeRedgifsButton = ({
 }: PostponeRedgifsButtonProps) => {
   const { toast } = useToast();
   const { settings } = useSettings();
-  const { channels } = useChannels();
+  const { data: channels = [] } = useChannels();
 
   const findRedgifsUrlAndCreatePost = async () => {
     try {

@@ -1,11 +1,11 @@
 import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
+import { useNiches, useUpdateNiche } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { Check, Pencil } from "lucide-react";
 import { useState } from "react";
 import { HashtagInput } from "../../../components/HashtagInput";
-import { useNiches } from "../../../contexts/NicheContext";
 import { DeleteNicheButton } from "./DeleteNicheButton";
 import { NewNicheRow } from "./NewNicheRow";
 
@@ -21,23 +21,30 @@ type NicheTableProps = {
 
 export const NicheTable = ({ onNicheUpdated }: NicheTableProps) => {
   const [editingNiche, setEditingNiche] = useState<EditingNiche | null>(null);
-  const { niches, refresh } = useNiches();
+  const { data: niches = [], isLoading, refetch } = useNiches();
+  const updateNicheMutation = useUpdateNiche();
 
   const updateNiche = async (niche: EditingNiche) => {
     if (!niche) return;
 
     try {
-      await window.api["niche:update"](niche.id, {
-        name: niche.name,
-        hashtags: niche.hashtags,
+      await updateNicheMutation.mutateAsync({
+        nicheId: niche.id,
+        updates: {
+          name: niche.name,
+          hashtags: niche.hashtags,
+        },
       });
-      refresh();
       setEditingNiche(null);
       onNicheUpdated?.();
     } catch (error) {
       console.error("Failed to update niche", error);
     }
   };
+
+  if (isLoading) {
+    return <div className="text-sm text-muted-foreground">Loading niches...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -48,52 +55,51 @@ export const NicheTable = ({ onNicheUpdated }: NicheTableProps) => {
       <div className="rounded-md border">
         {niches.map((niche, i) => (
           <div className="grid grid-cols-[1fr_4fr_auto]" key={niche.id}>
-            {editingNiche?.id === niche.id ? (
-              <div
-                className={cn(
-                  "min-h-14 p-2 pl-4 flex items-center justify-between gap-2",
-                  i % 2 === 0 && "bg-muted/50"
-                )}
-              >
-                <Input
-                  value={editingNiche.name}
-                  onChange={(e) => setEditingNiche({ ...editingNiche, name: e.target.value })}
-                  onKeyDown={(e) => e.key === "Enter" && updateNiche(editingNiche)}
-                  className="h-8"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => updateNiche(editingNiche)}
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div
-                className={cn(
-                  "min-h-14 p-2 pl-4 flex items-center justify-between group",
-                  i % 2 === 0 && "bg-muted/50"
-                )}
-              >
-                <Badge size="lg">{niche.name}</Badge>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="group-hover:opacity-100 transition-opacity opacity-0 h-8 w-8"
-                  onClick={() =>
-                    setEditingNiche({
-                      id: niche.id,
-                      name: niche.name,
-                      hashtags: niche.hashtags.map((hashtag) => hashtag.name),
-                    })
-                  }
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
+            <div
+              className={cn("min-h-14 p-2 flex w-full items-center", i % 2 === 0 && "bg-muted/50")}
+            >
+              {editingNiche?.id === niche.id ? (
+                <div className="flex gap-2 items-center w-full">
+                  <Input
+                    value={editingNiche.name}
+                    onChange={(e) =>
+                      setEditingNiche({
+                        ...editingNiche,
+                        name: e.target.value,
+                      })
+                    }
+                    className="h-8"
+                  />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                    onClick={() => updateNiche(editingNiche)}
+                    disabled={updateNicheMutation.isPending}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center w-full">
+                  <Badge variant="secondary">{niche.name}</Badge>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                    onClick={() =>
+                      setEditingNiche({
+                        id: niche.id,
+                        name: niche.name,
+                        hashtags: niche.hashtags.map((h) => h.name),
+                      })
+                    }
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
 
             <div
               className={cn("min-h-14 p-2 flex w-full items-center", i % 2 === 0 && "bg-muted/50")}
@@ -115,12 +121,20 @@ export const NicheTable = ({ onNicheUpdated }: NicheTableProps) => {
               <DeleteNicheButton
                 nicheId={niche.id}
                 nicheName={niche.name}
-                onNicheDeleted={refresh}
+                onNicheDeleted={() => {
+                  refetch();
+                  onNicheUpdated?.();
+                }}
               />
             </div>
           </div>
         ))}
-        <NewNicheRow onNicheCreated={refresh} />
+        <NewNicheRow
+          onNicheCreated={() => {
+            refetch();
+            onNicheUpdated?.();
+          }}
+        />
       </div>
     </div>
   );

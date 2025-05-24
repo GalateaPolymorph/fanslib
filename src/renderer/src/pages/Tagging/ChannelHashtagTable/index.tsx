@@ -2,10 +2,10 @@ import { cn } from "@renderer/lib/utils";
 import { ChannelBadge } from "../../../components/ChannelBadge";
 import { HashtagInput } from "../../../components/HashtagInput";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { useChannels } from "../../../contexts/ChannelContext";
+import { useChannels } from "../../../hooks/api/useChannels";
 
 export const ChannelHashtagTable = () => {
-  const { channels, isLoading: isLoadingChannels, refetch } = useChannels();
+  const { data: channels = [], isLoading: isLoadingChannels, refetch } = useChannels();
 
   const updateChannelHashtags = async (channelId: string, hashtags: string[]) => {
     try {

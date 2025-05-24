@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Media } from "../../../features/library/entity";
+import { Media } from "../../../../features/library/entity";
 
 type UseGalleryKeyboardHandlingProps = {
   media: Media[];

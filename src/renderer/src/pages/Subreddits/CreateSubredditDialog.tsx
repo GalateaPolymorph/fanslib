@@ -16,10 +16,12 @@ import {
 } from "@renderer/components/ui/select";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { useCreateSubreddit } from "@renderer/hooks/api/useChannels";
 import { parseViewCount } from "@renderer/lib/format-views";
 import { useState } from "react";
 import { VERIFICATION_STATUS, type VerificationStatus } from "../../../../features/channels/type";
 import { VerificationStatus as VerificationStatusComponent } from "../../components/VerificationStatus";
+
 type CreateSubredditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -32,6 +34,7 @@ export const CreateSubredditDialog = ({
   onSubredditCreated,
 }: CreateSubredditDialogProps) => {
   const { toast } = useToast();
+  const createSubredditMutation = useCreateSubreddit();
   const [name, setName] = useState("");
   const [maxPostFrequencyHours, setMaxPostFrequencyHours] = useState<string>("");
   const [notes, setNotes] = useState("");
@@ -60,7 +63,7 @@ export const CreateSubredditDialog = ({
     }
 
     try {
-      await window.api["channel:subreddit-create"]({
+      await createSubredditMutation.mutateAsync({
         name: nameWithoutR,
         maxPostFrequencyHours: maxPostFrequencyHours ? parseInt(maxPostFrequencyHours) : 24,
         notes: notes.trim() || undefined,
@@ -68,19 +71,11 @@ export const CreateSubredditDialog = ({
         verificationStatus,
       });
 
-      toast({
-        title: "Subreddit created successfully",
-      });
-
       onSubredditCreated();
       onOpenChange(false);
       resetForm();
     } catch (error) {
-      toast({
-        title: "Failed to create subreddit",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive",
-      });
+      console.error("Failed to create subreddit", error);
     }
   };
 

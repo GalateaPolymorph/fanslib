@@ -1,52 +1,45 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { Button } from "@renderer/components/ui/button";
-import { useChannels } from "@renderer/contexts/ChannelContext";
+import { usePost } from "@renderer/hooks";
+import { useChannels } from "@renderer/hooks/api/useChannels";
 import { cn } from "@renderer/lib/utils";
 import { PostDetailAnalytics } from "@renderer/pages/PostDetail/PostDetailAnalytics";
 import { PostDetailCaptionInput } from "@renderer/pages/PostDetail/PostDetailCaptionInput";
 import { PostDetailDateInput } from "@renderer/pages/PostDetail/PostDetailDateInput";
 import { PostDetailDeleteButton } from "@renderer/pages/PostDetail/PostDetailDeleteButton";
+import { PostDetailFanslyStatisticsInput } from "@renderer/pages/PostDetail/PostDetailFanslyStatisticsInput";
 import { PostDetailMedia } from "@renderer/pages/PostDetail/PostDetailMedia";
+import { PostDetailNavigation } from "@renderer/pages/PostDetail/PostDetailNavigation";
 import { PostDetailPostponeButton } from "@renderer/pages/PostDetail/PostDetailPostponeButton";
 import { PostDetailStatusButton } from "@renderer/pages/PostDetail/PostDetailStatusButton";
 import { PostDetailTimeInput } from "@renderer/pages/PostDetail/PostDetailTimeInput";
 import { PostDetailUrlInput } from "@renderer/pages/PostDetail/PostDetailUrlInput";
 import { ArrowLeft } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Post } from "../../../../features/posts/entity";
 import { CreatePostDialog } from "../MediaDetail/CreatePostDialog";
 
 export const PostDetailPage = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const [post, setPost] = useState<Post | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
-  const { channels } = useChannels();
+  const { data: channels = [] } = useChannels();
 
-  const fetchPost = useCallback(async () => {
-    if (!postId) return;
-
-    try {
-      const fetchedPost = await window.api["post:byId"](postId);
-      setPost(fetchedPost);
-      console.log(fetchedPost);
-    } catch (err) {
-      setError("Failed to load post");
-      console.error("Failed to load post:", err);
-    }
-  }, [postId]);
-
-  useEffect(() => {
-    fetchPost();
-  }, [fetchPost, postId]);
+  const { data: post, isLoading, error } = usePost(postId);
 
   const openCreateDialog = (channelId: string) => {
     setSelectedChannelId(channelId);
     setIsCreateDialogOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-lg text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   if (error || !post) {
     return (
@@ -80,12 +73,13 @@ export const PostDetailPage = () => {
               Back
             </Button>
             <div className="flex-1" />
+            <PostDetailNavigation post={post} />
           </div>
 
           <div className="flex justify-between">
             <h1 className="text-3xl font-semibold tracking-tight">Post</h1>
             <div className="flex items-center gap-2">
-              <PostDetailDeleteButton post={post} onUpdate={fetchPost} />
+              <PostDetailDeleteButton post={post} />
             </div>
           </div>
 
@@ -94,11 +88,11 @@ export const PostDetailPage = () => {
               <div className="self-start flex items-center gap-2 group">
                 <ChannelBadge
                   name={post.subreddit ? `r/${post.subreddit.name}` : post.channel.name}
-                  typeId={post.subreddit ? "reddit" : post.channel.type.id}
+                  typeId={post.subreddit ? "reddit" : post.channel.type?.id || post.channel.typeId}
                   size="lg"
                 />
               </div>
-              <PostDetailMedia post={post} onUpdate={fetchPost} variant="detail" />
+              <PostDetailMedia post={post} variant="detail" />
               {otherChannels.length > 0 && (
                 <div className="flex items-center gap-2 mt-4">
                   <span className="text-sm text-muted-foreground">Duplicate this post to:</span>
@@ -125,13 +119,16 @@ export const PostDetailPage = () => {
               <PostDetailPostponeButton post={post} />
             </div>
             <div className="flex flex-col gap-3">
-              <PostDetailStatusButton post={post} onUpdate={fetchPost} />
+              <PostDetailStatusButton post={post} />
               <div className="border rounded-md p-2 grid w-auto grid-cols-[2fr_1fr] gap-2">
-                <PostDetailDateInput post={post} onUpdate={fetchPost} />
-                <PostDetailTimeInput post={post} onUpdate={fetchPost} />
+                <PostDetailDateInput post={post} />
+                <PostDetailTimeInput post={post} />
               </div>
-              <PostDetailUrlInput post={post} onUpdate={fetchPost} />
-              <PostDetailCaptionInput post={post} onUpdate={fetchPost} />
+              <PostDetailUrlInput post={post} />
+              {(post.channel.type?.id || post.channel.typeId) === "fansly" && (
+                <PostDetailFanslyStatisticsInput post={post} />
+              )}
+              <PostDetailCaptionInput post={post} />
             </div>
           </div>
           <div className="mt-8">

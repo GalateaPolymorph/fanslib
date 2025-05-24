@@ -5,14 +5,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@renderer/components/ui/tooltip";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { useUpdatePost } from "@renderer/hooks";
 import { CalendarDays, Check, Info, Undo2 } from "lucide-react";
 import { Post } from "src/features/posts/entity";
 import { StatusBadge } from "../../components/StatusBadge";
 
 type PostDetailStatusButtonProps = {
   post: Post;
-  onUpdate: () => Promise<void>;
 };
 
 const InfoTooltip = () => (
@@ -36,26 +35,24 @@ const InfoTooltip = () => (
   </Tooltip>
 );
 
-export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButtonProps) => {
-  const { toast } = useToast();
+export const PostDetailStatusButton = ({ post }: PostDetailStatusButtonProps) => {
+  const updatePostMutation = useUpdatePost();
 
   const handleUpdateStatus = async (status: "draft" | "scheduled" | "posted") => {
     try {
-      await window.api["post:update"](post.id, { status });
-      await onUpdate();
-      toast({
-        title: `Post ${status === "draft" ? "moved back to draft" : status}`,
+      await updatePostMutation.mutateAsync({
+        postId: post.id,
+        updates: { status },
       });
     } catch (err) {
-      toast({
-        title: `Failed to ${status === "draft" ? "move back to draft" : status} post`,
-        variant: "destructive",
-      });
+      // Error handling is done in the mutation
       console.error(`Failed to update post status to ${status}:`, err);
     }
   };
 
   const renderButtons = () => {
+    const isUpdating = updatePostMutation.isPending;
+
     if (post.status === "draft") {
       return (
         <>
@@ -64,6 +61,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
             variant="outline"
             onClick={() => handleUpdateStatus("scheduled")}
             className="text-blue-500 hover:text-blue-600 hover:bg-blue-100"
+            disabled={isUpdating}
           >
             <CalendarDays className="size-4 mr-2" />
             Mark scheduled
@@ -71,6 +69,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
           <Button
             onClick={() => handleUpdateStatus("posted")}
             className="bg-green-500 hover:bg-green-600"
+            disabled={isUpdating}
           >
             <Check className="size-4 mr-2" />
             Mark posted
@@ -88,6 +87,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
             variant="outline"
             onClick={() => handleUpdateStatus("draft")}
             className="text-muted-foreground hover:text-foreground"
+            disabled={isUpdating}
           >
             <Undo2 className="size-4 mr-2" />
             Back to Draft
@@ -95,6 +95,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
           <Button
             onClick={() => handleUpdateStatus("posted")}
             className="bg-green-500 hover:bg-green-600"
+            disabled={isUpdating}
           >
             <Check className="size-4 mr-2" />
             Mark posted
@@ -112,6 +113,7 @@ export const PostDetailStatusButton = ({ post, onUpdate }: PostDetailStatusButto
             variant="outline"
             onClick={() => handleUpdateStatus("draft")}
             className="text-muted-foreground hover:text-foreground"
+            disabled={isUpdating}
           >
             <Undo2 className="size-4 mr-2" />
             Back to Draft

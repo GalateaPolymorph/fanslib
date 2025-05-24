@@ -263,7 +263,9 @@ export const getPostById = async (id: string) => {
           tier: true,
         },
       },
-      channel: true,
+      channel: {
+        type: true,
+      },
       subreddit: true,
       category: true,
       fanslyAnalyticsDatapoints: true,

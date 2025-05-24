@@ -50,7 +50,12 @@ export const PostCalendarPost = ({ post, onUpdate }: PostCalendarPostProps) => {
       )}
     >
       <div className="[grid-area:stickers] flex gap-1">
-        <ChannelBadge noName name={""} typeId={post.channel.type.id} size="sm" />
+        <ChannelBadge
+          noName
+          name={""}
+          typeId={post.channel.type?.id || post.channel.typeId}
+          size="sm"
+        />
         {tier && <Sticker className="text-xs w-5">{printTier(tier)}</Sticker>}
       </div>
       <div className="[grid-area:time] text-xs text-muted-foreground">{time}</div>

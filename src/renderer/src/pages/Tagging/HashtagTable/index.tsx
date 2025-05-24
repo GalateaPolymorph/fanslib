@@ -3,7 +3,7 @@ import { cn } from "@renderer/lib/utils";
 import { CSSProperties } from "react";
 import { HashtagWithStats } from "../../../../../features/hashtags/api-type";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { useChannels } from "../../../contexts/ChannelContext";
+import { useChannels } from "../../../hooks/api/useChannels";
 import { DeleteHashtagButton } from "./DeleteHashtagButton";
 import { HashtagTableHeader } from "./HashtagTableHeader";
 import { HashtagViewInput } from "./HashtagViewInput";
@@ -22,7 +22,7 @@ export const HashtagTable = ({
   onHashtagCreated,
   onHashtagDeleted,
 }: HashtagTableProps) => {
-  const { channels, isLoading: isLoadingChannels } = useChannels();
+  const { data: channels = [], isLoading: isLoadingChannels } = useChannels();
 
   const getViewCount = (hashtag: HashtagWithStats, channelId: string) => {
     const stat = hashtag.channelStats.find((s) => s.channelId === channelId);

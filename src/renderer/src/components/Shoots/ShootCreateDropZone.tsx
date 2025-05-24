@@ -1,9 +1,9 @@
+import { useDragOver } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { type FC, useState } from "react";
 import { Media } from "src/features/library/entity";
 import { useMediaDrag } from "../../contexts/MediaDragContext";
-import { useDragOver } from "../../hooks/useDragOver";
 import { CreateShootDialog } from "./CreateShootDialog";
 
 type ShootCreateDropZoneProps = {

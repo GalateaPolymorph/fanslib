@@ -5,10 +5,11 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { FanslyAnalyticsDatapoint } from "../analytics/entity";
+import { FanslyAnalyticsAggregate, FanslyAnalyticsDatapoint } from "../analytics/entity";
 import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
 import { Subreddit } from "../channels/subreddit";
@@ -65,6 +66,9 @@ export class Post {
   @Column("varchar", { nullable: true })
   url?: string;
 
+  @Column("varchar", { nullable: true })
+  fanslyStatisticsId?: string;
+
   @Column({
     type: "varchar",
     enum: ["draft", "scheduled", "posted"],
@@ -101,6 +105,9 @@ export class Post {
 
   @OneToMany(() => FanslyAnalyticsDatapoint, (dp) => dp.post)
   fanslyAnalyticsDatapoints!: FanslyAnalyticsDatapoint[];
+
+  @OneToOne(() => FanslyAnalyticsAggregate, (aggregate) => aggregate.post)
+  fanslyAnalyticsAggregate?: FanslyAnalyticsAggregate;
 }
 
 export type PostWithoutRelations = Omit<

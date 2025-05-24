@@ -9,24 +9,65 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>("dark");
+// Get system theme preference as fallback
+const getSystemTheme = (): Theme => {
+  if (typeof window !== "undefined" && window.matchMedia) {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return "light"; // Default fallback
+};
 
+// Apply theme to DOM immediately
+const applyTheme = (theme: Theme) => {
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+};
+
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  // Initialize with system preference to reduce flash
+  const [theme, setTheme] = useState<Theme>(() => getSystemTheme());
+  const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
+
+  // Apply initial theme immediately
   useEffect(() => {
-    // Load initial theme from settings
-    window.api["settings:load"]().then((settings) => {
-      setTheme(settings.theme as Theme);
-    });
+    applyTheme(theme);
   }, []);
 
   useEffect(() => {
-    // Update document class when theme changes
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    const loadTheme = async () => {
+      try {
+        const settings = await window.api["settings:load"]();
+        const loadedTheme = settings.theme as Theme;
+
+        // Only update if different from current theme to prevent unnecessary re-renders
+        if (loadedTheme !== theme) {
+          setTheme(loadedTheme);
+          applyTheme(loadedTheme);
+        } else {
+          // Ensure DOM is in sync even if theme is the same
+          applyTheme(loadedTheme);
+        }
+      } catch (error) {
+        console.error("Failed to load theme from settings:", error);
+        // Keep current theme (system preference) as fallback
+        applyTheme(theme);
+      } finally {
+        setHasLoadedSettings(true);
+      }
+    };
+
+    loadTheme();
   }, [theme]);
+
+  useEffect(() => {
+    // Update document class when theme changes after initial load
+    if (hasLoadedSettings) {
+      applyTheme(theme);
+    }
+  }, [theme, hasLoadedSettings]);
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 };

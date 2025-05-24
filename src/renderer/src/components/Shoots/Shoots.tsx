@@ -1,15 +1,15 @@
+import { ShootCreateDropZone } from "@renderer/components/Shoots/ShootCreateDropZone";
+import { ShootDetail } from "@renderer/components/Shoots/ShootDetail";
 import { ShootsFilter } from "@renderer/components/ShootsFilter";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import { useLibrary } from "@renderer/contexts/LibraryContext";
+import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
+import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
+import { useShootContext } from "@renderer/contexts/ShootContext";
+import { ShootPreferencesProvider } from "@renderer/contexts/ShootPreferencesContext";
+import { usePersistentScrollPosition } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { type FC } from "react";
-import { useLibrary } from "../../contexts/LibraryContext";
-import { useMediaDrag } from "../../contexts/MediaDragContext";
-import { MediaSelectionProvider } from "../../contexts/MediaSelectionContext";
-import { useShootContext } from "../../contexts/ShootContext";
-import { ShootPreferencesProvider } from "../../contexts/ShootPreferencesContext";
-import { usePersistentScrollPosition } from "../../hooks/usePersistentScrollPosition";
-import { ShootCreateDropZone } from "./ShootCreateDropZone";
-import { ShootDetail } from "./ShootDetail";
 import { ShootViewSettings } from "./ShootViewSettings";
 import { useShootsMedia } from "./useShootsMedia";
 

@@ -1,10 +1,10 @@
 import { MediaSelection } from "@renderer/components/MediaSelection";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { useChannels } from "@renderer/contexts/ChannelContext";
-import { useRedditPost } from "@renderer/contexts/RedditPostContext";
-import { ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Subreddit } from "src/features/channels/subreddit";
+import { Button } from "@renderer/components/ui/button";
+import { Input } from "@renderer/components/ui/input";
+import { useRedditPosts } from "@renderer/contexts/RedditPostContext";
+import { useState } from "react";
+import { Subreddit } from "../../../../../features/channels/subreddit";
+import { Media } from "../../../../../features/library/entity";
 import { SubredditMediaSelectedView } from "./SubredditMediaSelectedView";
 
 type SubredditPostDrafterProps = {
@@ -12,55 +12,84 @@ type SubredditPostDrafterProps = {
 };
 
 export const SubredditPostDrafter = ({ subreddits }: SubredditPostDrafterProps) => {
-  const { channels } = useChannels();
-  const { drafts, updateDraftMedia } = useRedditPost();
-  const redditChannel = channels.find((c) => c.type.id === "reddit");
+  const [selectedMedia, setSelectedMedia] = useState<Media[]>([]);
+  const [selectedSubreddits, setSelectedSubreddits] = useState<Subreddit[]>([]);
+  const [url, setUrl] = useState("");
+  const [caption, setCaption] = useState("");
+  const { addDraft } = useRedditPosts();
+
+  const createDrafts = () => {
+    selectedSubreddits.forEach((subreddit) => {
+      addDraft({
+        subreddit,
+        media: selectedMedia[0] || null,
+        url,
+        caption,
+      });
+    });
+
+    // Reset form
+    setSelectedMedia([]);
+    setSelectedSubreddits([]);
+    setUrl("");
+    setCaption("");
+  };
 
   return (
-    <div className="grid grid-cols-1 gap-6">
-      {drafts.map((draft) => {
-        const subreddit = subreddits.find((s) => s.id === draft.subreddit.id);
-        if (!subreddit) return null;
+    <div className="space-y-4">
+      <div>
+        <label className="text-sm font-medium">Select Media</label>
+        <MediaSelection
+          selectedMedia={selectedMedia}
+          onMediaSelect={(media) => setSelectedMedia([media])}
+          pageLimit={5}
+        />
+      </div>
 
-        const subredditHasNoEligibleMediaFilter =
-          !subreddit.eligibleMediaFilter || Object.keys(subreddit.eligibleMediaFilter).length === 0;
+      <div>
+        <label className="text-sm font-medium">URL (optional)</label>
+        <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." />
+      </div>
 
-        const eligibleMediaFilter = {
-          ...(subredditHasNoEligibleMediaFilter
-            ? (redditChannel?.eligibleMediaFilter ?? {})
-            : subreddit.eligibleMediaFilter),
-          subredditFilters: [{ subredditId: subreddit.id, posted: false }],
-        };
+      <div>
+        <label className="text-sm font-medium">Caption</label>
+        <Input
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          placeholder="Post caption..."
+        />
+      </div>
 
-        return (
-          <div key={draft.subreddit.id} className="border rounded-lg p-4">
-            <div className="flex flex-col gap-2 mb-4">
-              <Link
-                to={`https://www.reddit.com/r/${subreddit.name}`}
-                className="text-lg font-semibold flex items-center gap-2"
-                target="_blank"
-              >
-                r/{subreddit.name} <ExternalLink className="size-4" />
-              </Link>
-              {subreddit.notes && (
-                <p className="text-sm text-muted-foreground">{subreddit.notes}</p>
-              )}
-            </div>
-            {draft.media && <SubredditMediaSelectedView draft={draft} />}
-            {!draft.media && (
-              <ScrollArea>
-                <MediaSelection
-                  pageLimit={5}
-                  selectedMedia={[]}
-                  onMediaSelect={(media) => updateDraftMedia(draft.subreddit.id, media)}
-                  eligibleMediaFilter={eligibleMediaFilter}
-                  sort={{ field: "random", direction: "ASC" }}
-                />
-              </ScrollArea>
-            )}
-          </div>
-        );
-      })}
+      <div>
+        <label className="text-sm font-medium">Select Subreddits</label>
+        <div className="space-y-2">
+          {subreddits.map((subreddit) => (
+            <label key={subreddit.id} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selectedSubreddits.some((s) => s.id === subreddit.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedSubreddits([...selectedSubreddits, subreddit]);
+                  } else {
+                    setSelectedSubreddits(selectedSubreddits.filter((s) => s.id !== subreddit.id));
+                  }
+                }}
+              />
+              <span>{subreddit.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <Button
+        onClick={createDrafts}
+        disabled={selectedSubreddits.length === 0 || selectedMedia.length === 0}
+      >
+        Create Drafts
+      </Button>
+
+      {selectedMedia[0] && <SubredditMediaSelectedView media={selectedMedia[0]} />}
     </div>
   );
 };

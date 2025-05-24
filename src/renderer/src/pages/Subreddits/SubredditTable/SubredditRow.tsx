@@ -1,6 +1,6 @@
 import { Button } from "@renderer/components/ui/button";
 import { Checkbox } from "@renderer/components/ui/checkbox";
-import { usePostFrequencyStatus } from "@renderer/hooks/usePostFrequencyStatus";
+import { usePostFrequencyStatus } from "@renderer/hooks";
 import { formatViewCount } from "@renderer/lib/format-views";
 import { cn } from "@renderer/lib/utils";
 import { ExternalLink, Pencil } from "lucide-react";

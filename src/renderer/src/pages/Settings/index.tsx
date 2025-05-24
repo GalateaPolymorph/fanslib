@@ -3,6 +3,7 @@ import { Separator } from "@renderer/components/ui/separator";
 import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButton";
 import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { CategorySettings } from "./CategorySettings";
+import { FanslySettings } from "./FanslySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
 import { PostponeSettings } from "./PostponeSettings";
 import { TierSettings } from "./TierSettings";
@@ -29,6 +30,13 @@ export const SettingsPage = () => {
 
         <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">
           <ThemeSwitch />
+        </SettingsSection>
+
+        <SettingsSection
+          title="Fansly Analytics"
+          description="Configure your Fansly authentication for analytics data fetching."
+        >
+          <FanslySettings />
         </SettingsSection>
 
         <SettingsSection

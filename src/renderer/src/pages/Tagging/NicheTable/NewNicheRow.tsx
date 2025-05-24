@@ -1,5 +1,6 @@
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
+import { useCreateNiche } from "@renderer/hooks";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -9,12 +10,13 @@ type NewNicheRowProps = {
 
 export const NewNicheRow = ({ onNicheCreated }: NewNicheRowProps) => {
   const [nicheName, setNicheName] = useState("");
+  const createNicheMutation = useCreateNiche();
 
   const createNiche = async () => {
     if (!nicheName.trim()) return;
 
     try {
-      await window.api["niche:create"]({ name: nicheName });
+      await createNicheMutation.mutateAsync({ name: nicheName });
       setNicheName("");
       onNicheCreated();
     } catch (error) {
@@ -37,13 +39,14 @@ export const NewNicheRow = ({ onNicheCreated }: NewNicheRowProps) => {
         placeholder="Add new niche..."
         variant="ghost"
         className="h-8"
+        disabled={createNicheMutation.isPending}
       />
       <Button
         variant="ghost"
         size="icon"
         className="h-8 w-8"
         onClick={createNiche}
-        disabled={!nicheName.trim()}
+        disabled={!nicheName.trim() || createNicheMutation.isPending}
       >
         <Plus className="h-4 w-4" />
       </Button>

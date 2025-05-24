@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@renderer/components/ui/select";
+import { useUpdateSubreddit } from "@renderer/hooks/api/useChannels";
 import { formatViewCount, parseViewCount } from "@renderer/lib/format-views";
 import { Check } from "lucide-react";
 import { useState } from "react";
@@ -25,6 +26,7 @@ type EditingSubredditRowProps = {
 };
 
 export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRowProps) => {
+  const updateSubredditMutation = useUpdateSubreddit();
   const [editingSubreddit, setEditingSubreddit] = useState<EditingSubreddit>({
     ...subreddit,
     eligibleMediaFilter: subreddit.eligibleMediaFilter || {},
@@ -35,13 +37,16 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
 
   const updateSubreddit = async () => {
     try {
-      await window.api["channel:subreddit-update"](subreddit.id, {
-        name: editingSubreddit.name,
-        maxPostFrequencyHours: editingSubreddit.maxPostFrequencyHours,
-        notes: editingSubreddit.notes,
-        memberCount: parseViewCount(unparsedMemberCount.replaceAll(",", ".")),
-        verificationStatus: editingSubreddit.verificationStatus,
-        eligibleMediaFilter: editingSubreddit.eligibleMediaFilter,
+      await updateSubredditMutation.mutateAsync({
+        subredditId: subreddit.id,
+        updates: {
+          name: editingSubreddit.name,
+          maxPostFrequencyHours: editingSubreddit.maxPostFrequencyHours,
+          notes: editingSubreddit.notes,
+          memberCount: parseViewCount(unparsedMemberCount.replaceAll(",", ".")),
+          verificationStatus: editingSubreddit.verificationStatus,
+          eligibleMediaFilter: editingSubreddit.eligibleMediaFilter,
+        },
       });
       onUpdate();
     } catch (error) {

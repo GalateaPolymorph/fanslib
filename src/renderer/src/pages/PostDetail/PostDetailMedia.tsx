@@ -16,14 +16,12 @@ import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
 
 type PostDetailMediaProps = {
   post: Post;
-  onUpdate: () => Promise<void>;
   isDraggingMedia?: boolean;
   variant?: "default" | "detail";
 };
 
 export const PostDetailMedia = ({
   post,
-  onUpdate,
   isDraggingMedia = false,
   variant = "default",
 }: PostDetailMediaProps) => {
@@ -33,7 +31,7 @@ export const PostDetailMedia = ({
   const removeMediaFromPost = async (postMediaId: string) => {
     try {
       await window.api["post:removeMedia"](post.id, [postMediaId]);
-      await onUpdate();
+      // The mutation will automatically refresh the post data
       toast({
         title: "Media removed from post",
       });
@@ -129,7 +127,6 @@ export const PostDetailMedia = ({
           ))}
           <PostDetailAddMediaButton
             post={post}
-            onUpdate={onUpdate}
             isDraggingMedia={isDraggingMedia}
             variant={variant}
           />

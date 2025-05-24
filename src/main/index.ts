@@ -1,9 +1,10 @@
 import "reflect-metadata";
 
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow, session, shell } from "electron";
 import { join } from "path";
 import icon from "../../assets/icons/icon.png?asset";
 import { startCronJobs, stopCronJobs } from "../features/_common/cron";
+import { initializeAnalyticsAggregates } from "../features/analytics/operations";
 import { loadChannelTypeFixtures } from "../features/channels/fixtures";
 import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
@@ -36,6 +37,9 @@ const createWindow = () => {
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false,
+      webSecurity: true,
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
 
@@ -66,8 +70,18 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.whenReady().then(async () => {
+  // Clear service worker storage to prevent database conflicts
+  try {
+    await session.defaultSession.clearStorageData({
+      storages: ["serviceworkers", "cachestorage"],
+    });
+  } catch (error) {
+    console.warn("Failed to clear service worker storage:", error);
+  }
+
   await db();
   await loadChannelTypeFixtures();
+  await initializeAnalyticsAggregates();
   registerMediaProtocolHandler();
   registerThumbnailProtocolHandler();
 

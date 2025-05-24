@@ -1,8 +1,9 @@
-import { FanslyAnalyticsResponse } from "src/lib/fansly-analytics/fansly-analytics-response";
 import { db } from "../../lib/db";
-import { Post } from "../posts/entity";
+import { aggregatePostAnalyticsData } from "../../lib/fansly-analytics/aggregate";
+import { FanslyAnalyticsResponse } from "../../lib/fansly-analytics/fansly-analytics-response";
 import { saveHashtagsFromAnalytics } from "../hashtags/operations";
-import { FanslyAnalyticsDatapoint } from "./entity";
+import { Post } from "../posts/entity";
+import { FanslyAnalyticsAggregate, FanslyAnalyticsDatapoint } from "./entity";
 
 const gatherFanslyPostAnalyticsDatapoints = (
   response: FanslyAnalyticsResponse
@@ -24,14 +25,18 @@ type CreateFanslyAnalyticsDatapointPayload = Omit<
   "id" | "post" | "postId"
 >;
 
-export const addDatapointsToPost = async (postId: string, response: FanslyAnalyticsResponse) => {
+export const addDatapointsToPost = async (
+  postId: string,
+  response: FanslyAnalyticsResponse
+): Promise<FanslyAnalyticsDatapoint[]> => {
   const dataSource = await db();
   const postRepository = dataSource.getRepository(Post);
   const dpRepo = dataSource.getRepository(FanslyAnalyticsDatapoint);
+  const aggregateRepo = dataSource.getRepository(FanslyAnalyticsAggregate);
 
   const post = await postRepository.findOne({
     where: { id: postId },
-    relations: { channel: true },
+    relations: { channel: true, postMedia: { media: true } },
   });
   if (!post) {
     throw new Error("Post not found");
@@ -52,7 +57,7 @@ export const addDatapointsToPost = async (postId: string, response: FanslyAnalyt
 
   const datapoints = gatherFanslyPostAnalyticsDatapoints(response);
 
-  return Promise.all(
+  const savedDatapoints = await Promise.all(
     datapoints.map(async (dp) => {
       const existingDatapointForTimestamp = await dpRepo.findOne({
         where: { timestamp: dp.timestamp, postId },
@@ -71,4 +76,88 @@ export const addDatapointsToPost = async (postId: string, response: FanslyAnalyt
       return dpRepo.save(newDatapoint);
     })
   );
+
+  // Update aggregate data
+  const aggregatedData = aggregatePostAnalyticsData(post, false);
+
+  const existingAggregate = await aggregateRepo.findOne({
+    where: { postId },
+  });
+
+  if (existingAggregate) {
+    existingAggregate.totalViews = aggregatedData.at(-1)?.Views ?? 0;
+    existingAggregate.averageEngagementSeconds =
+      aggregatedData.at(-1)?.averageWatchTimeSeconds ?? 0;
+    existingAggregate.averageEngagementPercent =
+      aggregatedData.at(-1)?.averageWatchTimePercent ?? 0;
+    await aggregateRepo.save(existingAggregate);
+  } else {
+    const newAggregate = aggregateRepo.create({
+      post,
+      postId,
+      totalViews: aggregatedData.at(-1)?.Views ?? 0,
+      averageEngagementSeconds: aggregatedData.at(-1)?.averageWatchTimeSeconds ?? 0,
+      averageEngagementPercent: aggregatedData.at(-1)?.averageWatchTimePercent ?? 0,
+    });
+    await aggregateRepo.save(newAggregate);
+  }
+
+  return savedDatapoints;
+};
+
+export const initializeAnalyticsAggregates = async (): Promise<void> => {
+  const dataSource = await db();
+  const postRepository = dataSource.getRepository(Post);
+  const aggregateRepo = dataSource.getRepository(FanslyAnalyticsAggregate);
+
+  // Find all posts that have datapoints but no aggregate
+  const posts = await postRepository
+    .createQueryBuilder("post")
+    .leftJoinAndSelect("post.fanslyAnalyticsDatapoints", "datapoints")
+    .leftJoinAndSelect("post.fanslyAnalyticsAggregate", "aggregate")
+    .leftJoinAndSelect("post.postMedia", "postMedia")
+    .leftJoinAndSelect("postMedia.media", "media")
+    .leftJoinAndSelect("media.tier", "tier")
+    .where("datapoints.id IS NOT NULL")
+    .andWhere("aggregate.id IS NULL")
+    .getMany();
+
+  console.log(`Found ${posts.length} posts to initialize aggregates for`);
+
+  await Promise.all(
+    posts.map(async (post) => {
+      const aggregated = aggregatePostAnalyticsData(post, false);
+
+      if (!aggregated.at(-1)) {
+        return;
+      }
+
+      const existingAggregate = await aggregateRepo.findOne({
+        where: { postId: post.id },
+      });
+
+      if (existingAggregate) {
+        existingAggregate.totalViews = aggregated.at(-1)?.Views ?? 0;
+        existingAggregate.averageEngagementSeconds =
+          aggregated.at(-1)?.averageWatchTimeSeconds ?? 0;
+        existingAggregate.averageEngagementPercent =
+          aggregated.at(-1)?.averageWatchTimePercent ?? 0;
+        await aggregateRepo.save(existingAggregate);
+        console.log(`Updated aggregate for post ${post.id}`);
+      } else {
+        const newAggregate = aggregateRepo.create({
+          post,
+          postId: post.id,
+          totalViews: aggregated.at(-1)?.Views ?? 0,
+          averageEngagementSeconds: aggregated.at(-1)?.averageWatchTimeSeconds ?? 0,
+          averageEngagementPercent: aggregated.at(-1)?.averageWatchTimePercent ?? 0,
+        });
+
+        await aggregateRepo.save(newAggregate);
+        console.log(`Created aggregate for post ${post.id}`);
+      }
+    })
+  );
+
+  console.log("Finished initializing analytics aggregates");
 };

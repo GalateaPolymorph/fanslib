@@ -50,13 +50,14 @@ export const PostCalendar = ({ className, posts, onUpdate }: PostCalendarProps) 
 
   const previousMonth = () => {
     const firstDayPreviousMonth = add(firstDayCurrentMonth, { months: -1 });
+    const lastDayPreviousMonth = endOfMonth(firstDayPreviousMonth);
 
     setCurrentMonth(format(firstDayPreviousMonth, "MMM-yyyy"));
     updatePreferences({
       filter: {
         dateRange: {
           startDate: startOfMonth(firstDayPreviousMonth).toISOString(),
-          endDate: preferences.filter.dateRange?.endDate,
+          endDate: lastDayPreviousMonth.toISOString(),
         },
       },
     });
@@ -64,13 +65,14 @@ export const PostCalendar = ({ className, posts, onUpdate }: PostCalendarProps) 
 
   const nextMonth = () => {
     const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
+    const lastDayNextMonth = endOfMonth(firstDayNextMonth);
 
     setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
     updatePreferences({
       filter: {
         dateRange: {
           startDate: startOfMonth(firstDayNextMonth).toISOString(),
-          endDate: preferences.filter.dateRange?.endDate,
+          endDate: lastDayNextMonth.toISOString(),
         },
       },
     });

@@ -1,6 +1,6 @@
+import { useGalleryKeyboardHandling } from "@renderer/hooks";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Media } from "../../../features/library/entity";
-import { useGalleryKeyboardHandling } from "../hooks/useGalleryKeyboardHandling";
 
 type MediaSelectionContextType = {
   selectedMediaIds: Set<string>;

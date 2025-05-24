@@ -1,72 +1,64 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@renderer/components/ui/alert-dialog";
-import { Button } from "@renderer/components/ui/button";
-import { useToast } from "@renderer/components/ui/use-toast";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Post } from "src/features/posts/entity";
 
+import { Button } from "@renderer/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@renderer/components/ui/dialog";
+import { useDeletePost } from "@renderer/hooks";
+
 type PostDetailDeleteButtonProps = {
   post: Post;
-  onUpdate: () => Promise<void>;
 };
 
-export const PostDetailDeleteButton = ({ post, onUpdate }: PostDetailDeleteButtonProps) => {
-  const { toast } = useToast();
+export const PostDetailDeleteButton = ({ post }: PostDetailDeleteButtonProps) => {
   const navigate = useNavigate();
+  const deletePostMutation = useDeletePost();
 
-  const deletePost = async () => {
+  const handleDelete = async () => {
     try {
-      await window.api["post:delete"](post.id);
-      await onUpdate();
-      toast({
-        title: "Post deleted successfully",
-      });
+      await deletePostMutation.mutateAsync(post.id);
       navigate("/posts");
     } catch (err) {
-      toast({
-        title: "Failed to delete post",
-        variant: "destructive",
-      });
+      // Error handling is done in the mutation
       console.error("Failed to delete post:", err);
     }
   };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <Button variant="ghost" className="text-destructive hover:bg-destructive/10">
           <Trash2 className="size-4 mr-2" />
           Delete Post
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to delete this post?</AlertDialogTitle>
-          <AlertDialogDescription>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you sure you want to delete this post?</DialogTitle>
+          <DialogDescription>
             This action cannot be undone. This will permanently delete the post and remove it from
             all associated media.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={deletePost}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline">Cancel</Button>
+          <Button
+            onClick={handleDelete}
+            disabled={deletePostMutation.isPending}
             className="bg-destructive hover:bg-destructive/90"
           >
-            Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            {deletePostMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

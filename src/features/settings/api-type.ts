@@ -1,11 +1,28 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 import { Settings } from "./entity";
 
-const methods = ["load", "save", "resetDatabase"] as const;
+type FanslyCredentials = {
+  fanslyAuth?: string;
+  fanslySessionId?: string;
+  fanslyClientCheck?: string;
+  fanslyClientId?: string;
+};
+
+const methods = [
+  "load",
+  "save",
+  "resetDatabase",
+  "saveFanslyCredentials",
+  "loadFanslyCredentials",
+  "clearFanslyCredentials",
+] as const;
 export type SettingsHandlers = {
   load: (_: any) => Promise<Settings>;
   save: (_: any, settings: Partial<Settings>) => Promise<Settings>;
   resetDatabase: (_: any) => Promise<void>;
+  saveFanslyCredentials: (_: any, credentials: Partial<FanslyCredentials>) => Promise<void>;
+  loadFanslyCredentials: (_: any) => Promise<FanslyCredentials>;
+  clearFanslyCredentials: (_: any) => Promise<void>;
 };
 
 export const namespace = "settings" as const;

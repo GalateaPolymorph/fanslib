@@ -18,14 +18,12 @@ import { MediaTileLite } from "../../components/MediaTile";
 
 type PostDetailAddMediaButtonProps = {
   post: Post;
-  onUpdate: () => Promise<void>;
   isDraggingMedia?: boolean;
   variant?: "default" | "detail";
 };
 
 export const PostDetailAddMediaButton = ({
   post,
-  onUpdate,
   isDraggingMedia = false,
   variant = "default",
 }: PostDetailAddMediaButtonProps) => {
@@ -56,7 +54,7 @@ export const PostDetailAddMediaButton = ({
         post.id,
         selectedMedia.map((m) => m.id)
       );
-      await onUpdate();
+      // React Query will automatically refresh the post data
       setOpen(false);
       toast({
         title: "Media added to post",

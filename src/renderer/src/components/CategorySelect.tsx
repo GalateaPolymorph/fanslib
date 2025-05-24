@@ -1,5 +1,5 @@
 import { Badge } from "@renderer/components/ui/badge";
-import { useCategories } from "../contexts/CategoryContext";
+import { useCategories } from "../hooks/api/useCategories";
 import { cn } from "../lib/utils";
 
 export type CategorySelectionState = {
@@ -25,7 +25,7 @@ export const CategorySelect = ({
   disabledCategories = [],
   includeNoneOption = false,
 }: CategorySelectProps) => {
-  const { categories, isLoading } = useCategories();
+  const { data: categories = [], isLoading } = useCategories();
 
   const getCategoryState = (id: "NONE" | string): "selected" | "half-selected" | "unselected" => {
     if (id === "NONE") {

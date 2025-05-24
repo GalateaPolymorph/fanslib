@@ -8,7 +8,7 @@ import { Input } from "@renderer/components/ui/input";
 import { Separator } from "@renderer/components/ui/separator";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { TooltipProvider } from "@renderer/components/ui/tooltip";
-import { useIsMobile } from "@renderer/hooks/useMobile";
+import { useIsMobile } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { Logo } from "./logo";
 

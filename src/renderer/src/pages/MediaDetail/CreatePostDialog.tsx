@@ -1,4 +1,3 @@
-import { CaptionPreview } from "@renderer/components/CaptionPreview";
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { HashtagButton } from "@renderer/components/HashtagButton";
@@ -34,7 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { MediaFilters } from "src/features/library/api-type";
 import { Media } from "../../../../features/library/entity";
 import { PostStatus } from "../../../../features/posts/entity";
-import { useChannels } from "../../contexts/ChannelContext";
+import { useChannels } from "../../hooks/api/useChannels";
 import { captionMaxLength } from "../../lib/caption-max-length";
 import { CreatePostAndPostponeButton } from "./CreatePostAndPostponeButton";
 
@@ -57,7 +56,7 @@ export const CreatePostDialog = ({
 }: CreatePostDialogProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { channels } = useChannels();
+  const { data: channels = [] } = useChannels();
   const [selectedChannel, setSelectedChannel] = useState<string[]>([]);
   const [selectedSubreddits, setSelectedSubreddits] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
@@ -307,9 +306,6 @@ export const CreatePostDialog = ({
                       className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
                     />
                   </div>
-                  {selectedChannel[0] && (
-                    <CaptionPreview caption={caption} channel={selectedChannelData} />
-                  )}
                 </div>
               </div>
 

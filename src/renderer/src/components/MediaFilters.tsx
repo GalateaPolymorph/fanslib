@@ -1,4 +1,4 @@
-import { useChannels } from "@renderer/contexts/ChannelContext";
+import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Filter, Search, X } from "lucide-react";
 import { omit } from "ramda";
 import type { MediaFilters as MediaFiltersType } from "../../../features/library/api-type";
@@ -59,7 +59,12 @@ export const MediaFilters = ({
   vertical = false,
   noEligibleIn = false,
 }: MediaFiltersProps) => {
-  const { channels } = useChannels();
+  const { data: channels = [], isLoading } = useChannels();
+
+  if (isLoading) {
+    return <div className="text-sm text-muted-foreground">Loading filters...</div>;
+  }
+
   const clearFilters = () => {
     onChange({
       categories: undefined,

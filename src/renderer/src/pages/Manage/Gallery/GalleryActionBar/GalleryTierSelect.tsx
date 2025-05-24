@@ -1,5 +1,5 @@
 import { Button } from "@renderer/components/ui/button";
-import { useTiers } from "@renderer/hooks/useTiers";
+import { useAssignTierToMedias, useTiers } from "@renderer/hooks";
 import { printTier } from "@renderer/lib/tier";
 import { Media } from "src/features/library/entity";
 
@@ -9,14 +9,20 @@ type Props = {
 };
 
 export const GalleryTierSelect = ({ selectedMedia, onUpdate }: Props) => {
-  const { tiers, assignTierToMedias } = useTiers();
+  const { data: tiers = [] } = useTiers();
+  const assignTierToMediasMutation = useAssignTierToMedias();
 
   const selectTier = async (tierId: number | null) => {
-    await assignTierToMedias(
-      selectedMedia.map((media) => media.id),
-      tierId ?? -1
-    );
-    onUpdate();
+    try {
+      await assignTierToMediasMutation.mutateAsync({
+        mediaIds: selectedMedia.map((media) => media.id),
+        tierId: tierId ?? -1,
+      });
+      onUpdate();
+    } catch (error) {
+      // Error is handled by the mutation
+      console.error("Failed to assign tier:", error);
+    }
   };
 
   const selectedTiers = selectedMedia.map((media) => media.tier?.id);
@@ -32,6 +38,7 @@ export const GalleryTierSelect = ({ selectedMedia, onUpdate }: Props) => {
             size="sm"
             onClick={() => selectTier(tier.id)}
             className="min-w-[3rem] flex gap-2"
+            disabled={assignTierToMediasMutation.isPending}
           >
             <span>{tier.name}</span>
             <span>{printTier(tier)}</span>

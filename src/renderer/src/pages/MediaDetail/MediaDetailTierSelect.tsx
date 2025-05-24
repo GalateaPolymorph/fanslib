@@ -1,7 +1,7 @@
+import { useAssignTierToMedia, useTiers } from "@renderer/hooks";
 import { useState } from "react";
 import { Media } from "src/features/library/entity";
 import { TierBadge } from "../../components/TierBadge";
-import { useTiers } from "../../hooks/useTiers";
 
 type Props = {
   media: Media;
@@ -9,11 +9,23 @@ type Props = {
 
 export const MediaDetailTierSelect = ({ media }: Props) => {
   const [tierId, setTierId] = useState<number | null>(media.tier?.id ?? null);
-  const { tiers, assignTierToMedia } = useTiers();
+  const { data: tiers = [] } = useTiers();
+  const assignTierToMediaMutation = useAssignTierToMedia();
 
   const selectTier = async (tierId: number | null) => {
+    if (assignTierToMediaMutation.isPending) return;
+
     setTierId(tierId);
-    assignTierToMedia(media.id, tierId ?? -1);
+    try {
+      await assignTierToMediaMutation.mutateAsync({
+        mediaId: media.id,
+        tierId: tierId ?? -1,
+      });
+    } catch (error) {
+      // Error is handled by the mutation, revert optimistic update
+      setTierId(media.tier?.id ?? null);
+      console.error("Failed to assign tier:", error);
+    }
   };
 
   return (

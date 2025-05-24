@@ -1,39 +1,30 @@
-import { useEffect, useState } from "react";
-import { HashtagWithStats } from "../../../../features/hashtags/api-type";
+import { useHashtags, useUpdateHashtagStats } from "../../hooks/api/useHashtags";
 import { ChannelHashtagTable } from "./ChannelHashtagTable";
 import { HashtagTable } from "./HashtagTable";
 import { NicheTable } from "./NicheTable";
 
 export const TaggingPage = () => {
-  const [hashtags, setHashtags] = useState<HashtagWithStats[]>([]);
-
-  const loadHashtags = async () => {
-    try {
-      const allHashtags = await window.api["hashtag:list"]();
-      setHashtags(allHashtags);
-    } catch (error) {
-      console.error("Failed to load hashtags", error);
-    }
-  };
-
-  useEffect(() => {
-    loadHashtags();
-  }, []);
+  const { data: hashtags = [], refetch } = useHashtags();
+  const updateHashtagStatsMutation = useUpdateHashtagStats();
 
   const updateHashtagStats = async (hashtagId: number, channelId: string, viewCount: number) => {
     try {
-      await window.api["hashtag:stats:set"](hashtagId, channelId, viewCount);
-      loadHashtags();
+      await updateHashtagStatsMutation.mutateAsync({ hashtagId, channelId, viewCount });
+      refetch();
     } catch (error) {
       console.error("Failed to update hashtag stats", error);
     }
+  };
+
+  const handleHashtagUpdated = () => {
+    refetch();
   };
 
   return (
     <div className="px-6 py-6 space-y-8">
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Tagging</h2>
-        <NicheTable onNicheUpdated={loadHashtags} />
+        <NicheTable onNicheUpdated={handleHashtagUpdated} />
       </div>
 
       <ChannelHashtagTable />
@@ -41,8 +32,8 @@ export const TaggingPage = () => {
       <HashtagTable
         hashtags={hashtags}
         onStatsChange={updateHashtagStats}
-        onHashtagCreated={loadHashtags}
-        onHashtagDeleted={loadHashtags}
+        onHashtagCreated={handleHashtagUpdated}
+        onHashtagDeleted={handleHashtagUpdated}
       />
     </div>
   );

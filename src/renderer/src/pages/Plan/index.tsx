@@ -1,11 +1,11 @@
 import { PostFilters } from "@renderer/components/PostFilters";
-import { useChannels } from "@renderer/contexts/ChannelContext";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import {
   PlanPreferencesProvider,
   usePlanPreferences,
 } from "@renderer/contexts/PlanPreferencesContext";
+import { useChannels } from "@renderer/hooks/api/useChannels";
 import { useCallback, useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 import { Library } from "../../components/Library";
@@ -19,7 +19,7 @@ import { PostCalendar } from "./PostCalendar/PostCalendar";
 import { PostTimeline } from "./PostTimeline";
 
 const PlanPageContent = () => {
-  const { channels } = useChannels();
+  const { data: channels = [] } = useChannels();
   const { preferences, updatePreferences } = usePlanPreferences();
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
 
@@ -74,6 +74,10 @@ const PlanPageContent = () => {
           )
         : [];
 
+      console.log({
+        allPosts,
+        dateRange: preferences.filter.dateRange,
+      });
       // Combine and sort all posts by date
       const allPostsCombined = [...filteredPosts, ...virtualPosts].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()

@@ -5,19 +5,26 @@ import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui
 import { Check, Palette, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { CATEGORY_COLORS } from "../../../../features/categories/colors";
-import { useCategories } from "../../contexts/CategoryContext";
+import {
+  useCategories,
+  useCreateCategory,
+  useDeleteCategory,
+  useUpdateCategory,
+} from "../../hooks/api/useCategories";
 
 export const CategorySettings = () => {
   const [categoryName, setCategoryName] = useState("");
   const [editingCategory, setEditingCategory] = useState<{ id: string; name: string } | null>(null);
-  const { categories, refetch } = useCategories();
+  const { data: categories = [] } = useCategories();
+  const createCategoryMutation = useCreateCategory();
+  const updateCategoryMutation = useUpdateCategory();
+  const deleteCategoryMutation = useDeleteCategory();
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) return;
 
     try {
-      await window.api["category:create"](categoryName);
-      refetch();
+      await createCategoryMutation.mutateAsync(categoryName);
       setCategoryName("");
     } catch (error) {
       console.error("Failed to create category", error);
@@ -26,8 +33,7 @@ export const CategorySettings = () => {
 
   const handleDeleteCategory = async (id: string) => {
     try {
-      await window.api["category:delete"](id);
-      refetch();
+      await deleteCategoryMutation.mutateAsync(id);
     } catch (error) {
       console.error("Failed to delete category", error);
     }
@@ -35,8 +41,7 @@ export const CategorySettings = () => {
 
   const handleUpdateColor = async (id: string, color: string) => {
     try {
-      await window.api["category:update"](id, { color });
-      refetch();
+      await updateCategoryMutation.mutateAsync({ categoryId: id, updates: { color } });
     } catch (error) {
       console.error("Failed to update category color", error);
     }
@@ -46,8 +51,10 @@ export const CategorySettings = () => {
     if (!editingCategory || !editingCategory.name.trim()) return;
 
     try {
-      await window.api["category:update"](editingCategory.id, { name: editingCategory.name });
-      refetch();
+      await updateCategoryMutation.mutateAsync({
+        categoryId: editingCategory.id,
+        updates: { name: editingCategory.name },
+      });
       setEditingCategory(null);
     } catch (error) {
       console.error("Failed to update category name", error);

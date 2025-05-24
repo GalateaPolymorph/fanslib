@@ -1,71 +1,46 @@
 import { Input } from "@renderer/components/ui/input";
-import { useToast } from "@renderer/components/ui/use-toast";
-import { useDebounce } from "@renderer/hooks/useDebounce";
-import { useEffect, useState } from "react";
+import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
+import { useState } from "react";
 import { Post } from "src/features/posts/entity";
 
 type PostDetailUrlInputProps = {
   post: Post;
-  onUpdate: () => Promise<void>;
 };
 
-export const PostDetailUrlInput = ({ post, onUpdate }: PostDetailUrlInputProps) => {
-  const [url, setUrl] = useState(post.url ?? "");
-  const debouncedUrl = useDebounce(url, 500);
-  const { toast } = useToast();
+export const PostDetailUrlInput = ({ post }: PostDetailUrlInputProps) => {
+  const [localUrl, setLocalUrl] = useState(post.url ?? "");
 
-  useEffect(() => {
-    setUrl(post.url ?? "");
-  }, [post.url]);
+  const { updateField, isUpdating } = useFieldUpdate<string>({
+    post,
+    fieldName: "url",
+    transform: (value: string) => value.trim() || null,
+  });
 
-  useEffect(() => {
-    const updateUrl = async () => {
-      // Convert empty string to null for comparison
-      const normalizedDebouncedUrl = debouncedUrl.trim() || null;
-      const normalizedPostUrl = post.url?.trim() || null;
-
-      // Skip update if values are effectively the same
-      if (normalizedDebouncedUrl === normalizedPostUrl) {
-        return;
-      }
-
-      try {
-        await window.api["post:update"](post.id, { url: normalizedDebouncedUrl });
-        await onUpdate();
-
-        toast({
-          title: "Post URL updated",
-          duration: 2000,
-        });
-      } catch (err) {
-        toast({
-          title: "Failed to update post URL",
-          variant: "destructive",
-        });
-        console.error("Failed to update post URL:", err);
-        // Reset to the original value on error
-        setUrl(post.url ?? "");
-      }
-    };
-
-    // Only run the update if we have a debounced value
-    if (debouncedUrl !== undefined) {
-      updateUrl();
-    }
-  }, [debouncedUrl, post.id, post.url, onUpdate, toast]);
+  const updateUrl = (newUrl: string) => {
+    setLocalUrl(newUrl);
+    updateField(newUrl);
+  };
 
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor="post-url" className="text-sm font-medium">
         Post URL
       </label>
-      <Input
-        id="post-url"
-        type="url"
-        placeholder="Enter post URL"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-      />
+      <div className="relative">
+        <Input
+          id="post-url"
+          type="url"
+          placeholder="Enter post URL"
+          value={localUrl}
+          onChange={(e) => updateUrl(e.target.value)}
+          disabled={isUpdating}
+        />
+        {isUpdating && (
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="text-xs text-muted-foreground">Updating...</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

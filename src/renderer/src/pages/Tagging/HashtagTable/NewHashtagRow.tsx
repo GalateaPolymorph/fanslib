@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import { useCreateHashtag } from "../../../hooks/api/useHashtags";
 
 type NewHashtagRowProps = {
   channelCount: number;
@@ -10,12 +11,13 @@ type NewHashtagRowProps = {
 
 export const NewHashtagRow = ({ onHashtagCreated }: NewHashtagRowProps) => {
   const [newHashtagName, setNewHashtagName] = useState("");
+  const createHashtagMutation = useCreateHashtag();
 
   const createHashtag = async () => {
     if (!newHashtagName.trim()) return;
 
     try {
-      await window.api["hashtag:create"](newHashtagName);
+      await createHashtagMutation.mutateAsync(newHashtagName);
       setNewHashtagName("");
       onHashtagCreated();
     } catch (error) {

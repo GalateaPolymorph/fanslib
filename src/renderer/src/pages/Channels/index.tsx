@@ -1,16 +1,17 @@
 import { Button } from "@renderer/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/dialog";
-import { useChannels } from "@renderer/contexts/ChannelContext";
+import { useChannels, useDeleteChannel } from "@renderer/hooks/api/useChannels";
+import { CreateChannelForm } from "@renderer/pages/Channels/CreateChannelForm";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Channel } from "../../../../features/channels/entity";
 import { ChannelView } from "./ChannelView";
-import { CreateChannelForm } from "./CreateChannelForm";
 
 export const ChannelsPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingChannelId, setEditingChannelId] = useState<string | null>(null);
-  const { channels, refetch } = useChannels();
+  const { data: channels = [], refetch } = useChannels();
+  const deleteChannelMutation = useDeleteChannel();
 
   const handleNewChannel = (channel: Channel) => {
     refetch();
@@ -19,11 +20,14 @@ export const ChannelsPage = () => {
   };
 
   const handleChannelDelete = async (channel: Channel) => {
-    await window.api["channel:delete"](channel.id);
-    refetch();
+    await deleteChannelMutation.mutateAsync(channel.id);
     if (editingChannelId === channel.id) {
       setEditingChannelId(null);
     }
+  };
+
+  const handleChannelUpdate = () => {
+    refetch();
   };
 
   return (
@@ -48,7 +52,7 @@ export const ChannelsPage = () => {
           <div key={channel.id} className="p-6">
             <ChannelView
               channel={channel}
-              onUpdate={refetch}
+              onUpdate={handleChannelUpdate}
               onDelete={handleChannelDelete}
               isEditing={channel.id === editingChannelId}
               onEditingChange={(editing) => setEditingChannelId(editing ? channel.id : null)}

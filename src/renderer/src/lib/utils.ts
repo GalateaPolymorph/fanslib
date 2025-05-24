@@ -1,7 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
 
 export const formatFileSize = (bytes: number): string => {
   const units = ["B", "KB", "MB", "GB", "TB"];

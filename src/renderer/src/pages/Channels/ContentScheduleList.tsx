@@ -1,5 +1,6 @@
 import { TierBadge } from "@renderer/components/TierBadge";
-import { useTiers } from "@renderer/hooks/useTiers";
+import { Button } from "@renderer/components/ui/button";
+import { useCategories, useTiers } from "@renderer/hooks";
 import { Edit, Trash2 } from "lucide-react";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import { CategoryBadge } from "../../components/CategoryBadge";
@@ -14,8 +15,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../components/ui/alert-dialog";
-import { Button } from "../../components/ui/button";
-import { useCategories } from "../../contexts/CategoryContext";
 
 type ContentScheduleListProps = {
   schedules: ContentSchedule[];
@@ -24,8 +23,8 @@ type ContentScheduleListProps = {
 };
 
 export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentScheduleListProps) => {
-  const { categories } = useCategories();
-  const { tiers } = useTiers();
+  const { data: categories = [] } = useCategories();
+  const { data: tiers = [] } = useTiers();
 
   const formatDays = (schedule: ContentSchedule) => {
     return schedule.type !== "daily" && schedule.preferredDays?.length

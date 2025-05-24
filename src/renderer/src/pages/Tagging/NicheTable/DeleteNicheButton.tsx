@@ -1,3 +1,4 @@
+import { useDeleteNiche } from "@renderer/hooks";
 import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -23,9 +24,11 @@ export const DeleteNicheButton = ({
   nicheName,
   onNicheDeleted,
 }: DeleteNicheButtonProps) => {
+  const deleteNicheMutation = useDeleteNiche();
+
   const deleteNiche = async () => {
     try {
-      await window.api["niche:delete"](nicheId);
+      await deleteNicheMutation.mutateAsync(nicheId);
       onNicheDeleted();
     } catch (error) {
       console.error("Failed to delete niche", error);
@@ -39,6 +42,7 @@ export const DeleteNicheButton = ({
           variant="ghost"
           size="icon"
           className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          disabled={deleteNicheMutation.isPending}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -55,6 +59,7 @@ export const DeleteNicheButton = ({
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={deleteNiche}
+            disabled={deleteNicheMutation.isPending}
           >
             Delete
           </AlertDialogAction>

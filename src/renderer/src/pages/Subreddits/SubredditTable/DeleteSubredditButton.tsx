@@ -10,6 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@renderer/components/ui/alert-dialog";
 import { Button } from "@renderer/components/ui/button";
+import { useDeleteSubreddit } from "@renderer/hooks/api/useChannels";
 import { Trash2 } from "lucide-react";
 
 type DeleteSubredditButtonProps = {
@@ -23,9 +24,11 @@ export const DeleteSubredditButton = ({
   subredditName,
   onSubredditDeleted,
 }: DeleteSubredditButtonProps) => {
+  const deleteSubredditMutation = useDeleteSubreddit();
+
   const deleteSubreddit = async () => {
     try {
-      await window.api["channel:subreddit-delete"](subredditId);
+      await deleteSubredditMutation.mutateAsync(subredditId);
       onSubredditDeleted();
     } catch (error) {
       console.error("Failed to delete subreddit", error);

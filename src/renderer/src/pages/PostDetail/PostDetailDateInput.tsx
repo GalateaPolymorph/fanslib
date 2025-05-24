@@ -1,64 +1,37 @@
 import { Calendar } from "@renderer/components/ui/calendar";
-import { useToast } from "@renderer/components/ui/use-toast";
-import { useDebounce } from "@renderer/hooks/useDebounce";
+import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
 import { cn } from "@renderer/lib/utils";
-import { useEffect, useState } from "react";
 import { Post } from "src/features/posts/entity";
 
 type PostDetailDateInputProps = {
   post: Post;
-  onUpdate: () => Promise<void>;
 };
 
-export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const debouncedDate = useDebounce(selectedDate, 500);
-  const { toast } = useToast();
+export const PostDetailDateInput = ({ post }: PostDetailDateInputProps) => {
+  const { updateField, getCurrentValue, isUpdating } = useFieldUpdate<Date>({
+    post,
+    fieldName: "date",
+    transform: (date: Date) => date.toISOString(),
+    debounceMs: 300,
+  });
 
-  useEffect(() => {
-    setSelectedDate(new Date(post.date));
-  }, [post.id, post.date]);
-
-  useEffect(() => {
-    const updateDate = async () => {
-      if (!debouncedDate || debouncedDate.getTime() === new Date(post.date).getTime()) return;
-
-      try {
-        await window.api["post:update"](post.id, { date: debouncedDate.toISOString() });
-        await onUpdate();
-
-        toast({
-          title: "Post date updated",
-          duration: 2000,
-        });
-      } catch (err) {
-        toast({
-          title: "Failed to update post date",
-          variant: "destructive",
-        });
-        console.error("Failed to update post date:", err);
-        setSelectedDate(new Date(post.date));
-      }
-    };
-
-    updateDate();
-  }, [debouncedDate, post.id, post.date, onUpdate, toast]);
+  const currentDate = getCurrentValue();
+  const selectedDate = currentDate ? new Date(currentDate) : new Date(post.date);
 
   const updateSelectedDate = (newDate: Date | undefined) => {
     if (!newDate) return;
 
     // Keep the original time when updating the date
     const updatedDate = new Date(newDate);
-    if (selectedDate) {
-      updatedDate.setHours(selectedDate.getHours());
-      updatedDate.setMinutes(selectedDate.getMinutes());
-      updatedDate.setSeconds(selectedDate.getSeconds());
-    }
+    const originalDate = new Date(post.date);
 
-    setSelectedDate(updatedDate);
+    updatedDate.setHours(originalDate.getHours());
+    updatedDate.setMinutes(originalDate.getMinutes());
+    updatedDate.setSeconds(originalDate.getSeconds());
+    updatedDate.setMilliseconds(originalDate.getMilliseconds());
+
+    updateField(updatedDate);
   };
-
-  if (!selectedDate) return null;
 
   return (
     <div className="relative">
@@ -67,12 +40,18 @@ export const PostDetailDateInput = ({ post, onUpdate }: PostDetailDateInputProps
         selected={selectedDate}
         defaultMonth={selectedDate}
         onSelect={updateSelectedDate}
+        disabled={isUpdating}
         selectedClassNames={cn({
           "bg-blue-500": post.status === "scheduled",
           "bg-green-500": post.status === "posted",
           "bg-gray-500": post.status === "draft",
         })}
       />
+      {isUpdating && (
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+          <div className="text-sm text-muted-foreground">Updating...</div>
+        </div>
+      )}
     </div>
   );
 };
