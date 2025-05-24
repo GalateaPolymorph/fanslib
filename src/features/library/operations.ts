@@ -97,6 +97,14 @@ export const fetchAllMedia = async (
     });
   }
 
+  // Apply caption filter
+  if (params?.caption) {
+    queryBuilder.andWhere(
+      "EXISTS (SELECT 1 FROM post_media pm JOIN post p ON p.id = pm.postId WHERE pm.mediaId = media.id AND LOWER(p.caption) LIKE LOWER(:caption))",
+      { caption: `%${params.caption}%` }
+    );
+  }
+
   // Apply unposted filter
   if (params?.unposted) {
     queryBuilder.andWhere("postMedia.id IS NULL");

@@ -29,6 +29,7 @@ const defaultPreferences: LibraryPreferences = {
   },
   filter: {
     search: undefined,
+    caption: undefined,
     excludeShoots: [],
     categories: undefined,
   },

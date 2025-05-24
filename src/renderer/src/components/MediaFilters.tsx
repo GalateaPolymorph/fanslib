@@ -29,6 +29,7 @@ type MediaFiltersProps = {
 
 type FilterType =
   | "search"
+  | "caption"
   | "categories"
   | "tiers"
   | "channelFilters"
@@ -43,6 +44,7 @@ type FilterConfig = {
 
 const AVAILABLE_FILTERS: FilterConfig[] = [
   { label: "Search", key: "search" },
+  { label: "Caption", key: "caption" },
   { label: "Categories", key: "categories" },
   { label: "Tiers", key: "tiers" },
   { label: "Channel", key: "channelFilters" },
@@ -69,6 +71,7 @@ export const MediaFilters = ({
     onChange({
       categories: undefined,
       search: undefined,
+      caption: undefined,
       excludeShoots: undefined,
       shootId: undefined,
       channelFilters: undefined,
@@ -92,6 +95,7 @@ export const MediaFilters = ({
   const isFilterActive = (key: FilterType): boolean => {
     if (key === "shoots") return value.shootId !== undefined;
     if (key === "search") return value.search !== undefined;
+    if (key === "caption") return value.caption !== undefined;
     return !!value[key];
   };
 
@@ -129,6 +133,35 @@ export const MediaFilters = ({
                   variant="ghost"
                   size="icon"
                   onClick={() => onChange({ ...value, search: undefined })}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        );
+      case "caption":
+        return (
+          <div className="flex items-center gap-2 w-full">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                className="pl-9 pr-8"
+                value={value.caption ?? ""}
+                onChange={(e) => {
+                  onChange({
+                    ...value,
+                    caption: e.target.value,
+                  });
+                }}
+                placeholder="Search post captions..."
+              />
+              {value.caption && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onChange({ ...value, caption: undefined })}
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
                 >
                   <X className="h-4 w-4" />
@@ -280,6 +313,10 @@ export const MediaFilters = ({
                   }
                   if (filter.key === "search") {
                     onChange({ ...value, search: "" });
+                    return;
+                  }
+                  if (filter.key === "caption") {
+                    onChange({ ...value, caption: "" });
                     return;
                   }
                   onChange({ ...value, [filter.key]: [] });

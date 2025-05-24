@@ -26,6 +26,7 @@ export type MediaFilters = {
   createdDateStart?: Date;
   createdDateEnd?: Date;
   search?: string;
+  caption?: string;
   excludeShoots?: string[];
   shootId?: string;
   channelFilters?: ChannelPostFilter[];

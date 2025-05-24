@@ -9,7 +9,11 @@ import {
   cleanupExpiredAnalyticsFetchHistory,
   initializeAnalyticsAggregates,
 } from "./operations";
-import { getFanslyPostsWithAnalytics } from "./posts-analytics";
+import {
+  getFanslyPostsWithAnalytics,
+  getHashtagAnalytics,
+  getTimeAnalytics,
+} from "./posts-analytics";
 import { updateFanslyCredentialsFromFetch } from "./update-credentials";
 
 export const handlers: AnalyticsHandlers = {
@@ -37,6 +41,12 @@ export const handlers: AnalyticsHandlers = {
     const endDate = new Date(params.endDate);
 
     return getAnalyticsSummary(startDate, endDate);
+  },
+  getHashtagAnalytics: async (_) => {
+    return getHashtagAnalytics();
+  },
+  getTimeAnalytics: async (_) => {
+    return getTimeAnalytics();
   },
   fetchFanslyAnalyticsData: async (
     _,

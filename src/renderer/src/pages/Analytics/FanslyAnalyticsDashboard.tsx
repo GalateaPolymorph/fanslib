@@ -4,6 +4,10 @@ import { BulkFetchButton } from "../../components/analytics/BulkFetchButton";
 import { BulkAnalyticsFetchProgress } from "../../components/analytics/BulkFetchProgress";
 import { KpiOverviewCards } from "../../components/analytics/KpiOverviewCards";
 import { TimeframeSelector } from "../../components/analytics/TimeframeSelector";
+import { EngagementViewsChart } from "../../components/analytics/charts/EngagementViewsChart";
+import { HashtagPerformanceHeatmap } from "../../components/analytics/charts/HashtagPerformanceHeatmap";
+import { OptimalLengthChart } from "../../components/analytics/charts/OptimalLengthChart";
+import { TimePerformanceHeatmap } from "../../components/analytics/charts/TimePerformanceHeatmap";
 import {
   Card,
   CardContent,
@@ -19,13 +23,13 @@ export const FanslyAnalyticsDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
 
-  const { fetchProgress, fetchResult, isFetching, startBulkFetch, resetFetch } = useBulkFetch(
-    () => {
-      // Invalidate queries to refresh data after bulk fetch
-      queryClient.invalidateQueries({ queryKey: ["fanslyPosts"] });
-      queryClient.invalidateQueries({ queryKey: ["analyticsSummary"] });
-    }
-  );
+  const { fetchProgress, fetchResult, isFetching, startBulkFetch } = useBulkFetch(() => {
+    // Invalidate queries to refresh data after bulk fetch
+    queryClient.invalidateQueries({ queryKey: ["fanslyPosts"] });
+    queryClient.invalidateQueries({ queryKey: ["analyticsSummary"] });
+    queryClient.invalidateQueries({ queryKey: ["hashtagAnalytics"] });
+    queryClient.invalidateQueries({ queryKey: ["timeAnalytics"] });
+  });
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -63,18 +67,19 @@ export const FanslyAnalyticsDashboard = () => {
         </TabsContent>
 
         <TabsContent value="visualizations" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Visualizations</CardTitle>
-              <CardDescription>
-                Visualizations to help understand your content performance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Visualizations will go here */}
-              <p>Visualizations coming soon...</p>
-            </CardContent>
-          </Card>
+          <div className="grid gap-6">
+            {/* Engagement vs Views Scatter Plot */}
+            <EngagementViewsChart />
+
+            {/* Grid layout for remaining charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <OptimalLengthChart />
+              <HashtagPerformanceHeatmap />
+            </div>
+
+            {/* Full width for time heatmap */}
+            <TimePerformanceHeatmap />
+          </div>
         </TabsContent>
 
         <TabsContent value="insights" className="mt-6">

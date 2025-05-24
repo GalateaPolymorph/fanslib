@@ -54,11 +54,27 @@ export type AnalyticsSummary = {
   }[];
 };
 
+export type HashtagAnalytics = {
+  hashtag: string;
+  postCount: number;
+  avgViews: number;
+  avgEngagement: number;
+}[];
+
+export type TimeAnalytics = {
+  timePeriod: string; // e.g., "Monday 12-2pm"
+  postCount: number;
+  avgViews: number;
+  avgEngagement: number;
+}[];
+
 const methods = [
   "addDatapointsToPost",
   "initializeAnalyticsAggregates",
   "getFanslyPostsWithAnalytics",
   "getAnalyticsSummary",
+  "getHashtagAnalytics",
+  "getTimeAnalytics",
   "fetchFanslyAnalyticsData",
   "bulkFetchAnalytics",
   "updateFanslyCredentialsFromFetch",
@@ -80,6 +96,8 @@ export type AnalyticsHandlers = {
     sortDirection?: "asc" | "desc"
   ) => Promise<FanslyPostWithAnalytics[]>;
   getAnalyticsSummary: (_: unknown, params?: AnalyticsSummaryParams) => Promise<AnalyticsSummary>;
+  getHashtagAnalytics: (_: unknown) => Promise<HashtagAnalytics>;
+  getTimeAnalytics: (_: unknown) => Promise<TimeAnalytics>;
   fetchFanslyAnalyticsData: (
     _: unknown,
     postId: string,
