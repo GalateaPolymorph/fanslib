@@ -41,7 +41,6 @@ export const addDatapointsToPost = async (
   if (!post) {
     throw new Error("Post not found");
   }
-
   // Process hashtags if this is a Fansly post
   if (post.channel.typeId === "fansly" && response.response.aggregationData?.tags) {
     try {
@@ -56,7 +55,6 @@ export const addDatapointsToPost = async (
   }
 
   const datapoints = gatherFanslyPostAnalyticsDatapoints(response);
-
   const savedDatapoints = await Promise.all(
     datapoints.map(async (dp) => {
       const existingDatapointForTimestamp = await dpRepo.findOne({
@@ -77,8 +75,21 @@ export const addDatapointsToPost = async (
     })
   );
 
+  // Reload the post with all required relations for aggregation
+  const postWithDatapoints = await postRepository.findOne({
+    where: { id: postId },
+    relations: {
+      fanslyAnalyticsDatapoints: true,
+      postMedia: { media: { tier: true } },
+    },
+  });
+
+  if (!postWithDatapoints) {
+    throw new Error("Post not found after saving datapoints");
+  }
+
   // Update aggregate data
-  const aggregatedData = aggregatePostAnalyticsData(post, false);
+  const aggregatedData = aggregatePostAnalyticsData(postWithDatapoints, false);
 
   const existingAggregate = await aggregateRepo.findOne({
     where: { postId },
@@ -122,8 +133,6 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
     .andWhere("aggregate.id IS NULL")
     .getMany();
 
-  console.log(`Found ${posts.length} posts to initialize aggregates for`);
-
   await Promise.all(
     posts.map(async (post) => {
       const aggregated = aggregatePostAnalyticsData(post, false);
@@ -143,7 +152,6 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
         existingAggregate.averageEngagementPercent =
           aggregated.at(-1)?.averageWatchTimePercent ?? 0;
         await aggregateRepo.save(existingAggregate);
-        console.log(`Updated aggregate for post ${post.id}`);
       } else {
         const newAggregate = aggregateRepo.create({
           post,
@@ -154,10 +162,12 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
         });
 
         await aggregateRepo.save(newAggregate);
-        console.log(`Created aggregate for post ${post.id}`);
       }
     })
   );
+};
 
-  console.log("Finished initializing analytics aggregates");
+export const cleanupExpiredAnalyticsFetchHistory = async (): Promise<number> => {
+  const { cleanupExpiredFetchHistory } = await import("./timeframe-utils");
+  return cleanupExpiredFetchHistory();
 };

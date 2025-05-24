@@ -42,3 +42,28 @@ export class FanslyAnalyticsAggregate {
   @Column("varchar")
   postId!: string;
 }
+
+@Entity()
+export class AnalyticsFetchHistory {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Column("varchar")
+  timeframeIdentifier!: string; // e.g., "rolling-30d", "fixed-2024-11"
+
+  @Column("varchar")
+  postId!: string;
+
+  @Column("datetime")
+  fetchedAt!: Date;
+
+  @Column("datetime", { nullable: true })
+  expiresAt?: Date; // Only set for rolling timeframes
+
+  @Column("varchar")
+  timeframeType!: "rolling" | "fixed";
+
+  @ManyToOne(() => Post)
+  @JoinColumn({ name: "postId" })
+  post!: Post;
+}

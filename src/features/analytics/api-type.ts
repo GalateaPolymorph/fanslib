@@ -1,6 +1,7 @@
 import { FanslyAnalyticsResponse } from "../../lib/fansly-analytics/fansly-analytics-response";
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 import { Post } from "../posts/entity";
+import { BulkFetchProgress, BulkFetchResult } from "./bulk-fetch";
 import { FanslyAnalyticsDatapoint } from "./entity";
 
 export type FanslyPostWithAnalytics = {
@@ -13,6 +14,23 @@ export type FanslyPostWithAnalytics = {
   averageEngagementPercent: number;
   hashtags: string[];
   videoLength: number;
+};
+
+export type AnalyticsSummaryParams = {
+  startDate: string;
+  endDate: string;
+};
+
+export type BulkFetchParams = {
+  analyticsStartDate: string;
+  analyticsEndDate: string;
+};
+
+export type FanslyCredentials = {
+  fanslyAuth?: string;
+  fanslySessionId?: string;
+  fanslyClientCheck?: string;
+  fanslyClientId?: string;
 };
 
 export type AnalyticsSummary = {
@@ -36,17 +54,17 @@ export type AnalyticsSummary = {
   }[];
 };
 
-export type GetAnalyticsSummaryParams = {
-  startDate: string;
-  endDate: string;
-};
-
-export const methods = [
+const methods = [
   "addDatapointsToPost",
   "initializeAnalyticsAggregates",
   "getFanslyPostsWithAnalytics",
   "getAnalyticsSummary",
   "fetchFanslyAnalyticsData",
+  "bulkFetchAnalytics",
+  "updateFanslyCredentialsFromFetch",
+  "onBulkFetchProgress",
+  "onBulkFetchComplete",
+  "cleanupExpiredAnalyticsFetchHistory",
 ] as const;
 
 export type AnalyticsHandlers = {
@@ -61,11 +79,24 @@ export type AnalyticsHandlers = {
     sortBy?: string,
     sortDirection?: "asc" | "desc"
   ) => Promise<FanslyPostWithAnalytics[]>;
-  getAnalyticsSummary: (
+  getAnalyticsSummary: (_: unknown, params?: AnalyticsSummaryParams) => Promise<AnalyticsSummary>;
+  fetchFanslyAnalyticsData: (
     _: unknown,
-    params?: GetAnalyticsSummaryParams
-  ) => Promise<AnalyticsSummary>;
-  fetchFanslyAnalyticsData: (_: unknown, postId: string) => Promise<FanslyAnalyticsResponse>;
+    postId: string,
+    analyticsStartDate?: string,
+    analyticsEndDate?: string
+  ) => Promise<FanslyAnalyticsResponse>;
+  bulkFetchAnalytics: (_: unknown, params?: BulkFetchParams) => Promise<BulkFetchResult>;
+  updateFanslyCredentialsFromFetch: (_: unknown, fetchRequest: string) => Promise<void>;
+  onBulkFetchProgress: (
+    _: unknown,
+    listener: (_: unknown, progress: BulkFetchProgress) => void
+  ) => void;
+  onBulkFetchComplete: (
+    _: unknown,
+    listener: (_: unknown, result: BulkFetchResult) => void
+  ) => void;
+  cleanupExpiredAnalyticsFetchHistory: (_: unknown) => Promise<number>;
 };
 
 export const namespace = "analytics" as const;

@@ -198,7 +198,7 @@ export const KpiOverviewCards = () => {
 
                 return (
                   <Link
-                    to={`/post/${post?.id ?? performer.id}`}
+                    to={`/posts/${post?.id ?? performer.id}`}
                     key={performer.id}
                     className="flex gap-3 items-center hover:bg-accent p-2 rounded-md transition-colors"
                   >

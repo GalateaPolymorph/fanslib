@@ -11,7 +11,9 @@ const FANSLY_API_URL = "https://apiv3.fansly.com/api/v1/it/moie/statsnew";
  * Fetches analytics data for a Fansly post using the statistics ID
  */
 export const fetchFanslyAnalyticsData = async (
-  postId: string
+  postId: string,
+  analyticsStartDate?: Date,
+  analyticsEndDate?: Date
 ): Promise<FanslyAnalyticsResponse> => {
   // Get the post from the database
   const postRepository = AppDataSource.getRepository(Post);
@@ -33,10 +35,15 @@ export const fetchFanslyAnalyticsData = async (
     );
   }
 
-  // Calculate dates for the last 30 days
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(endDate.getDate() - 30);
+  // Use provided dates or default to last 30 days
+  const endDate = analyticsEndDate || new Date();
+  const startDate =
+    analyticsStartDate ||
+    (() => {
+      const date = new Date();
+      date.setDate(date.getDate() - 30);
+      return date;
+    })();
 
   // Convert to timestamps (milliseconds)
   const beforeDate = endDate.getTime();
