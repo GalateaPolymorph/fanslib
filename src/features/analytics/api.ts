@@ -4,6 +4,7 @@ import { getAnalyticsSummary } from "./analytics-summary";
 import { AnalyticsHandlers, namespace } from "./api-type";
 import { bulkFetchAnalytics } from "./bulk-fetch";
 import { fetchFanslyAnalyticsData } from "./fetch-fansly-data";
+import { generateInsights } from "./insights-generator";
 import {
   addDatapointsToPost,
   cleanupExpiredAnalyticsFetchHistory,
@@ -47,6 +48,10 @@ export const handlers: AnalyticsHandlers = {
   },
   getTimeAnalytics: async (_) => {
     return getTimeAnalytics();
+  },
+  generateInsights: async (_) => {
+    const posts = await getFanslyPostsWithAnalytics();
+    return generateInsights(posts);
   },
   fetchFanslyAnalyticsData: async (
     _,
