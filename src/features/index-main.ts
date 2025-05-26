@@ -11,6 +11,7 @@ import { osHandlers } from "./os/api";
 import { postHandlers } from "./posts/api";
 import { settingsHandlers } from "./settings/api";
 import { shootHandlers } from "./shoots/api";
+import { tagHandlers } from "./tags/api";
 import { tierHandlers } from "./tiers/api";
 export * from "./index-renderer";
 
@@ -29,4 +30,5 @@ export const handlers = {
   ...nicheHandlers,
   ...apiPostponeHandlers,
   ...analyticsHandlers,
+  ...tagHandlers,
 };

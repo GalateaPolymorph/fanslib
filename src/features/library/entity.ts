@@ -76,6 +76,9 @@ export class Media {
   })
   niches!: Niche[];
 
+  @OneToMany("MediaTag", "media")
+  mediaTags: any[];
+
   @ManyToOne(() => Tier, (tier) => tier.media)
   tier?: Tier;
 }

@@ -17,7 +17,7 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
-    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "rebuild": "electron-rebuild -f -w sqlite3",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
@@ -118,5 +118,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
+  },
+  "overrides": {
+    "@radix-ui/react-dismissable-layer": "^1.1.4"
   }
 }

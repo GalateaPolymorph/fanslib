@@ -15,6 +15,7 @@ import {
   getHashtagAnalytics,
   getTimeAnalytics,
 } from "./posts-analytics";
+import { getTagAnalytics, getTagCorrelations, getTagTrends } from "./tag-analytics";
 import { updateFanslyCredentialsFromFetch } from "./update-credentials";
 
 export const handlers: AnalyticsHandlers = {
@@ -84,6 +85,20 @@ export const handlers: AnalyticsHandlers = {
   },
   cleanupExpiredAnalyticsFetchHistory: async (_) => {
     return cleanupExpiredAnalyticsFetchHistory();
+  },
+
+  // Tag Analytics
+  getTagAnalytics: async (_, params) => {
+    return getTagAnalytics(params);
+  },
+  getTagPerformanceMetrics: async (_, tagIds, timeRange) => {
+    return getTagAnalytics({ tagIds, timeRange });
+  },
+  getTagCorrelations: async (_, dimensionId) => {
+    return getTagCorrelations(dimensionId);
+  },
+  getTagTrends: async (_, tagIds, timeRange) => {
+    return getTagTrends(tagIds, timeRange);
   },
 };
 

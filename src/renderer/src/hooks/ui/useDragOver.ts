@@ -40,6 +40,7 @@ export const useDragOver = ({
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsOver(false);
     onDrop?.(e);
   };

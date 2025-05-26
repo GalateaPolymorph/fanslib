@@ -17,6 +17,7 @@ import { Media } from "../features/library/entity";
 import { Niche } from "../features/niches/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
+import { MediaTag, TagDefinition, TagDimension } from "../features/tags/entity";
 import { Tier } from "../features/tiers/entity";
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
@@ -40,6 +41,9 @@ export const AppDataSource = new DataSource({
     FanslyAnalyticsDatapoint,
     FanslyAnalyticsAggregate,
     AnalyticsFetchHistory,
+    TagDimension,
+    TagDefinition,
+    MediaTag,
   ],
   synchronize: true,
   logging: false,

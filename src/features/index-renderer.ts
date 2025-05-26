@@ -23,6 +23,7 @@ import { OsIpcChannel, OsIpcHandlers, osMethods } from "./os/api-type";
 import { PostIpcChannel, PostIpcHandlers, postMethods } from "./posts/api-type";
 import { SettingsIpcChannel, SettingsIpcHandlers, settingsMethods } from "./settings/api-type";
 import { ShootIpcChannel, ShootIpcHandlers, shootMethods } from "./shoots/api-type";
+import { TagIpcChannel, TagIpcHandlers, tagMethods } from "./tags/api-type";
 import { TierIpcChannel, TierIpcHandlers, tierMethods } from "./tiers/api-type";
 
 export type IpcHandlers = CategoryIpcHandlers &
@@ -38,7 +39,8 @@ export type IpcHandlers = CategoryIpcHandlers &
   TierIpcHandlers &
   NicheIpcHandlers &
   APIPostponeIpcHandlers &
-  AnalyticsIpcHandlers;
+  AnalyticsIpcHandlers &
+  TagIpcHandlers;
 
 export const ipcMethods = [
   ...categoryMethods,
@@ -55,6 +57,7 @@ export const ipcMethods = [
   ...nicheMethods,
   ...apiPostponeMethods,
   ...analyticsMethods,
+  ...tagMethods,
 ];
 
 export type IpcChannel =
@@ -71,4 +74,5 @@ export type IpcChannel =
   | HashtagIpcChannel
   | NicheIpcChannel
   | APIPostponeIpcChannel
-  | AnalyticsIpcChannel;
+  | AnalyticsIpcChannel
+  | TagIpcChannel;

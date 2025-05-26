@@ -22,6 +22,7 @@ import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
 import { SettingsPage } from "./pages/Settings";
 import { SubredditsPage } from "./pages/Subreddits";
+import { TagDemo } from "./pages/TagDemo";
 import { TaggingPage } from "./pages/Tagging";
 
 const router = createBrowserRouter([
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "/tagging",
         element: <TaggingPage />,
+      },
+      {
+        path: "/tag-demo",
+        element: <TagDemo />,
       },
       {
         path: "/analytics",

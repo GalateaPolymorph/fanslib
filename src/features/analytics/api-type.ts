@@ -68,6 +68,33 @@ export type TimeAnalytics = {
   avgEngagement: number;
 }[];
 
+// Tag Analytics Types
+export type TagAnalyticsParams = {
+  tagIds?: number[];
+  dimensionIds?: number[];
+  timeRange?: { start: Date; end: Date };
+  metrics?: string[];
+};
+
+export type TagPerformanceMetrics = {
+  tagId: number;
+  tagName: string;
+  dimensionName: string;
+  totalAssignments: number;
+  averageEngagement: number;
+  topPerformingMedia: string[];
+  trendDirection: "up" | "down" | "stable";
+  confidenceScore: number;
+};
+
+export type TagCorrelationData = {
+  tagId1: number;
+  tagId2: number;
+  correlationStrength: number;
+  combinedPerformance: number;
+  coOccurrenceCount: number;
+};
+
 export type ActionableInsight = {
   type: "videoLength" | "hashtag" | "contentTheme" | "postTiming";
   confidence: number; // 0-1 scale based on statistical significance
@@ -154,6 +181,11 @@ const methods = [
   "onBulkFetchProgress",
   "onBulkFetchComplete",
   "cleanupExpiredAnalyticsFetchHistory",
+  // Tag Analytics
+  "getTagAnalytics",
+  "getTagPerformanceMetrics",
+  "getTagCorrelations",
+  "getTagTrends",
 ] as const;
 
 export type AnalyticsHandlers = {
@@ -189,6 +221,20 @@ export type AnalyticsHandlers = {
     listener: (_: unknown, result: BulkFetchResult) => void
   ) => void;
   cleanupExpiredAnalyticsFetchHistory: (_: unknown) => Promise<number>;
+
+  // Tag Analytics
+  getTagAnalytics: (_: unknown, params: TagAnalyticsParams) => Promise<TagPerformanceMetrics[]>;
+  getTagPerformanceMetrics: (
+    _: unknown,
+    tagIds: number[],
+    timeRange: { start: Date; end: Date }
+  ) => Promise<TagPerformanceMetrics[]>;
+  getTagCorrelations: (_: unknown, dimensionId?: number) => Promise<TagCorrelationData[]>;
+  getTagTrends: (
+    _: unknown,
+    tagIds: number[],
+    timeRange: { start: Date; end: Date }
+  ) => Promise<any>;
 };
 
 export const namespace = "analytics" as const;

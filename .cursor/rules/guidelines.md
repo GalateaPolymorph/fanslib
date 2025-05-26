@@ -1,0 +1,292 @@
+# FansLib Development Standards
+
+## Project Overview
+
+**FansLib** is an Electron desktop application for managing adult content creators' content libraries. Built with TypeScript, React, Vite, Tailwind CSS, and TypeORM.
+
+### Core Technology Stack
+
+- **Frontend**: React 18 + TypeScript + Tailwind CSS + Shadcn/ui
+- **Backend**: Electron + TypeORM + SQLite3
+- **Build**: Vite + Electron-vite
+- **State Management**: TanStack Query
+- **UI Components**: Radix UI + Shadcn/ui + Tremor charts
+- **Utilities**: Ramda (functional programming) + date-fns
+
+## Architecture Rules
+
+### Electron Process Separation
+
+- **NEVER** import renderer-specific code in main process files
+- **NEVER** import main process code in renderer files
+- **ALWAYS** use preload scripts for secure IPC communication
+- **ALWAYS** place main process code in `src/main/`
+- **ALWAYS** place preload scripts in `src/preload/`
+- **ALWAYS** place renderer code in `src/renderer/`
+
+### Feature Organization
+
+- **ALWAYS** create new features in `src/features/[feature-name]/`
+- **ALWAYS** use kebab-case for feature directory names
+- **ALWAYS** include both main and renderer exports in feature index files
+- **NEVER** create cross-feature dependencies without explicit interfaces
+
+## File Organization Standards
+
+### Directory Structure Rules
+
+- **ALWAYS** use kebab-case for all directory names
+- **ALWAYS** use PascalCase for React component files
+- **ALWAYS** use camelCase for utility and hook files
+- **ALWAYS** place types in the same file of the corresponding code
+
+### Component Organization
+
+- **ALWAYS** place reusable UI components in `src/renderer/src/components/ui/`
+- **ALWAYS** place feature-specific components in `src/renderer/src/components/[feature-name]/`
+- **ALWAYS** place page components in `src/renderer/src/pages/`
+- **NEVER** create components with more than 300 lines
+- **ALWAYS** extract subcomponents when components exceed 200 lines
+
+### Hook Organization
+
+- **ALWAYS** place custom hooks in `src/renderer/src/hooks/`
+- **ALWAYS** organize hooks by category: `api/`, `business/`, `forms/`, `ui/`
+- **ALWAYS** prefix hook names with `use`
+- **NEVER** create hooks that manage more than one concern
+
+## Code Standards
+
+### TypeScript Rules
+
+- **ALWAYS** use `const` declarations, never `let` or `var`
+- **ALWAYS** use arrow functions, never `function` keyword
+- **ALWAYS** use named exports, never default exports
+- **ALWAYS** define types over interfaces
+- **NEVER** use `any` type
+- **ALWAYS** use strict type checking
+
+### React Component Rules
+
+- **ALWAYS** use functional components with TypeScript
+- **ALWAYS** destructure props in function parameters
+- **ALWAYS** use early returns for conditional rendering
+- **NEVER** use classes for components
+- **ALWAYS** use `React.memo` for performance optimization when appropriate
+
+### Event Handler Naming
+
+- **NEVER** use "handle" prefix in event handler names
+- **ALWAYS** name handlers after the action they perform
+- Example: `submitForm` not `handleSubmit`, `deleteItem` not `handleDelete`
+
+### Array Operations
+
+- **NEVER** use for, while, or do-while loops
+- **ALWAYS** use `.map()`, `.filter()`, `.reduce()`, `.forEach()`
+- **NEVER** use array mutation methods like `.push()`, `.unshift()`, `.splice()`
+- **ALWAYS** create new arrays with spread operator or array methods
+
+## UI Component Standards
+
+### Shadcn/ui Integration
+
+- **ALWAYS** use existing shadcn/ui components from `src/renderer/src/components/ui/`
+- **ALWAYS** extend shadcn/ui components rather than creating from scratch
+- **ALWAYS** use `cn()` utility for conditional className merging
+- **NEVER** modify shadcn/ui component files directly
+
+### Styling Rules
+
+- **ALWAYS** use Tailwind CSS classes
+- **ALWAYS** use mobile-first responsive design
+- **NEVER** use inline styles
+- **ALWAYS** use CSS variables for theme colors
+- **ALWAYS** follow Tailwind's utility-first approach
+
+### Icon Usage
+
+- **ALWAYS** use Lucide React icons from `lucide-react`
+- **ALWAYS** use RemixIcon from `@remixicon/react` for specific cases
+- **NEVER** import entire icon libraries
+- **ALWAYS** import icons individually
+
+## State Management Rules
+
+### TanStack Query
+
+- **ALWAYS** use TanStack Query for server state management
+- **ALWAYS** place query hooks in `src/renderer/src/hooks/api/`
+- **ALWAYS** use proper query keys with consistent naming, extracted in a separate helper e.g. const mediaKeys = {...}
+- **ALWAYS** implement error handling for all queries
+- **NEVER** use TanStack Query for local UI state
+
+### Local State
+
+- **ALWAYS** use `useState` for simple local state
+- **ALWAYS** use `useReducer` for complex state logic
+- **NEVER** use global state for component-specific data
+- **ALWAYS** lift state up only when necessary
+
+## Database and GraphQL Rules
+
+### TypeORM Integration
+
+- **ALWAYS** place entity definitions in feature directories
+- **ALWAYS** use decorators for entity configuration
+- **ALWAYS** implement proper relationships between entities
+- **NEVER** write raw SQL queries without TypeORM query builder
+
+## Feature Development Workflow
+
+### Creating New Features
+
+1. **ALWAYS** create feature directory in `src/features/[feature-name]/`
+2. **ALWAYS** create main and renderer index files
+3. **ALWAYS** implement database entities if needed
+4. **ALWAYS** create corresponding UI components
+5. **ALWAYS** add feature exports to main feature index
+
+### Cross-Feature Communication
+
+- **ALWAYS** define explicit interfaces for feature interactions
+- **ALWAYS** use event-driven communication between features
+- **NEVER** import feature internals directly
+- **ALWAYS** use shared types for common data structures
+
+## Build and Development Rules
+
+### Scripts Usage
+
+- **NEVER** use `npm run dev` for development, let the user do it
+- **ALWAYS** run `npm run check` before committing
+- **ALWAYS** use `npm run build` for production builds
+- **NEVER** commit without passing type checks and linting
+
+### Environment Configuration
+
+- **ALWAYS** use `.env` files for environment variables
+- **NEVER** commit sensitive data in `.env` files
+- **ALWAYS** provide `.env.example` for required variables
+- **ALWAYS** use `process.env` for environment access
+
+## Performance Rules
+
+### Component Optimization
+
+- **ALWAYS** use `React.memo` for expensive components
+- **ALWAYS** use `useMemo` for expensive calculations
+- **ALWAYS** use `useCallback` for event handlers passed to children
+- **NEVER** create objects or functions in render methods
+
+### Bundle Optimization
+
+- **ALWAYS** use dynamic imports for large dependencies
+- **ALWAYS** implement code splitting for routes
+- **NEVER** import entire libraries when only using specific functions
+- **ALWAYS** analyze bundle size with build tools
+
+## Security Rules
+
+### Electron Security
+
+- **ALWAYS** disable node integration in renderer processes
+- **ALWAYS** enable context isolation in preload scripts
+- **NEVER** expose sensitive APIs to renderer processes
+- **ALWAYS** validate all IPC communications
+
+### Data Handling
+
+- **ALWAYS** sanitize user inputs
+- **NEVER** store sensitive data in localStorage
+- **ALWAYS** use secure storage for credentials
+- **ALWAYS** validate data at boundaries
+
+## Error Handling Rules
+
+### Error Boundaries
+
+- **ALWAYS** implement error boundaries for feature components
+- **ALWAYS** provide fallback UI for errors
+- **NEVER** let errors crash the entire application
+- **ALWAYS** log errors for debugging
+
+### API Error Handling
+
+- **ALWAYS** handle network errors gracefully
+- **ALWAYS** provide user-friendly error messages
+- **NEVER** expose technical error details to users
+- **ALWAYS** implement retry mechanisms for transient errors
+
+## Prohibited Actions
+
+### Code Patterns
+
+- **NEVER** use `var` or `let` declarations
+- **NEVER** use `function` keyword for declarations
+- **NEVER** use default exports
+- **NEVER** use `any` type in TypeScript
+- **NEVER** use for loops or while loops
+- **NEVER** mutate arrays or objects directly
+- **NEVER** use inline styles
+- **NEVER** import entire libraries unnecessarily
+
+### Architecture Violations
+
+- **NEVER** import renderer code in main process
+- **NEVER** import main process code in renderer
+- **NEVER** create circular dependencies between features
+- **NEVER** bypass TypeORM for database operations
+- **NEVER** modify shadcn/ui components directly
+- **NEVER** create global state without justification
+
+### Security Violations
+
+- **NEVER** disable Electron security features
+- **NEVER** expose Node.js APIs to renderer without validation
+- **NEVER** store sensitive data in plain text
+- **NEVER** trust user input without validation
+
+## Multi-File Coordination Requirements
+
+### When adding new features:
+
+- **ALWAYS** update `src/features/index-main.ts` and `src/features/index-renderer.ts`
+- **ALWAYS** add feature routes to router configuration
+- **ALWAYS** update navigation components if needed
+- **ALWAYS** add feature-specific database migrations
+
+### When modifying UI components:
+
+- **ALWAYS** check for breaking changes in dependent components
+- **ALWAYS** update theme configuration if adding new variants
+
+### When changing database schemas:
+
+- **ALWAYS** create TypeORM migrations
+- **ALWAYS** update related TypeScript types
+- **ALWAYS** update seed data if applicable
+
+## AI Decision-Making Guidelines
+
+### When choosing between implementation approaches:
+
+1. **Prioritize** existing patterns over new ones
+2. **Prefer** functional programming over imperative
+3. **Choose** composition over inheritance
+4. **Select** explicit over implicit behavior
+5. **Favor** type safety over convenience
+
+### When handling ambiguous requirements:
+
+1. **First** check existing similar implementations
+2. **Then** follow established project patterns
+3. **Finally** choose the most maintainable approach
+4. **Always** document decisions in code comments only when strictly necessary
+
+### When encountering conflicts:
+
+1. **Security** takes precedence over convenience
+2. **Type safety** takes precedence over performance
+3. **Maintainability** takes precedence over brevity
+4. **Consistency** takes precedence over personal preference
