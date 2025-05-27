@@ -23,6 +23,8 @@ export type CreateTagDefinitionDto = {
   description?: string;
   metadata?: string;
   color?: string;
+  stickerDisplay?: "none" | "color" | "short";
+  shortRepresentation?: string;
   sortOrder?: number;
   parentTagId?: number;
 };
@@ -33,6 +35,8 @@ export type UpdateTagDefinitionDto = {
   description?: string;
   metadata?: string;
   color?: string;
+  stickerDisplay?: "none" | "color" | "short";
+  shortRepresentation?: string;
   sortOrder?: number;
   parentTagId?: number;
 };
@@ -62,6 +66,7 @@ const methods = [
   // Media Tagging
   "assignTagsToMedia",
   "removeTagsFromMedia",
+  "getMediaTags",
   "bulkAssignTags",
 ] as const;
 
@@ -83,6 +88,7 @@ export type TagHandlers = {
   // Media Tagging
   assignTagsToMedia: (_: any, dto: AssignTagsDto) => Promise<MediaTag[]>;
   removeTagsFromMedia: (_: any, mediaId: string, tagIds: number[]) => Promise<void>;
+  getMediaTags: (_: any, mediaId: string, dimensionId?: number) => Promise<MediaTag[]>;
   bulkAssignTags: (_: any, assignments: AssignTagsDto[]) => Promise<MediaTag[]>;
 };
 

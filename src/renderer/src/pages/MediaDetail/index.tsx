@@ -38,6 +38,7 @@ export const MediaDetail = () => {
       </div>
     );
   }
+  console.log(media);
 
   return (
     <MediaSelectionProvider media={[media]}>

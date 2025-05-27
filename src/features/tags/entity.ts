@@ -11,6 +11,9 @@ import {
 } from "typeorm";
 import { Media } from "../library/entity";
 
+export const STICKER_DISPLAY_MODES = ["none", "color", "short"] as const;
+export type StickerDisplayMode = (typeof STICKER_DISPLAY_MODES)[number];
+
 @Entity()
 export class TagDimension {
   @PrimaryGeneratedColumn()
@@ -67,6 +70,12 @@ export class TagDefinition {
 
   @Column("varchar", { nullable: true })
   color?: string; // Color for categorical tags
+
+  @Column("varchar", { default: "none" })
+  stickerDisplay: StickerDisplayMode; // Display mode for stickers
+
+  @Column("varchar", { nullable: true })
+  shortRepresentation?: string; // Custom short text for sticker display
 
   @Column("int", { default: 0 })
   sortOrder: number; // Order within dimension
@@ -132,7 +141,13 @@ export class MediaTag {
   tagDisplayName: string; // Denormalized from TagDefinition.displayName
 
   @Column("varchar", { nullable: true })
-  color?: string; // Denormalized from TagDefinition.metadata.color for categorical tags
+  color?: string; // Denormalized from TagDefinition.color for categorical tags
+
+  @Column("varchar", { default: "none" })
+  stickerDisplay: StickerDisplayMode; // Denormalized from TagDefinition.stickerDisplay
+
+  @Column("varchar", { nullable: true })
+  shortRepresentation?: string; // Denormalized from TagDefinition.shortRepresentation
 
   @Column("real", { nullable: true })
   numericValue?: number; // Parsed numeric value for numerical tags (performance optimization)

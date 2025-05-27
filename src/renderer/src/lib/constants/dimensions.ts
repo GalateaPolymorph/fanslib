@@ -2,6 +2,16 @@
  * Standard dimension names used throughout the application
  * These constants provide a single source of truth for dimension names
  * and enable easy updates across the entire frontend codebase
+ *
+ * MIGRATION NOTE: The FansLib application now uses a generalized tag system
+ * with configurable sticker display properties. While these constants are
+ * maintained for backward compatibility, new implementations should use:
+ *
+ * - MediaTileTagStickers component for automatic sticker display
+ * - stickerDisplay property on TagDefinition ('none', 'color', 'short')
+ * - shortRepresentation property for custom display text
+ *
+ * This eliminates the need for hardcoded tier/category special handling.
  */
 
 export const TIER_DIMENSION_NAME = "Tier" as const;
@@ -9,6 +19,7 @@ export const CATEGORY_DIMENSION_NAME = "Category" as const;
 
 /**
  * All standard dimension names grouped for convenience
+ * @deprecated Use the generalized tag system instead of hardcoded dimension handling
  */
 export const STANDARD_DIMENSION_NAMES = {
   TIER: TIER_DIMENSION_NAME,
@@ -17,6 +28,7 @@ export const STANDARD_DIMENSION_NAMES = {
 
 /**
  * Tier values for categorical tier system
+ * @deprecated Configure these as TagDefinition entities with appropriate shortRepresentation
  */
 export const TIER_VALUES = {
   FREE: "Free",
@@ -26,6 +38,7 @@ export const TIER_VALUES = {
 
 /**
  * Mapping between tier levels and categorical values
+ * @deprecated Use TagDefinition entities with shortRepresentation instead
  */
 export const TIER_LEVEL_TO_VALUE = {
   0: TIER_VALUES.FREE,
@@ -35,6 +48,7 @@ export const TIER_LEVEL_TO_VALUE = {
 
 /**
  * Mapping between categorical values and tier levels
+ * @deprecated Use TagDefinition entities with shortRepresentation instead
  */
 export const TIER_VALUE_TO_LEVEL = {
   [TIER_VALUES.FREE]: 0,
@@ -70,6 +84,7 @@ export const isValidTierValue = (value: string): value is TierValue => {
 };
 
 /**
+ * @deprecated Use TagDefinition entities with shortRepresentation instead
  * Helper function to convert tier level to categorical value
  */
 export const getTierValueFromLevel = (level: number): TierValue | null => {
@@ -77,6 +92,7 @@ export const getTierValueFromLevel = (level: number): TierValue | null => {
 };
 
 /**
+ * @deprecated Use TagDefinition entities with shortRepresentation instead
  * Helper function to convert categorical value to tier level
  */
 export const getTierLevelFromValue = (value: string): number | null => {

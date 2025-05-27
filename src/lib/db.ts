@@ -18,6 +18,7 @@ import { Niche } from "../features/niches/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
 import { MediaTag, TagDefinition, TagDimension } from "../features/tags/entity";
+import { runStickerDisplayMigration } from "../features/tags/migration";
 import { Tier } from "../features/tiers/entity";
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
@@ -62,6 +63,8 @@ export const db = async () => {
   if (!initialized) {
     await AppDataSource.initialize();
     initialized = true;
+
+    await runStickerDisplayMigration();
   }
 
   return AppDataSource;

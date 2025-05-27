@@ -17,6 +17,7 @@ export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
   const { data: mediaTags, isLoading: mediaTagsLoading } = useMediaTags(mediaId);
   const assignTagsMutation = useAssignTagsToMedia();
 
+  console.log(mediaTags);
   // Auto-activate dimensions that have existing tags
   useEffect(() => {
     if (mediaTags && mediaTags.length > 0) {

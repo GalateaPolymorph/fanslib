@@ -24,11 +24,13 @@ const formatTierAsDisplay = (tierValue: string): string => {
 };
 
 // Helper function to check if this is a Tier dimension
+// @deprecated Use the generalized tag system instead of hardcoded dimension checks
 const isTierDimension = (dimensionName: string): boolean => {
   return dimensionName === "Tier";
 };
 
 // Helper function to check if this is a Category dimension
+// @deprecated Use the generalized tag system instead of hardcoded dimension checks
 const isCategoryDimension = (dimensionName: string): boolean => {
   return dimensionName === "Category";
 };

@@ -45,6 +45,10 @@ export const mediaTagsToSelectionState = (mediaTags: MediaTag[]): TagSelectionSt
 };
 
 /**
+ * @deprecated Use the generalized tag system with stickerDisplay configuration instead.
+ * For display purposes, use MediaTileTagStickers component which automatically handles
+ * all tags with shortRepresentation configured.
+ *
  * Get Tier value from media tags (returns the categorical value: Free, Paid, Premium)
  */
 export const getTierValue = (mediaTags: MediaTag[]): string | null => {
@@ -55,6 +59,10 @@ export const getTierValue = (mediaTags: MediaTag[]): string | null => {
 };
 
 /**
+ * @deprecated Use the generalized tag system with stickerDisplay configuration instead.
+ * For display purposes, use MediaTileTagStickers component which automatically handles
+ * all tags with shortRepresentation configured.
+ *
  * Get Tier level from media tags (returns the numerical level: 0, 1, 2)
  */
 export const getTierLevel = (mediaTags: MediaTag[]): number | null => {
@@ -65,6 +73,10 @@ export const getTierLevel = (mediaTags: MediaTag[]): number | null => {
 };
 
 /**
+ * @deprecated Use the generalized tag system with stickerDisplay configuration instead.
+ * For display purposes, use MediaTileTagStickers component which automatically handles
+ * all tags with color display configured.
+ *
  * Get Category tags from media tags
  */
 export const getCategoryTags = (mediaTags: MediaTag[]): MediaTag[] => {
@@ -88,6 +100,10 @@ export const hasMediaTierLevel = (mediaTags: MediaTag[], level: number): boolean
 };
 
 /**
+ * @deprecated Use the generalized tag system with stickerDisplay configuration instead.
+ * For display purposes, use MediaTileTagStickers component which automatically handles
+ * all tags with color display configured.
+ *
  * Get category slugs from media tags
  */
 export const getCategorySlugs = (mediaTags: MediaTag[]): string[] => {
@@ -113,6 +129,9 @@ export const getContentCategoryTags = (mediaTags: MediaTag[]): MediaTag[] => {
 };
 
 /**
+ * @deprecated Use the generalized tag system with shortRepresentation instead.
+ * Configure tier tags with stickerDisplay='short' and appropriate shortRepresentation values.
+ *
  * Format tier value as display string with icons
  */
 export const formatTierAsDisplay = (tierValue: string): string => {
@@ -126,6 +145,10 @@ export const formatTierAsDisplay = (tierValue: string): string => {
 };
 
 /**
+ * @deprecated Use the generalized tag system with shortRepresentation instead.
+ * Configure tier tags with stickerDisplay='short' and shortRepresentation='$', '$$', '$$$' etc.
+ * The MediaTileTagStickers component will automatically display these.
+ *
  * Format tier level as display string with icons
  */
 export const formatTierLevelAsDisplay = (level: number): string => {

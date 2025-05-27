@@ -2,12 +2,11 @@ import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { useMediaSelection } from "@renderer/contexts/MediaSelectionContext";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../lib/utils";
-import { MediaTileCategorySticker } from "./MediaTileCategorySticker";
 import { MediaFileFilenameTooltip } from "./MediaTileFilenameTooltip";
 import { MediaTileImage } from "./MediaTileImage";
 import { MediaTilePostsPopover } from "./MediaTilePostsPopover";
 import { MediaTileSelectionCircle } from "./MediaTileSelectionCircle";
-import { MediaTileTierSticker } from "./MediaTileTierSticker";
+import { MediaTileTagStickers } from "./MediaTileTagStickers";
 import { MediaTileTypeSticker } from "./MediaTileTypeSticker";
 import { MediaTileVideo } from "./MediaTileVideo";
 import { MediaTileProps } from "./types";
@@ -21,13 +20,11 @@ export const MediaTile = (props: MediaTileProps) => {
     useMediaSelection();
 
   const withPostsPopover = props.withPostsPopover ?? false;
-  const withCategoryHint = props.withCategoryHint ?? false;
   const withPreview = props.withPreview ?? false;
   const withSelection = props.withSelection ?? false;
   const withDragAndDrop = props.withDragAndDrop ?? false;
   const withDuration = props.withDuration ?? false;
   const withTypeIcon = props.withTypeIcon ?? false;
-  const withTier = props.withTier ?? false;
   const withNavigation = props.withNavigation ?? false;
   const withFileName = props.withFileName ?? false;
   const cover = props.cover ?? false;
@@ -93,8 +90,7 @@ export const MediaTile = (props: MediaTileProps) => {
       {withSelection && <MediaTileSelectionCircle mediaId={media.id} />}
       <div className="absolute bottom-1 left-1 flex gap-1 z-10">
         {withPostsPopover && <MediaTilePostsPopover media={media} />}
-        {withCategoryHint && <MediaTileCategorySticker media={media} />}
-        {withTier && <MediaTileTierSticker media={media} />}
+        <MediaTileTagStickers media={media} />
         {withTypeIcon && <MediaTileTypeSticker media={media} />}
       </div>
     </div>

@@ -55,9 +55,7 @@ const GalleryContent = ({ medias, error, libraryPath, onScan, onUpdate }: Galler
               withPreview
               withDragAndDrop
               withDuration
-              withCategoryHint
               withPostsPopover
-              withTier
               withNavigation
               withFileName
               index={index}

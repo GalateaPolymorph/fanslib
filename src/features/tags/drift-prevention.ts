@@ -140,18 +140,25 @@ export const validateMediaTagAssignment = async (dto: {
  */
 export const performPeriodicCleanup = async (): Promise<{
   orphanedMediaTagsRemoved: number;
+  stickerDisplayPropertiesSynced: number;
   timestamp: Date;
 }> => {
   console.log("🔄 Starting periodic tag drift cleanup...");
 
-  const { removedCount } = await cleanupOrphanedMediaTags();
+  const [{ removedCount }, { updatedCount }] = await Promise.all([
+    cleanupOrphanedMediaTags(),
+    syncStickerDisplayProperties(),
+  ]);
+
   const timestamp = new Date();
 
   console.log(`✅ Periodic cleanup completed at ${timestamp.toISOString()}`);
   console.log(`   - Removed ${removedCount} orphaned MediaTag entries`);
+  console.log(`   - Synchronized ${updatedCount} sticker display properties`);
 
   return {
     orphanedMediaTagsRemoved: removedCount,
+    stickerDisplayPropertiesSynced: updatedCount,
     timestamp,
   };
 };
@@ -162,6 +169,7 @@ export const performPeriodicCleanup = async (): Promise<{
 export const getDriftPreventionStats = async (): Promise<{
   totalMediaTags: number;
   orphanedMediaTags: number;
+  inconsistentStickerDisplayProperties: number;
   totalTagDefinitions: number;
   integrityPercentage: number;
 }> => {
@@ -169,19 +177,25 @@ export const getDriftPreventionStats = async (): Promise<{
   const mediaTagRepository = dataSource.getRepository(MediaTag);
   const tagDefinitionRepository = dataSource.getRepository(TagDefinition);
 
-  const [totalMediaTags, orphanedTags, totalTagDefinitions] = await Promise.all([
-    mediaTagRepository.count(),
-    findOrphanedMediaTags(),
-    tagDefinitionRepository.count(),
-  ]);
+  const [totalMediaTags, orphanedTags, outdatedStickerTags, totalTagDefinitions] =
+    await Promise.all([
+      mediaTagRepository.count(),
+      findOrphanedMediaTags(),
+      findOutdatedStickerDisplayProperties(),
+      tagDefinitionRepository.count(),
+    ]);
 
   const orphanedCount = orphanedTags.length;
+  const inconsistentStickerCount = outdatedStickerTags.length;
+  const totalInconsistencies = orphanedCount + inconsistentStickerCount;
+
   const integrityPercentage =
-    totalMediaTags > 0 ? ((totalMediaTags - orphanedCount) / totalMediaTags) * 100 : 100;
+    totalMediaTags > 0 ? ((totalMediaTags - totalInconsistencies) / totalMediaTags) * 100 : 100;
 
   return {
     totalMediaTags,
     orphanedMediaTags: orphanedCount,
+    inconsistentStickerDisplayProperties: inconsistentStickerCount,
     totalTagDefinitions,
     integrityPercentage: Math.round(integrityPercentage * 100) / 100,
   };
@@ -230,4 +244,104 @@ export const stopPeriodicCleanup = (): void => {
  */
 export const isPeriodicCleanupRunning = (): boolean => {
   return cleanupInterval !== null;
+};
+
+/**
+ * Find MediaTags with outdated sticker display properties
+ */
+export const findOutdatedStickerDisplayProperties = async (): Promise<MediaTag[]> => {
+  const dataSource = await db();
+  const mediaTagRepository = dataSource.getRepository(MediaTag);
+
+  // Use query builder to find MediaTags where denormalized fields don't match TagDefinition
+  const outdatedMediaTags = await mediaTagRepository
+    .createQueryBuilder("mt")
+    .leftJoin("mt.tag", "td")
+    .where(
+      "(mt.stickerDisplay != td.stickerDisplay OR " +
+        "(mt.stickerDisplay IS NULL AND td.stickerDisplay IS NOT NULL) OR " +
+        "(mt.stickerDisplay IS NOT NULL AND td.stickerDisplay IS NULL)) OR " +
+        "(mt.shortRepresentation != td.shortRepresentation OR " +
+        "(mt.shortRepresentation IS NULL AND td.shortRepresentation IS NOT NULL) OR " +
+        "(mt.shortRepresentation IS NOT NULL AND td.shortRepresentation IS NULL))"
+    )
+    .getMany();
+
+  return outdatedMediaTags;
+};
+
+/**
+ * Synchronize sticker display properties from TagDefinition to MediaTag
+ */
+export const syncStickerDisplayProperties = async (): Promise<{
+  updatedCount: number;
+  updatedIds: number[];
+}> => {
+  const outdatedTags = await findOutdatedStickerDisplayProperties();
+
+  if (outdatedTags.length === 0) {
+    return { updatedCount: 0, updatedIds: [] };
+  }
+
+  const dataSource = await db();
+  const mediaTagRepository = dataSource.getRepository(MediaTag);
+  const tagDefinitionRepository = dataSource.getRepository(TagDefinition);
+
+  const updatedIds: number[] = [];
+
+  // Process in batches to avoid memory issues with large datasets
+  const batchSize = 100;
+  for (let i = 0; i < outdatedTags.length; i += batchSize) {
+    const batch = outdatedTags.slice(i, i + batchSize);
+    const tagDefinitionIds = batch.map((mt) => mt.tagDefinitionId);
+
+    // Get the corresponding TagDefinitions
+    const tagDefinitions = await tagDefinitionRepository.find({
+      where: { id: In(tagDefinitionIds) },
+      relations: ["dimension"],
+    });
+
+    // Create a map for quick lookup
+    const tagDefinitionMap = new Map(tagDefinitions.map((td) => [td.id, td]));
+
+    // Update each MediaTag with correct denormalized fields
+    for (const mediaTag of batch) {
+      const tagDefinition = tagDefinitionMap.get(mediaTag.tagDefinitionId);
+      if (tagDefinition) {
+        // Update denormalized fields to match TagDefinition
+        mediaTag.stickerDisplay = tagDefinition.stickerDisplay || "none";
+        mediaTag.shortRepresentation = tagDefinition.shortRepresentation || null;
+        updatedIds.push(mediaTag.id);
+      }
+    }
+
+    // Save the batch
+    await mediaTagRepository.save(batch);
+  }
+
+  console.log(`🔄 Synchronized ${outdatedTags.length} MediaTag sticker display properties`);
+
+  return { updatedCount: outdatedTags.length, updatedIds };
+};
+
+/**
+ * Validate consistency of sticker display properties between TagDefinition and MediaTag
+ */
+export const validateStickerDisplayConsistency = async (): Promise<{
+  isConsistent: boolean;
+  inconsistentCount: number;
+  totalChecked: number;
+}> => {
+  const outdatedTags = await findOutdatedStickerDisplayProperties();
+  const dataSource = await db();
+  const mediaTagRepository = dataSource.getRepository(MediaTag);
+
+  const totalMediaTags = await mediaTagRepository.count();
+  const inconsistentCount = outdatedTags.length;
+
+  return {
+    isConsistent: inconsistentCount === 0,
+    inconsistentCount,
+    totalChecked: totalMediaTags,
+  };
 };

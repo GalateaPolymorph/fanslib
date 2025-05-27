@@ -10,7 +10,7 @@ import {
   UpdateTagDimensionDto,
 } from "./api-type";
 import { validateMediaTagAssignment } from "./drift-prevention";
-import { MediaTag, TagDefinition, TagDimension } from "./entity";
+import { MediaTag, STICKER_DISPLAY_MODES, TagDefinition, TagDimension } from "./entity";
 
 // Dimension Operations
 export const createTagDimension = async (dto: CreateTagDimensionDto): Promise<TagDimension> => {
@@ -152,6 +152,13 @@ export const createTagDefinition = async (dto: CreateTagDefinitionDto): Promise<
     dto.color = normalizeHexColor(dto.color);
   }
 
+  // Validate stickerDisplay enum value if provided
+  if (dto.stickerDisplay && !STICKER_DISPLAY_MODES.includes(dto.stickerDisplay)) {
+    throw new Error(
+      `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
+    );
+  }
+
   // Assign color automatically for categorical tags
   const assignedColor = await assignColorForCategoricalTag(dto.dimensionId, dto.color);
 
@@ -182,6 +189,13 @@ export const updateTagDefinition = async (
       throw new Error(`Invalid color format: ${colorError}`);
     }
     dto.color = normalizeHexColor(dto.color);
+  }
+
+  // Validate stickerDisplay enum value if provided
+  if (dto.stickerDisplay && !STICKER_DISPLAY_MODES.includes(dto.stickerDisplay)) {
+    throw new Error(
+      `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
+    );
   }
 
   await repository.update(id, dto);
@@ -294,6 +308,10 @@ const populateDenormalizedFields = (
 
   // Use the color field directly from TagDefinition
   mediaTag.color = tagDefinition.color || null;
+
+  // Use the sticker display properties directly from TagDefinition
+  mediaTag.stickerDisplay = tagDefinition.stickerDisplay || "none";
+  mediaTag.shortRepresentation = tagDefinition.shortRepresentation || null;
 
   // Parse and store typed values for performance optimization
   if (tagDefinition.dimension.dataType === "numerical") {

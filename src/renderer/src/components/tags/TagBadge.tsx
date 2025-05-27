@@ -22,13 +22,8 @@ export const TagBadge = ({
   return (
     <Badge
       variant={badgeVariant}
-      className={cn(
-        "cursor-pointer transition-colors",
-        isSelected && "bg-blue-500 text-white hover:bg-blue-600",
-        !isSelected && "hover:bg-gray-200",
-        onClick && "select-none",
-        className
-      )}
+      color={tag.color}
+      className={cn("cursor-pointer transition-colors", onClick && "select-none", className)}
       onClick={onClick}
     >
       {tag.displayName}

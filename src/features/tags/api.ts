@@ -8,6 +8,7 @@ import {
   deleteTagDefinition,
   deleteTagDimension,
   getAllTagDimensions,
+  getMediaTags,
   getTagDefinitionById,
   getTagDimensionById,
   getTagsByDimension,
@@ -57,6 +58,9 @@ export const handlers: TagHandlers = {
   },
   removeTagsFromMedia: (_, mediaId, tagIds) => {
     return removeTagsFromMedia(mediaId, tagIds);
+  },
+  getMediaTags: (_, mediaId, dimensionId) => {
+    return getMediaTags(mediaId, dimensionId);
   },
   bulkAssignTags: (_, assignments) => {
     return bulkAssignTags(assignments);

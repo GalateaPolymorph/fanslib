@@ -55,6 +55,7 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
         hashtags: true,
       },
       tier: true,
+      mediaTags: true,
     },
   });
 };
