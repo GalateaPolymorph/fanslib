@@ -22,6 +22,8 @@ export type CreateTagDefinitionDto = {
   displayName: string;
   description?: string;
   metadata?: string;
+  color?: string;
+  sortOrder?: number;
   parentTagId?: number;
 };
 
@@ -30,6 +32,8 @@ export type UpdateTagDefinitionDto = {
   displayName?: string;
   description?: string;
   metadata?: string;
+  color?: string;
+  sortOrder?: number;
   parentTagId?: number;
 };
 
@@ -58,11 +62,7 @@ const methods = [
   // Media Tagging
   "assignTagsToMedia",
   "removeTagsFromMedia",
-  "getMediaTags",
   "bulkAssignTags",
-
-  // Tag Suggestions
-  "getRecommendedTags",
 ] as const;
 
 export type TagHandlers = {
@@ -83,11 +83,7 @@ export type TagHandlers = {
   // Media Tagging
   assignTagsToMedia: (_: any, dto: AssignTagsDto) => Promise<MediaTag[]>;
   removeTagsFromMedia: (_: any, mediaId: string, tagIds: number[]) => Promise<void>;
-  getMediaTags: (_: any, mediaId: string, dimensionId?: number) => Promise<MediaTag[]>;
   bulkAssignTags: (_: any, assignments: AssignTagsDto[]) => Promise<MediaTag[]>;
-
-  // Tag Suggestions
-  getRecommendedTags: (_: any, mediaId: string) => Promise<TagDefinition[]>;
 };
 
 export const namespace = "tags" as const;

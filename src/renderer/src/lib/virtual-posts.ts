@@ -11,7 +11,11 @@ import {
   startOfWeek,
 } from "date-fns";
 import { Tier } from "src/features/tiers/entity";
-import { ContentSchedule } from "../../../features/content-schedules/entity";
+import {
+  ContentSchedule,
+  parseTagRequirements,
+  TagRequirements,
+} from "../../../features/content-schedules/entity";
 import { Post } from "../../../features/posts/entity";
 const SCHEDULE_HORIZON_MONTHS = 3; // Generate posts for next 3 months
 
@@ -27,6 +31,7 @@ export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt" | "postMed
   subredditId: string | null;
   tierId: number;
   tier: Tier;
+  tagRequirements: TagRequirements | null;
   fanslyAnalyticsAggregate: undefined;
 };
 
@@ -34,11 +39,24 @@ export type VirtualPostMedia = {
   media: {
     tier?: Tier;
     tierId?: number;
+    tagRequirements?: TagRequirements;
   };
 };
 
 export const isVirtualPost = (post: Post | VirtualPost): post is VirtualPost => {
   return "isVirtual" in post && post.isVirtual === true;
+};
+
+// Helper function to check if media matches tag requirements
+const matchesTagRequirements = (
+  mediaTags: Array<{ dimensionName: string; tagDefinitionId: string | number }>,
+  requirements: TagRequirements
+): boolean => {
+  return Object.entries(requirements).every(([dimensionName, requiredTags]) =>
+    mediaTags.some(
+      (tag) => tag.dimensionName === dimensionName && requiredTags.includes(tag.tagDefinitionId)
+    )
+  );
 };
 
 const generateScheduleDates = (schedule: ContentSchedule, startDate: Date = new Date()): Date[] => {
@@ -122,6 +140,9 @@ export const generateVirtualPosts = (
       });
     });
 
+    // Parse tag requirements from the schedule
+    const tagRequirements = parseTagRequirements(schedule.tagRequirements);
+
     return filteredDates.map((scheduleDate, index) => ({
       isVirtual: true as const,
       virtualId: `${schedule.id}-${index}`,
@@ -139,6 +160,7 @@ export const generateVirtualPosts = (
       subredditId: null,
       tierId: schedule.tierId,
       tier: schedule.tier,
+      tagRequirements,
       fanslyAnalyticsAggregate: undefined,
       fanslyAnalyticsDatapoints: [],
       postMedia: [
@@ -146,9 +168,13 @@ export const generateVirtualPosts = (
           media: {
             tier: schedule.tier,
             tierId: schedule.tierId,
+            tagRequirements,
           },
         },
       ],
     }));
   });
 };
+
+// Export the helper function for use in other modules
+export { matchesTagRequirements };

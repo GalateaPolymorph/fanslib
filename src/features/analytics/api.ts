@@ -5,11 +5,7 @@ import { AnalyticsHandlers, namespace } from "./api-type";
 import { bulkFetchAnalytics } from "./bulk-fetch";
 import { fetchFanslyAnalyticsData } from "./fetch-fansly-data";
 import { generateInsights } from "./insights-generator";
-import {
-  addDatapointsToPost,
-  cleanupExpiredAnalyticsFetchHistory,
-  initializeAnalyticsAggregates,
-} from "./operations";
+import { addDatapointsToPost, initializeAnalyticsAggregates } from "./operations";
 import {
   getFanslyPostsWithAnalytics,
   getHashtagAnalytics,
@@ -82,9 +78,6 @@ export const handlers: AnalyticsHandlers = {
   },
   onBulkFetchComplete: (_) => {
     // Stub for event listener
-  },
-  cleanupExpiredAnalyticsFetchHistory: async (_) => {
-    return cleanupExpiredAnalyticsFetchHistory();
   },
 
   // Tag Analytics

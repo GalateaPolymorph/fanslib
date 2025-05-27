@@ -2,8 +2,8 @@ import { nanoid } from "nanoid";
 import { db } from "../../lib/db";
 import { Category } from "../categories/entity";
 import { Tier } from "../tiers/entity";
-import { ContentScheduleCreateData } from "./api-type";
-import { ContentSchedule } from "./entity";
+import { ContentScheduleCreateData, ContentScheduleUpdateData } from "./api-type";
+import { ContentSchedule, stringifyTagRequirements } from "./entity";
 
 export const createContentSchedule = async (
   data: ContentScheduleCreateData
@@ -14,11 +14,14 @@ export const createContentSchedule = async (
   const schedule = new ContentSchedule();
   const now = new Date().toISOString();
 
+  const tagRequirements = stringifyTagRequirements(data.tagRequirements || {});
+
   Object.assign(schedule, {
     ...data,
     id: nanoid(),
     createdAt: now,
     updatedAt: now,
+    tagRequirements,
   });
 
   await repository.save(schedule);
@@ -28,6 +31,7 @@ export const createContentSchedule = async (
     relations: {
       channel: true,
       category: true,
+      tier: true,
     },
   }) as Promise<ContentSchedule>;
 };
@@ -104,9 +108,7 @@ export const fetchAllContentSchedules = async (): Promise<ContentSchedule[]> => 
 
 export const updateContentSchedule = async (
   id: string,
-  updates: Partial<
-    Omit<ContentSchedule, "id" | "createdAt" | "updatedAt" | "channel" | "category" | "tier">
-  >
+  updates: ContentScheduleUpdateData
 ): Promise<ContentSchedule | null> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(ContentSchedule);
@@ -122,10 +124,21 @@ export const updateContentSchedule = async (
 
   if (!schedule) return null;
 
+  // Handle tagRequirements conversion
+  let tagRequirementsString: string | undefined;
+  if ("tagRequirements" in updates) {
+    if (updates.tagRequirements === null) {
+      tagRequirementsString = undefined;
+    } else if (updates.tagRequirements) {
+      tagRequirementsString = stringifyTagRequirements(updates.tagRequirements);
+    }
+  }
+
   // Apply updates with timestamp
   Object.assign(schedule, {
     ...updates,
     updatedAt: new Date().toISOString(),
+    ...(tagRequirementsString !== undefined && { tagRequirements: tagRequirementsString }),
   });
 
   if (updates.categoryId) {

@@ -1,13 +1,16 @@
 import { CreateShootDialog } from "@renderer/components/Shoots/CreateShootDialog";
+import { TagAssignment } from "@renderer/components/TagAssignment";
 import { Button } from "@renderer/components/ui/button";
 import { cn } from "@renderer/lib/utils";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
 import { Camera, Send, X } from "lucide-react";
 import { useState } from "react";
 import { Media } from "../../../../../../features/library/entity";
-import { GalleryCategorySelect } from "./GalleryCategorySelect";
 import { GalleryNicheSelect } from "./GalleryNicheSelect";
-import { GalleryTierSelect } from "./GalleryTierSelect";
+
+// Dimension constants
+const TIER_DIMENSION_NAME = "Tier";
+const CATEGORY_DIMENSION_NAME = "Category";
 
 type GalleryActionBarProps = {
   selectedCount: number;
@@ -43,8 +46,16 @@ export const GalleryActionBar = ({
       >
         <div className="flex gap-4 row-span-2 items-center">
           <GalleryNicheSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
-          <GalleryCategorySelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
-          <GalleryTierSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
+          <TagAssignment
+            dimensionName={CATEGORY_DIMENSION_NAME}
+            selectedMedia={selectedMedia}
+            onUpdate={onUpdate}
+          />
+          <TagAssignment
+            dimensionName={TIER_DIMENSION_NAME}
+            selectedMedia={selectedMedia}
+            onUpdate={onUpdate}
+          />
           <Button
             variant="outline"
             className="flex items-center gap-2"

@@ -1,14 +1,17 @@
 import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Filter, Search, X } from "lucide-react";
 import { omit } from "ramda";
-import type { MediaFilters as MediaFiltersType } from "../../../features/library/api-type";
+import type {
+  MediaFilters as MediaFiltersType,
+  TagFilter as TagFilterType,
+} from "../../../features/library/api-type";
 import { cn } from "../lib/utils";
-import { CategorySelect } from "./CategorySelect";
 import { ChannelPostFilter } from "./ChannelPostFilter";
 import { ChannelSelect } from "./ChannelSelect";
 import { ShootSelect } from "./ShootSelect";
 import { SubredditPostFilter } from "./SubredditPostFilter";
-import { TierSelect } from "./TierSelect";
+import { TagDimensionSelect } from "./TagDimensionSelect";
+import { TagSelector } from "./TagSelector";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -17,6 +20,11 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Input } from "./ui/input";
+
+type TagSelectionState = {
+  id: string | number;
+  state: "selected" | "half-selected" | "unselected";
+};
 
 type MediaFiltersProps = {
   value: MediaFiltersType;
@@ -30,12 +38,11 @@ type MediaFiltersProps = {
 type FilterType =
   | "search"
   | "caption"
-  | "categories"
-  | "tiers"
   | "channelFilters"
   | "subredditFilters"
   | "shoots"
-  | "excludeShoots";
+  | "excludeShoots"
+  | "tagFilters";
 
 type FilterConfig = {
   label: string;
@@ -45,8 +52,6 @@ type FilterConfig = {
 const AVAILABLE_FILTERS: FilterConfig[] = [
   { label: "Search", key: "search" },
   { label: "Caption", key: "caption" },
-  { label: "Categories", key: "categories" },
-  { label: "Tiers", key: "tiers" },
   { label: "Channel", key: "channelFilters" },
   { label: "Subreddit", key: "subredditFilters" },
   { label: "Shoot", key: "shoots" },
@@ -77,6 +82,7 @@ export const MediaFilters = ({
       channelFilters: undefined,
       subredditFilters: undefined,
       tiers: undefined,
+      tagFilters: undefined,
     });
   };
 
@@ -96,6 +102,7 @@ export const MediaFilters = ({
     if (key === "shoots") return value.shootId !== undefined;
     if (key === "search") return value.search !== undefined;
     if (key === "caption") return value.caption !== undefined;
+    if (key === "tagFilters") return value.tagFilters && Object.keys(value.tagFilters).length > 0;
     return !!value[key];
   };
 
@@ -108,6 +115,101 @@ export const MediaFilters = ({
     const channel = channels.find((c) => c.id === channelId);
     if (!channel?.eligibleMediaFilter) return;
     onChange(channel.eligibleMediaFilter);
+  };
+
+  // Helper functions for tag filters
+  const addTagFilter = (dimensionName: string) => {
+    const newTagFilters = {
+      ...value.tagFilters,
+      [dimensionName]: { tagIds: [], operator: "OR" as const },
+    };
+    onChange({ ...value, tagFilters: newTagFilters });
+  };
+
+  const updateTagFilter = (dimensionName: string, filter: TagFilterType) => {
+    const newTagFilters = {
+      ...value.tagFilters,
+      [dimensionName]: filter,
+    };
+    onChange({ ...value, tagFilters: newTagFilters });
+  };
+
+  const removeTagFilter = (dimensionName: string) => {
+    const newTagFilters = { ...value.tagFilters };
+    delete newTagFilters[dimensionName];
+
+    const hasRemainingFilters = Object.keys(newTagFilters).length > 0;
+    onChange({
+      ...value,
+      tagFilters: hasRemainingFilters ? newTagFilters : undefined,
+    });
+  };
+
+  const getActiveTagFilters = () => {
+    return value.tagFilters ? Object.keys(value.tagFilters) : [];
+  };
+
+  // Helper function to render a single tag filter
+  const renderTagFilter = (dimensionName: string, filter: TagFilterType) => {
+    // Convert TagFilter to TagSelectionState format
+    const getTagStates = (): TagSelectionState[] => {
+      if (!filter.tagIds?.length) return [];
+
+      return filter.tagIds.map((id) => ({
+        id,
+        state: "selected" as const,
+      }));
+    };
+
+    // Handle tag selection changes
+    const handleTagChange = (
+      tagStates: TagSelectionState[] | undefined,
+      _changedTagId: string | number
+    ) => {
+      if (tagStates === undefined) {
+        // No tags selected
+        updateTagFilter(dimensionName, { ...filter, tagIds: undefined });
+        return;
+      }
+
+      if (tagStates.length === 0) {
+        // "None" selected - filter for media without any tags in this dimension
+        updateTagFilter(dimensionName, { ...filter, tagIds: [] });
+        return;
+      }
+
+      // Extract selected tag IDs
+      const selectedTagIds = tagStates
+        .filter((state) => state.state === "selected")
+        .map((state) => state.id as number);
+
+      updateTagFilter(dimensionName, { ...filter, tagIds: selectedTagIds });
+    };
+
+    return (
+      <div className="flex items-center gap-2 group">
+        <div className="flex-1">
+          <TagSelector
+            dimensionName={dimensionName}
+            value={getTagStates()}
+            onChange={handleTagChange}
+            multiple={true}
+            includeNoneOption={true}
+            tierDisplayFormat="both"
+          />
+        </div>
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => removeTagFilter(dimensionName)}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   const renderFilterContent = (key: FilterType) => {
@@ -145,9 +247,8 @@ export const MediaFilters = ({
         return (
           <div className="flex items-center gap-2 w-full">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                className="pl-9 pr-8"
+                className="pr-8"
                 value={value.caption ?? ""}
                 onChange={(e) => {
                   onChange({
@@ -155,7 +256,7 @@ export const MediaFilters = ({
                     caption: e.target.value,
                   });
                 }}
-                placeholder="Search post captions..."
+                placeholder="Search captions..."
               />
               {value.caption && (
                 <Button
@@ -169,41 +270,6 @@ export const MediaFilters = ({
               )}
             </div>
           </div>
-        );
-      case "categories":
-        return (
-          <CategorySelect
-            value={
-              !value.categories
-                ? []
-                : value.categories.map((id) => ({ id, state: "selected" as const }))
-            }
-            onChange={(categories) => {
-              onChange({
-                ...value,
-                categories:
-                  categories === undefined
-                    ? []
-                    : categories.filter((c) => c.state === "selected").map((c) => c.id),
-              });
-            }}
-            multiple={true}
-            includeNoneOption
-          />
-        );
-      case "tiers":
-        return (
-          <TierSelect
-            includeNoneOption
-            selectedTierIds={value.tiers ? value.tiers.map(Number) : undefined}
-            onTierSelect={(tierIds) => {
-              onChange({
-                ...value,
-                tiers: tierIds === undefined ? [] : tierIds,
-              });
-            }}
-            multiple
-          />
         );
       case "channelFilters":
         return (
@@ -260,6 +326,8 @@ export const MediaFilters = ({
             placeholder="Exclude shoots"
           />
         );
+      default:
+        return null;
     }
   };
 
@@ -328,6 +396,11 @@ export const MediaFilters = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
+        <TagDimensionSelect
+          excludeDimensions={getActiveTagFilters()}
+          onDimensionSelect={addTagFilter}
+        />
+
         <div
           className={cn(
             "flex flex-1 gap-x-4 gap-y-2",
@@ -350,6 +423,13 @@ export const MediaFilters = ({
               </div>
             </div>
           ))}
+
+          {/* Render active tag filters */}
+          {getActiveTagFilters().map((dimensionName) => (
+            <div key={dimensionName}>
+              {renderTagFilter(dimensionName, value.tagFilters![dimensionName])}
+            </div>
+          ))}
         </div>
 
         {showClearButton && hasFilters && (
@@ -357,9 +437,9 @@ export const MediaFilters = ({
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="text-muted-foreground"
+            className="h-9 text-muted-foreground"
           >
-            Clear filters
+            Clear all
           </Button>
         )}
       </div>

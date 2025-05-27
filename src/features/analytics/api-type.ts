@@ -180,7 +180,7 @@ const methods = [
   "updateFanslyCredentialsFromFetch",
   "onBulkFetchProgress",
   "onBulkFetchComplete",
-  "cleanupExpiredAnalyticsFetchHistory",
+
   // Tag Analytics
   "getTagAnalytics",
   "getTagPerformanceMetrics",
@@ -220,7 +220,6 @@ export type AnalyticsHandlers = {
     _: unknown,
     listener: (_: unknown, result: BulkFetchResult) => void
   ) => void;
-  cleanupExpiredAnalyticsFetchHistory: (_: unknown) => Promise<number>;
 
   // Tag Analytics
   getTagAnalytics: (_: unknown, params: TagAnalyticsParams) => Promise<TagPerformanceMetrics[]>;

@@ -20,6 +20,12 @@ export type SubredditPostFilter = {
   posted: boolean;
 };
 
+export type TagFilter = {
+  tagIds?: number[];
+  values?: string[];
+  operator?: "AND" | "OR";
+};
+
 export type MediaFilters = {
   categories?: string[] | undefined;
   unposted?: boolean;
@@ -32,6 +38,10 @@ export type MediaFilters = {
   channelFilters?: ChannelPostFilter[];
   subredditFilters?: SubredditPostFilter[];
   tiers?: number[];
+  // Tag-based filtering
+  tagFilters?: {
+    [dimensionName: string]: TagFilter;
+  };
 };
 
 export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
@@ -55,7 +65,7 @@ export type FileScanResult = {
 
 export type UpdateMediaPayload = Partial<
   Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia" | "niches">
-> & { categoryIds?: string[] };
+>;
 
 const methods = [
   "scan",
@@ -67,9 +77,8 @@ const methods = [
   "onScanProgress",
   "onScanComplete",
   "updateNiches",
-  "assignTierToMedia",
-  "assignTierToMedias",
 ] as const;
+
 export type LibraryHandlers = {
   scan: (_: unknown) => Promise<LibraryScanResult>;
   scanFile: (_: unknown, path: string) => Promise<FileScanResult>;
@@ -83,8 +92,6 @@ export type LibraryHandlers = {
   ) => void;
   onScanComplete: (_: unknown, listener: (_: unknown, result: LibraryScanResult) => void) => void;
   updateNiches: (_: unknown, mediaId: string, nicheIds: number[]) => Promise<Media>;
-  assignTierToMedia: (_: unknown, mediaId: string, tierId: number) => Promise<Media>;
-  assignTierToMedias: (_: unknown, mediaIds: string[], tierId: number) => Promise<Media[]>;
 };
 
 export const namespace = "library" as const;

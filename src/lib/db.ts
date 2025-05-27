@@ -63,6 +63,7 @@ export const db = async () => {
     await AppDataSource.initialize();
     initialized = true;
   }
+
   return AppDataSource;
 };
 

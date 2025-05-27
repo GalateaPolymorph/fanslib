@@ -1,3 +1,6 @@
+import { db } from "src/lib/db";
+import { AnalyticsFetchHistory } from "./entity";
+
 export type TimeframeClassification = {
   type: "rolling" | "fixed";
   identifier: string;
@@ -69,9 +72,6 @@ export const isFetchExpired = (expiresAt?: Date): boolean => {
  * This should be called periodically (e.g., daily)
  */
 export const cleanupExpiredFetchHistory = async (): Promise<number> => {
-  const { db } = await import("../../lib/db");
-  const { AnalyticsFetchHistory } = await import("./entity");
-
   const dataSource = await db();
   const fetchHistoryRepository = dataSource.getRepository(AnalyticsFetchHistory);
 

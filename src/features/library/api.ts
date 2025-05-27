@@ -2,8 +2,6 @@ import { prefixNamespaceObject } from "../../lib/namespace";
 import { loadSettings } from "../settings/load";
 import { LibraryHandlers, namespace } from "./api-type";
 import {
-  assignTierToMedia,
-  assignTierToMedias,
   deleteMedia,
   fetchAllMedia,
   getMediaById,
@@ -45,14 +43,6 @@ export const handlers: LibraryHandlers = {
 
   updateNiches: async (_, mediaId: string, nicheIds: number[]) => {
     return updateMediaNiches(mediaId, nicheIds);
-  },
-
-  assignTierToMedia: async (_, mediaId: string, tierId: number) => {
-    return assignTierToMedia(mediaId, tierId);
-  },
-
-  assignTierToMedias: async (_, mediaIds: string[], tierId: number) => {
-    return assignTierToMedias(mediaIds, tierId);
   },
 
   onScanProgress: (_) => {

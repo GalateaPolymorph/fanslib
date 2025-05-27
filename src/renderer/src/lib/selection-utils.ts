@@ -5,6 +5,25 @@ export type SelectionState<T extends string | number = string | number> = {
   state: "selected" | "half-selected" | "unselected";
 };
 
+// Helper function to get tag IDs for a specific dimension from media
+export const getMediaTagIdsByDimension = (media: Media, dimensionName: string): number[] => {
+  if (!media.mediaTags) return [];
+
+  return media.mediaTags
+    .filter((mediaTag: any) => mediaTag.dimensionName === dimensionName)
+    .map((mediaTag: any) => mediaTag.tagDefinitionId);
+};
+
+// Helper function to get tag states for a specific dimension
+export const getTagSelectionStates = (
+  selectedMedia: Media[],
+  dimensionName: string
+): SelectionState<number>[] => {
+  return getSelectionStates<Media, number>(selectedMedia, selectedMedia, (media) =>
+    getMediaTagIdsByDimension(media, dimensionName)
+  );
+};
+
 export const getSelectionStates = <T extends { id: string | number }, K extends string | number>(
   _items: T[],
   selectedItems: T[],

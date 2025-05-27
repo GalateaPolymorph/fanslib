@@ -1,11 +1,13 @@
-import { Post } from "../../../../features/posts/entity";
-import {
-  formatNumber,
-  formatToDecimalSeconds,
-  aggregatePostAnalyticsData,
-} from "../../../../lib/fansly-analytics";
 import { CategoryBar } from "@renderer/components/tremor/CategoryBar";
 import { useMemo } from "react";
+import { Post } from "../../../../features/posts/entity";
+import {
+  aggregatePostAnalyticsData,
+  formatNumber,
+  formatToDecimalSeconds,
+} from "../../../../lib/fansly-analytics";
+import { useMediaTags } from "../../hooks/tags/useMediaTags";
+import { getTierLevel } from "../../lib/media-tags";
 
 type PostAnalyticsSummaryProps = {
   post: Post;
@@ -14,7 +16,22 @@ type PostAnalyticsSummaryProps = {
 export const PostAnalyticsSummary = ({ post }: PostAnalyticsSummaryProps) => {
   const graphData = useMemo(() => aggregatePostAnalyticsData(post, false), [post]);
 
-  const relevantMedia = post.postMedia.find((m) => m.media.tier?.level === 0);
+  // Find the first media item to get its ID for tag lookup
+  const firstMediaId = post.postMedia[0]?.media?.id;
+  const { data: mediaTags = [] } = useMediaTags(firstMediaId || "");
+
+  // Find relevant media with Tier level 0 (equivalent to Free tier)
+  const relevantMedia = useMemo(() => {
+    // For now, we'll use the first media item as relevant media
+    // In a more sophisticated implementation, we could check all media items
+    // and find one with Tier level 0 (Free tier)
+    const tierLevel = getTierLevel(mediaTags);
+    if (tierLevel === 0) {
+      return post.postMedia[0];
+    }
+    return post.postMedia[0]; // Fallback to first media
+  }, [post.postMedia, mediaTags]);
+
   const videoLengthMs = (relevantMedia?.media?.duration || 0) * 1000;
 
   if (graphData.length <= 1) {

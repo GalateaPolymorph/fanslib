@@ -14,6 +14,7 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "check": "npm run format:check && npm run lint:check && npm run typecheck",
+    "unused": "ts-unused-exports tsconfig.web.json --showLineNumber",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
@@ -116,6 +117,7 @@
     "react-dom": "^18.3.1",
     "tailwindcss": "^4.0.0-beta.3",
     "ts-node": "^10.9.2",
+    "ts-unused-exports": "^11.0.1",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   },

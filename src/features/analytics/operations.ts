@@ -166,8 +166,3 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
     })
   );
 };
-
-export const cleanupExpiredAnalyticsFetchHistory = async (): Promise<number> => {
-  const { cleanupExpiredFetchHistory } = await import("./timeframe-utils");
-  return cleanupExpiredFetchHistory();
-};

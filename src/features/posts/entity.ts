@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { FanslyAnalyticsAggregate, FanslyAnalyticsDatapoint } from "../analytics/entity";
 import { Category } from "../categories/entity";
 import { Channel } from "../channels/entity";
 import { Subreddit } from "../channels/subreddit";
@@ -103,11 +102,11 @@ export class Post {
   @OneToMany(() => PostMedia, (mediaOrder) => mediaOrder.post)
   postMedia!: PostMedia[];
 
-  @OneToMany(() => FanslyAnalyticsDatapoint, (dp) => dp.post)
-  fanslyAnalyticsDatapoints!: FanslyAnalyticsDatapoint[];
+  @OneToMany("FanslyAnalyticsDatapoint", "post")
+  fanslyAnalyticsDatapoints!: any[];
 
-  @OneToOne(() => FanslyAnalyticsAggregate, (aggregate) => aggregate.post)
-  fanslyAnalyticsAggregate?: FanslyAnalyticsAggregate;
+  @OneToOne("FanslyAnalyticsAggregate", "post")
+  fanslyAnalyticsAggregate?: any;
 }
 
 export type PostWithoutRelations = Omit<
