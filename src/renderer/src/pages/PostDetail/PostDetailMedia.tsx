@@ -78,7 +78,6 @@ export const PostDetailMedia = ({
                       allMedias={post.postMedia.map((pm) => pm.media)}
                       withPreview
                       withDuration
-                      withTier
                       withNavigation
                     />
                   </div>
