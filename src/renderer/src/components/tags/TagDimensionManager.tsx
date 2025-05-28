@@ -1,16 +1,18 @@
+import {
+  useCreateTagDefinition,
+  useDeleteTagDefinition,
+  useUpdateTagDefinition,
+} from "@renderer/hooks/api/tags/useTagDefinitions";
+import {
+  useCreateTagDimension,
+  useDeleteTagDimension,
+  useTagDimensions,
+} from "@renderer/hooks/api/tags/useTagDimensions";
 import { List, Plus, TreePine } from "lucide-react";
 import { useState } from "react";
 import { CreateTagDefinitionDto, CreateTagDimensionDto } from "../../../../features/tags/api-type";
 import { TagDefinition, TagDimension } from "../../../../features/tags/entity";
 import { TagDragProvider } from "../../contexts/TagDragContext";
-import {
-  useCreateTagDefinition,
-  useCreateTagDimension,
-  useDeleteTagDefinition,
-  useDeleteTagDimension,
-  useTagDimensions,
-  useUpdateTagDefinition,
-} from "../../hooks/tags";
 import { Button } from "../ui/button";
 import { DeleteTagDialog } from "./DeleteTagDialog";
 import { DimensionCard } from "./DimensionCard";

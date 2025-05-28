@@ -1,55 +1,38 @@
+import { useTagsByDimension } from "@renderer/hooks/api/tags/useTagDefinitions";
 import { Plus } from "lucide-react";
-import { MediaTag, TagDimension } from "../../../../features/tags/entity";
-import { useTagsByDimension } from "../../hooks/tags";
+import { TagDimension } from "../../../../features/tags/entity";
 import { Button } from "../ui/button";
 import { BooleanTagSelector } from "./BooleanTagSelector";
 import { NumericalTagSelector } from "./NumericalTagSelector";
 import { TagBadge } from "./TagBadge";
+import { SelectionState } from "./types";
 
 type DimensionTagSelectorProps = {
   dimension: TagDimension;
-  selectedTags: MediaTag[];
-  onTagsChange: (tagIds: number[]) => void;
+  tagStates: Record<number, SelectionState>;
+  onTagToggle: (tagId: number, currentState: SelectionState) => void;
   onCreateTag?: () => void;
 };
 
 export const DimensionTagSelector = ({
   dimension,
-  selectedTags,
-  onTagsChange,
+  tagStates,
+  onTagToggle,
   onCreateTag,
 }: DimensionTagSelectorProps) => {
   const { data: availableTags, isLoading } = useTagsByDimension(dimension.id);
 
-  const selectedTagIds = selectedTags.map((mt) => mt.tagDefinitionId);
-
-  const toggleTag = (tagId: number) => {
-    const newSelection = selectedTagIds.includes(tagId)
-      ? selectedTagIds.filter((id) => id !== tagId)
-      : [...selectedTagIds, tagId];
-
-    onTagsChange(newSelection);
+  const handleTagToggle = (tagId: number) => {
+    const currentState = tagStates[tagId] || "unchecked";
+    onTagToggle(tagId, currentState);
   };
 
-  // Use specialized selectors for numerical and boolean dimensions
   if (dimension.dataType === "numerical") {
-    return (
-      <NumericalTagSelector
-        dimension={dimension}
-        selectedTags={selectedTags}
-        onTagsChange={onTagsChange}
-      />
-    );
+    return <NumericalTagSelector dimension={dimension} selectedTags={[]} onTagsChange={() => {}} />;
   }
 
   if (dimension.dataType === "boolean") {
-    return (
-      <BooleanTagSelector
-        dimension={dimension}
-        selectedTags={selectedTags}
-        onTagsChange={onTagsChange}
-      />
-    );
+    return <BooleanTagSelector dimension={dimension} selectedTags={[]} onTagsChange={() => {}} />;
   }
 
   if (isLoading) {
@@ -63,8 +46,8 @@ export const DimensionTagSelector = ({
           <TagBadge
             key={tag.id}
             tag={tag}
-            isSelected={selectedTagIds.includes(tag.id)}
-            onClick={() => toggleTag(tag.id)}
+            selectionState={tagStates[tag.id] || "unchecked"}
+            onClick={() => handleTagToggle(tag.id)}
           />
         ))}
       </div>

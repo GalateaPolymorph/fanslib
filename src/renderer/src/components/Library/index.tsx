@@ -16,7 +16,7 @@ export type LibraryProps = {
 
 export const Library = ({ showHeader = true }: LibraryProps) => {
   const { settings } = useSettings();
-  const { media, error, refetch, totalPages, totalItems } = useLibrary();
+  const { media, error, totalPages, totalItems } = useLibrary();
   const { preferences, updatePreferences } = useLibraryPreferences();
 
   const { isScanning, scanProgress, handleScan, scanResult } = useScan();
@@ -67,7 +67,6 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
             error={error}
             libraryPath={settings?.libraryPath}
             onScan={handleScan}
-            onUpdate={refetch}
           />
         </div>
         <GalleryPagination totalPages={totalPages} totalItems={totalItems} />

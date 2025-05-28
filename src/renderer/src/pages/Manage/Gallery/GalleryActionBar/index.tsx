@@ -1,4 +1,5 @@
 import { CreateShootDialog } from "@renderer/components/Shoots/CreateShootDialog";
+import { BulkTagAssigner } from "@renderer/components/tags/BulkTagAssigner";
 import { Button } from "@renderer/components/ui/button";
 import { cn } from "@renderer/lib/utils";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
@@ -10,7 +11,6 @@ type GalleryActionBarProps = {
   selectedCount: number;
   selectedMedia: Media[];
   onClearSelection: () => void;
-  onUpdate: () => void;
 };
 
 export const GalleryActionBar = ({
@@ -46,6 +46,9 @@ export const GalleryActionBar = ({
             <Camera className="h-4 w-4" />
             Create Shoot
           </Button>
+
+          <BulkTagAssigner selectedMedia={selectedMedia} />
+
           <Button
             variant="default"
             className="flex items-center gap-2"

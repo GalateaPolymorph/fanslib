@@ -1,11 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateTagDimensionDto, UpdateTagDimensionDto } from "../../../../features/tags/api-type";
-import { TagDimension } from "../../../../features/tags/entity";
-import { useToast } from "../../components/ui/use-toast";
+import {
+  CreateTagDimensionDto,
+  UpdateTagDimensionDto,
+} from "../../../../../features/tags/api-type";
+import { TagDimension } from "../../../../../features/tags/entity";
+import { useToast } from "../../../components/ui/use-toast";
+
+export const tagDimensionQueryKeys = {
+  dimensions: () => ["tag-dimensions"],
+  dimension: (id: number) => ["tag-dimension", id],
+};
 
 export const useTagDimensions = () => {
   return useQuery<TagDimension[]>({
-    queryKey: ["tag-dimensions"],
+    queryKey: tagDimensionQueryKeys.dimensions(),
     queryFn: async () => {
       return window.api["tags:getAllDimensions"]();
     },
@@ -23,7 +31,7 @@ export const useCreateTagDimension = () => {
       return window.api["tags:createDimension"](dto);
     },
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tag-dimensions"] });
+      await queryClient.refetchQueries({ queryKey: tagDimensionQueryKeys.dimensions() });
       toast({
         title: "Dimension created successfully",
         duration: 2000,
@@ -48,7 +56,7 @@ export const useUpdateTagDimension = () => {
       return window.api["tags:updateDimension"](id, dto);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tag-dimensions"] });
+      queryClient.invalidateQueries({ queryKey: tagDimensionQueryKeys.dimensions() });
       toast({
         title: "Dimension updated successfully",
         duration: 2000,
@@ -73,7 +81,7 @@ export const useDeleteTagDimension = () => {
       return window.api["tags:deleteDimension"](id);
     },
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tag-dimensions"] });
+      await queryClient.refetchQueries({ queryKey: tagDimensionQueryKeys.dimensions() });
       toast({
         title: "Dimension deleted successfully",
         duration: 2000,
@@ -91,7 +99,7 @@ export const useDeleteTagDimension = () => {
 
 export const useTagDimensionById = (id: number) => {
   return useQuery<TagDimension>({
-    queryKey: ["tag-dimension", id],
+    queryKey: tagDimensionQueryKeys.dimension(id),
     queryFn: async () => {
       return window.api["tags:getDimensionById"](id);
     },

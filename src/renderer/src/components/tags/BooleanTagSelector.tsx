@@ -1,7 +1,10 @@
+import {
+  useCreateTagDefinition,
+  useTagsByDimension,
+} from "@renderer/hooks/api/tags/useTagDefinitions";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { MediaTag, TagDimension } from "../../../../features/tags/entity";
-import { useCreateTagDefinition, useTagsByDimension } from "../../hooks/tags";
 import {
   formatBooleanValue,
   parseBooleanSchema,
@@ -57,7 +60,7 @@ export const BooleanTagSelector = ({
 
       await refetchTags();
       return newTag;
-    } catch (err) {
+    } catch {
       setError("Failed to create tag");
       return null;
     } finally {

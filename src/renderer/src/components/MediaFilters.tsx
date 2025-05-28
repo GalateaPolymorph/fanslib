@@ -10,7 +10,7 @@ import { ChannelPostFilter } from "./ChannelPostFilter";
 import { ChannelSelect } from "./ChannelSelect";
 import { ShootSelect } from "./ShootSelect";
 import { SubredditPostFilter } from "./SubredditPostFilter";
-import { TagDimensionSelect } from "./TagDimensionSelect";
+import { TagFilterDimensionSelect } from "./TagFilterDimensionSelect";
 import { TagSelector } from "./TagSelector";
 import { Button } from "./ui/button";
 import {
@@ -393,7 +393,7 @@ export const MediaFilters = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <TagDimensionSelect
+        <TagFilterDimensionSelect
           excludeDimensions={getActiveTagFilters()}
           onDimensionSelect={addTagFilter}
         />

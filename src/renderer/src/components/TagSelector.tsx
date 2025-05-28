@@ -2,8 +2,8 @@ import { Badge } from "@renderer/components/ui/badge";
 import { Slider } from "@renderer/components/ui/slider";
 import { Switch } from "@renderer/components/ui/switch";
 import { useMemo } from "react";
-import { useTagsByDimension } from "../hooks/tags/useTagDefinitions";
-import { useTagDimensions } from "../hooks/tags/useTagDimensions";
+import { useTagsByDimension } from "../hooks/api/tags/useTagDefinitions";
+import { useTagDimensions } from "../hooks/api/tags/useTagDimensions";
 import { cn } from "../lib/utils";
 
 export type TagSelectionState = {

@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useTagDimensions } from "../hooks/tags/useTagDimensions";
+import { useTagDimensions } from "../hooks/api/tags/useTagDimensions";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -8,17 +8,17 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-type TagDimensionSelectProps = {
+type TagFilterDimensionSelectProps = {
   excludeDimensions?: string[];
   onDimensionSelect: (dimensionName: string) => void;
   className?: string;
 };
 
-export const TagDimensionSelect = ({
+export const TagFilterDimensionSelect = ({
   excludeDimensions = [],
   onDimensionSelect,
   className,
-}: TagDimensionSelectProps) => {
+}: TagFilterDimensionSelectProps) => {
   const { data: dimensions = [], isLoading } = useTagDimensions();
 
   const availableDimensions = dimensions.filter(

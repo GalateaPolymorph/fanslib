@@ -17,6 +17,3 @@ export * from "./forms/useFieldUpdate";
 // Business Logic Hooks
 export * from "./business/usePostFrequencyStatus";
 export * from "./business/useShootAccordionState";
-
-// Tag Hooks
-export * from "./tags";

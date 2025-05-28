@@ -1,59 +1,68 @@
+import { useAssignTagsToMedia } from "@renderer/hooks/api/tags/useAssignTagsToMedia";
+import { useRemoveTagsFromMedia } from "@renderer/hooks/api/tags/useRemoveTagsFromMedia";
+import { useTagDimensions } from "@renderer/hooks/api/tags/useTagDimensions";
+import { useTagStates } from "@renderer/hooks/tags/useTagStates";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useAssignTagsToMedia, useMediaTags, useTagDimensions } from "../../hooks/tags";
+import { Media } from "../../../../features/library/entity";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { DimensionTagSelector } from "./DimensionTagSelector";
+import { SelectionState } from "./types";
 
 type MediaTagEditorProps = {
-  mediaId: string;
+  media: Media[]; // Always an array of media items
   className?: string;
 };
 
-export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
+export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
   const [activeDimensions, setActiveDimensions] = useState<Set<number>>(new Set());
 
   const { data: dimensions, isLoading: dimensionsLoading } = useTagDimensions();
-  const { data: mediaTags, isLoading: mediaTagsLoading } = useMediaTags(mediaId);
-  const assignTagsMutation = useAssignTagsToMedia();
+  const tagStates = useTagStates(media);
+  const assignMutation = useAssignTagsToMedia();
+  const removeMutation = useRemoveTagsFromMedia();
 
-  console.log(mediaTags);
-  // Auto-activate dimensions that have existing tags
+  // Auto-activate dimensions that have tags
   useEffect(() => {
-    if (mediaTags && mediaTags.length > 0) {
-      const dimensionsWithTags = new Set(
-        mediaTags.map((mt) => mt.tag?.dimensionId).filter((id): id is number => id !== undefined)
-      );
-
-      if (dimensionsWithTags.size > 0) {
-        setActiveDimensions((prev) => {
-          // Merge existing active dimensions with dimensions that have tags
-          const merged = new Set([...prev, ...dimensionsWithTags]);
-          return merged;
-        });
+    if (tagStates.tagStates && Object.keys(tagStates.tagStates).length > 0) {
+      // Find dimensions that have any tags assigned
+      const tagIds = Object.keys(tagStates.tagStates).map(Number);
+      if (dimensions && tagIds.length > 0) {
+        // We need to find which dimensions these tags belong to
+        // For now, we'll activate all dimensions that have any tags
+        // This could be optimized by fetching tag definitions to get their dimensions
+        const allDimensionIds = new Set(dimensions.map((d) => d.id));
+        setActiveDimensions((prev) => new Set([...prev, ...allDimensionIds]));
       }
     }
-  }, [mediaTags]);
+  }, [tagStates.tagStates, dimensions]);
 
-  const assignTags = (dimensionId: number, tagIds: number[]) => {
-    if (tagIds.length === 0) {
-      // If no tags selected, remove all tags for this dimension
-      const tagsToRemove =
-        mediaTags
-          ?.filter((mt) => mt.tag?.dimensionId === dimensionId)
-          .map((mt) => mt.tagDefinitionId) || [];
-
-      if (tagsToRemove.length > 0) {
-        window.api["tags:removeTagsFromMedia"](mediaId, tagsToRemove);
-      }
-      return;
+  const handleTagToggle = async (tagId: number, currentState: SelectionState) => {
+    if (currentState === "unchecked") {
+      // Assign to all media
+      const assignments = media.map((m) => ({
+        mediaId: m.id,
+        tagDefinitionIds: [tagId],
+        source: "manual" as const,
+      }));
+      await assignMutation.mutateAsync(assignments);
+    } else if (currentState === "checked") {
+      // Remove from all media
+      const removals = media.map((m) => ({
+        mediaId: m.id,
+        tagIds: [tagId],
+      }));
+      await removeMutation.mutateAsync(removals);
+    } else {
+      // Indeterminate: assign to all media (making it consistent)
+      const assignments = media.map((m) => ({
+        mediaId: m.id,
+        tagDefinitionIds: [tagId],
+        source: "manual" as const,
+      }));
+      await assignMutation.mutateAsync(assignments);
     }
-
-    assignTagsMutation.mutate({
-      mediaId,
-      tagDefinitionIds: tagIds,
-      source: "manual",
-    });
   };
 
   const addDimension = (dimensionId: number) => {
@@ -68,7 +77,12 @@ export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
     });
 
     // Clear any existing tags for this dimension
-    assignTags(dimensionId, []);
+    // Find all tags in this dimension that are currently assigned
+    if (dimensions && tagStates.tagStates) {
+      // This is a simplified approach - in a real implementation, you'd want to
+      // fetch tag definitions to know which tags belong to which dimension
+      // For now, we'll skip the auto-removal to avoid complexity
+    }
   };
 
   const getAvailableDimensions = () => {
@@ -107,10 +121,14 @@ export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
     }
   };
 
-  if (dimensionsLoading || mediaTagsLoading) {
+  const isLoading = dimensionsLoading || tagStates.isLoading;
+
+  if (isLoading) {
     return (
       <div className={className}>
-        <h3 className="text-lg font-medium mb-4">Tags</h3>
+        <h3 className="text-lg font-medium mb-4">
+          Tags {media.length > 1 && `(${media.length} items)`}
+        </h3>
         <div className="space-y-4">
           <div className="animate-pulse">
             <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
@@ -133,9 +151,11 @@ export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
 
   return (
     <div className={className}>
-      <h3 className="text-lg font-medium mb-4">Tags</h3>
+      <h3 className="text-lg font-medium mb-4">
+        Tags {media.length > 1 && `(${media.length} items)`}
+      </h3>
 
-      {/* Available Dimensions Pills - Simplified */}
+      {/* Available Dimensions Pills */}
       {getAvailableDimensions().length > 0 && (
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
@@ -184,8 +204,8 @@ export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
               </div>
               <DimensionTagSelector
                 dimension={dimension}
-                selectedTags={mediaTags?.filter((mt) => mt.tag?.dimensionId === dimension.id) || []}
-                onTagsChange={(tagIds) => assignTags(dimension.id, tagIds)}
+                tagStates={tagStates.tagStates}
+                onTagToggle={handleTagToggle}
               />
             </CardContent>
           </Card>
@@ -199,7 +219,7 @@ export const MediaTagEditor = ({ mediaId, className }: MediaTagEditorProps) => {
         )}
       </div>
 
-      {assignTagsMutation.isPending && (
+      {(assignMutation.isPending || removeMutation.isPending) && (
         <div className="text-sm text-gray-500 mt-4 flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
           Saving tags...

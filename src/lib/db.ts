@@ -15,6 +15,7 @@ import { Hashtag, HashtagChannelStats } from "../features/hashtags/entity";
 import { Media } from "../features/library/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
+import { startPeriodicCleanup, stopPeriodicCleanup } from "../features/tags/drift-prevention";
 import { MediaTag, TagDefinition, TagDimension } from "../features/tags/entity";
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
@@ -49,6 +50,7 @@ export const uninitialize = async () => {
   if (initialized) {
     await AppDataSource.destroy();
     initialized = false;
+    stopPeriodicCleanup();
   }
 };
 
@@ -56,6 +58,8 @@ export const db = async () => {
   if (!initialized) {
     await AppDataSource.initialize();
     initialized = true;
+
+    startPeriodicCleanup();
   }
 
   return AppDataSource;

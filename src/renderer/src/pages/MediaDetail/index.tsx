@@ -64,7 +64,7 @@ export const MediaDetail = () => {
             </div>
             <div className="flex flex-col gap-6">
               <MediaDetailMetadata media={media} />
-              <MediaTagEditor mediaId={media.id} />
+              <MediaTagEditor media={[media]} />
             </div>
           </div>
 

@@ -12,10 +12,9 @@ type GalleryProps = {
   error?: string;
   libraryPath?: string;
   onScan: () => void;
-  onUpdate: () => void;
 };
 
-const GalleryContent = ({ medias, error, libraryPath, onScan, onUpdate }: GalleryProps) => {
+const GalleryContent = ({ medias, error, libraryPath, onScan }: GalleryProps) => {
   const { preferences } = useLibraryPreferences();
 
   const { selectedMediaIds, clearSelection } = useMediaSelection();
@@ -35,7 +34,6 @@ const GalleryContent = ({ medias, error, libraryPath, onScan, onUpdate }: Galler
         selectedCount={selectedMediaIds.size}
         selectedMedia={selectedMediaItems}
         onClearSelection={clearSelection}
-        onUpdate={onUpdate}
       />
       <ScrollArea className="h-[calc(100%-3rem)] @container">
         <div

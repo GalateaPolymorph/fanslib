@@ -1,7 +1,10 @@
+import {
+  useCreateTagDefinition,
+  useTagsByDimension,
+} from "@renderer/hooks/api/tags/useTagDefinitions";
 import { X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MediaTag, TagDimension } from "../../../../features/tags/entity";
-import { useCreateTagDefinition, useTagsByDimension } from "../../hooks/tags";
 import {
   formatNumericValue,
   parseNumericSchema,
@@ -67,7 +70,7 @@ export const NumericalTagSelector = ({
 
       await refetchTags();
       return newTag;
-    } catch (err) {
+    } catch {
       setError("Failed to create tag");
       return null;
     } finally {

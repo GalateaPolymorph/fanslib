@@ -1,9 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { PaginatedResponse } from "../../../features/_common/pagination";
-import { GetAllMediaParams } from "../../../features/library/api-type";
+import { createContext, useContext, type ReactNode } from "react";
 import { Media } from "../../../features/library/entity";
-import { useLibraryPreferences } from "./LibraryPreferencesContext";
-import { useSettings } from "./SettingsContext";
+import { useLibraryQuery } from "../hooks/api/useLibrary";
 
 type LibraryContextType = {
   media: Media[];
@@ -21,60 +18,20 @@ type LibraryProviderProps = {
 };
 
 export const LibraryProvider = ({ children }: LibraryProviderProps) => {
-  const { settings } = useSettings();
-  const libraryPath = settings?.libraryPath;
-  const { preferences } = useLibraryPreferences();
-  const [mediaData, setMediaData] = useState<PaginatedResponse<Media>>({
-    items: [],
-    total: 0,
-    page: 1,
-    limit: 50,
-    totalPages: 1,
-  });
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { data, error, isLoading, refetch } = useLibraryQuery();
 
-  const fetchLibrary = useCallback(async () => {
-    if (!libraryPath) return;
+  const contextValue: LibraryContextType = {
+    media: data?.items || [],
+    totalItems: data?.total || 0,
+    totalPages: data?.totalPages || 1,
+    error: error ? (error instanceof Error ? error.message : "Failed to fetch library") : null,
+    isLoading,
+    refetch: async () => {
+      await refetch();
+    },
+  };
 
-    setIsLoading(true);
-    try {
-      setError(null);
-
-      const params: GetAllMediaParams = {
-        page: preferences.pagination.page,
-        limit: preferences.pagination.limit,
-        sort: preferences.sort,
-        ...preferences.filter,
-      };
-
-      const result = await window.api["library:getAll"](params);
-      setMediaData(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch library");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [libraryPath, preferences]);
-
-  useEffect(() => {
-    fetchLibrary();
-  }, [fetchLibrary]);
-
-  return (
-    <LibraryContext.Provider
-      value={{
-        media: mediaData.items,
-        totalItems: mediaData.total,
-        totalPages: mediaData.totalPages,
-        error,
-        isLoading,
-        refetch: fetchLibrary,
-      }}
-    >
-      {children}
-    </LibraryContext.Provider>
-  );
+  return <LibraryContext.Provider value={contextValue}>{children}</LibraryContext.Provider>;
 };
 
 export const useLibrary = () => {

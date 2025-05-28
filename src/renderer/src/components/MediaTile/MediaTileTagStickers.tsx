@@ -1,13 +1,13 @@
 import { Sticker } from "@renderer/components/ui/sticker";
 import { Media } from "src/features/library/entity";
-import { useMediaTags } from "../../hooks/tags/useMediaTags";
+import { useTagsForMedia } from "../../hooks/api/tags/useTags";
 
 type MediaTileTagStickersProps = {
   media: Media;
 };
 
 export const MediaTileTagStickers = ({ media }: MediaTileTagStickersProps) => {
-  const { data: mediaTags = [] } = useMediaTags(media.id);
+  const { data: mediaTags = [] } = useTagsForMedia(media.id);
 
   // Filter tags that have sticker display enabled (not 'none')
   const stickerTags = mediaTags.filter(

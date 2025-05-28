@@ -1,7 +1,7 @@
 import { Image as ImageIcon, Video } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Media } from "../../../../features/library/entity";
-import { useMediaTags } from "../../hooks/tags/useMediaTags";
+import { useTagsForMedia } from "../../hooks/api/tags/useTags";
 import { cn } from "../../lib/utils";
 import { formatDuration } from "../../lib/video";
 
@@ -26,7 +26,7 @@ export const MediaTileLite = memo(
     const videoRef = useRef<HTMLVideoElement>(null);
     const previewIntervalRef = useRef<number>();
 
-    const { data: mediaTags = [] } = useMediaTags(media.id);
+    const { data: mediaTags = [] } = useTagsForMedia(media.id);
     const stickerTags = mediaTags.filter((mt) => mt.stickerDisplay === "color");
 
     const handleImageError = useCallback(() => {

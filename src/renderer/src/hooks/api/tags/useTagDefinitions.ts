@@ -1,11 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateTagDefinitionDto, UpdateTagDefinitionDto } from "../../../../features/tags/api-type";
-import { TagDefinition } from "../../../../features/tags/entity";
-import { useToast } from "../../components/ui/use-toast";
+import {
+  CreateTagDefinitionDto,
+  UpdateTagDefinitionDto,
+} from "../../../../../features/tags/api-type";
+import { TagDefinition } from "../../../../../features/tags/entity";
+import { useToast } from "../../../components/ui/use-toast";
+import { tagDimensionQueryKeys } from "./useTagDimensions";
+
+export const tagDefinitionQueryKeys = {
+  tagsByDimension: (dimensionId: number) => ["dimension-tags", dimensionId],
+  tagById: (id: number) => ["tag-definition", id],
+};
 
 export const useTagsByDimension = (dimensionId: number) => {
   return useQuery<TagDefinition[]>({
-    queryKey: ["dimension-tags", dimensionId],
+    queryKey: tagDefinitionQueryKeys.tagsByDimension(dimensionId),
     queryFn: async () => {
       return window.api["tags:getTagsByDimension"](dimensionId);
     },
@@ -17,7 +26,7 @@ export const useTagsByDimension = (dimensionId: number) => {
 
 export const useTagDefinitionById = (id: number) => {
   return useQuery<TagDefinition>({
-    queryKey: ["tag-definition", id],
+    queryKey: tagDefinitionQueryKeys.tagById(id),
     queryFn: async () => {
       return window.api["tags:getTagById"](id);
     },
@@ -37,8 +46,10 @@ export const useCreateTagDefinition = () => {
     },
     onSuccess: async (_, variables) => {
       await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["tag-dimensions"] }),
-        queryClient.refetchQueries({ queryKey: ["dimension-tags", variables.dimensionId] }),
+        queryClient.refetchQueries({ queryKey: tagDimensionQueryKeys.dimensions() }),
+        queryClient.refetchQueries({
+          queryKey: tagDefinitionQueryKeys.tagsByDimension(variables.dimensionId),
+        }),
       ]);
       toast({
         title: "Tag created successfully",
@@ -65,9 +76,11 @@ export const useUpdateTagDefinition = () => {
     },
     onSuccess: async (result) => {
       await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["tag-dimensions"] }),
-        queryClient.refetchQueries({ queryKey: ["dimension-tags", result.dimensionId] }),
-        queryClient.refetchQueries({ queryKey: ["tag-definition", result.id] }),
+        queryClient.refetchQueries({ queryKey: tagDimensionQueryKeys.dimensions() }),
+        queryClient.refetchQueries({
+          queryKey: tagDefinitionQueryKeys.tagsByDimension(result.dimensionId),
+        }),
+        queryClient.refetchQueries({ queryKey: tagDefinitionQueryKeys.tagById(result.id) }),
       ]);
       toast({
         title: "Tag updated successfully",
@@ -94,8 +107,7 @@ export const useDeleteTagDefinition = () => {
     },
     onSuccess: async () => {
       await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["tag-dimensions"] }),
-        queryClient.refetchQueries({ queryKey: ["dimension-tags"] }),
+        queryClient.refetchQueries({ queryKey: tagDimensionQueryKeys.dimensions() }),
       ]);
       toast({
         title: "Tag deleted successfully",

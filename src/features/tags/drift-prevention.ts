@@ -209,7 +209,7 @@ let cleanupInterval: NodeJS.Timeout | null = null;
 /**
  * Start periodic cleanup with configurable interval
  */
-export const startPeriodicCleanup = (intervalMinutes: number = 60): void => {
+export const startPeriodicCleanup = async (intervalMinutes: number = 60): Promise<void> => {
   if (cleanupInterval) {
     console.log("⚠️ Periodic cleanup is already running");
     return;
@@ -219,6 +219,7 @@ export const startPeriodicCleanup = (intervalMinutes: number = 60): void => {
 
   console.log(`🔄 Starting periodic tag drift cleanup (every ${intervalMinutes} minutes)`);
 
+  await performPeriodicCleanup();
   cleanupInterval = setInterval(async () => {
     try {
       await performPeriodicCleanup();

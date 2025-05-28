@@ -1,5 +1,5 @@
+import { useTagAnalytics } from "@renderer/hooks/tags/useTagAnalytics";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { useTagAnalytics } from "../../hooks/tags";
 
 type TagPerformanceChartProps = {
   dimensionId?: number;
