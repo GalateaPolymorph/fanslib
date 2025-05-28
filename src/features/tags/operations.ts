@@ -17,9 +17,17 @@ export const createTagDimension = async (dto: CreateTagDimensionDto): Promise<Ta
   const dataSource = await db();
   const repository = dataSource.getRepository(TagDimension);
 
+  // Validate stickerDisplay enum value if provided
+  if (dto.stickerDisplay && !STICKER_DISPLAY_MODES.includes(dto.stickerDisplay)) {
+    throw new Error(
+      `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
+    );
+  }
+
   const dimension = repository.create({
     ...dto,
     sortOrder: dto.sortOrder ?? 0,
+    stickerDisplay: dto.stickerDisplay ?? "none",
   });
 
   return repository.save(dimension);
@@ -32,11 +40,23 @@ export const updateTagDimension = async (
   const dataSource = await db();
   const repository = dataSource.getRepository(TagDimension);
 
+  // Validate stickerDisplay enum value if provided
+  if (dto.stickerDisplay && !STICKER_DISPLAY_MODES.includes(dto.stickerDisplay)) {
+    throw new Error(
+      `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
+    );
+  }
+
   await repository.update(id, dto);
   const dimension = await repository.findOne({ where: { id } });
 
   if (!dimension) {
     throw new Error(`TagDimension with id ${id} not found`);
+  }
+
+  // Sync denormalized fields in MediaTag when dimension stickerDisplay is updated
+  if (dto.stickerDisplay !== undefined) {
+    await syncDenormalizedFieldsForDimension(id);
   }
 
   return dimension;
@@ -152,13 +172,6 @@ export const createTagDefinition = async (dto: CreateTagDefinitionDto): Promise<
     dto.color = normalizeHexColor(dto.color);
   }
 
-  // Validate stickerDisplay enum value if provided
-  if (dto.stickerDisplay && !STICKER_DISPLAY_MODES.includes(dto.stickerDisplay)) {
-    throw new Error(
-      `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
-    );
-  }
-
   // Assign color automatically for categorical tags
   const assignedColor = await assignColorForCategoricalTag(dto.dimensionId, dto.color);
 
@@ -189,13 +202,6 @@ export const updateTagDefinition = async (
       throw new Error(`Invalid color format: ${colorError}`);
     }
     dto.color = normalizeHexColor(dto.color);
-  }
-
-  // Validate stickerDisplay enum value if provided
-  if (dto.stickerDisplay && !STICKER_DISPLAY_MODES.includes(dto.stickerDisplay)) {
-    throw new Error(
-      `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
-    );
   }
 
   await repository.update(id, dto);
@@ -238,6 +244,41 @@ const syncDenormalizedFieldsForTag = async (tagDefinitionId: number): Promise<vo
   // Update denormalized fields for each MediaTag
   for (const mediaTag of mediaTags) {
     populateDenormalizedFields(mediaTag, tagDefinition);
+  }
+
+  // Save all updated MediaTags
+  if (mediaTags.length > 0) {
+    await mediaTagRepository.save(mediaTags);
+  }
+};
+
+const syncDenormalizedFieldsForDimension = async (dimensionId: number): Promise<void> => {
+  const dataSource = await db();
+  const mediaTagRepository = dataSource.getRepository(MediaTag);
+  const tagDefinitionRepository = dataSource.getRepository(TagDefinition);
+
+  // Get all tag definitions for this dimension
+  const tagDefinitions = await tagDefinitionRepository.find({
+    where: { dimensionId },
+    relations: ["dimension"],
+  });
+
+  if (tagDefinitions.length === 0) {
+    return;
+  }
+
+  // Get all MediaTags that reference any TagDefinition in this dimension
+  const tagDefinitionIds = tagDefinitions.map((tag) => tag.id);
+  const mediaTags = await mediaTagRepository.find({
+    where: { tagDefinitionId: In(tagDefinitionIds) },
+  });
+
+  // Update denormalized fields for each MediaTag
+  for (const mediaTag of mediaTags) {
+    const tagDefinition = tagDefinitions.find((tag) => tag.id === mediaTag.tagDefinitionId);
+    if (tagDefinition) {
+      populateDenormalizedFields(mediaTag, tagDefinition);
+    }
   }
 
   // Save all updated MediaTags
@@ -309,8 +350,8 @@ const populateDenormalizedFields = (
   // Use the color field directly from TagDefinition
   mediaTag.color = tagDefinition.color || null;
 
-  // Use the sticker display properties directly from TagDefinition
-  mediaTag.stickerDisplay = tagDefinition.stickerDisplay || "none";
+  // Use stickerDisplay from TagDimension and shortRepresentation from TagDefinition
+  mediaTag.stickerDisplay = tagDefinition.dimension.stickerDisplay || "none";
   mediaTag.shortRepresentation = tagDefinition.shortRepresentation || null;
 
   // Parse and store typed values for performance optimization

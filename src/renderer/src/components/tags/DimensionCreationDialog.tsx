@@ -150,6 +150,45 @@ export const DimensionCreationDialog = ({
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="stickerDisplay">Sticker Display Mode</Label>
+            <Select
+              value={dimension.stickerDisplay || "none"}
+              onValueChange={(value: "none" | "color" | "short") =>
+                updateDimension({ stickerDisplay: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select sticker display mode" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">
+                  <div>
+                    <div className="font-medium">None</div>
+                    <div className="text-xs text-gray-500">
+                      No visual stickers displayed for tags in this dimension
+                    </div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="color">
+                  <div>
+                    <div className="font-medium">Color</div>
+                    <div className="text-xs text-gray-500">
+                      Show colored dots/badges for categorical tags
+                    </div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="short">
+                  <div>
+                    <div className="font-medium">Short Text</div>
+                    <div className="text-xs text-gray-500">
+                      Show short text representations for tags
+                    </div>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           {/* Configuration sections for specific data types */}
           {dimension.dataType === "boolean" && (
             <div className="p-4 border rounded-md bg-purple-50">

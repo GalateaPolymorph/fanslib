@@ -1,7 +1,6 @@
 import { TagDefinition } from "../../../../features/tags/entity";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Textarea } from "../ui/textarea";
 import { ParentTagSelector } from "./ParentTagSelector";
 
@@ -10,7 +9,6 @@ type CategoricalValueInputProps = {
   value: string;
   description: string;
   parentTagId: number | null;
-  stickerDisplay: "none" | "color" | "short";
   shortRepresentation: string;
   availableTags: TagDefinition[];
   currentTagId?: number;
@@ -18,7 +16,6 @@ type CategoricalValueInputProps = {
   onValueChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onParentTagChange: (parentId: number | null) => void;
-  onStickerDisplayChange: (mode: "none" | "color" | "short") => void;
   onShortRepresentationChange: (value: string) => void;
 };
 
@@ -27,7 +24,6 @@ export const CategoricalValueInput = ({
   value,
   description,
   parentTagId,
-  stickerDisplay,
   shortRepresentation,
   availableTags,
   currentTagId,
@@ -35,7 +31,6 @@ export const CategoricalValueInput = ({
   onValueChange,
   onDescriptionChange,
   onParentTagChange,
-  onStickerDisplayChange,
   onShortRepresentationChange,
 }: CategoricalValueInputProps) => {
   return (
@@ -89,53 +84,19 @@ export const CategoricalValueInput = ({
         </p>
       </div>
 
-      <div className="space-y-3">
-        <Label>Sticker Display Mode</Label>
-        <RadioGroup
-          value={stickerDisplay}
-          onValueChange={(value) => onStickerDisplayChange(value as "none" | "color" | "short")}
-          className="space-y-2"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="none" id="sticker-none" />
-            <Label htmlFor="sticker-none" className="text-sm font-normal cursor-pointer">
-              None - No sticker display
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="color" id="sticker-color" />
-            <Label htmlFor="sticker-color" className="text-sm font-normal cursor-pointer">
-              Color Bubble - Display as colored bubble
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="short" id="sticker-short" />
-            <Label htmlFor="sticker-short" className="text-sm font-normal cursor-pointer">
-              Short Text - Display custom text representation
-            </Label>
-          </div>
-        </RadioGroup>
+      <div className="space-y-2">
+        <Label htmlFor="shortRepresentation">Short Representation</Label>
+        <Input
+          id="shortRepresentation"
+          value={shortRepresentation}
+          onChange={(e) => onShortRepresentationChange(e.target.value)}
+          placeholder="e.g., $, ★, HD, 4K"
+          maxLength={10}
+        />
         <p className="text-xs text-gray-500">
-          Choose how this tag appears as a sticker on media tiles.
+          Short text or symbol to display on media tiles (max 10 characters, optional).
         </p>
       </div>
-
-      {stickerDisplay === "short" && (
-        <div className="space-y-2">
-          <Label htmlFor="shortRepresentation">Short Representation *</Label>
-          <Input
-            id="shortRepresentation"
-            value={shortRepresentation}
-            onChange={(e) => onShortRepresentationChange(e.target.value)}
-            placeholder="e.g., $, ★, HD, 4K"
-            maxLength={10}
-            required
-          />
-          <p className="text-xs text-gray-500">
-            Short text or symbol to display on media tiles (max 10 characters).
-          </p>
-        </div>
-      )}
     </div>
   );
 };

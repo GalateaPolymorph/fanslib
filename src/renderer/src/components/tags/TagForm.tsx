@@ -36,7 +36,6 @@ export const TagForm = ({
     value: initialData?.value || "",
     description: initialData?.description || "",
     parentTagId: initialData?.parentTagId || null,
-    stickerDisplay: (initialData?.stickerDisplay || "none") as "none" | "color" | "short",
     shortRepresentation: initialData?.shortRepresentation || "",
     typedValue: isNumeric
       ? parseFloat(initialData?.value || "0")
@@ -51,16 +50,6 @@ export const TagForm = ({
     e.preventDefault();
 
     if (validationError || !formData.displayName.trim()) {
-      return;
-    }
-
-    // Validate short representation when sticker display is 'short'
-    if (
-      isCategorical &&
-      formData.stickerDisplay === "short" &&
-      !formData.shortRepresentation.trim()
-    ) {
-      setValidationError("Short representation is required when using short text display mode");
       return;
     }
 
@@ -80,7 +69,6 @@ export const TagForm = ({
       description: formData.description.trim() || undefined,
       ...(isCategorical && {
         parentTagId: formData.parentTagId,
-        stickerDisplay: formData.stickerDisplay,
         shortRepresentation: formData.shortRepresentation.trim() || undefined,
       }),
       ...(!isEditing && { dimensionId: dimension.id }),
@@ -118,7 +106,6 @@ export const TagForm = ({
           value={formData.value}
           description={formData.description}
           parentTagId={formData.parentTagId}
-          stickerDisplay={formData.stickerDisplay}
           shortRepresentation={formData.shortRepresentation}
           availableTags={availableTags}
           currentTagId={initialData?.id}
@@ -128,19 +115,8 @@ export const TagForm = ({
           onParentTagChange={(parentId) =>
             setFormData((prev) => ({ ...prev, parentTagId: parentId }))
           }
-          onStickerDisplayChange={(mode) => {
-            setFormData((prev) => ({ ...prev, stickerDisplay: mode }));
-            // Clear validation error when switching away from 'short' mode
-            if (mode !== "short" && validationError?.includes("Short representation")) {
-              setValidationError(null);
-            }
-          }}
           onShortRepresentationChange={(value) => {
             setFormData((prev) => ({ ...prev, shortRepresentation: value }));
-            // Clear validation error when user starts typing
-            if (validationError?.includes("Short representation")) {
-              setValidationError(null);
-            }
           }}
         />
       );

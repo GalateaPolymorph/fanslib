@@ -253,14 +253,16 @@ export const findOutdatedStickerDisplayProperties = async (): Promise<MediaTag[]
   const dataSource = await db();
   const mediaTagRepository = dataSource.getRepository(MediaTag);
 
-  // Use query builder to find MediaTags where denormalized fields don't match TagDefinition
+  // Use query builder to find MediaTags where denormalized fields don't match their sources
+  // stickerDisplay should match TagDimension, shortRepresentation should match TagDefinition
   const outdatedMediaTags = await mediaTagRepository
     .createQueryBuilder("mt")
     .leftJoin("mt.tag", "td")
+    .leftJoin("td.dimension", "dim")
     .where(
-      "(mt.stickerDisplay != td.stickerDisplay OR " +
-        "(mt.stickerDisplay IS NULL AND td.stickerDisplay IS NOT NULL) OR " +
-        "(mt.stickerDisplay IS NOT NULL AND td.stickerDisplay IS NULL)) OR " +
+      "(mt.stickerDisplay != dim.stickerDisplay OR " +
+        "(mt.stickerDisplay IS NULL AND dim.stickerDisplay IS NOT NULL) OR " +
+        "(mt.stickerDisplay IS NOT NULL AND dim.stickerDisplay IS NULL)) OR " +
         "(mt.shortRepresentation != td.shortRepresentation OR " +
         "(mt.shortRepresentation IS NULL AND td.shortRepresentation IS NOT NULL) OR " +
         "(mt.shortRepresentation IS NOT NULL AND td.shortRepresentation IS NULL))"
@@ -271,7 +273,7 @@ export const findOutdatedStickerDisplayProperties = async (): Promise<MediaTag[]
 };
 
 /**
- * Synchronize sticker display properties from TagDefinition to MediaTag
+ * Synchronize sticker display properties from their correct sources to MediaTag
  */
 export const syncStickerDisplayProperties = async (): Promise<{
   updatedCount: number;
@@ -295,7 +297,7 @@ export const syncStickerDisplayProperties = async (): Promise<{
     const batch = outdatedTags.slice(i, i + batchSize);
     const tagDefinitionIds = batch.map((mt) => mt.tagDefinitionId);
 
-    // Get the corresponding TagDefinitions
+    // Get the corresponding TagDefinitions with their dimensions
     const tagDefinitions = await tagDefinitionRepository.find({
       where: { id: In(tagDefinitionIds) },
       relations: ["dimension"],
@@ -304,12 +306,12 @@ export const syncStickerDisplayProperties = async (): Promise<{
     // Create a map for quick lookup
     const tagDefinitionMap = new Map(tagDefinitions.map((td) => [td.id, td]));
 
-    // Update each MediaTag with correct denormalized fields
+    // Update each MediaTag with correct denormalized fields from their sources
     for (const mediaTag of batch) {
       const tagDefinition = tagDefinitionMap.get(mediaTag.tagDefinitionId);
       if (tagDefinition) {
-        // Update denormalized fields to match TagDefinition
-        mediaTag.stickerDisplay = tagDefinition.stickerDisplay || "none";
+        // Update denormalized fields: stickerDisplay from dimension, shortRepresentation from tag
+        mediaTag.stickerDisplay = tagDefinition.dimension.stickerDisplay || "none";
         mediaTag.shortRepresentation = tagDefinition.shortRepresentation || null;
         updatedIds.push(mediaTag.id);
       }
@@ -325,7 +327,8 @@ export const syncStickerDisplayProperties = async (): Promise<{
 };
 
 /**
- * Validate consistency of sticker display properties between TagDefinition and MediaTag
+ * Validate consistency of sticker display properties between their sources and MediaTag
+ * stickerDisplay should match TagDimension, shortRepresentation should match TagDefinition
  */
 export const validateStickerDisplayConsistency = async (): Promise<{
   isConsistent: boolean;

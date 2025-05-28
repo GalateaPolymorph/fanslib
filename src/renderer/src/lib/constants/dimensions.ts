@@ -8,8 +8,8 @@
  * maintained for backward compatibility, new implementations should use:
  *
  * - MediaTileTagStickers component for automatic sticker display
- * - stickerDisplay property on TagDefinition ('none', 'color', 'short')
- * - shortRepresentation property for custom display text
+ * - stickerDisplay property on TagDimension ('none', 'color', 'short')
+ * - shortRepresentation property on TagDefinition for custom display text
  *
  * This eliminates the need for hardcoded tier/category special handling.
  */

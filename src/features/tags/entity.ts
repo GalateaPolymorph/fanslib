@@ -34,6 +34,9 @@ export class TagDimension {
   @Column("int", { default: 0 })
   sortOrder: number;
 
+  @Column("varchar", { default: "none" })
+  stickerDisplay: StickerDisplayMode;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -70,9 +73,6 @@ export class TagDefinition {
 
   @Column("varchar", { nullable: true })
   color?: string; // Color for categorical tags
-
-  @Column("varchar", { default: "none" })
-  stickerDisplay: StickerDisplayMode; // Display mode for stickers
 
   @Column("varchar", { nullable: true })
   shortRepresentation?: string; // Custom short text for sticker display
@@ -144,7 +144,7 @@ export class MediaTag {
   color?: string; // Denormalized from TagDefinition.color for categorical tags
 
   @Column("varchar", { default: "none" })
-  stickerDisplay: StickerDisplayMode; // Denormalized from TagDefinition.stickerDisplay
+  stickerDisplay: StickerDisplayMode; // Denormalized from TagDimension.stickerDisplay
 
   @Column("varchar", { nullable: true })
   shortRepresentation?: string; // Denormalized from TagDefinition.shortRepresentation

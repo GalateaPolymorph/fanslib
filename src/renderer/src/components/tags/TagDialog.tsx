@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CreateTagDefinitionDto, UpdateTagDefinitionDto } from "../../../../features/tags/api-type";
-import { StickerDisplayMode, TagDefinition, TagDimension } from "../../../../features/tags/entity";
+import { TagDefinition, TagDimension } from "../../../../features/tags/entity";
 import {
   convertFromTagValue,
   convertToTagValue,
@@ -64,7 +64,6 @@ export const TagDialog = ({
         value: tag.value,
         description: tag.description || "",
         parentTagId: tag.parentTagId || null,
-        stickerDisplay: (tag.stickerDisplay || "none") as StickerDisplayMode,
         shortRepresentation: tag.shortRepresentation || "",
         typedValue: convertFromTagValue(tag.value, dimension.dataType),
       };
@@ -76,7 +75,6 @@ export const TagDialog = ({
       value: "",
       description: "",
       parentTagId: editingTag?.parentTagId || null,
-      stickerDisplay: "none" as "none" | "color" | "short",
       shortRepresentation: "",
       typedValue: defaultValue,
     };
@@ -87,16 +85,6 @@ export const TagDialog = ({
 
   const handleSubmit = () => {
     if (validationError || !formData.displayName.trim()) {
-      return;
-    }
-
-    // Validate short representation when sticker display is 'short'
-    if (
-      isCategorical &&
-      formData.stickerDisplay === "short" &&
-      !formData.shortRepresentation.trim()
-    ) {
-      setValidationError("Short representation is required when using short text display mode");
       return;
     }
 
@@ -116,7 +104,6 @@ export const TagDialog = ({
       description: formData.description.trim() || undefined,
       ...(isCategorical && {
         parentTagId: formData.parentTagId,
-        stickerDisplay: formData.stickerDisplay,
         shortRepresentation: formData.shortRepresentation.trim() || undefined,
       }),
     };
@@ -176,7 +163,6 @@ export const TagDialog = ({
           value={formData.value}
           description={formData.description}
           parentTagId={formData.parentTagId}
-          stickerDisplay={formData.stickerDisplay}
           shortRepresentation={formData.shortRepresentation}
           availableTags={availableTags}
           currentTagId={editingTag?.mode === "edit" ? editingTag.tag.id : undefined}
@@ -186,19 +172,8 @@ export const TagDialog = ({
           onParentTagChange={(parentId) =>
             setFormData((prev) => ({ ...prev, parentTagId: parentId }))
           }
-          onStickerDisplayChange={(mode) => {
-            setFormData((prev) => ({ ...prev, stickerDisplay: mode }));
-            // Clear validation error when switching away from 'short' mode
-            if (mode !== "short" && validationError?.includes("Short representation")) {
-              setValidationError(null);
-            }
-          }}
           onShortRepresentationChange={(value) => {
             setFormData((prev) => ({ ...prev, shortRepresentation: value }));
-            // Clear validation error when user starts typing
-            if (validationError?.includes("Short representation")) {
-              setValidationError(null);
-            }
           }}
         />
       );

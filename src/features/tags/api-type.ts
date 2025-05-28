@@ -7,6 +7,7 @@ export type CreateTagDimensionDto = {
   dataType: "categorical" | "numerical" | "boolean";
   validationSchema?: string;
   sortOrder?: number;
+  stickerDisplay?: "none" | "color" | "short";
 };
 
 export type UpdateTagDimensionDto = {
@@ -14,6 +15,7 @@ export type UpdateTagDimensionDto = {
   description?: string;
   validationSchema?: string;
   sortOrder?: number;
+  stickerDisplay?: "none" | "color" | "short";
 };
 
 export type CreateTagDefinitionDto = {
@@ -23,7 +25,6 @@ export type CreateTagDefinitionDto = {
   description?: string;
   metadata?: string;
   color?: string;
-  stickerDisplay?: "none" | "color" | "short";
   shortRepresentation?: string;
   sortOrder?: number;
   parentTagId?: number;
@@ -35,7 +36,6 @@ export type UpdateTagDefinitionDto = {
   description?: string;
   metadata?: string;
   color?: string;
-  stickerDisplay?: "none" | "color" | "short";
   shortRepresentation?: string;
   sortOrder?: number;
   parentTagId?: number;
