@@ -31,7 +31,6 @@ const defaultPreferences: LibraryPreferences = {
     search: undefined,
     caption: undefined,
     excludeShoots: [],
-    categories: undefined,
   },
   sort: {
     field: "fileModificationDate",

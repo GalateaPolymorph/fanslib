@@ -50,7 +50,8 @@ export const aggregatePostAnalyticsData = (post: Post, trimPlateau = true): Data
     return [];
   }
 
-  const relevantMedia = post.postMedia.find((m) => m.media.tier?.level === 0);
+  // TODO: Use isFreePreview?
+  const relevantMedia = post.postMedia[0];
   const videoLengthMs = (relevantMedia?.media?.duration || 0) * 1000;
   const postDate = new Date(post.date);
   postDate.setHours(0, 0, 0, 0); // Normalize to start of day

@@ -4,22 +4,18 @@ import { ContentSchedule, TagRequirements } from "./entity";
 
 export type ContentScheduleCreateData = {
   channelId: string;
-  categoryId?: string;
   type: "daily" | "weekly" | "monthly";
   postsPerTimeframe?: number;
   preferredDays?: string[];
   preferredTimes?: string[];
-  tierId?: number;
   tagRequirements?: TagRequirements;
 };
 
 export type ContentScheduleUpdateData = {
-  categoryId?: string | null;
   type?: "daily" | "weekly" | "monthly";
   postsPerTimeframe?: number;
   preferredDays?: string[];
   preferredTimes?: string[];
-  tierId?: number | null;
   tagRequirements?: TagRequirements | null;
 };
 

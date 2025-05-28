@@ -1,4 +1,3 @@
-import { TagSelectionState, TagSelector } from "@renderer/components/TagSelector";
 import { Button } from "@renderer/components/ui/button";
 import {
   Select,
@@ -14,18 +13,9 @@ import { useMemo, useState } from "react";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
 import { ContentSchedule, TagRequirements } from "../../../../features/content-schedules/entity";
 
-// Dimension constants
-const TIER_DIMENSION_NAME = "Tier";
-const CATEGORY_DIMENSION_NAME = "Category";
-
-// Legacy dimension names for backward compatibility
-const LEGACY_TIER_DIMENSION_NAME = "Content Quality";
-const LEGACY_CATEGORY_DIMENSION_NAME = "Content Category";
-
 type ContentScheduleFormProps = {
   schedule?: ContentSchedule;
   channelId: string;
-  existingSchedules: ContentSchedule[];
   onSubmit: (schedule: ContentScheduleCreateData) => void;
   onCancel: () => void;
 };
@@ -33,7 +23,6 @@ type ContentScheduleFormProps = {
 export const ContentScheduleForm = ({
   schedule,
   channelId,
-  existingSchedules,
   onSubmit,
   onCancel,
 }: ContentScheduleFormProps) => {
@@ -41,27 +30,16 @@ export const ContentScheduleForm = ({
 
   // Initialize tag requirements from schedule or legacy fields
   const initialTagRequirements = useMemo(() => {
-    if (schedule?.tagRequirements) {
-      try {
-        return JSON.parse(schedule.tagRequirements) as TagRequirements;
-      } catch {
-        return {};
-      }
+    if (!schedule?.tagRequirements) return {};
+    try {
+      return JSON.parse(schedule.tagRequirements) as TagRequirements;
+    } catch {
+      return {};
     }
+  }, [schedule?.tagRequirements]);
 
-    // Convert legacy fields to tag requirements
-    const requirements: TagRequirements = {};
-    if (schedule?.categoryId) {
-      requirements[CATEGORY_DIMENSION_NAME] = [schedule.categoryId];
-    }
-    if (schedule?.tierId !== undefined && schedule?.tierId !== null) {
-      requirements[TIER_DIMENSION_NAME] = [schedule.tierId];
-    }
-
-    return requirements;
-  }, [schedule]);
-
-  const [tagRequirements, setTagRequirements] = useState<TagRequirements>(initialTagRequirements);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [tagRequirements, _setTagRequirements] = useState<TagRequirements>(initialTagRequirements);
   const [postsPerTimeframe, setPostsPerTimeframe] = useState(schedule?.postsPerTimeframe || 1);
   const [preferredDays, setPreferredDays] = useState<string[]>(
     schedule?.preferredDays?.map((d) => d.toString()) || []
@@ -84,85 +62,15 @@ export const ContentScheduleForm = ({
     };
   });
 
-  // Get disabled categories from existing schedules
-  const disabledCategories = useMemo(() => {
-    return existingSchedules
-      .filter((s) => s.id !== schedule?.id)
-      .map((s) => {
-        // Check both legacy categoryId and tagRequirements
-        if (s.categoryId) return s.categoryId;
-        if (s.tagRequirements) {
-          try {
-            const requirements = JSON.parse(s.tagRequirements) as TagRequirements;
-            // Check both new and legacy dimension names
-            const categoryTags =
-              requirements[CATEGORY_DIMENSION_NAME] || requirements[LEGACY_CATEGORY_DIMENSION_NAME];
-            return categoryTags?.[0]; // Return first category tag
-          } catch {
-            return null;
-          }
-        }
-        return null;
-      })
-      .filter(Boolean);
-  }, [existingSchedules, schedule?.id]);
-
   const handleSubmit = () => {
-    // Convert tag requirements back to legacy format for backward compatibility
-    const categoryTags =
-      tagRequirements[CATEGORY_DIMENSION_NAME] || tagRequirements[LEGACY_CATEGORY_DIMENSION_NAME];
-    const tierTags =
-      tagRequirements[TIER_DIMENSION_NAME] || tagRequirements[LEGACY_TIER_DIMENSION_NAME];
-
-    const categoryId = (categoryTags?.[0] as string) || null;
-    const tierId = (tierTags?.[0] as number) || null;
-
     onSubmit({
       channelId,
-      categoryId,
       type,
       postsPerTimeframe,
       preferredTimes,
-      tierId,
       tagRequirements: Object.keys(tagRequirements).length > 0 ? tagRequirements : undefined,
       ...(type !== "daily" ? { preferredDays } : {}),
     });
-  };
-
-  const handleCategoryTagChange = (tagStates: TagSelectionState[] | undefined) => {
-    const newRequirements = { ...tagRequirements };
-
-    // Remove both new and legacy dimension names
-    delete newRequirements[CATEGORY_DIMENSION_NAME];
-    delete newRequirements[LEGACY_CATEGORY_DIMENSION_NAME];
-
-    if (tagStates && tagStates.length > 0) {
-      const selectedTags = tagStates.filter((tag) => tag.state === "selected").map((tag) => tag.id);
-
-      if (selectedTags.length > 0) {
-        newRequirements[CATEGORY_DIMENSION_NAME] = selectedTags;
-      }
-    }
-
-    setTagRequirements(newRequirements);
-  };
-
-  const handleTierTagChange = (tagStates: TagSelectionState[] | undefined) => {
-    const newRequirements = { ...tagRequirements };
-
-    // Remove both new and legacy dimension names
-    delete newRequirements[TIER_DIMENSION_NAME];
-    delete newRequirements[LEGACY_TIER_DIMENSION_NAME];
-
-    if (tagStates && tagStates.length > 0) {
-      const selectedTags = tagStates.filter((tag) => tag.state === "selected").map((tag) => tag.id);
-
-      if (selectedTags.length > 0) {
-        newRequirements[TIER_DIMENSION_NAME] = selectedTags;
-      }
-    }
-
-    setTagRequirements(newRequirements);
   };
 
   const handleDayToggle = (dayIndex: number) => {
@@ -195,56 +103,9 @@ export const ContentScheduleForm = ({
     setPreferredTimes((current) => current.filter((t) => t !== time));
   };
 
-  // Convert tag requirements to TagSelectionState format
-  const categoryTagStates: TagSelectionState[] | undefined = useMemo(() => {
-    const categoryTags =
-      tagRequirements[CATEGORY_DIMENSION_NAME] || tagRequirements[LEGACY_CATEGORY_DIMENSION_NAME];
-    if (!categoryTags || categoryTags.length === 0) return undefined;
-
-    return categoryTags.map((tagId) => ({
-      id: tagId,
-      state: "selected" as const,
-    }));
-  }, [tagRequirements]);
-
-  const tierTagStates: TagSelectionState[] | undefined = useMemo(() => {
-    const tierTags =
-      tagRequirements[TIER_DIMENSION_NAME] || tagRequirements[LEGACY_TIER_DIMENSION_NAME];
-    if (!tierTags || tierTags.length === 0) return undefined;
-
-    return tierTags.map((tagId) => ({
-      id: tagId,
-      state: "selected" as const,
-    }));
-  }, [tagRequirements]);
-
   return (
     <div className="space-y-4">
       <div className="grid gap-4">
-        <div className="space-y-2">
-          <h4 className="text-sm">Category</h4>
-          <TagSelector
-            dimensionName={CATEGORY_DIMENSION_NAME}
-            value={categoryTagStates}
-            onChange={handleCategoryTagChange}
-            multiple={false}
-            disabledTags={disabledCategories}
-            includeNoneOption
-          />
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="text-sm">Minimum Tier Level</h4>
-          <TagSelector
-            dimensionName={TIER_DIMENSION_NAME}
-            value={tierTagStates}
-            onChange={handleTierTagChange}
-            multiple={false}
-            includeNoneOption
-            tierDisplayFormat="categorical"
-          />
-        </div>
-
         <div className="space-y-2">
           <h4 className="text-sm">Schedule Type</h4>
           <Select value={type} onValueChange={(value: ContentSchedule["type"]) => setType(value)}>

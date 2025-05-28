@@ -9,11 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Category } from "../categories/entity";
+import { FanslyAnalyticsAggregate, FanslyAnalyticsDatapoint } from "../analytics/entity";
 import { Channel } from "../channels/entity";
 import { Subreddit } from "../channels/subreddit";
 import { Media } from "../library/entity";
-import { Tier } from "../tiers/entity";
 export type PostStatus = "draft" | "scheduled" | "posted";
 
 @Entity()
@@ -86,30 +85,20 @@ export class Post {
   @Column("varchar", { nullable: true })
   subredditId?: string;
 
-  @ManyToOne(() => Category)
-  @JoinColumn({ name: "categoryId", referencedColumnName: "id" })
-  category?: Category;
-  @Column("varchar", { nullable: true })
-  categoryId?: string;
-
-  @Column("int", { nullable: true })
-  tierId?: number;
-
-  @ManyToOne(() => Tier)
-  @JoinColumn({ name: "tierId" })
-  tier?: Tier;
-
   @OneToMany(() => PostMedia, (mediaOrder) => mediaOrder.post)
   postMedia!: PostMedia[];
 
-  @OneToMany("FanslyAnalyticsDatapoint", "post")
-  fanslyAnalyticsDatapoints!: any[];
+  @OneToMany(
+    () => FanslyAnalyticsDatapoint,
+    (fanslyAnalyticsDatapoint) => fanslyAnalyticsDatapoint.post
+  )
+  fanslyAnalyticsDatapoints!: FanslyAnalyticsDatapoint[];
 
-  @OneToOne("FanslyAnalyticsAggregate", "post")
-  fanslyAnalyticsAggregate?: any;
+  @OneToOne(
+    () => FanslyAnalyticsAggregate,
+    (fanslyAnalyticsAggregate) => fanslyAnalyticsAggregate.post
+  )
+  fanslyAnalyticsAggregate?: FanslyAnalyticsAggregate;
 }
 
-export type PostWithoutRelations = Omit<
-  Post,
-  "channel" | "category" | "media" | "tier" | "subreddit"
->;
+export type PostWithoutRelations = Omit<Post, "channel" | "media" | "subreddit">;

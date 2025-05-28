@@ -44,7 +44,6 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
   return database.manager.findOne(Media, {
     where: { id },
     relations: {
-      categories: true,
       postMedia: {
         post: {
           channel: true,
@@ -54,7 +53,6 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
       niches: {
         hashtags: true,
       },
-      tier: true,
       mediaTags: true,
     },
   });
@@ -70,24 +68,12 @@ export const fetchAllMedia = async (
   const database = await db();
   const queryBuilder = database.manager
     .createQueryBuilder(Media, "media")
-    .leftJoinAndSelect("media.categories", "categories")
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
     .leftJoinAndSelect("post.channel", "channel")
     .leftJoinAndSelect("post.subreddit", "subreddit")
     .leftJoinAndSelect("media.niches", "niches")
-    .leftJoinAndSelect("niches.hashtags", "hashtags")
-    .leftJoinAndSelect("media.tier", "tier");
-
-  // Apply category filter
-  if (params?.categories?.length) {
-    queryBuilder.andWhere("categories.id IN (:...categories)", { categories: params.categories });
-  }
-
-  // Apply category empty filter
-  if (params?.categories?.length === 0) {
-    queryBuilder.andWhere("categories.id IS NULL");
-  }
+    .leftJoinAndSelect("niches.hashtags", "hashtags");
 
   // Apply search filter
   if (params?.search) {
@@ -206,16 +192,6 @@ export const fetchAllMedia = async (
         );
       }
     });
-  }
-
-  // Apply tier filters
-  if (params?.tiers?.length) {
-    queryBuilder.andWhere("tier.id IN (:...tiers)", { tiers: params.tiers });
-  }
-
-  // Apply tier none filter
-  if (params?.tiers?.length === 0) {
-    queryBuilder.andWhere("tier.id IS NULL");
   }
 
   // Apply tag-based filters using denormalized MediaTag fields for performance
@@ -337,7 +313,6 @@ export const fetchMediaByPath = async (path: string): Promise<Media | null> => {
   return repository.findOne({
     where: { path },
     relations: {
-      categories: true,
       postMedia: {
         post: {
           channel: true,
@@ -354,7 +329,6 @@ export const fetchMediaByPaths = async (paths: string[]): Promise<Media[]> => {
   return repository.find({
     where: { path: In(paths) },
     relations: {
-      categories: true,
       postMedia: {
         post: {
           channel: true,
@@ -371,7 +345,6 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
   const media = await repository.findOne({
     where: { id },
     relations: {
-      categories: true,
       postMedia: {
         post: {
           channel: true,
@@ -390,7 +363,6 @@ export const updateMedia = async (id: string, updates: UpdateMediaPayload) => {
   const newMedia = await repository.findOne({
     where: { id },
     relations: {
-      categories: true,
       postMedia: true,
       shoots: true,
     },

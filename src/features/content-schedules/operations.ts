@@ -1,7 +1,5 @@
 import { nanoid } from "nanoid";
 import { db } from "../../lib/db";
-import { Category } from "../categories/entity";
-import { Tier } from "../tiers/entity";
 import { ContentScheduleCreateData, ContentScheduleUpdateData } from "./api-type";
 import { ContentSchedule, stringifyTagRequirements } from "./entity";
 
@@ -30,8 +28,6 @@ export const createContentSchedule = async (
     where: { id: schedule.id },
     relations: {
       channel: true,
-      category: true,
-      tier: true,
     },
   }) as Promise<ContentSchedule>;
 };
@@ -44,8 +40,6 @@ export const fetchContentScheduleById = async (id: string): Promise<ContentSched
     where: { id },
     relations: {
       channel: true,
-      category: true,
-      tier: true,
     },
   });
 };
@@ -60,27 +54,6 @@ export const fetchContentSchedulesByChannel = async (
     where: { channelId },
     relations: {
       channel: true,
-      category: true,
-      tier: true,
-    },
-    order: {
-      createdAt: "DESC",
-    },
-  });
-};
-
-export const fetchContentSchedulesByCategory = async (
-  categoryId: string
-): Promise<ContentSchedule[]> => {
-  const dataSource = await db();
-  const repository = dataSource.getRepository(ContentSchedule);
-
-  return repository.find({
-    where: { categoryId },
-    relations: {
-      channel: true,
-      category: true,
-      tier: true,
     },
     order: {
       createdAt: "DESC",
@@ -97,8 +70,6 @@ export const fetchAllContentSchedules = async (): Promise<ContentSchedule[]> => 
       channel: {
         type: true,
       },
-      category: true,
-      tier: true,
     },
     order: {
       createdAt: "DESC",
@@ -117,57 +88,32 @@ export const updateContentSchedule = async (
     where: { id },
     relations: {
       channel: true,
-      category: true,
-      tier: true,
     },
   });
 
   if (!schedule) return null;
 
-  // Handle tagRequirements conversion
-  let tagRequirementsString: string | undefined;
-  if ("tagRequirements" in updates) {
-    if (updates.tagRequirements === null) {
-      tagRequirementsString = undefined;
-    } else if (updates.tagRequirements) {
-      tagRequirementsString = stringifyTagRequirements(updates.tagRequirements);
-    }
-  }
+  const tagRequirementsString =
+    "tagRequirements" in updates
+      ? updates.tagRequirements === null
+        ? undefined
+        : updates.tagRequirements
+          ? stringifyTagRequirements(updates.tagRequirements)
+          : undefined
+      : undefined;
 
-  // Apply updates with timestamp
   Object.assign(schedule, {
     ...updates,
     updatedAt: new Date().toISOString(),
     ...(tagRequirementsString !== undefined && { tagRequirements: tagRequirementsString }),
   });
 
-  if (updates.categoryId) {
-    schedule.category = await dataSource.getRepository(Category).findOne({
-      where: { id: updates.categoryId },
-    });
-  }
-  if (updates.categoryId === null) {
-    schedule.category = null;
-  }
-  if (updates.tierId) {
-    schedule.tier = await dataSource.getRepository(Tier).findOne({
-      where: { id: updates.tierId },
-    });
-  }
-  if (updates.tierId === null) {
-    schedule.tier = null;
-  }
-
-  // Save the entity
   await repository.save(schedule);
 
-  // Return with relations
   return repository.findOne({
     where: { id },
     relations: {
       channel: true,
-      category: true,
-      tier: true,
     },
   });
 };

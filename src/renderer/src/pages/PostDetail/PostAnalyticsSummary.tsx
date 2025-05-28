@@ -6,8 +6,6 @@ import {
   formatNumber,
   formatToDecimalSeconds,
 } from "../../../../lib/fansly-analytics";
-import { useMediaTags } from "../../hooks/tags/useMediaTags";
-import { getTierLevel } from "../../lib/media-tags";
 
 type PostAnalyticsSummaryProps = {
   post: Post;
@@ -16,21 +14,9 @@ type PostAnalyticsSummaryProps = {
 export const PostAnalyticsSummary = ({ post }: PostAnalyticsSummaryProps) => {
   const graphData = useMemo(() => aggregatePostAnalyticsData(post, false), [post]);
 
-  // Find the first media item to get its ID for tag lookup
-  const firstMediaId = post.postMedia[0]?.media?.id;
-  const { data: mediaTags = [] } = useMediaTags(firstMediaId || "");
-
-  // Find relevant media with Tier level 0 (equivalent to Free tier)
   const relevantMedia = useMemo(() => {
-    // For now, we'll use the first media item as relevant media
-    // In a more sophisticated implementation, we could check all media items
-    // and find one with Tier level 0 (Free tier)
-    const tierLevel = getTierLevel(mediaTags);
-    if (tierLevel === 0) {
-      return post.postMedia[0];
-    }
-    return post.postMedia[0]; // Fallback to first media
-  }, [post.postMedia, mediaTags]);
+    return post.postMedia[0]; // TODO: Use isFreePreview?
+  }, [post.postMedia]);
 
   const videoLengthMs = (relevantMedia?.media?.duration || 0) * 1000;
 

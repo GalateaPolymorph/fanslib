@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Media } from "../../../../features/library/entity";
 import { ShootWithMedia } from "../../../../features/shoots/api-type";
-import { useShootPreferences } from "../../contexts/ShootPreferencesContext";
 
 type GroupKey = {
   shootId: string;
@@ -16,9 +15,10 @@ export type GroupedShootMedia = {
 const sortMediaByDate = (a: Media, b: Media) =>
   b.fileCreationDate.getTime() - a.fileCreationDate.getTime();
 
-export const useShootsMedia = (shoots: ShootWithMedia[]): GroupedShootMedia => {
-  const { preferences: shootPreferences } = useShootPreferences();
+// Left here as a reference. Before it was grouped by category, but we can't to that anymore as we're using tags now.
+const shouldBeGrouped = (_media: Media) => false;
 
+export const useShootsMedia = (shoots: ShootWithMedia[]): GroupedShootMedia => {
   return useMemo(() => {
     const shootsMedia = new Map<GroupKey, Map<string, Media[]>>();
     const allMedia = new Map<GroupKey, Media[]>();
@@ -46,15 +46,15 @@ export const useShootsMedia = (shoots: ShootWithMedia[]): GroupedShootMedia => {
       const uncategorized: Media[] = [];
 
       shoot.media.forEach((media) => {
-        if (media.categories.length === 0) {
+        if (!shouldBeGrouped(media)) {
           uncategorized.push(media);
         } else {
-          // Sort categories to ensure stable ordering
-          const sortedCategories = [...media.categories].sort((a, b) => a.id.localeCompare(b.id));
-          sortedCategories.forEach((category) => {
-            const existing = grouped.get(category.id) || [];
-            grouped.set(category.id, [...existing, media]);
-          });
+          // // Sort categories to ensure stable ordering
+          // const sortedCategories = [...media.categories].sort((a, b) => a.id.localeCompare(b.id));
+          // sortedCategories.forEach((category) => {
+          //   const existing = grouped.get(category.id) || [];
+          //   grouped.set(category.id, [...existing, media]);
+          // });
         }
       });
 
@@ -69,7 +69,9 @@ export const useShootsMedia = (shoots: ShootWithMedia[]): GroupedShootMedia => {
       }
 
       // If not grouping by category, create a single "ALL" group
-      if (!shootPreferences.groupByCategory) {
+      // if (!shootPreferences.groupByCategory) {
+      // eslint-disable-next-line no-constant-condition
+      if (true) {
         const sortedMap = new Map<string, Media[]>();
         sortedMap.set("ALL", sortedMedia);
         shootsMedia.set(groupKey, sortedMap);
@@ -83,5 +85,5 @@ export const useShootsMedia = (shoots: ShootWithMedia[]): GroupedShootMedia => {
     });
 
     return { allMedia, shootsMedia };
-  }, [shoots, shootPreferences.groupByCategory]);
+  }, [shoots]);
 };

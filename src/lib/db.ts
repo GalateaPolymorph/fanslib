@@ -8,7 +8,6 @@ import {
   FanslyAnalyticsAggregate,
   FanslyAnalyticsDatapoint,
 } from "../features/analytics/entity";
-import { Category } from "../features/categories/entity";
 import { Channel, ChannelType } from "../features/channels/entity";
 import { Subreddit } from "../features/channels/subreddit";
 import { ContentSchedule } from "../features/content-schedules/entity";
@@ -18,14 +17,12 @@ import { Niche } from "../features/niches/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
 import { MediaTag, TagDefinition, TagDimension } from "../features/tags/entity";
-import { Tier } from "../features/tiers/entity";
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
 
 export const AppDataSource = new DataSource({
   type: "sqlite",
   database: dbPath,
   entities: [
-    Category,
     Channel,
     ChannelType,
     Hashtag,
@@ -35,7 +32,6 @@ export const AppDataSource = new DataSource({
     PostMedia,
     ContentSchedule,
     Shoot,
-    Tier,
     Niche,
     Subreddit,
     FanslyAnalyticsDatapoint,

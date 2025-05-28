@@ -4,16 +4,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Category } from "../categories/entity";
 import { Niche } from "../niches/entity";
 import { PostMedia } from "../posts/entity";
 import { Shoot } from "../shoots/entity";
-import { Tier } from "../tiers/entity";
+import { MediaTag } from "../tags/entity";
 
 export type MediaType = "image" | "video";
 
@@ -49,14 +47,6 @@ export class Media {
   @Column("datetime")
   fileModificationDate!: Date;
 
-  @ManyToMany(() => Category, { cascade: true })
-  @JoinTable({
-    name: "media_categories",
-    joinColumn: { name: "media_id", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "category_id", referencedColumnName: "id" },
-  })
-  categories!: Category[];
-
   @OneToMany(() => PostMedia, (postMedia) => postMedia.media)
   postMedia: PostMedia[];
 
@@ -76,11 +66,8 @@ export class Media {
   })
   niches!: Niche[];
 
-  @OneToMany("MediaTag", "media")
-  mediaTags: any[];
-
-  @ManyToOne(() => Tier, (tier) => tier.media)
-  tier?: Tier;
+  @OneToMany(() => MediaTag, (mediaTag) => mediaTag.media)
+  mediaTags: MediaTag[];
 }
 
-export type MediaWithoutRelations = Omit<Media, "id" | "categories">;
+export type MediaWithoutRelations = Omit<Media, "id">;

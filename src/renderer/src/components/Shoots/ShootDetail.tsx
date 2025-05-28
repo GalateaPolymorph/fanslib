@@ -6,7 +6,6 @@ import { Media } from "../../../../features/library/entity";
 import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
 import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import { useMediaDrag } from "../../contexts/MediaDragContext";
-import { useShootPreferences } from "../../contexts/ShootPreferencesContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { ShootDetailDeleteButton } from "./ShootDetailDeleteButton";
 import { ShootDetailDropZone } from "./ShootDetailDropZone";
@@ -28,7 +27,6 @@ type ShootDetailContentProps = {
 
 const ShootDetailContent = ({ shoot, groupedMedia, onUpdate }: ShootDetailContentProps) => {
   const { preferences: libraryPreferences, updatePreferences } = useLibraryPreferences();
-  const { preferences: shootPreferences } = useShootPreferences();
   const { isDragging } = useMediaDrag();
   const [isEditing, setIsEditing] = useState(false);
   const { isOpen, setIsOpen } = useShootAccordionState(shoot.id);
@@ -103,19 +101,7 @@ const ShootDetailContent = ({ shoot, groupedMedia, onUpdate }: ShootDetailConten
           <div className="flex flex-col gap-4 pb-4" onClick={(e) => e.stopPropagation()}>
             {shoot.media && (
               <div className="flex flex-col gap-6">
-                {shootPreferences.groupByCategory
-                  ? Array.from(groupedMedia.entries()).map(([categoryId, mediaList]) => (
-                      <div key={categoryId} className="flex flex-col gap-2">
-                        <h3 className="text-sm font-medium text-muted-foreground">
-                          {categoryId === "uncategorized"
-                            ? "Uncategorized"
-                            : mediaList[0]?.categories.find((c) => c.id === categoryId)?.name ||
-                              "Unknown Category"}
-                        </h3>
-                        {renderMediaGrid(mediaList, Array.from(groupedMedia.values()).flat())}
-                      </div>
-                    ))
-                  : renderMediaGrid(Array.from(groupedMedia.values()).flat(), shoot.media)}
+                {renderMediaGrid(Array.from(groupedMedia.values()).flat(), shoot.media)}
                 {isDragging && <ShootDetailDropZone shoot={shoot} onUpdate={onUpdate} />}
               </div>
             )}

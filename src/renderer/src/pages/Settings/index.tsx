@@ -2,11 +2,9 @@ import { ThemeSwitch } from "@renderer/components/ThemeSwitch";
 import { Separator } from "@renderer/components/ui/separator";
 import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButton";
 import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
-import { CategorySettings } from "./CategorySettings";
 import { FanslySettings } from "./FanslySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
 import { PostponeSettings } from "./PostponeSettings";
-import { TierSettings } from "./TierSettings";
 
 export const SettingsPage = () => {
   return (
@@ -24,8 +22,6 @@ export const SettingsPage = () => {
           description="Configure your library location and organization preferences."
         >
           <LibraryPathInput />
-          <CategorySettings />
-          <TierSettings />
         </SettingsSection>
 
         <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">

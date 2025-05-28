@@ -4,7 +4,6 @@ import {
   APIPostponeIpcHandlers,
   apiPostponeMethods,
 } from "./api-postpone/api-type";
-import { CategoryIpcChannel, CategoryIpcHandlers, categoryMethods } from "./categories/api-type";
 import { ChannelIpcChannel, ChannelIpcHandlers, channelMethods } from "./channels/api-type";
 import {
   ContentScheduleIpcChannel,
@@ -24,10 +23,8 @@ import { PostIpcChannel, PostIpcHandlers, postMethods } from "./posts/api-type";
 import { SettingsIpcChannel, SettingsIpcHandlers, settingsMethods } from "./settings/api-type";
 import { ShootIpcChannel, ShootIpcHandlers, shootMethods } from "./shoots/api-type";
 import { TagIpcChannel, TagIpcHandlers, tagMethods } from "./tags/api-type";
-import { TierIpcChannel, TierIpcHandlers, tierMethods } from "./tiers/api-type";
 
-export type IpcHandlers = CategoryIpcHandlers &
-  ChannelIpcHandlers &
+export type IpcHandlers = ChannelIpcHandlers &
   ContentScheduleIpcHandlers &
   LibraryIpcHandlers &
   NotificationIpcHandlers &
@@ -36,14 +33,12 @@ export type IpcHandlers = CategoryIpcHandlers &
   SettingsIpcHandlers &
   ShootIpcHandlers &
   HashtagIpcHandlers &
-  TierIpcHandlers &
   NicheIpcHandlers &
   APIPostponeIpcHandlers &
   AnalyticsIpcHandlers &
   TagIpcHandlers;
 
 export const ipcMethods = [
-  ...categoryMethods,
   ...channelMethods,
   ...contentScheduleMethods,
   ...libraryMethods,
@@ -52,7 +47,6 @@ export const ipcMethods = [
   ...postMethods,
   ...settingsMethods,
   ...shootMethods,
-  ...tierMethods,
   ...hashtagMethods,
   ...nicheMethods,
   ...apiPostponeMethods,
@@ -61,7 +55,6 @@ export const ipcMethods = [
 ];
 
 export type IpcChannel =
-  | CategoryIpcChannel
   | ChannelIpcChannel
   | ContentScheduleIpcChannel
   | LibraryIpcChannel
@@ -70,7 +63,6 @@ export type IpcChannel =
   | PostIpcChannel
   | SettingsIpcChannel
   | ShootIpcChannel
-  | TierIpcChannel
   | HashtagIpcChannel
   | NicheIpcChannel
   | APIPostponeIpcChannel

@@ -1,7 +1,6 @@
 import { In } from "typeorm";
 import { normalizeHexColor, validateHexColor } from "../../lib/color";
 import { db } from "../../lib/db";
-import { CATEGORY_COLORS } from "../categories/colors";
 import {
   AssignTagsDto,
   CreateTagDefinitionDto,
@@ -11,6 +10,16 @@ import {
 } from "./api-type";
 import { validateMediaTagAssignment } from "./drift-prevention";
 import { MediaTag, STICKER_DISPLAY_MODES, TagDefinition, TagDimension } from "./entity";
+
+export const TAG_COLORS = [
+  "#7F00FF",
+  "#FCD023",
+  "#FF8811",
+  "#FFC2E2",
+  "#EF476F",
+  "#00A8E8",
+  "#4CAF50",
+];
 
 // Dimension Operations
 export const createTagDimension = async (dto: CreateTagDimensionDto): Promise<TagDimension> => {
@@ -145,14 +154,14 @@ const assignColorForCategoricalTag = async (
   );
 
   // Find the first available color from the palette
-  for (const color of CATEGORY_COLORS) {
+  for (const color of TAG_COLORS) {
     if (!usedColors.has(color)) {
       return color;
     }
   }
 
   // If all colors are used, cycle back to the beginning
-  return CATEGORY_COLORS[existingTags.length % CATEGORY_COLORS.length];
+  return TAG_COLORS[existingTags.length % TAG_COLORS.length];
 };
 
 // Tag Definition Operations

@@ -79,7 +79,6 @@ export const usePostPreviewDrag = ({
         const newPost = await window.api["post:create"](
           {
             date: post.date,
-            categoryId: post.categoryId,
             channelId: post.channelId,
             status: "draft",
             caption: "",

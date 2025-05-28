@@ -80,7 +80,7 @@ export const addDatapointsToPost = async (
     where: { id: postId },
     relations: {
       fanslyAnalyticsDatapoints: true,
-      postMedia: { media: { tier: true } },
+      postMedia: { media: true },
     },
   });
 
@@ -128,7 +128,6 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
     .leftJoinAndSelect("post.fanslyAnalyticsAggregate", "aggregate")
     .leftJoinAndSelect("post.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("media.tier", "tier")
     .where("datapoints.id IS NOT NULL")
     .andWhere("aggregate.id IS NULL")
     .getMany();

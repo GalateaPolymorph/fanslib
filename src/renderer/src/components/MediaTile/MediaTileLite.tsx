@@ -1,4 +1,3 @@
-import { getCategoryTags } from "@renderer/lib/media-tags";
 import { Image as ImageIcon, Video } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Media } from "../../../../features/library/entity";
@@ -27,9 +26,8 @@ export const MediaTileLite = memo(
     const videoRef = useRef<HTMLVideoElement>(null);
     const previewIntervalRef = useRef<number>();
 
-    // Get media tags for this media item
     const { data: mediaTags = [] } = useMediaTags(media.id);
-    const categoryTags = getCategoryTags(mediaTags);
+    const stickerTags = mediaTags.filter((mt) => mt.stickerDisplay === "color");
 
     const handleImageError = useCallback(() => {
       setLocalImageError(true);
@@ -124,9 +122,9 @@ export const MediaTileLite = memo(
           </div>
         )}
         <div className="absolute bottom-1 left-1 flex gap-1 z-10">
-          {categoryTags.length > 0 && (
+          {stickerTags.length > 0 && (
             <div className="size-5 p-1 rounded bg-black/50 flex items-center justify-center">
-              {categoryTags.map((tag) => (
+              {stickerTags.map((tag) => (
                 <div
                   key={tag.id}
                   className="w-2 h-2 rounded-full"

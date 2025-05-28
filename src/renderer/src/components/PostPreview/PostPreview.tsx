@@ -3,15 +3,11 @@ import { isVirtualPost, VirtualPost } from "@renderer/lib/virtual-posts";
 import { PostTimelineDropZone } from "@renderer/pages/Plan/PostTimelineDropZone";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
-import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Post } from "../../../../features/posts/entity";
-import { useMediaTags } from "../../hooks/tags/useMediaTags";
-import { formatTierLevelAsDisplay, getTierLevel } from "../../lib/media-tags";
 import { ChannelBadge } from "../ChannelBadge";
 import { MediaTile } from "../MediaTile";
 import { StatusSticker } from "../StatusSticker";
-import { Sticker } from "../ui/sticker";
 import { usePostPreviewDrag } from "./usePostPreviewDrag";
 
 type PostPreviewProps = {
@@ -42,18 +38,6 @@ export const PostPreview = ({
     onOpenChange,
     onUpdate,
   });
-
-  // Get media tags for the first media item (simplified approach)
-  // In a more sophisticated implementation, we could aggregate all media tier levels
-  const firstMedia = post.postMedia[0]?.media;
-  const firstMediaId = firstMedia && "id" in firstMedia ? firstMedia.id : "";
-  const { data: mediaTags = [] } = useMediaTags(firstMediaId);
-
-  // Get unique tier levels (simplified to just show the first media's tier)
-  const uniqueTierLevels = useMemo(() => {
-    const tierLevel = getTierLevel(mediaTags);
-    return tierLevel !== null ? [tierLevel] : [];
-  }, [mediaTags]);
 
   const previousDropZone =
     !isDraggedOver || !previousPostInList ? null : (
@@ -89,11 +73,6 @@ export const PostPreview = ({
               <div className="flex items-center gap-2">
                 <ChannelBadge name={post.channel.name} typeId={post.channel.typeId} />
                 <StatusSticker status={post.status} />
-                {uniqueTierLevels.map((level) => (
-                  <Sticker className="text-xs" key={level}>
-                    {formatTierLevelAsDisplay(level)}
-                  </Sticker>
-                ))}
               </div>
               <span className="text-sm text-muted-foreground block">
                 {format(new Date(post.date), "MMMM d, h:mm aaa")}

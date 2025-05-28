@@ -1,4 +1,3 @@
-import { Badge } from "@renderer/components/ui/badge";
 import { Button } from "@renderer/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
@@ -14,21 +13,6 @@ import {
   AlertDialogTrigger,
 } from "../../components/ui/alert-dialog";
 
-// Dimension constants
-const TIER_DIMENSION_NAME = "Tier";
-const CATEGORY_DIMENSION_NAME = "Category";
-
-// Legacy dimension names for backward compatibility
-const LEGACY_TIER_DIMENSION_NAME = "Content Quality";
-const LEGACY_CATEGORY_DIMENSION_NAME = "Content Category";
-
-// Tier value mapping for display
-const TIER_VALUE_DISPLAY = {
-  Free: "🆓 Free",
-  Paid: "💰 Paid",
-  Premium: "💎 Premium",
-} as const;
-
 type ContentScheduleListProps = {
   schedules: ContentSchedule[];
   onEdit: (schedule: ContentSchedule) => void;
@@ -42,22 +26,6 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
           .map((d) => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d])
           .join(", ")}`
       : "";
-  };
-
-  const formatTierDisplay = (tierValue: string | number) => {
-    // Handle categorical values
-    if (typeof tierValue === "string" && tierValue in TIER_VALUE_DISPLAY) {
-      return TIER_VALUE_DISPLAY[tierValue as keyof typeof TIER_VALUE_DISPLAY];
-    }
-
-    // Handle legacy numerical values
-    if (typeof tierValue === "number") {
-      const tierMap = { 0: "🆓 Free", 1: "💰 Paid", 2: "💎 Premium" };
-      return tierMap[tierValue as keyof typeof tierMap] || `Tier ${tierValue}`;
-    }
-
-    // Fallback for unknown values
-    return `Tier ${tierValue}`;
   };
 
   const formatTagRequirements = (schedule: ContentSchedule) => {
@@ -76,38 +44,8 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
       return null;
     }
 
-    const badges = [];
-
-    // Display Tier requirements (check both new and legacy dimension names)
-    const tierReq =
-      tagRequirements[TIER_DIMENSION_NAME] || tagRequirements[LEGACY_TIER_DIMENSION_NAME];
-    if (tierReq) {
-      if (tierReq.values && tierReq.values.length > 0) {
-        const tierDisplay = tierReq.values
-          .map((val: string | number) => formatTierDisplay(val))
-          .join(", ");
-        badges.push(
-          <Badge key="tier" variant="secondary" className="text-xs">
-            {tierDisplay}
-          </Badge>
-        );
-      }
-    }
-
-    // Display Category requirements (check both new and legacy dimension names)
-    const categoryReq =
-      tagRequirements[CATEGORY_DIMENSION_NAME] || tagRequirements[LEGACY_CATEGORY_DIMENSION_NAME];
-    if (categoryReq) {
-      if (categoryReq.values && categoryReq.values.length > 0) {
-        badges.push(
-          <Badge key="category" variant="outline" className="text-xs">
-            {categoryReq.values.join(", ")}
-          </Badge>
-        );
-      }
-    }
-
-    return badges.length > 0 ? badges : null;
+    // TODO: Display tag requirements as badges
+    return [];
   };
 
   if (!schedules.length) {

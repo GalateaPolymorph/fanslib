@@ -14,10 +14,8 @@ export type PostFilters = {
 export type PostCreateData = {
   date: string;
   channelId: string;
-  categoryId?: string;
   caption?: string;
   status: PostStatus;
-  tierId?: number;
   url?: string;
   fanslyStatisticsId?: string;
   subredditId?: string;

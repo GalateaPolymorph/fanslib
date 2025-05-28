@@ -2,7 +2,6 @@ import { Button } from "@renderer/components/ui/button";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useMedia } from "@renderer/hooks";
 import { MediaDetailDeleteButton } from "@renderer/pages/MediaDetail/MediaDetailDeleteButton";
-import { MediaDetailTierSelect } from "@renderer/pages/MediaDetail/MediaDetailTierSelect";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,7 +9,6 @@ import { MediaView } from "../../components/MediaView";
 import { PostponeRedgifsButton } from "../../components/PostponeRedgifsButton";
 import { MediaTagEditor } from "../../components/tags/MediaTagEditor";
 import { CreatePostDialog } from "./CreatePostDialog";
-import { MediaDetailCategorySelect } from "./MediaDetailCategorySelect";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
 import { MediaDetailNicheSelect } from "./MediaDetailNicheSelect";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
@@ -67,9 +65,7 @@ export const MediaDetail = () => {
             </div>
             <div className="flex flex-col gap-6">
               <MediaDetailMetadata media={media} />
-              <MediaDetailCategorySelect media={media} />
               <MediaDetailNicheSelect media={media} />
-              <MediaDetailTierSelect media={media} />
               <MediaTagEditor mediaId={media.id} />
             </div>
           </div>

@@ -10,7 +10,6 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { Tier } from "src/features/tiers/entity";
 import {
   ContentSchedule,
   parseTagRequirements,
@@ -29,16 +28,12 @@ export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt" | "postMed
   url: string | null;
   subreddit: string | null;
   subredditId: string | null;
-  tierId: number;
-  tier: Tier;
   tagRequirements: TagRequirements | null;
   fanslyAnalyticsAggregate: undefined;
 };
 
 export type VirtualPostMedia = {
   media: {
-    tier?: Tier;
-    tierId?: number;
     tagRequirements?: TagRequirements;
   };
 };
@@ -149,8 +144,6 @@ export const generateVirtualPosts = (
       scheduleId: schedule.id,
       channel: schedule.channel,
       channelId: schedule.channelId,
-      category: schedule.category,
-      categoryId: schedule.categoryId,
       caption: "",
       date: format(scheduleDate, "yyyy-MM-dd'T'HH:mm:ssXXX"),
       status: "draft" as const,
@@ -158,16 +151,12 @@ export const generateVirtualPosts = (
       fanslyStatisticsId: null,
       subreddit: null,
       subredditId: null,
-      tierId: schedule.tierId,
-      tier: schedule.tier,
       tagRequirements,
       fanslyAnalyticsAggregate: undefined,
       fanslyAnalyticsDatapoints: [],
       postMedia: [
         {
           media: {
-            tier: schedule.tier,
-            tierId: schedule.tierId,
             tagRequirements,
           },
         },

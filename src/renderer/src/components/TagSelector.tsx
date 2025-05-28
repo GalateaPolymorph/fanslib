@@ -1,48 +1,10 @@
 import { Badge } from "@renderer/components/ui/badge";
-import { Button } from "@renderer/components/ui/button";
 import { Slider } from "@renderer/components/ui/slider";
 import { Switch } from "@renderer/components/ui/switch";
 import { useMemo } from "react";
 import { useTagsByDimension } from "../hooks/tags/useTagDefinitions";
 import { useTagDimensions } from "../hooks/tags/useTagDimensions";
 import { cn } from "../lib/utils";
-
-// Helper function to format tier-like display for legacy Content Quality
-const formatContentQualityLevel = (level: number): string => {
-  return new Array(level + 1).fill("$").join("");
-};
-
-// Helper function to format tier value as display string with icons
-const formatTierAsDisplay = (tierValue: string): string => {
-  const tierDisplayMap = {
-    Free: "🆓 Free",
-    Paid: "💰 Paid",
-    Premium: "💎 Premium",
-  };
-
-  return tierDisplayMap[tierValue as keyof typeof tierDisplayMap] || tierValue;
-};
-
-// Helper function to check if this is a Tier dimension
-// @deprecated Use the generalized tag system instead of hardcoded dimension checks
-const isTierDimension = (dimensionName: string): boolean => {
-  return dimensionName === "Tier";
-};
-
-// Helper function to check if this is a Category dimension
-// @deprecated Use the generalized tag system instead of hardcoded dimension checks
-const isCategoryDimension = (dimensionName: string): boolean => {
-  return dimensionName === "Category";
-};
-
-// Backward compatibility helpers
-const isContentQualityDimension = (dimensionName: string): boolean => {
-  return dimensionName === "Content Quality" || isTierDimension(dimensionName);
-};
-
-const isContentCategoryDimension = (dimensionName: string): boolean => {
-  return dimensionName === "Content Category" || isCategoryDimension(dimensionName);
-};
 
 export type TagSelectionState = {
   id: string | number;
@@ -57,8 +19,6 @@ type TagSelectorProps = {
   disabledTags?: (string | number)[];
   includeNoneOption?: boolean;
   className?: string;
-  // Optional: Custom tier display format for legacy Content Quality and new Tier
-  tierDisplayFormat?: "dollar" | "level" | "both" | "categorical";
 };
 
 export const TagSelector = ({
@@ -69,7 +29,6 @@ export const TagSelector = ({
   disabledTags = [],
   includeNoneOption = false,
   className,
-  tierDisplayFormat = "both",
 }: TagSelectorProps) => {
   const { data: dimensions = [], isLoading: dimensionsLoading } = useTagDimensions();
 
@@ -185,120 +144,6 @@ export const TagSelector = ({
       return a.displayName.localeCompare(b.displayName);
     });
 
-    // Special rendering for Tier with enhanced display formatting
-    if (isTierDimension(dimensionName)) {
-      return (
-        <div className={cn("flex flex-wrap gap-2", className)}>
-          {sortedTags.map((tag) => {
-            const isDisabled = disabledTags.includes(tag.id);
-            const state = getTagState(tag.id);
-
-            return (
-              <Button
-                key={tag.id}
-                variant={state === "selected" ? "default" : "outline"}
-                size="sm"
-                className={cn(
-                  "min-w-[4rem] transition-colors",
-                  !multiple && value?.length > 0 && state === "unselected" && "opacity-50",
-                  isDisabled && "opacity-30 cursor-not-allowed"
-                )}
-                onClick={() => handleToggleTag(tag.id)}
-                title={
-                  isDisabled
-                    ? `This ${dimensionName.toLowerCase()} already has a schedule`
-                    : undefined
-                }
-              >
-                {formatTierAsDisplay(tag.value)}
-              </Button>
-            );
-          })}
-          {includeNoneOption && (
-            <Button
-              variant={getTagState("NONE") === "selected" ? "default" : "outline"}
-              size="sm"
-              className={cn(
-                "transition-colors text-muted-foreground",
-                !multiple && value?.length > 0 && "opacity-50"
-              )}
-              onClick={() => {
-                onChange(getTagState("NONE") === "selected" ? undefined : [], "");
-              }}
-            >
-              None
-            </Button>
-          )}
-        </div>
-      );
-    }
-
-    // Special rendering for Category with enhanced color support
-    if (isCategoryDimension(dimensionName) || isContentCategoryDimension(dimensionName)) {
-      return (
-        <div className={cn("flex flex-wrap gap-2", className)}>
-          {sortedTags.map((tag) => {
-            const isDisabled = disabledTags.includes(tag.id);
-            const state = getTagState(tag.id);
-
-            return (
-              <Badge
-                key={tag.id}
-                variant={
-                  state === "selected"
-                    ? "default"
-                    : state === "half-selected"
-                      ? "halfSelected"
-                      : "outline"
-                }
-                className={cn(
-                  "transition-colors cursor-pointer",
-                  !multiple && value?.length > 0 && state === "unselected" && "opacity-50",
-                  isDisabled && "opacity-30 cursor-not-allowed"
-                )}
-                style={{
-                  backgroundColor: state === "selected" ? tag.color : "transparent",
-                  borderColor: tag.color || "hsl(var(--border))",
-                  color: state === "selected" ? "white" : tag.color || "hsl(var(--foreground))",
-                  ...(state === "half-selected" &&
-                    ({
-                      "--half-selected-color": tag.color || "hsl(var(--border))",
-                    } as React.CSSProperties)),
-                }}
-                onClick={() => handleToggleTag(tag.id)}
-                title={
-                  isDisabled
-                    ? `This ${dimensionName.toLowerCase()} already has a schedule`
-                    : undefined
-                }
-              >
-                {tag.displayName}
-              </Badge>
-            );
-          })}
-          {includeNoneOption && (
-            <Badge
-              variant={getTagState("NONE") === "selected" ? "default" : "outline"}
-              className={cn(
-                "transition-colors cursor-pointer text-muted-foreground",
-                !multiple && value?.length > 0 && "opacity-50"
-              )}
-              onClick={() => {
-                onChange(getTagState("NONE") === "selected" ? undefined : [], "");
-              }}
-              style={{
-                backgroundColor:
-                  getTagState("NONE") === "selected" ? "hsl(var(--muted))" : "transparent",
-                borderColor: "hsl(var(--muted))",
-              }}
-            >
-              None
-            </Badge>
-          )}
-        </div>
-      );
-    }
-
     // Default categorical rendering for other dimensions
     return (
       <div className={cn("flex flex-wrap gap-2", className)}>
@@ -365,86 +210,6 @@ export const TagSelector = ({
   }
 
   if (dimension.dataType === "numerical") {
-    // Special rendering for Content Quality with tier-like display
-    if (isContentQualityDimension(dimensionName)) {
-      // Parse validation schema for min/max/step
-      let min = 0;
-      let max = 10;
-      let step = 1;
-
-      if (dimension.validationSchema) {
-        try {
-          const schema = JSON.parse(dimension.validationSchema);
-          min = schema.min ?? schema.minimum ?? 0;
-          max = schema.max ?? schema.maximum ?? 10;
-          step = schema.step ?? 1;
-        } catch (e) {
-          console.warn("Failed to parse validation schema for Content Quality dimension:", e);
-        }
-      }
-
-      // Generate tier levels based on min/max
-      const tierLevels = [];
-      for (let level = min; level <= max; level += step) {
-        tierLevels.push(level);
-      }
-
-      return (
-        <div className={cn("flex flex-wrap gap-2", className)}>
-          {tierLevels.map((level) => {
-            const isDisabled = disabledTags.includes(level);
-            const state = getTagState(level);
-
-            return (
-              <Button
-                key={level}
-                variant={state === "selected" ? "outline" : "ghost"}
-                size="sm"
-                className={cn(
-                  "min-w-[3rem] border border-transparent inline-flex gap-2 transition-colors",
-                  state === "selected" && "text-primary border-primary",
-                  state === "half-selected" && "text-primary/70 border-primary/70",
-                  !multiple && value?.length > 0 && state === "unselected" && "opacity-50",
-                  isDisabled && "opacity-30 cursor-not-allowed"
-                )}
-                onClick={() => handleToggleTag(level)}
-                title={
-                  isDisabled
-                    ? `This ${dimensionName.toLowerCase()} already has a schedule`
-                    : `Level ${level}`
-                }
-              >
-                {tierDisplayFormat === "level" && <span>Level {level}</span>}
-                {tierDisplayFormat === "dollar" && <span>{formatContentQualityLevel(level)}</span>}
-                {tierDisplayFormat === "both" && (
-                  <>
-                    <span>Level {level}</span>
-                    <span>{formatContentQualityLevel(level)}</span>
-                  </>
-                )}
-              </Button>
-            );
-          })}
-          {includeNoneOption && (
-            <Button
-              variant={getTagState("NONE") === "selected" ? "outline" : "ghost"}
-              size="sm"
-              className={cn(
-                "transition-colors text-muted-foreground",
-                !multiple && value?.length > 0 && "opacity-50"
-              )}
-              onClick={() => {
-                onChange(getTagState("NONE") === "selected" ? undefined : [], "");
-              }}
-            >
-              None
-            </Button>
-          )}
-        </div>
-      );
-    }
-
-    // Default numerical rendering with slider for other dimensions
     // Parse validation schema for min/max/step
     let min = 0;
     let max = 10;

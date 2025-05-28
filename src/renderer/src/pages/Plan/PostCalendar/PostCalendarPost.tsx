@@ -1,8 +1,6 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
-import { Sticker } from "@renderer/components/ui/sticker";
 import { usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import { usePostDrag } from "@renderer/contexts/PostDragContext";
-import { maximumTier, printTier } from "@renderer/lib/tier";
 import { cn } from "@renderer/lib/utils";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -19,7 +17,6 @@ type PostCalendarPostProps = {
 export const PostCalendarPost = ({ post, onUpdate }: PostCalendarPostProps) => {
   const { startPostDrag, endPostDrag } = usePostDrag();
   const time = format(new Date(post.date), "h:mm a");
-  const tier = maximumTier(post);
   const { preferences } = usePlanPreferences();
 
   const dragProps = !isVirtualPost(post)
@@ -56,7 +53,6 @@ export const PostCalendarPost = ({ post, onUpdate }: PostCalendarPostProps) => {
           typeId={post.channel.type?.id || post.channel.typeId}
           size="sm"
         />
-        {tier && <Sticker className="text-xs w-5">{printTier(tier)}</Sticker>}
       </div>
       <div className="[grid-area:time] text-xs text-muted-foreground">{time}</div>
       <div className="[grid-area:media] relative">

@@ -90,7 +90,6 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
       size: stats.size,
       fileCreationDate: stats.birthtime,
       fileModificationDate: stats.mtime,
-      categories: existingMedia?.categories || [],
       postMedia: existingMedia?.postMedia || [],
       shoots: [],
       duration: type === "video" ? await getVideoDuration(filePath) : undefined,

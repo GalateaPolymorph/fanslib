@@ -63,7 +63,6 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
       postMedia: {
         media: {
           niches: true,
-          tier: true,
         },
       },
       channel: {
@@ -71,7 +70,6 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
         defaultHashtags: true,
       },
       subreddit: true,
-      category: true,
       fanslyAnalyticsDatapoints: true,
     },
     order: {
@@ -106,14 +104,11 @@ export const fetchPostsByMediaId = async (mediaId: string): Promise<Post[]> => {
     },
     relations: {
       postMedia: {
-        media: {
-          categories: true,
-        },
+        media: true,
       },
       channel: {
         type: true,
       },
-      category: true,
     },
     order: {
       postMedia: {
@@ -138,7 +133,6 @@ export const fetchPostsByChannel = async (channelId: string): Promise<Post[]> =>
       channel: {
         type: true,
       },
-      category: true,
     },
     order: {
       date: "DESC",
@@ -162,7 +156,6 @@ export const fetchPostsBySchedule = async (scheduleId: string): Promise<Post[]> 
       channel: {
         type: true,
       },
-      category: true,
     },
     order: {
       date: "DESC",
@@ -175,7 +168,7 @@ export const fetchPostsBySchedule = async (scheduleId: string): Promise<Post[]> 
 
 export const updatePost = async (
   id: string,
-  updates: Partial<Omit<Post, "id" | "media" | "channel" | "category">>,
+  updates: Partial<Omit<Post, "id" | "media" | "channel">>,
   mediaIds?: string[]
 ): Promise<Post | null> => {
   const dataSource = await db();
@@ -260,14 +253,12 @@ export const getPostById = async (id: string) => {
       postMedia: {
         media: {
           niches: true,
-          tier: true,
         },
       },
       channel: {
         type: true,
       },
       subreddit: true,
-      category: true,
       fanslyAnalyticsDatapoints: true,
     },
     order: {
@@ -287,11 +278,9 @@ export const getAllPosts = async (filters?: PostFilters) => {
     .leftJoinAndSelect("post.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.media", "media")
     .leftJoinAndSelect("media.niches", "niches")
-    .leftJoinAndSelect("media.tier", "tier")
     .leftJoinAndSelect("post.channel", "channel")
     .leftJoinAndSelect("channel.type", "channelType")
     .leftJoinAndSelect("channel.defaultHashtags", "defaultHashtags")
-    .leftJoinAndSelect("post.category", "category")
     .orderBy("post.date", "DESC")
     .addOrderBy("postMedia.order", "ASC");
 
@@ -362,7 +351,6 @@ export const fetchPostsByUrl = async (url: string): Promise<Post | null> => {
       postMedia: {
         media: {
           niches: true,
-          tier: true,
         },
       },
       channel: {
@@ -370,7 +358,6 @@ export const fetchPostsByUrl = async (url: string): Promise<Post | null> => {
         defaultHashtags: true,
       },
       subreddit: true,
-      category: true,
     },
     order: {
       postMedia: {

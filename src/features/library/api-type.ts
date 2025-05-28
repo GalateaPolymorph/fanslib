@@ -27,7 +27,6 @@ export type TagFilter = {
 };
 
 export type MediaFilters = {
-  categories?: string[] | undefined;
   unposted?: boolean;
   createdDateStart?: Date;
   createdDateEnd?: Date;
@@ -37,7 +36,6 @@ export type MediaFilters = {
   shootId?: string;
   channelFilters?: ChannelPostFilter[];
   subredditFilters?: SubredditPostFilter[];
-  tiers?: number[];
   // Tag-based filtering
   tagFilters?: {
     [dimensionName: string]: TagFilter;
@@ -64,7 +62,7 @@ export type FileScanResult = {
 };
 
 export type UpdateMediaPayload = Partial<
-  Omit<Media, "id" | "createdAt" | "updatedAt" | "categories" | "postMedia" | "niches">
+  Omit<Media, "id" | "createdAt" | "updatedAt" | "postMedia" | "niches">
 >;
 
 const methods = [

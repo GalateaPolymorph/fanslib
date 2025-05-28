@@ -7,12 +7,11 @@ import {
 } from "../lib/selection-utils";
 import { TagSelectionState, TagSelector } from "./TagSelector";
 
-type UniversalBulkTagAssignmentProps = {
+type TagAssignment = {
   dimensionName: string;
   selectedMedia: Media[];
   onUpdate: () => void;
   className?: string;
-  tierDisplayFormat?: "dollar" | "level" | "both";
 };
 
 export const TagAssignment = ({
@@ -20,8 +19,7 @@ export const TagAssignment = ({
   selectedMedia,
   onUpdate,
   className,
-  tierDisplayFormat = "both",
-}: UniversalBulkTagAssignmentProps) => {
+}: TagAssignment) => {
   const queryClient = useQueryClient();
 
   // Mutation for assigning tags to media
@@ -86,7 +84,6 @@ export const TagAssignment = ({
           value={getTagStates()}
           onChange={handleTagChange}
           multiple={true}
-          tierDisplayFormat={tierDisplayFormat}
           disabledTags={assignTagsMutation.isPending ? [] : []} // Could add logic for disabled tags
         />
       </div>

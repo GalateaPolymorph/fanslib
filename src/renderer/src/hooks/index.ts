@@ -6,12 +6,10 @@ export * from "./ui/useMobile";
 export * from "./ui/usePersistentScrollPosition";
 
 // API Hooks (React Query)
-export * from "./api/useCategories";
 export * from "./api/useChannels";
 export * from "./api/useMedia";
 export * from "./api/useNiches";
 export * from "./api/usePost";
-export * from "./api/useTiers";
 
 // Form Hooks
 export * from "./forms/useDebouncedFieldUpdate";

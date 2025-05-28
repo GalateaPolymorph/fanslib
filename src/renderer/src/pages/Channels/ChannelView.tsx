@@ -188,7 +188,6 @@ export const ChannelView = ({
                 {isAddingSchedule && (
                   <ContentScheduleForm
                     channelId={channel.id}
-                    existingSchedules={schedules}
                     onSubmit={handleAddSchedule}
                     onCancel={() => setIsAddingSchedule(false)}
                   />
@@ -198,7 +197,6 @@ export const ChannelView = ({
                   <ContentScheduleForm
                     channelId={channel.id}
                     schedule={editingSchedule}
-                    existingSchedules={schedules}
                     onSubmit={(schedule) => handleUpdateSchedule(editingSchedule.id, schedule)}
                     onCancel={() => setEditingSchedule(null)}
                   />

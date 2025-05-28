@@ -1,12 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type ShootViewPreferences = {
-  groupByCategory: boolean;
-};
+type ShootViewPreferences = {};
 
-const defaultPreferences: ShootViewPreferences = {
-  groupByCategory: true,
-};
+const defaultPreferences: ShootViewPreferences = {};
 
 type ShootPreferencesContextType = {
   preferences: ShootViewPreferences;
