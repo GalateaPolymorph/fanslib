@@ -13,7 +13,6 @@ import { Subreddit } from "../features/channels/subreddit";
 import { ContentSchedule } from "../features/content-schedules/entity";
 import { Hashtag, HashtagChannelStats } from "../features/hashtags/entity";
 import { Media } from "../features/library/entity";
-import { Niche } from "../features/niches/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
 import { MediaTag, TagDefinition, TagDimension } from "../features/tags/entity";
@@ -32,7 +31,6 @@ export const AppDataSource = new DataSource({
     PostMedia,
     ContentSchedule,
     Shoot,
-    Niche,
     Subreddit,
     FanslyAnalyticsDatapoint,
     FanslyAnalyticsAggregate,

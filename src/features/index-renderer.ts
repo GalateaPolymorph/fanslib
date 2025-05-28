@@ -12,7 +12,6 @@ import {
 } from "./content-schedules/api-type";
 import { HashtagIpcChannel, HashtagIpcHandlers, hashtagMethods } from "./hashtags/api-type";
 import { LibraryIpcChannel, LibraryIpcHandlers, libraryMethods } from "./library/api-type";
-import { NicheIpcChannel, NicheIpcHandlers, nicheMethods } from "./niches/api-type";
 import {
   NotificationIpcChannel,
   NotificationIpcHandlers,
@@ -33,7 +32,6 @@ export type IpcHandlers = ChannelIpcHandlers &
   SettingsIpcHandlers &
   ShootIpcHandlers &
   HashtagIpcHandlers &
-  NicheIpcHandlers &
   APIPostponeIpcHandlers &
   AnalyticsIpcHandlers &
   TagIpcHandlers;
@@ -48,7 +46,6 @@ export const ipcMethods = [
   ...settingsMethods,
   ...shootMethods,
   ...hashtagMethods,
-  ...nicheMethods,
   ...apiPostponeMethods,
   ...analyticsMethods,
   ...tagMethods,
@@ -64,7 +61,6 @@ export type IpcChannel =
   | SettingsIpcChannel
   | ShootIpcChannel
   | HashtagIpcChannel
-  | NicheIpcChannel
   | APIPostponeIpcChannel
   | AnalyticsIpcChannel
   | TagIpcChannel;

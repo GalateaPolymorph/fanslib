@@ -2,7 +2,6 @@ import * as fs from "fs/promises";
 import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { PaginatedResponse } from "../_common/pagination";
-import { Niche } from "../niches/entity";
 import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 
@@ -50,9 +49,6 @@ export const getMediaById = async (id: string): Promise<Media | null> => {
           subreddit: true,
         },
       },
-      niches: {
-        hashtags: true,
-      },
       mediaTags: true,
     },
   });
@@ -71,9 +67,7 @@ export const fetchAllMedia = async (
     .leftJoinAndSelect("media.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.post", "post")
     .leftJoinAndSelect("post.channel", "channel")
-    .leftJoinAndSelect("post.subreddit", "subreddit")
-    .leftJoinAndSelect("media.niches", "niches")
-    .leftJoinAndSelect("niches.hashtags", "hashtags");
+    .leftJoinAndSelect("post.subreddit", "subreddit");
 
   // Apply search filter
   if (params?.search) {
@@ -389,22 +383,4 @@ export const deleteMedia = async (id: string, deleteFile = false) => {
       // Don't throw since we already deleted from DB
     }
   }
-};
-
-export const updateMediaNiches = async (mediaId: string, nicheIds: number[]): Promise<Media> => {
-  const dataSource = await db();
-  const mediaRepository = dataSource.getRepository(Media);
-  const nicheRepository = dataSource.getRepository(Niche);
-
-  const media = await mediaRepository.findOne({
-    where: { id: mediaId },
-    relations: { niches: true },
-  });
-
-  if (!media) {
-    throw new Error(`Media with id ${mediaId} not found`);
-  }
-
-  media.niches = await nicheRepository.findBy({ id: In(nicheIds) });
-  return mediaRepository.save(media);
 };

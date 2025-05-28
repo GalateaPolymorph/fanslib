@@ -38,7 +38,6 @@ export const PostDetailCaptionInput = ({ post }: PostDetailCaptionInputProps) =>
           disabled={isUpdating}
         />
         <HashtagButton
-          media={post.postMedia.map((pm) => pm.media)}
           channel={post.channel}
           caption={localCaption}
           onCaptionChange={updateCaption}

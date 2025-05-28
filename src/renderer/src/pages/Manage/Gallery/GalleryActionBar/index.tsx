@@ -5,7 +5,6 @@ import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
 import { Camera, Send, X } from "lucide-react";
 import { useState } from "react";
 import { Media } from "../../../../../../features/library/entity";
-import { GalleryNicheSelect } from "./GalleryNicheSelect";
 
 type GalleryActionBarProps = {
   selectedCount: number;
@@ -18,7 +17,6 @@ export const GalleryActionBar = ({
   selectedCount,
   selectedMedia,
   onClearSelection,
-  onUpdate,
 }: GalleryActionBarProps) => {
   const [isCreateShootDialogOpen, setIsCreateShootDialogOpen] = useState(false);
   const [isCreatePostDialogOpen, setIsCreatePostDialogOpen] = useState(false);
@@ -40,7 +38,6 @@ export const GalleryActionBar = ({
         )}
       >
         <div className="flex gap-4 row-span-2 items-center">
-          <GalleryNicheSelect selectedMedia={selectedMedia} onUpdate={onUpdate} />
           <Button
             variant="outline"
             className="flex items-center gap-2"

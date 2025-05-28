@@ -4,7 +4,6 @@ import { channelHandlers } from "./channels/api";
 import { contentScheduleHandlers } from "./content-schedules/api";
 import { hashtagHandlers } from "./hashtags/api";
 import { libraryHandlers } from "./library/api";
-import { nicheHandlers } from "./niches/api";
 import { notificationHandlers } from "./notifications/api";
 import { osHandlers } from "./os/api";
 import { postHandlers } from "./posts/api";
@@ -23,7 +22,6 @@ export const handlers = {
   ...shootHandlers,
   ...settingsHandlers,
   ...hashtagHandlers,
-  ...nicheHandlers,
   ...apiPostponeHandlers,
   ...analyticsHandlers,
   ...tagHandlers,

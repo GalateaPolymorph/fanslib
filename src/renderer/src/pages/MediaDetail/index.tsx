@@ -10,7 +10,6 @@ import { PostponeRedgifsButton } from "../../components/PostponeRedgifsButton";
 import { MediaTagEditor } from "../../components/tags/MediaTagEditor";
 import { CreatePostDialog } from "./CreatePostDialog";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
-import { MediaDetailNicheSelect } from "./MediaDetailNicheSelect";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
 import { MediaPosts } from "./MediaPosts";
 
@@ -65,7 +64,6 @@ export const MediaDetail = () => {
             </div>
             <div className="flex flex-col gap-6">
               <MediaDetailMetadata media={media} />
-              <MediaDetailNicheSelect media={media} />
               <MediaTagEditor mediaId={media.id} />
             </div>
           </div>

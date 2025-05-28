@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Niche } from "../niches/entity";
 import { PostMedia } from "../posts/entity";
 import { Shoot } from "../shoots/entity";
 import { MediaTag } from "../tags/entity";
@@ -57,14 +56,6 @@ export class Media {
     inverseJoinColumn: { name: "shoot_id", referencedColumnName: "id" },
   })
   shoots: Shoot[];
-
-  @ManyToMany(() => Niche, { cascade: true })
-  @JoinTable({
-    name: "media_niches",
-    joinColumn: { name: "media_id", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "niche_id", referencedColumnName: "id" },
-  })
-  niches!: Niche[];
 
   @OneToMany(() => MediaTag, (mediaTag) => mediaTag.media)
   mediaTags: MediaTag[];

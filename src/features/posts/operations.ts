@@ -61,9 +61,7 @@ export const fetchPostById = async (id: string): Promise<Post | null> => {
     where: { id },
     relations: {
       postMedia: {
-        media: {
-          niches: true,
-        },
+        media: true,
       },
       channel: {
         type: true,
@@ -251,9 +249,7 @@ export const getPostById = async (id: string) => {
     where: { id },
     relations: {
       postMedia: {
-        media: {
-          niches: true,
-        },
+        media: true,
       },
       channel: {
         type: true,
@@ -277,7 +273,6 @@ export const getAllPosts = async (filters?: PostFilters) => {
     .createQueryBuilder("post")
     .leftJoinAndSelect("post.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.media", "media")
-    .leftJoinAndSelect("media.niches", "niches")
     .leftJoinAndSelect("post.channel", "channel")
     .leftJoinAndSelect("channel.type", "channelType")
     .leftJoinAndSelect("channel.defaultHashtags", "defaultHashtags")
@@ -349,9 +344,7 @@ export const fetchPostsByUrl = async (url: string): Promise<Post | null> => {
     where: { url },
     relations: {
       postMedia: {
-        media: {
-          niches: true,
-        },
+        media: true,
       },
       channel: {
         type: true,

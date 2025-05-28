@@ -8,7 +8,6 @@ export * from "./ui/usePersistentScrollPosition";
 // API Hooks (React Query)
 export * from "./api/useChannels";
 export * from "./api/useMedia";
-export * from "./api/useNiches";
 export * from "./api/usePost";
 
 // Form Hooks

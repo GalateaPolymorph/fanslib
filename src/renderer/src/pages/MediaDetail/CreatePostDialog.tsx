@@ -299,7 +299,6 @@ export const CreatePostDialog = ({
                       </p>
                     )}
                     <HashtagButton
-                      media={selectedMedia}
                       channel={selectedChannelData}
                       caption={caption}
                       onCaptionChange={setCaption}
