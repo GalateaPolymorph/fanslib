@@ -36,6 +36,7 @@ export type MediaFilters = {
   shootId?: string;
   channelFilters?: ChannelPostFilter[];
   subredditFilters?: SubredditPostFilter[];
+  eligibleChannelId?: string;
   // Tag-based filtering
   tagFilters?: {
     [dimensionName: string]: TagFilter;

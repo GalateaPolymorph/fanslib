@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PaginatedResponse } from "../../../features/_common/pagination";
 import { MediaFilters, MediaSort } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
-import { MediaFilters as MediaFiltersComponent } from "./MediaFilters";
+import { MediaFilters as MediaFiltersComponent } from "./MediaFilters/";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";

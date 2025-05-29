@@ -5,7 +5,7 @@ import { Gallery } from "../../pages/Manage/Gallery/Gallery";
 import { GalleryPagination } from "../../pages/Manage/Gallery/GalleryPagination";
 import { GalleryViewSettings } from "../../pages/Manage/Gallery/GalleryViewSettings";
 import { LibrarySortOptions } from "../../pages/Manage/Gallery/LibrarySortOptions";
-import { MediaFilters as MediaFiltersComponent } from "../MediaFilters";
+import { MediaFilters as MediaFiltersComponent } from "../MediaFilters/";
 import { ScanButton } from "./Scan/ScanButton";
 import { ScanProgress } from "./Scan/ScanProgress";
 import { useScan } from "./Scan/useScan";
