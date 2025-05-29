@@ -1,10 +1,9 @@
 import { MediaTile } from "@renderer/components/MediaTile";
 import { cn } from "@renderer/lib/utils";
 import { PostMedia } from "../../../../../features/posts/entity";
-import { VirtualPostMedia } from "../../../lib/virtual-posts";
 
 type PostCalendarPostMediaProps = {
-  postMedia: PostMedia[] | VirtualPostMedia[];
+  postMedia: PostMedia[];
   isVirtual: boolean;
 };
 
@@ -14,7 +13,7 @@ export const PostCalendarPostMedia = ({ postMedia, isVirtual }: PostCalendarPost
   return (
     <div className={cn("grid gap-1 grid-rows-1 grid-cols-2")}>
       {Array.from({ length: 2 }).map((_, i) => {
-        const media = !isVirtual ? (postMedia as PostMedia[])[i]?.media : null;
+        const media = !isVirtual ? postMedia[i]?.media : null;
 
         return (
           <div className="relative rounded-md" key={i}>

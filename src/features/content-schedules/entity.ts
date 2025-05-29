@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Channel } from "../channels/entity";
+import { MediaFilters } from "../library/api-type";
 
 @Entity()
 export class ContentSchedule {
@@ -31,7 +32,7 @@ export class ContentSchedule {
   createdAt!: string;
 
   @Column("text", { nullable: true })
-  tagRequirements?: string;
+  mediaFilters?: string;
 
   @ManyToOne(() => Channel)
   @JoinColumn({ name: "channelId" })
@@ -40,19 +41,15 @@ export class ContentSchedule {
 
 export type ContentScheduleWithoutRelations = Omit<ContentSchedule, "channel">;
 
-// Key represents the tag category (e.g., "genre", "mood", "topic")
-// Value represents an array of allowed tag IDs (either string or number) for that category
-export type TagRequirements = Record<string, (string | number)[]>;
-
-export const parseTagRequirements = (tagRequirements?: string): TagRequirements | null => {
-  if (!tagRequirements) return null;
+export const parseMediaFilters = (mediaFilters?: string): MediaFilters | null => {
+  if (!mediaFilters) return null;
   try {
-    return JSON.parse(tagRequirements);
+    return JSON.parse(mediaFilters);
   } catch {
     return null;
   }
 };
 
-export const stringifyTagRequirements = (requirements: TagRequirements): string => {
-  return JSON.stringify(requirements);
+export const stringifyMediaFilters = (filters: MediaFilters): string => {
+  return JSON.stringify(filters);
 };

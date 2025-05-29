@@ -1,4 +1,6 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
+import { MediaFilterSummary } from "@renderer/components/MediaFilterSummary";
+import { PostTagStickers } from "@renderer/components/PostTagStickers";
 import { usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import { usePostDrag } from "@renderer/contexts/PostDragContext";
 import { cn } from "@renderer/lib/utils";
@@ -53,10 +55,18 @@ export const PostCalendarPost = ({ post, onUpdate }: PostCalendarPostProps) => {
           typeId={post.channel.type?.id || post.channel.typeId}
           size="sm"
         />
+        {isVirtualPost(post) ? (
+          <MediaFilterSummary mediaFilters={post.mediaFilters} layout="stacked" />
+        ) : (
+          <PostTagStickers postMedia={post.postMedia} />
+        )}
       </div>
       <div className="[grid-area:time] text-xs text-muted-foreground">{time}</div>
       <div className="[grid-area:media] relative">
-        <PostCalendarPostMedia postMedia={post.postMedia} isVirtual={isVirtualPost(post)} />
+        <PostCalendarPostMedia
+          postMedia={isVirtualPost(post) ? [] : post.postMedia}
+          isVirtual={isVirtualPost(post)}
+        />
       </div>
       {preferences.view.showCaptions && (
         <div className="[grid-area:captions] text-xs text-muted-foreground">

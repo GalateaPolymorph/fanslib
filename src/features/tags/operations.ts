@@ -334,7 +334,7 @@ export const getTagDefinitionById = async (id: number): Promise<TagDefinition> =
 
   const tag = await repository.findOne({
     where: { id },
-    relations: ["dimension", "parent", "children"],
+    relations: ["dimension"],
   });
 
   if (!tag) {
@@ -342,6 +342,33 @@ export const getTagDefinitionById = async (id: number): Promise<TagDefinition> =
   }
 
   return tag;
+};
+
+export const getTagDefinitionsByIds = async (
+  tagIds: (string | number)[]
+): Promise<TagDefinition[]> => {
+  if (!tagIds || tagIds.length === 0) {
+    return [];
+  }
+
+  const dataSource = await db();
+  const repository = dataSource.getRepository(TagDefinition);
+
+  // Convert all IDs to numbers for consistency and filter out invalid ones
+  const numericIds = tagIds
+    .map((id) => (typeof id === "string" ? parseInt(id, 10) : id))
+    .filter((id) => !isNaN(id) && id > 0);
+
+  if (numericIds.length === 0) {
+    return [];
+  }
+
+  const tags = await repository.find({
+    where: { id: In(numericIds) },
+    relations: ["dimension"],
+  });
+
+  return tags;
 };
 
 // Helper function to populate denormalized fields in MediaTag

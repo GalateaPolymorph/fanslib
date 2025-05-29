@@ -10,6 +10,7 @@ import {
   getAllTagDimensions,
   getMediaTags,
   getTagDefinitionById,
+  getTagDefinitionsByIds,
   getTagDimensionById,
   getTagsByDimension,
   removeTagsFromMedia,
@@ -50,6 +51,9 @@ export const handlers: TagHandlers = {
   },
   getTagById: (_, id) => {
     return getTagDefinitionById(id);
+  },
+  getTagDefinitionsByIds: (_, ids) => {
+    return getTagDefinitionsByIds(ids);
   },
 
   // Media Tagging

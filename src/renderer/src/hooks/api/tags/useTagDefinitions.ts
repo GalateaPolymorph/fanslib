@@ -10,6 +10,7 @@ import { tagDimensionQueryKeys } from "./useTagDimensions";
 export const tagDefinitionQueryKeys = {
   tagsByDimension: (dimensionId: number) => ["dimension-tags", dimensionId],
   tagById: (id: number) => ["tag-definition", id],
+  tagsByIds: (ids: number[]) => ["tag-definitions", ids.sort()],
 };
 
 export const useTagsByDimension = (dimensionId: number) => {
@@ -121,5 +122,18 @@ export const useDeleteTagDefinition = () => {
         variant: "destructive",
       });
     },
+  });
+};
+
+export const useTagDefinitionsByIds = (ids: number[]) => {
+  return useQuery<TagDefinition[]>({
+    queryKey: tagDefinitionQueryKeys.tagsByIds(ids),
+    queryFn: async () => {
+      if (ids.length === 0) return [];
+      return window.api["tags:getTagDefinitionsByIds"](ids);
+    },
+    enabled: ids.length > 0,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };

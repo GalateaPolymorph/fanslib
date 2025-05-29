@@ -10,11 +10,8 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import {
-  ContentSchedule,
-  parseTagRequirements,
-  TagRequirements,
-} from "../../../features/content-schedules/entity";
+import { ContentSchedule, parseMediaFilters } from "../../../features/content-schedules/entity";
+import { MediaFilters } from "../../../features/library/api-type";
 import { Post } from "../../../features/posts/entity";
 const SCHEDULE_HORIZON_MONTHS = 3; // Generate posts for next 3 months
 
@@ -22,36 +19,17 @@ export type VirtualPost = Omit<Post, "id" | "createdAt" | "updatedAt" | "postMed
   isVirtual: true;
   scheduleId: string;
   virtualId: string;
-  postMedia: VirtualPostMedia[];
   fanslyAnalyticsDatapoints: any[];
   fanslyStatisticsId: string | null;
   url: string | null;
   subreddit: string | null;
   subredditId: string | null;
-  tagRequirements: TagRequirements | null;
+  mediaFilters: MediaFilters | null;
   fanslyAnalyticsAggregate: undefined;
-};
-
-export type VirtualPostMedia = {
-  media: {
-    tagRequirements?: TagRequirements;
-  };
 };
 
 export const isVirtualPost = (post: Post | VirtualPost): post is VirtualPost => {
   return "isVirtual" in post && post.isVirtual === true;
-};
-
-// Helper function to check if media matches tag requirements
-const matchesTagRequirements = (
-  mediaTags: Array<{ dimensionName: string; tagDefinitionId: string | number }>,
-  requirements: TagRequirements
-): boolean => {
-  return Object.entries(requirements).every(([dimensionName, requiredTags]) =>
-    mediaTags.some(
-      (tag) => tag.dimensionName === dimensionName && requiredTags.includes(tag.tagDefinitionId)
-    )
-  );
 };
 
 const generateScheduleDates = (schedule: ContentSchedule, startDate: Date = new Date()): Date[] => {
@@ -135,8 +113,8 @@ export const generateVirtualPosts = (
       });
     });
 
-    // Parse tag requirements from the schedule
-    const tagRequirements = parseTagRequirements(schedule.tagRequirements);
+    // Parse media filters from the schedule
+    const mediaFilters = parseMediaFilters(schedule.mediaFilters);
 
     return filteredDates.map((scheduleDate, index) => ({
       isVirtual: true as const,
@@ -151,19 +129,9 @@ export const generateVirtualPosts = (
       fanslyStatisticsId: null,
       subreddit: null,
       subredditId: null,
-      tagRequirements,
+      mediaFilters,
       fanslyAnalyticsAggregate: undefined,
       fanslyAnalyticsDatapoints: [],
-      postMedia: [
-        {
-          media: {
-            tagRequirements,
-          },
-        },
-      ],
     }));
   });
 };
-
-// Export the helper function for use in other modules
-export { matchesTagRequirements };

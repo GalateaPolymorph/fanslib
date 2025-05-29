@@ -1,6 +1,7 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 import { Channel } from "../channels/entity";
-import { ContentSchedule, TagRequirements } from "./entity";
+import { MediaFilters } from "../library/api-type";
+import { ContentSchedule } from "./entity";
 
 export type ContentScheduleCreateData = {
   channelId: string;
@@ -8,7 +9,7 @@ export type ContentScheduleCreateData = {
   postsPerTimeframe?: number;
   preferredDays?: string[];
   preferredTimes?: string[];
-  tagRequirements?: TagRequirements;
+  mediaFilters?: MediaFilters;
 };
 
 export type ContentScheduleUpdateData = {
@@ -16,7 +17,7 @@ export type ContentScheduleUpdateData = {
   postsPerTimeframe?: number;
   preferredDays?: string[];
   preferredTimes?: string[];
-  tagRequirements?: TagRequirements | null;
+  mediaFilters?: MediaFilters | null;
 };
 
 const methods = ["getAll", "getByChannel", "create", "update", "delete"] as const;

@@ -6,7 +6,9 @@ import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Post } from "../../../../features/posts/entity";
 import { ChannelBadge } from "../ChannelBadge";
+import { MediaFilterSummary } from "../MediaFilterSummary";
 import { MediaTile } from "../MediaTile";
+import { PostTagStickers } from "../PostTagStickers";
 import { StatusSticker } from "../StatusSticker";
 import { usePostPreviewDrag } from "./usePostPreviewDrag";
 
@@ -73,21 +75,27 @@ export const PostPreview = ({
               <div className="flex items-center gap-2">
                 <ChannelBadge name={post.channel.name} typeId={post.channel.typeId} />
                 <StatusSticker status={post.status} />
+                {isVirtualPost(post) ? (
+                  <MediaFilterSummary mediaFilters={post.mediaFilters} compact={true} />
+                ) : (
+                  <PostTagStickers postMedia={post.postMedia} />
+                )}
               </div>
               <span className="text-sm text-muted-foreground block">
                 {format(new Date(post.date), "MMMM d, h:mm aaa")}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {post.postMedia.map((pm) => (
-                <MediaTile
-                  key={pm.id}
-                  media={pm.media}
-                  allMedias={post.postMedia.map((pm) => pm.media)}
-                  index={post.postMedia.indexOf(pm)}
-                  className="size-24"
-                />
-              ))}
+              {!isVirtualPost(post) &&
+                post.postMedia.map((pm) => (
+                  <MediaTile
+                    key={pm.id}
+                    media={pm.media}
+                    allMedias={post.postMedia.map((pm) => pm.media)}
+                    index={post.postMedia.indexOf(pm)}
+                    className="size-24"
+                  />
+                ))}
             </div>
           </div>
           {isDragging && isDraggedOver && (

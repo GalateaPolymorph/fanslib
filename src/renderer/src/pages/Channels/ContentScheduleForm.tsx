@@ -11,7 +11,9 @@ import cn from "classnames";
 import { Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
-import { ContentSchedule, TagRequirements } from "../../../../features/content-schedules/entity";
+import { ContentSchedule, parseMediaFilters } from "../../../../features/content-schedules/entity";
+import { MediaFilters } from "../../../../features/library/api-type";
+import { MediaFilters as MediaFiltersComponent } from "../../components/MediaFilters";
 
 type ContentScheduleFormProps = {
   schedule?: ContentSchedule;
@@ -28,18 +30,12 @@ export const ContentScheduleForm = ({
 }: ContentScheduleFormProps) => {
   const [type, setType] = useState<ContentSchedule["type"]>(schedule?.type || "daily");
 
-  // Initialize tag requirements from schedule or legacy fields
-  const initialTagRequirements = useMemo(() => {
-    if (!schedule?.tagRequirements) return {};
-    try {
-      return JSON.parse(schedule.tagRequirements) as TagRequirements;
-    } catch {
-      return {};
-    }
-  }, [schedule?.tagRequirements]);
+  // Initialize media filters from schedule
+  const initialMediaFilters = useMemo(() => {
+    return parseMediaFilters(schedule?.mediaFilters) || {};
+  }, [schedule?.mediaFilters]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tagRequirements, _setTagRequirements] = useState<TagRequirements>(initialTagRequirements);
+  const [mediaFilters, setMediaFilters] = useState<MediaFilters>(initialMediaFilters);
   const [postsPerTimeframe, setPostsPerTimeframe] = useState(schedule?.postsPerTimeframe || 1);
   const [preferredDays, setPreferredDays] = useState<string[]>(
     schedule?.preferredDays?.map((d) => d.toString()) || []
@@ -68,7 +64,7 @@ export const ContentScheduleForm = ({
       type,
       postsPerTimeframe,
       preferredTimes,
-      tagRequirements: Object.keys(tagRequirements).length > 0 ? tagRequirements : undefined,
+      mediaFilters: Object.keys(mediaFilters).length > 0 ? mediaFilters : undefined,
       ...(type !== "daily" ? { preferredDays } : {}),
     });
   };
@@ -104,7 +100,7 @@ export const ContentScheduleForm = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="grid gap-4">
         <div className="space-y-2">
           <h4 className="text-sm">Schedule Type</h4>
@@ -194,11 +190,26 @@ export const ContentScheduleForm = ({
         </div>
       </div>
 
+      <div className="space-y-2">
+        <h4 className="text-sm">Content Filters</h4>
+        <p className="text-xs text-muted-foreground">
+          Define which media should be eligible for this schedule. Only media matching these filters
+          will be considered for posts.
+        </p>
+        <MediaFiltersComponent
+          value={mediaFilters}
+          onChange={setMediaFilters}
+          showClearButton={true}
+          noEligibleIn={true}
+          vertical={true}
+        />
+      </div>
+
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit}>Save</Button>
+        <Button onClick={handleSubmit}>{schedule ? "Update" : "Create"} Schedule</Button>
       </div>
     </div>
   );

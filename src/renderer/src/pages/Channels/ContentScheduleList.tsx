@@ -1,6 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
-import { ContentSchedule } from "../../../../features/content-schedules/entity";
+import { MediaFilterSummary } from "@renderer/components/MediaFilterSummary";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +9,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../components/ui/alert-dialog";
+} from "@renderer/components/ui/alert-dialog";
+import { Button } from "@renderer/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
+import { ContentSchedule, parseMediaFilters } from "../../../../features/content-schedules/entity";
 
 type ContentScheduleListProps = {
   schedules: ContentSchedule[];
@@ -28,26 +29,6 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
       : "";
   };
 
-  const formatTagRequirements = (schedule: ContentSchedule) => {
-    // Parse tag requirements from JSON string
-    const parseTagRequirements = (tagRequirements?: string) => {
-      if (!tagRequirements) return null;
-      try {
-        return JSON.parse(tagRequirements);
-      } catch {
-        return null;
-      }
-    };
-
-    const tagRequirements = parseTagRequirements(schedule.tagRequirements);
-    if (!tagRequirements || Object.keys(tagRequirements).length === 0) {
-      return null;
-    }
-
-    // TODO: Display tag requirements as badges
-    return [];
-  };
-
   if (!schedules.length) {
     return (
       <div className="text-sm text-muted-foreground">No content schedules configured yet.</div>
@@ -57,21 +38,29 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
   return (
     <div className="flex flex-col gap-2 divide-y">
       {schedules.map((schedule) => {
-        const tagBadges = formatTagRequirements(schedule);
         return (
           <div key={schedule.id} className="pb-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <p className="text-sm">
-                  {schedule.postsPerTimeframe} post
-                  {schedule.postsPerTimeframe > 1 && "s"} per{" "}
-                  {schedule.type === "daily"
-                    ? "day"
-                    : schedule.type === "weekly"
-                      ? "week"
-                      : "month"}
-                </p>
-                {tagBadges && <div className="flex gap-1">{tagBadges}</div>}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm">
+                    {schedule.postsPerTimeframe} post
+                    {schedule.postsPerTimeframe > 1 && "s"} per{" "}
+                    {schedule.type === "daily"
+                      ? "day"
+                      : schedule.type === "weekly"
+                        ? "week"
+                        : "month"}
+                  </p>
+                </div>
+                {formatDays(schedule) && (
+                  <p className="text-xs text-muted-foreground">{formatDays(schedule)}</p>
+                )}
+                <MediaFilterSummary
+                  mediaFilters={parseMediaFilters(schedule.mediaFilters)}
+                  compact={true}
+                  layout="grouped"
+                />
               </div>
               <div className="flex gap-2">
                 <Button size="icon" variant="ghost" onClick={() => onEdit(schedule)}>
@@ -101,9 +90,6 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
                 </AlertDialog>
               </div>
             </div>
-            {formatDays(schedule) && (
-              <p className="text-xs text-muted-foreground">{formatDays(schedule)}</p>
-            )}
           </div>
         );
       })}

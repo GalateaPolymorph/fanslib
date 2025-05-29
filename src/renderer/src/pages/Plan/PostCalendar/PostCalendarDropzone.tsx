@@ -59,7 +59,7 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
         endMediaDrag();
       } else if (isPostDragging && draggedPost && isVirtualPost(post)) {
         setCreatePostData({
-          media: draggedPost.postMedia.map((pm) => pm.media),
+          media: !isVirtualPost(draggedPost) ? draggedPost.postMedia.map((pm) => pm.media) : [],
           caption: draggedPost.caption,
         });
         endPostDrag();

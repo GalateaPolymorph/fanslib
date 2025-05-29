@@ -62,6 +62,7 @@ const methods = [
   "deleteTag",
   "getTagsByDimension",
   "getTagById",
+  "getTagDefinitionsByIds",
 
   // Media Tagging
   "assignTagsToMedia",
@@ -84,6 +85,7 @@ export type TagHandlers = {
   deleteTag: (_: any, id: number) => Promise<void>;
   getTagsByDimension: (_: any, dimensionId: number) => Promise<TagDefinition[]>;
   getTagById: (_: any, id: number) => Promise<TagDefinition>;
+  getTagDefinitionsByIds: (_: any, ids: (string | number)[]) => Promise<TagDefinition[]>;
 
   // Media Tagging
   assignTagsToMedia: (_: any, dto: AssignTagsDto) => Promise<MediaTag[]>;

@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { db } from "../../lib/db";
 import { ContentScheduleCreateData, ContentScheduleUpdateData } from "./api-type";
-import { ContentSchedule, stringifyTagRequirements } from "./entity";
+import { ContentSchedule, stringifyMediaFilters } from "./entity";
 
 export const createContentSchedule = async (
   data: ContentScheduleCreateData
@@ -12,14 +12,14 @@ export const createContentSchedule = async (
   const schedule = new ContentSchedule();
   const now = new Date().toISOString();
 
-  const tagRequirements = stringifyTagRequirements(data.tagRequirements || {});
+  const mediaFilters = data.mediaFilters ? stringifyMediaFilters(data.mediaFilters) : undefined;
 
   Object.assign(schedule, {
     ...data,
     id: nanoid(),
     createdAt: now,
     updatedAt: now,
-    tagRequirements,
+    mediaFilters,
   });
 
   await repository.save(schedule);
@@ -93,19 +93,19 @@ export const updateContentSchedule = async (
 
   if (!schedule) return null;
 
-  const tagRequirementsString =
-    "tagRequirements" in updates
-      ? updates.tagRequirements === null
+  const mediaFiltersString =
+    "mediaFilters" in updates
+      ? updates.mediaFilters === null
         ? undefined
-        : updates.tagRequirements
-          ? stringifyTagRequirements(updates.tagRequirements)
+        : updates.mediaFilters
+          ? stringifyMediaFilters(updates.mediaFilters)
           : undefined
       : undefined;
 
   Object.assign(schedule, {
     ...updates,
     updatedAt: new Date().toISOString(),
-    ...(tagRequirementsString !== undefined && { tagRequirements: tagRequirementsString }),
+    ...(mediaFiltersString !== undefined && { mediaFilters: mediaFiltersString }),
   });
 
   await repository.save(schedule);
