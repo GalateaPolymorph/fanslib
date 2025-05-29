@@ -1,10 +1,10 @@
 import { ChevronDown, ChevronRight, Edit, GripVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { TagDefinition } from "../../../../features/tags/entity";
-import { useTagDrag } from "../../contexts/TagDragContext";
-import { useTagDropZone } from "../../hooks/tags/useTagDropZone";
-import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
+import { TagDefinition } from "../../../../../../features/tags/entity";
+import { Button } from "../../../../components/ui/button";
+import { useTagDrag } from "../../../../contexts/TagDragContext";
+import { useTagDropZone } from "../../../../hooks/tags/useTagDropZone";
+import { cn } from "../../../../lib/utils";
 
 export type TreeNode = TagDefinition & {
   children: TreeNode[];

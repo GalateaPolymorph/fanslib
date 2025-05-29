@@ -1,14 +1,10 @@
 import { useState } from "react";
-import { CreateTagDefinitionDto, UpdateTagDefinitionDto } from "../../../../features/tags/api-type";
-import { TagDefinition, TagDimension } from "../../../../features/tags/entity";
 import {
-  convertFromTagValue,
-  convertToTagValue,
-  getDefaultValue,
-  parseBooleanSchema,
-  parseNumericSchema,
-} from "../../lib/tagValidation";
-import { Button } from "../ui/button";
+  CreateTagDefinitionDto,
+  UpdateTagDefinitionDto,
+} from "../../../../../../features/tags/api-type";
+import { TagDefinition, TagDimension } from "../../../../../../features/tags/entity";
+import { Button } from "../../../../components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,9 +12,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "../../../../components/ui/dialog";
+import { Input } from "../../../../components/ui/input";
+import { Label } from "../../../../components/ui/label";
+import {
+  convertFromTagValue,
+  convertToTagValue,
+  getDefaultValue,
+  parseBooleanSchema,
+  parseNumericSchema,
+} from "../../../../lib/tagValidation";
 import { BooleanValueInput } from "./BooleanValueInput";
 import { CategoricalValueInput } from "./CategoricalValueInput";
 import { NumericValueInput } from "./NumericValueInput";

@@ -1,11 +1,11 @@
+import { Button } from "@renderer/components/ui/button";
 import { useTagsByDimension } from "@renderer/hooks/api/tags/useTagDefinitions";
+import { SelectionState } from "@renderer/lib/selection-state";
 import { Plus } from "lucide-react";
-import { TagDimension } from "../../../../features/tags/entity";
-import { Button } from "../ui/button";
+import { TagDimension } from "../../../../../features/tags/entity";
 import { BooleanTagSelector } from "./BooleanTagSelector";
 import { NumericalTagSelector } from "./NumericalTagSelector";
 import { TagBadge } from "./TagBadge";
-import { SelectionState } from "./types";
 
 type DimensionTagSelectorProps = {
   dimension: TagDimension;

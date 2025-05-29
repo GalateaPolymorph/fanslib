@@ -1,7 +1,7 @@
 import { Edit, Trash2 } from "lucide-react";
-import { TagDefinition } from "../../../../features/tags/entity";
-import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
+import { TagDefinition } from "../../../../../../features/tags/entity";
+import { Button } from "../../../../components/ui/button";
+import { cn } from "../../../../lib/utils";
 
 type TagListItemProps = {
   tag: TagDefinition;

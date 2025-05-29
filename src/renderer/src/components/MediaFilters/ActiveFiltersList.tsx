@@ -26,7 +26,6 @@ type ActiveFiltersListProps = {
   activeTagFilters: string[];
   value: MediaFiltersType;
   onRemoveFilter: (key: FilterType) => void;
-  onRemoveTagFilter: (dimensionName: string) => void;
   renderFilterContent: (key: FilterType) => React.ReactNode;
   renderTagFilter: (dimensionName: string, filter: TagFilterType) => React.ReactNode;
   vertical?: boolean;
@@ -37,7 +36,6 @@ export const ActiveFiltersList = ({
   activeTagFilters,
   value,
   onRemoveFilter,
-  onRemoveTagFilter,
   renderFilterContent,
   renderTagFilter,
   vertical = false,

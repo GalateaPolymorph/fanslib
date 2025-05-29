@@ -1,7 +1,7 @@
+import { SelectionState } from "@renderer/lib/selection-state";
 import { groupBy } from "ramda";
 import { useMemo } from "react";
 import { Media } from "../../../../features/library/entity";
-import { SelectionState } from "../../components/tags/types";
 import { useTagsForMedias } from "../api/tags/useTags";
 
 export type TagStates = Record<number, SelectionState>;

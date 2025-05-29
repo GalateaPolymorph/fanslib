@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BulkFetchProgress, BulkFetchResult } from "../../components/analytics/BulkFetchProgress";
+import { BulkFetchProgress, BulkFetchResult } from "../../components/Analytics/BulkFetchProgress";
 
 type UseBulkFetchResult = {
   fetchProgress: BulkFetchProgress | null;

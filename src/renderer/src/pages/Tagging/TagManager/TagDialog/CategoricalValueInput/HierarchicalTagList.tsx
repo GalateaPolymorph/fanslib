@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
-import { TagDefinition } from "../../../../features/tags/entity";
-import { cn } from "../../lib/utils";
+import { TagDefinition } from "../../../../../../../features/tags/entity";
+import { cn } from "../../../../../lib/utils";
 
 export type TagHierarchyItem = {
   tag: TagDefinition;

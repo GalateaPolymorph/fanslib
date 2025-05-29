@@ -15,13 +15,13 @@ import {
   CreateTagDefinitionDto,
   CreateTagDimensionDto,
   UpdateTagDimensionDto,
-} from "../../../../features/tags/api-type";
-import { TagDefinition, TagDimension } from "../../../../features/tags/entity";
-import { TagDragProvider } from "../../contexts/TagDragContext";
-import { Button } from "../ui/button";
+} from "../../../../../features/tags/api-type";
+import { TagDefinition, TagDimension } from "../../../../../features/tags/entity";
+import { Button } from "../../../components/ui/button";
+import { TagDragProvider } from "../../../contexts/TagDragContext";
 import { DeleteTagDialog } from "./DeleteTagDialog";
 import { DimensionCard } from "./DimensionCard";
-import { DimensionDialog, EditingDimension } from "./DimensionDialog";
+import { DimensionDialog, EditingDimension } from "./DimensionDialog/DimensionDialog";
 import { TagDialog } from "./TagDialog";
 
 type EditingTag =
@@ -35,7 +35,7 @@ type EditingTag =
       mode: "create";
     };
 
-export const TagDimensionManager = () => {
+export const TagManager = () => {
   const [editingDimension, setEditingDimension] = useState<EditingDimension | null>(null);
   const [editingTag, setEditingTag] = useState<EditingTag | null>(null);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);

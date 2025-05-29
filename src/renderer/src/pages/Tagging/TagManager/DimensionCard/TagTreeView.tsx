@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TagDefinition } from "../../../../features/tags/entity";
+import { TagDefinition } from "../../../../../../features/tags/entity";
 import { TreeNode, TreeNodeComponent } from "./TreeNodeComponent";
 
 type TagTreeViewProps = {

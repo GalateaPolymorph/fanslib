@@ -1,7 +1,16 @@
-import { CreateTagDimensionDto, UpdateTagDimensionDto } from "../../../../features/tags/api-type";
-import { TagDimension } from "../../../../features/tags/entity";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
-import { TagDimensionForm } from "./TagDimensionForm";
+import {
+  CreateTagDimensionDto,
+  UpdateTagDimensionDto,
+} from "../../../../../../features/tags/api-type";
+import { TagDimension } from "../../../../../../features/tags/entity";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../../../../components/ui/dialog";
+import { DimensionForm } from "./DimensionForm";
 
 export type EditingDimension =
   | {
@@ -55,7 +64,7 @@ export const DimensionDialog = ({
           <DialogDescription>{getDialogDescription()}</DialogDescription>
         </DialogHeader>
 
-        <TagDimensionForm
+        <DimensionForm
           initialData={editingDimension?.mode === "edit" ? editingDimension.dimension : undefined}
           onSubmit={handleFormSubmit}
           onCancel={onClose}

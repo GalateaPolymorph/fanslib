@@ -1,31 +1,40 @@
 import { useState } from "react";
-import { CreateTagDimensionDto, UpdateTagDimensionDto } from "../../../../features/tags/api-type";
-import { TagDimension } from "../../../../features/tags/entity";
+import {
+  CreateTagDimensionDto,
+  UpdateTagDimensionDto,
+} from "../../../../../../features/tags/api-type";
+import { TagDimension } from "../../../../../../features/tags/entity";
+import { Button } from "../../../../components/ui/button";
+import { Input } from "../../../../components/ui/input";
+import { Label } from "../../../../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../../components/ui/select";
+import { Textarea } from "../../../../components/ui/textarea";
 import {
   BooleanSchema,
   NumericSchema,
   parseBooleanSchema,
   parseNumericSchema,
-} from "../../lib/tagValidation";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Textarea } from "../ui/textarea";
+} from "../../../../lib/tagValidation";
 
-type TagDimensionFormProps = {
+type DimensionFormProps = {
   initialData?: TagDimension;
   onSubmit: (data: CreateTagDimensionDto | UpdateTagDimensionDto) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 };
 
-export const TagDimensionForm = ({
+export const DimensionForm = ({
   initialData,
   onSubmit,
   onCancel,
   isSubmitting = false,
-}: TagDimensionFormProps) => {
+}: DimensionFormProps) => {
   const isEditing = !!initialData;
 
   const [formData, setFormData] = useState<CreateTagDimensionDto>({

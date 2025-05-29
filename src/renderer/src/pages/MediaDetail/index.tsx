@@ -7,11 +7,11 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MediaView } from "../../components/MediaView";
 import { PostponeRedgifsButton } from "../../components/PostponeRedgifsButton";
-import { MediaTagEditor } from "../../components/tags/MediaTagEditor";
 import { CreatePostDialog } from "./CreatePostDialog";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
 import { MediaPosts } from "./MediaPosts";
+import { MediaTagEditor } from "@renderer/components/MediaTagEditor";
 
 export const MediaDetail = () => {
   const { mediaId } = useParams();

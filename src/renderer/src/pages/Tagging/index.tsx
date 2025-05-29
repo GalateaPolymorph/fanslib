@@ -1,8 +1,8 @@
-import { TagDimensionManager } from "../../components/tags";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { useHashtags, useUpdateHashtagStats } from "../../hooks/api/useHashtags";
 import { ChannelHashtagTable } from "./ChannelHashtagTable";
 import { HashtagTable } from "./HashtagTable";
+import { TagManager } from "./TagManager";
 
 export const TaggingPage = () => {
   const { data: hashtags = [], refetch } = useHashtags();
@@ -47,7 +47,7 @@ export const TaggingPage = () => {
         </TabsContent>
 
         <TabsContent value="dimensions">
-          <TagDimensionManager />
+          <TagManager />
         </TabsContent>
       </Tabs>
     </div>

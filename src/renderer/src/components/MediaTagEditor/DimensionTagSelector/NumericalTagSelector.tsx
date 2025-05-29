@@ -1,16 +1,16 @@
+import { Slider } from "@renderer/components/ui/slider";
 import {
   useCreateTagDefinition,
   useTagsByDimension,
 } from "@renderer/hooks/api/tags/useTagDefinitions";
-import { X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { MediaTag, TagDimension } from "../../../../features/tags/entity";
 import {
   formatNumericValue,
   parseNumericSchema,
   validateNumericValue,
-} from "../../lib/tagValidation";
-import { Slider } from "../ui/slider";
+} from "@renderer/lib/tagValidation";
+import { X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MediaTag, TagDimension } from "../../../../../features/tags/entity";
 
 type NumericalTagSelectorProps = {
   dimension: TagDimension;

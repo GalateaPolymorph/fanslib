@@ -1,16 +1,16 @@
+import { MediaTagEditor } from "@renderer/components/MediaTagEditor";
 import { Tag } from "lucide-react";
 import { useState } from "react";
-import { Media } from "../../../../features/library/entity";
-import { Button } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { MediaTagEditor } from "./MediaTagEditor";
+import { Media } from "../../../../../../features/library/entity";
+import { Button } from "../../../../components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
 
-type BulkTagAssignerProps = {
+type TagAssignerProps = {
   selectedMedia: Media[];
   disabled?: boolean;
 };
 
-export const BulkTagAssigner = ({ selectedMedia, disabled = false }: BulkTagAssignerProps) => {
+export const TagAssigner = ({ selectedMedia, disabled = false }: TagAssignerProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {

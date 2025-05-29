@@ -11,7 +11,7 @@ type TagFilterProps = {
   className?: string;
 };
 
-export const MediaTagFilter = ({
+export const TagFilter = ({
   dimensionName,
   value,
   onChange,

@@ -1,15 +1,15 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { BulkFetchButton } from "../../components/analytics/BulkFetchButton";
-import { BulkAnalyticsFetchProgress } from "../../components/analytics/BulkFetchProgress";
-import { KpiOverviewCards } from "../../components/analytics/KpiOverviewCards";
-import { TimeframeSelector } from "../../components/analytics/TimeframeSelector";
-import { EngagementViewsChart } from "../../components/analytics/charts/EngagementViewsChart";
-import { HashtagPerformanceHeatmap } from "../../components/analytics/charts/HashtagPerformanceHeatmap";
-import { OptimalLengthChart } from "../../components/analytics/charts/OptimalLengthChart";
-import { TimePerformanceHeatmap } from "../../components/analytics/charts/TimePerformanceHeatmap";
-import { InsightsPanel } from "../../components/analytics/insights/InsightsPanel";
+import { BulkFetchButton } from "../../components/Analytics/BulkFetchButton";
+import { BulkAnalyticsFetchProgress } from "../../components/Analytics/BulkFetchProgress";
+import { KpiOverviewCards } from "../../components/Analytics/KpiOverviewCards";
+import { TimeframeSelector } from "../../components/Analytics/TimeframeSelector";
+import { EngagementViewsChart } from "../../components/Analytics/charts/EngagementViewsChart";
+import { HashtagPerformanceHeatmap } from "../../components/Analytics/charts/HashtagPerformanceHeatmap";
+import { OptimalLengthChart } from "../../components/Analytics/charts/OptimalLengthChart";
+import { TimePerformanceHeatmap } from "../../components/Analytics/charts/TimePerformanceHeatmap";
+import { InsightsPanel } from "../../components/Analytics/insights/InsightsPanel";
 import {
   Card,
   CardContent,

@@ -1,16 +1,16 @@
+import { Switch } from "@renderer/components/ui/switch";
 import {
   useCreateTagDefinition,
   useTagsByDimension,
 } from "@renderer/hooks/api/tags/useTagDefinitions";
-import { X } from "lucide-react";
-import { useState } from "react";
-import { MediaTag, TagDimension } from "../../../../features/tags/entity";
 import {
   formatBooleanValue,
   parseBooleanSchema,
   validateBooleanValue,
-} from "../../lib/tagValidation";
-import { Switch } from "../ui/switch";
+} from "@renderer/lib/tagValidation";
+import { X } from "lucide-react";
+import { useState } from "react";
+import { MediaTag, TagDimension } from "../../../../../features/tags/entity";
 
 type BooleanTagSelectorProps = {
   dimension: TagDimension;

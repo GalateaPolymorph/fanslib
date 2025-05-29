@@ -2,13 +2,13 @@ import { useAssignTagsToMedia } from "@renderer/hooks/api/tags/useAssignTagsToMe
 import { useRemoveTagsFromMedia } from "@renderer/hooks/api/tags/useRemoveTagsFromMedia";
 import { useTagDimensions } from "@renderer/hooks/api/tags/useTagDimensions";
 import { useTagStates } from "@renderer/hooks/tags/useTagStates";
+import { SelectionState } from "@renderer/lib/selection-state";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { DimensionTagSelector } from "./DimensionTagSelector";
-import { SelectionState } from "./types";
 
 type MediaTagEditorProps = {
   media: Media[]; // Always an array of media items

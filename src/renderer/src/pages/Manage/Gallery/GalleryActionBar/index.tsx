@@ -1,7 +1,7 @@
 import { CreateShootDialog } from "@renderer/components/Shoots/CreateShootDialog";
-import { BulkTagAssigner } from "@renderer/components/tags/BulkTagAssigner";
 import { Button } from "@renderer/components/ui/button";
 import { cn } from "@renderer/lib/utils";
+import { TagAssigner } from "@renderer/pages/Manage/Gallery/GalleryActionBar/TagAssigner";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
 import { Camera, Send, X } from "lucide-react";
 import { useState } from "react";
@@ -47,7 +47,7 @@ export const GalleryActionBar = ({
             Create Shoot
           </Button>
 
-          <BulkTagAssigner selectedMedia={selectedMedia} />
+          <TagAssigner selectedMedia={selectedMedia} />
 
           <Button
             variant="default"

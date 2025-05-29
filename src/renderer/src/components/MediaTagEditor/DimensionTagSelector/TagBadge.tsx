@@ -1,8 +1,8 @@
+import { Badge } from "@renderer/components/ui/badge";
+import { SelectionState } from "@renderer/lib/selection-state";
+import { cn } from "@renderer/lib/utils";
 import { Check, Minus } from "lucide-react";
-import { TagDefinition } from "../../../../features/tags/entity";
-import { cn } from "../../lib/utils";
-import { Badge } from "../ui/badge";
-import { SelectionState } from "./types";
+import { TagDefinition } from "../../../../../features/tags/entity";
 
 type TagBadgeProps = {
   tag: TagDefinition;

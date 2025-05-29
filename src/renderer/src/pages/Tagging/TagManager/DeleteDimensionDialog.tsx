@@ -1,3 +1,4 @@
+import { TagDimension } from "../../../../../features/tags/entity";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -7,28 +8,31 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../ui/alert-dialog";
+} from "../../../components/ui/alert-dialog";
 
-type DeleteTagDialogProps = {
+type DeleteDimensionDialogProps = {
   isOpen: boolean;
+  dimension: TagDimension;
   onConfirm: () => void;
   onCancel: () => void;
   isDeleting?: boolean;
 };
 
-export const DeleteTagDialog = ({
+export const DeleteDimensionDialog = ({
   isOpen,
+  dimension,
   onConfirm,
   onCancel,
   isDeleting = false,
-}: DeleteTagDialogProps) => {
+}: DeleteDimensionDialogProps) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Tag</AlertDialogTitle>
+          <AlertDialogTitle>Delete Dimension</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this tag? This action cannot be undone.
+            Are you sure you want to delete the &ldquo;{dimension.name}&rdquo; dimension? This will
+            also delete all tags in this dimension. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -38,7 +42,7 @@ export const DeleteTagDialog = ({
             onClick={onConfirm}
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete Tag"}
+            {isDeleting ? "Deleting..." : "Delete Dimension"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

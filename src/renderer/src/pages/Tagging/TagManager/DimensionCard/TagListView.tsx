@@ -1,4 +1,4 @@
-import { TagDefinition } from "../../../../features/tags/entity";
+import { TagDefinition } from "../../../../../../features/tags/entity";
 import { TagListItem } from "./TagListItem";
 
 type TagListViewProps = {
