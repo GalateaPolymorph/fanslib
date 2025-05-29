@@ -7,16 +7,21 @@ import {
   useCreateTagDimension,
   useDeleteTagDimension,
   useTagDimensions,
+  useUpdateTagDimension,
 } from "@renderer/hooks/api/tags/useTagDimensions";
 import { List, Plus, TreePine } from "lucide-react";
 import { useState } from "react";
-import { CreateTagDefinitionDto, CreateTagDimensionDto } from "../../../../features/tags/api-type";
+import {
+  CreateTagDefinitionDto,
+  CreateTagDimensionDto,
+  UpdateTagDimensionDto,
+} from "../../../../features/tags/api-type";
 import { TagDefinition, TagDimension } from "../../../../features/tags/entity";
 import { TagDragProvider } from "../../contexts/TagDragContext";
 import { Button } from "../ui/button";
 import { DeleteTagDialog } from "./DeleteTagDialog";
 import { DimensionCard } from "./DimensionCard";
-import { DimensionCreationDialog } from "./DimensionCreationDialog";
+import { DimensionDialog, EditingDimension } from "./DimensionDialog";
 import { TagDialog } from "./TagDialog";
 
 type EditingTag =
@@ -31,31 +36,35 @@ type EditingTag =
     };
 
 export const TagDimensionManager = () => {
-  const [isCreatingDimension, setIsCreatingDimension] = useState(false);
+  const [editingDimension, setEditingDimension] = useState<EditingDimension | null>(null);
   const [editingTag, setEditingTag] = useState<EditingTag | null>(null);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "tree">("tree");
   const [deletingTagId, setDeletingTagId] = useState<number | null>(null);
 
-  const [newDimension, setNewDimension] = useState<CreateTagDimensionDto>({
-    name: "",
-    description: "",
-    dataType: "categorical",
-  });
-
   const { data: dimensions, isLoading } = useTagDimensions();
   const createDimensionMutation = useCreateTagDimension();
+  const updateDimensionMutation = useUpdateTagDimension();
   const createTagMutation = useCreateTagDefinition();
   const updateTagMutation = useUpdateTagDefinition();
   const deleteDimensionMutation = useDeleteTagDimension();
   const deleteTagMutation = useDeleteTagDefinition();
 
-  const createDimension = () => {
-    if (newDimension.name.trim()) {
-      createDimensionMutation.mutate(newDimension, {
+  const handleDimensionSubmit = (
+    data: CreateTagDimensionDto | { id: number; dto: UpdateTagDimensionDto }
+  ) => {
+    if ("id" in data) {
+      // Update existing dimension
+      updateDimensionMutation.mutate(data, {
         onSuccess: () => {
-          setIsCreatingDimension(false);
-          setNewDimension({ name: "", description: "", dataType: "categorical" });
+          setEditingDimension(null);
+        },
+      });
+    } else {
+      // Create new dimension
+      createDimensionMutation.mutate(data as CreateTagDimensionDto, {
+        onSuccess: () => {
+          setEditingDimension(null);
         },
       });
     }
@@ -90,6 +99,13 @@ export const TagDimensionManager = () => {
   const handleEditTag = (tag: TagDefinition) => {
     setEditingTag({
       tag,
+      mode: "edit",
+    });
+  };
+
+  const handleEditDimension = (dimension: TagDimension) => {
+    setEditingDimension({
+      dimension,
       mode: "edit",
     });
   };
@@ -138,6 +154,8 @@ export const TagDimensionManager = () => {
   };
 
   const isSubmitting = createTagMutation.isPending || updateTagMutation.isPending;
+  const isDimensionSubmitting =
+    createDimensionMutation.isPending || updateDimensionMutation.isPending;
 
   if (isLoading) {
     return <div className="animate-pulse">Loading dimensions...</div>;
@@ -174,20 +192,21 @@ export const TagDimensionManager = () => {
                 <List className="w-4 h-4" />
               </Button>
             </div>
-            <Button onClick={() => setIsCreatingDimension(true)} disabled={isCreatingDimension}>
+            <Button
+              onClick={() => setEditingDimension({ mode: "create" })}
+              disabled={!!editingDimension}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Dimension
             </Button>
           </div>
         </div>
 
-        <DimensionCreationDialog
-          isOpen={isCreatingDimension}
-          onClose={() => setIsCreatingDimension(false)}
-          dimension={newDimension}
-          onDimensionChange={setNewDimension}
-          onSubmit={createDimension}
-          isSubmitting={createDimensionMutation.isPending}
+        <DimensionDialog
+          editingDimension={editingDimension}
+          onClose={() => setEditingDimension(null)}
+          onSubmit={handleDimensionSubmit}
+          isSubmitting={isDimensionSubmitting}
         />
 
         <div className="grid gap-4">
@@ -197,6 +216,7 @@ export const TagDimensionManager = () => {
               dimension={dimension}
               viewMode={viewMode}
               onDeleteDimension={(dimensionId) => deleteDimensionMutation.mutate(dimensionId)}
+              onEditDimension={handleEditDimension}
               onUpdateParent={handleUpdateParent}
               onDeleteTag={handleDeleteTag}
               onCreateTag={handleCreateTag}

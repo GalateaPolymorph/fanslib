@@ -13,7 +13,8 @@ export { TagForm } from "./TagForm";
 // Dimension management components
 export { DeleteDimensionDialog } from "./DeleteDimensionDialog";
 export { DimensionCard } from "./DimensionCard";
-export { DimensionCreationDialog } from "./DimensionCreationDialog";
+export { DimensionDialog } from "./DimensionDialog";
+export { TagDimensionForm } from "./TagDimensionForm";
 export { TagDimensionManager } from "./TagDimensionManager";
 
 // Dimension configuration components
@@ -43,4 +44,5 @@ export { TreeNodeComponent } from "./TreeNodeComponent";
 export { TagBreadcrumb } from "./TagBreadcrumb";
 
 // Types
+export type { EditingDimension } from "./DimensionDialog";
 export type { SelectionState } from "./types";

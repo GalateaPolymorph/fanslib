@@ -1,4 +1,4 @@
-import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { MoreHorizontal, PenLine, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { TagDefinition, TagDimension } from "../../../../features/tags/entity";
 import { cn } from "../../lib/utils";
@@ -22,6 +22,7 @@ type DimensionCardProps = {
   onEditTag: (tag: TagDefinition) => void;
   onDeleteTag: (tagId: number) => void;
   onDeleteDimension: (dimensionId: number) => void;
+  onEditDimension?: (dimension: TagDimension) => void;
   onUpdateParent: (tagId: number, newParentId: number | null) => void;
   onSelectTag?: (tagId: number) => void;
   isDeletingDimension?: boolean;
@@ -35,6 +36,7 @@ export const DimensionCard = ({
   onEditTag,
   onDeleteTag,
   onDeleteDimension,
+  onEditDimension,
   onUpdateParent,
   onSelectTag,
   isDeletingDimension = false,
@@ -75,6 +77,10 @@ export const DimensionCard = ({
   const confirmDeleteDimension = () => {
     onDeleteDimension(dimension.id);
     setShowDeleteDialog(false);
+  };
+
+  const handleEditDimension = () => {
+    onEditDimension?.(dimension);
   };
 
   return (
@@ -125,6 +131,10 @@ export const DimensionCard = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleEditDimension}>
+                  <PenLine className="w-4 h-4 mr-2" />
+                  Edit Dimension
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleDeleteDimension} className="text-red-600">
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete Dimension
