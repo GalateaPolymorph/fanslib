@@ -228,40 +228,32 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   }, []);
 
   const openRedditPost = useCallback(() => {
-    try {
-      const url = generateUrl();
-      if (!url) {
-        return;
+    const url = generateUrl();
+    if (!url) {
+      return;
+    }
+
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    // Mark as posted to Reddit when URL is successfully opened
+    setPostState((prev) => ({ ...prev, hasPostedToReddit: true }));
+
+    // Also reveal image in Finder if the selected media is an image
+    if (postState.media && postState.media.type === "image") {
+      try {
+        window.api["os:revealInFinder"](postState.media.path);
+      } catch (_error) {
+        console.warn("Failed to reveal image in Finder:", _error);
       }
-
-      window.open(url, "_blank", "noopener,noreferrer");
-
-      // Mark as posted to Reddit when URL is successfully opened
-      setPostState((prev) => ({ ...prev, hasPostedToReddit: true }));
-
-      // Also reveal image in Finder if the selected media is an image
-      if (postState.media && postState.media.type === "image") {
-        try {
-          window.api["os:revealInFinder"](postState.media.path);
-        } catch (_error) {
-          console.warn("Failed to reveal image in Finder:", _error);
-        }
-      }
-    } catch (_error) {
-      // Silent error handling
     }
   }, [generateUrl, postState.media]);
 
   const openRedgifsUrl = useCallback(() => {
-    try {
-      if (!postState.redgifsUrl) {
-        return;
-      }
-
-      window.open(postState.redgifsUrl, "_blank", "noopener,noreferrer");
-    } catch (_error) {
-      // Silent error handling
+    if (!postState.redgifsUrl) {
+      return;
     }
+
+    window.open(postState.redgifsUrl, "_blank", "noopener,noreferrer");
   }, [postState.redgifsUrl]);
 
   const openMediaInFinder = useCallback(() => {
@@ -269,11 +261,7 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
       return;
     }
 
-    try {
-      window.api["os:revealInFinder"](postState.media.path);
-    } catch (_error) {
-      // Silent error handling
-    }
+    window.api["os:revealInFinder"](postState.media.path);
   }, [postState.media]);
 
   const copyMediaNameToClipboard = useCallback(() => {
@@ -281,11 +269,7 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
       return;
     }
 
-    try {
-      window.api["os:copyToClipboard"](postState.media.name);
-    } catch (_error) {
-      // Silent error handling
-    }
+    window.api["os:copyToClipboard"](postState.media.name);
   }, [postState.media]);
 
   const markAsPosted = useCallback(async (): Promise<void> => {
