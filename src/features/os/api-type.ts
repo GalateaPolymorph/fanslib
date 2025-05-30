@@ -1,8 +1,9 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 
-const methods = ["revealInFinder"] as const;
+const methods = ["revealInFinder", "copyToClipboard"] as const;
 export type OsHandlers = {
   revealInFinder: (_: any, path: string) => void;
+  copyToClipboard: (_: any, text: string) => void;
 };
 
 export const namespace = "os" as const;

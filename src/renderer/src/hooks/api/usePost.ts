@@ -154,6 +154,53 @@ export const useDeletePost = () => {
   });
 };
 
+// Create post mutation
+export const useCreatePost = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({
+      postData,
+      mediaIds,
+    }: {
+      postData: {
+        date: string;
+        channelId: string;
+        caption?: string;
+        status: "draft" | "scheduled" | "posted";
+        url?: string;
+        fanslyStatisticsId?: string;
+        subredditId?: string;
+      };
+      mediaIds: string[];
+    }) => {
+      const result = await window.api["post:create"](postData, mediaIds);
+      if (!result) throw new Error("Failed to create post");
+      return result;
+    },
+    onSuccess: (newPost) => {
+      // Add the new post to cache
+      queryClient.setQueryData(postKeys.byId(newPost.id), newPost);
+
+      // Invalidate list queries to include the new post
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
+
+      toast({
+        title: "Post created successfully",
+        duration: 2000,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to create post",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
 // Custom hook for debounced post field updates
 export const useDebouncedPostUpdate = (post: Post | undefined) => {
   const updateMutation = useUpdatePost();

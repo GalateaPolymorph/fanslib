@@ -1,4 +1,4 @@
-import { shell } from "electron";
+import { clipboard, shell } from "electron";
 import fs from "fs";
 import path from "path";
 import { prefixNamespaceObject } from "../../lib/namespace";
@@ -16,6 +16,15 @@ export const handlers: OsHandlers = {
       }
     } catch (error) {
       console.error("Failed to reveal file:", error);
+      throw error;
+    }
+  },
+  copyToClipboard: (_, text) => {
+    try {
+      clipboard.writeText(text);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
       throw error;
     }
   },

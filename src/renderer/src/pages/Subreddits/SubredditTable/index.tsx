@@ -1,5 +1,6 @@
+import { useSubredditLastPostDates } from "@renderer/hooks/api/useSubredditLastPostDates";
 import { cn } from "@renderer/lib/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Subreddit } from "../../../../../features/channels/subreddit";
 import { EditingSubredditRow } from "./EditingSubredditRow";
 import { SubredditRow } from "./SubredditRow";
@@ -19,7 +20,9 @@ export const SubredditTable = ({
 }: SubredditTableProps) => {
   const [editingSubredditId, setEditingSubredditId] = useState<string | null>(null);
   const [selectedSubreddits, setSelectedSubreddits] = useState<string[]>([]);
-  const [lastPostDates, setLastPostDates] = useState<Record<string, string>>({});
+
+  const subredditIds = subreddits.map((s) => s.id);
+  const { data: lastPostDates = {} } = useSubredditLastPostDates(subredditIds);
 
   const toggleSubredditSelection = (id: string) => {
     setSelectedSubreddits((prev) => {
@@ -32,22 +35,6 @@ export const SubredditTable = ({
       return next;
     });
   };
-
-  useEffect(() => {
-    const fetchLastPostDates = async () => {
-      try {
-        const subredditIds = subreddits.map((s) => s.id);
-        if (subredditIds.length === 0) return;
-
-        const dates = await window.api["channel:subreddit-last-post-dates"](subredditIds);
-        setLastPostDates(dates);
-      } catch (error) {
-        console.error("Failed to fetch last post dates", error);
-      }
-    };
-
-    fetchLastPostDates();
-  }, [subreddits]);
 
   return (
     <div className="space-y-4">

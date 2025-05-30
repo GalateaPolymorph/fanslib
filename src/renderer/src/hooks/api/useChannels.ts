@@ -10,9 +10,10 @@ export const channelKeys = {
   byId: (id: string) => ["channels", id] as const,
   subreddits: ["channels", "subreddits"] as const,
   subredditById: (id: string) => ["channels", "subreddits", id] as const,
-  subredditLastPostDates: (ids: string[]) =>
-    ["channels", "subreddit-last-post-dates", ids.sort()] as const,
 };
+
+// Re-export from dedicated hook
+export { subredditLastPostDateKeys, useSubredditLastPostDates } from "./useSubredditLastPostDates";
 
 // Fetch all channels
 export const useChannels = () => {
@@ -53,21 +54,6 @@ export const useSubreddit = (id: string | undefined) => {
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes
-  });
-};
-
-// Fetch subreddit last post dates
-export const useSubredditLastPostDates = (subredditIds: string[]) => {
-  return useQuery({
-    queryKey: channelKeys.subredditLastPostDates(subredditIds),
-    queryFn: async () => {
-      if (subredditIds.length === 0) return {};
-      const dates = await window.api["channel:subreddit-last-post-dates"](subredditIds);
-      return dates;
-    },
-    enabled: subredditIds.length > 0,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 

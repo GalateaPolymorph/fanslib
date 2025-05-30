@@ -271,7 +271,6 @@ export const MediaFilters = ({
           activeTagFilters={getActiveTagFilters()}
           value={value}
           onRemoveFilter={removeFilter}
-          onRemoveTagFilter={removeTagFilter}
           renderFilterContent={renderFilterContent}
           renderTagFilter={renderTagFilter}
           vertical={vertical}

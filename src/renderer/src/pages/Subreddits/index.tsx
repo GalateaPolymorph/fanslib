@@ -1,3 +1,4 @@
+import { RedditQuickPostCreator } from "@renderer/pages/Subreddits/RedditQuickPostCreator";
 import { Button } from "@renderer/components/ui/button";
 import { useSubreddits } from "@renderer/hooks/api/useChannels";
 import { PlusCircle } from "lucide-react";
@@ -27,6 +28,8 @@ export const SubredditsPage = () => {
           Create Subreddit
         </Button>
       </div>
+
+      <RedditQuickPostCreator subreddits={subreddits} />
 
       <SubredditTable
         subreddits={subreddits}
