@@ -22,6 +22,7 @@ import { Channel } from "../../../../features/channels/entity";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
 import { ContentSchedule } from "../../../../features/content-schedules/entity";
 import type { MediaFilters } from "../../../../features/library/api-type";
+import { sanitizeFilterInput } from "../../../../features/library/filter-helpers";
 import { ContentScheduleForm } from "./ContentScheduleForm";
 import { ContentScheduleList } from "./ContentScheduleList";
 
@@ -44,8 +45,8 @@ export const ChannelView = ({
 }: ChannelViewProps) => {
   const [name, setName] = useState(channel.name);
   const [description, setDescription] = useState(channel.description || "");
-  const [eligibleMediaFilter, setEligibleMediaFilter] = useState<MediaFilters | undefined>(
-    channel.eligibleMediaFilter || {}
+  const [eligibleMediaFilter, setEligibleMediaFilter] = useState<MediaFilters>(() =>
+    sanitizeFilterInput(channel.eligibleMediaFilter)
   );
   const [schedules, setSchedules] = useState<ContentSchedule[]>([]);
   const [isAddingSchedule, setIsAddingSchedule] = useState(false);
@@ -59,7 +60,7 @@ export const ChannelView = ({
   useEffect(() => {
     setName(channel.name);
     setDescription(channel.description || "");
-    setEligibleMediaFilter(channel.eligibleMediaFilter || {});
+    setEligibleMediaFilter(sanitizeFilterInput(channel.eligibleMediaFilter));
     loadSchedules();
   }, [channel, loadSchedules]);
 
@@ -77,7 +78,7 @@ export const ChannelView = ({
   const handleCancel = () => {
     setName(channel.name);
     setDescription(channel.description || "");
-    setEligibleMediaFilter(channel.eligibleMediaFilter);
+    setEligibleMediaFilter(sanitizeFilterInput(channel.eligibleMediaFilter));
     onEditingChange?.(false);
   };
 
@@ -122,8 +123,6 @@ export const ChannelView = ({
                 value={eligibleMediaFilter}
                 onChange={setEligibleMediaFilter}
                 showClearButton={false}
-                vertical
-                noEligibleIn
               />
             </div>
             <div>

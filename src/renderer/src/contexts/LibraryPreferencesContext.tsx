@@ -27,11 +27,7 @@ const defaultPreferences: LibraryPreferences = {
   view: {
     gridSize: "large",
   },
-  filter: {
-    search: undefined,
-    caption: undefined,
-    excludeShoots: [],
-  },
+  filter: [],
   sort: {
     field: "fileModificationDate",
     direction: "DESC",

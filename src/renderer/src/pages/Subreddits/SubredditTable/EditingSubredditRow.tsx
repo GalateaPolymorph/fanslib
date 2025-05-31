@@ -17,6 +17,7 @@ import {
   VERIFICATION_STATUS,
   type VerificationStatus,
 } from "../../../../../features/channels/type";
+import { sanitizeFilterInput } from "../../../../../features/library/filter-helpers";
 import { VerificationStatus as VerificationStatusComponent } from "../../../components/VerificationStatus";
 import { EditingSubreddit } from "./type";
 
@@ -29,7 +30,7 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
   const updateSubredditMutation = useUpdateSubreddit();
   const [editingSubreddit, setEditingSubreddit] = useState<EditingSubreddit>({
     ...subreddit,
-    eligibleMediaFilter: subreddit.eligibleMediaFilter || {},
+    eligibleMediaFilter: sanitizeFilterInput(subreddit.eligibleMediaFilter),
   });
   const [unparsedMemberCount, setUnparsedMemberCount] = useState<string>(
     subreddit.memberCount ? formatViewCount(subreddit.memberCount) : ""
@@ -125,8 +126,6 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
           onChange={(filter) =>
             setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
           }
-          noEligibleIn
-          vertical
         />
       </div>
     </div>

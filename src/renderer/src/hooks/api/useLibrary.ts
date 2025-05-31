@@ -16,7 +16,7 @@ export const useLibraryQuery = () => {
     page: preferences.pagination.page,
     limit: preferences.pagination.limit,
     sort: preferences.sort,
-    ...preferences.filter,
+    filters: preferences.filter,
   };
 
   return useQuery({

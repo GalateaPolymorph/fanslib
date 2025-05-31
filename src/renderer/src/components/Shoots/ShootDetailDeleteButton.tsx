@@ -26,13 +26,22 @@ export const ShootDetailDeleteButton: FC<ShootDetailDeleteButtonProps> = ({ shoo
   const handleDelete = async () => {
     await window.api["shoot:delete"](shoot.id);
 
-    // Remove the shoot from excludeShoots if it's there
-    if (preferences.filter.excludeShoots?.includes(shoot.id)) {
+    // Remove any filter groups that include this shoot
+    const updatedFilters = preferences.filter
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => !(item.type === "shoot" && item.id === shoot.id)),
+      }))
+      .filter((group) => group.items.length > 0);
+
+    if (
+      updatedFilters.length !== preferences.filter.length ||
+      preferences.filter.some((group) =>
+        group.items.some((item) => item.type === "shoot" && item.id === shoot.id)
+      )
+    ) {
       updatePreferences({
-        filter: {
-          ...preferences.filter,
-          excludeShoots: preferences.filter.excludeShoots.filter((id) => id !== shoot.id),
-        },
+        filter: updatedFilters,
       });
     }
 

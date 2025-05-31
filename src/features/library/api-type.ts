@@ -10,40 +10,39 @@ export type MediaSort = {
   direction: SortDirection;
 };
 
-export type ChannelPostFilter = {
-  channelId: string;
-  posted: boolean;
+export type FilterItem =
+  | {
+      type: "channel" | "subreddit" | "tag" | "shoot";
+      id: string;
+    }
+  | {
+      type: "search" | "caption";
+      value: string;
+    }
+  | {
+      type: "posted";
+      value: boolean;
+    }
+  | {
+      type: "createdDateStart" | "createdDateEnd";
+      value: Date;
+    };
+
+export type FilterGroup = {
+  include: boolean;
+  items: FilterItem[];
 };
 
-export type SubredditPostFilter = {
-  subredditId: string;
-  posted: boolean;
-};
+export type MediaFilters = FilterGroup[];
 
+// DEPRECATED: Use MediaFilters instead
 export type TagFilter = {
   tagIds?: number[];
-  values?: string[];
-  operator?: "AND" | "OR";
 };
 
-export type MediaFilters = {
-  unposted?: boolean;
-  createdDateStart?: Date;
-  createdDateEnd?: Date;
-  search?: string;
-  caption?: string;
-  excludeShoots?: string[];
-  shootId?: string;
-  channelFilters?: ChannelPostFilter[];
-  subredditFilters?: SubredditPostFilter[];
-  eligibleChannelId?: string;
-  // Tag-based filtering
-  tagFilters?: {
-    [dimensionName: string]: TagFilter;
-  };
-};
-
-export type GetAllMediaParams = Partial<PaginationParams & MediaFilters & { sort?: MediaSort }>;
+export type GetAllMediaParams = Partial<
+  PaginationParams & { filters: MediaFilters; sort?: MediaSort }
+>;
 
 export type LibraryScanResult = {
   added: number;

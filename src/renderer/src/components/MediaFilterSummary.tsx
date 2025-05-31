@@ -1,5 +1,5 @@
 import { cn } from "@renderer/lib/utils";
-import { Camera, Filter, Search, Users } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { MediaFilters } from "../../../features/library/api-type";
 import { FilterSummaryItem, useMediaFilterSummary } from "../hooks/business/useMediaFilterSummary";
 
@@ -10,75 +10,28 @@ type MediaFilterSummaryProps = {
   layout?: "inline" | "stacked" | "grouped";
 };
 
-const getFilterIcon = (type: FilterSummaryItem["type"]) => {
-  switch (type) {
-    case "search":
-      return <Search className="h-3 w-3" />;
-    case "channel":
-      return <Users className="h-3 w-3" />;
-    case "shoot":
-    case "excludeShoot":
-      return <Camera className="h-3 w-3" />;
-    case "tag":
-      return <Filter className="h-3 w-3" />;
-    default:
-      return <Filter className="h-3 w-3" />;
-  }
+const getFilterIcon = (include: boolean) => {
+  return include ? <Plus className="h-3 w-3" /> : <Minus className="h-3 w-3" />;
 };
 
 const FilterItem = ({ item, compact }: { item: FilterSummaryItem; compact?: boolean }) => {
   const renderContent = () => {
-    if (item.type === "tag") {
-      if (item.isNoneFilter) {
-        return `No ${item.label}`;
-      }
-
-      if (item.tags?.length) {
-        // Show individual tag names if we have them and there aren't too many
-        if (item.tags.length <= 2 && !compact) {
-          return item.tags.map((tag) => tag.displayName).join(", ");
-        } else {
-          // Show count for many tags or in compact mode
-          return compact
-            ? `${item.count} ${item.label.toLowerCase()}`
-            : `${item.count} ${item.label.toLowerCase()} tag${item.count !== 1 ? "s" : ""}`;
-        }
-      } else {
-        // Fallback when tags are loading
-        return compact
-          ? `${item.count} ${item.label.toLowerCase()}`
-          : `${item.count} ${item.label.toLowerCase()} tag${item.count !== 1 ? "s" : ""}`;
-      }
+    if (compact) {
+      return `${item.include ? "+" : "-"} ${item.itemCount} filter${item.itemCount !== 1 ? "s" : ""}`;
     }
 
-    if (item.type === "search") {
-      return compact ? `"${item.value}"` : `Search: "${item.value}"`;
-    }
-
-    if (item.type === "channel") {
-      return compact
-        ? `${item.count} channels`
-        : `${item.count} channel${item.count !== 1 ? "s" : ""}`;
-    }
-
-    if (item.type === "excludeShoot") {
-      return compact
-        ? `Exclude ${item.count}`
-        : `Exclude ${item.count} shoot${item.count !== 1 ? "s" : ""}`;
-    }
-
-    return item.label;
+    return item.description;
   };
 
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5",
-        compact ? "text-sm" : "text-sm",
-        "text-muted-foreground"
+        "text-sm text-muted-foreground",
+        item.include ? "text-green-600" : "text-red-600"
       )}
     >
-      {!compact && getFilterIcon(item.type)}
+      {getFilterIcon(item.include)}
       <span>{renderContent()}</span>
     </span>
   );
@@ -123,11 +76,10 @@ export const MediaFilterSummary = ({
     return null;
   }
 
-  // Group filters by type for structured layouts
+  // Group filters by include/exclude for structured layouts
   const groupedFilters = {
-    tags: filterItems.filter((item) => item.type === "tag"),
-    content: filterItems.filter((item) => ["search", "shoot", "excludeShoot"].includes(item.type)),
-    channels: filterItems.filter((item) => item.type === "channel"),
+    include: filterItems.filter((item) => item.include),
+    exclude: filterItems.filter((item) => !item.include),
   };
 
   if (layout === "inline") {
@@ -156,9 +108,8 @@ export const MediaFilterSummary = ({
   if (layout === "grouped") {
     return (
       <div className={cn("flex flex-col gap-2.5", className)}>
-        <FilterGroup title="Tags" items={groupedFilters.tags} compact={compact} />
-        <FilterGroup title="Content" items={groupedFilters.content} compact={compact} />
-        <FilterGroup title="Channels" items={groupedFilters.channels} compact={compact} />
+        <FilterGroup title="Include" items={groupedFilters.include} compact={compact} />
+        <FilterGroup title="Exclude" items={groupedFilters.exclude} compact={compact} />
       </div>
     );
   }

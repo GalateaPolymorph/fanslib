@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PaginatedResponse } from "../../../features/_common/pagination";
 import { MediaFilters, MediaSort } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
+import { sanitizeFilterInput } from "../../../features/library/filter-helpers";
 import { MediaFilters as MediaFiltersComponent } from "./MediaFilters/";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/button";
@@ -38,7 +39,9 @@ export const MediaSelection = ({
   });
   const [activePreviewId, setActivePreviewId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<MediaFilters>(eligibleMediaFilter || {});
+  const [filters, setFilters] = useState<MediaFilters>(() =>
+    sanitizeFilterInput(eligibleMediaFilter)
+  );
   const [fetched, setFetched] = useState<string>(JSON.stringify({}));
 
   const parameters = useMemo(() => {
@@ -46,7 +49,7 @@ export const MediaSelection = ({
       limit: pageLimit,
       page: currentPage,
       sort: sort ?? { field: "fileModificationDate", direction: "DESC" },
-      ...filters,
+      filters,
     };
   }, [pageLimit, currentPage, sort, filters]);
 

@@ -3,6 +3,7 @@ import { useShootAccordionState } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { useState, type FC } from "react";
 import { Media } from "../../../../features/library/entity";
+import { createFilterGroup } from "../../../../features/library/filter-helpers";
 import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
 import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import { useMediaDrag } from "../../contexts/MediaDragContext";
@@ -110,7 +111,9 @@ const ShootDetailContent = ({ shoot, groupedMedia, onUpdate }: ShootDetailConten
             <Button
               variant="outline"
               onClick={() =>
-                updatePreferences({ filter: { shootId: shoot.id, excludeShoots: [] } })
+                updatePreferences({
+                  filter: [createFilterGroup(true, [{ type: "shoot", id: shoot.id }])],
+                })
               }
             >
               View in Library

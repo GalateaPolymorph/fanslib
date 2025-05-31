@@ -4,6 +4,9 @@ import { LibraryHandlers, namespace } from "./api-type";
 import { deleteMedia, fetchAllMedia, getMediaById, updateMedia } from "./operations";
 import { scanFile, scanLibrary } from "./scan";
 
+// Export filter helper functions for use throughout the application
+export * from "./filter-helpers";
+
 export const handlers: LibraryHandlers = {
   scan: async () => {
     const settings = await loadSettings();

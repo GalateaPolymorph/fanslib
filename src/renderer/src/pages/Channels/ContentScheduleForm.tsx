@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { ContentScheduleCreateData } from "../../../../features/content-schedules/api-type";
 import { ContentSchedule, parseMediaFilters } from "../../../../features/content-schedules/entity";
 import { MediaFilters } from "../../../../features/library/api-type";
+import { sanitizeFilterInput } from "../../../../features/library/filter-helpers";
 import { MediaFilters as MediaFiltersComponent } from "../../components/MediaFilters";
 
 type ContentScheduleFormProps = {
@@ -32,7 +33,7 @@ export const ContentScheduleForm = ({
 
   // Initialize media filters from schedule
   const initialMediaFilters = useMemo(() => {
-    return parseMediaFilters(schedule?.mediaFilters) || {};
+    return sanitizeFilterInput(parseMediaFilters(schedule?.mediaFilters));
   }, [schedule?.mediaFilters]);
 
   const [mediaFilters, setMediaFilters] = useState<MediaFilters>(initialMediaFilters);
@@ -200,8 +201,6 @@ export const ContentScheduleForm = ({
           value={mediaFilters}
           onChange={setMediaFilters}
           showClearButton={true}
-          noEligibleIn={true}
-          vertical={true}
         />
       </div>
 
