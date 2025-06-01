@@ -122,7 +122,6 @@ export const ChannelView = ({
               <MediaFiltersComponent
                 value={eligibleMediaFilter}
                 onChange={setEligibleMediaFilter}
-                showClearButton={false}
               />
             </div>
             <div>

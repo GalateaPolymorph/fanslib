@@ -2,40 +2,6 @@ import { SelectQueryBuilder } from "typeorm";
 import { FilterGroup, FilterItem, MediaFilters } from "./api-type";
 import { Media } from "./entity";
 
-export const validateFilterItem = (item: FilterItem): boolean => {
-  switch (item.type) {
-    case "channel":
-    case "subreddit":
-    case "tag":
-    case "shoot":
-      return typeof item.id === "string" && item.id.length > 0;
-    case "search":
-    case "caption":
-      return typeof item.value === "string" && item.value.length > 0;
-    case "posted":
-      return typeof item.value === "boolean";
-    case "createdDateStart":
-    case "createdDateEnd":
-      return item.value instanceof Date && !isNaN(item.value.getTime());
-    default:
-      return false;
-  }
-};
-
-export const validateFilterGroup = (group: FilterGroup): boolean => {
-  if (!group || typeof group.include !== "boolean" || !Array.isArray(group.items)) {
-    return false;
-  }
-  return group.items.every(validateFilterItem);
-};
-
-export const validateMediaFilters = (filters: MediaFilters): boolean => {
-  if (!Array.isArray(filters)) {
-    return false;
-  }
-  return filters.every(validateFilterGroup);
-};
-
 export const buildFilterItemQuery = (
   item: FilterItem,
   queryBuilder: SelectQueryBuilder<Media>,
@@ -75,7 +41,7 @@ export const buildFilterItemQuery = (
         `${operator}EXISTS (
           SELECT 1 FROM media_tag mt
           WHERE mt.media_id = media.id
-          AND mt.tag_id = :tagId${paramIndex}
+          AND mt.tag_definition_id = :tagId${paramIndex}
         )`,
         { [`tagId${paramIndex}`]: item.id }
       );
@@ -92,14 +58,14 @@ export const buildFilterItemQuery = (
       );
       break;
 
-    case "search":
+    case "filename":
       if (include) {
-        queryBuilder.andWhere("LOWER(media.path) LIKE LOWER(:search" + paramIndex + ")", {
-          [`search${paramIndex}`]: `%${item.value}%`,
+        queryBuilder.andWhere("LOWER(media.path) LIKE LOWER(:filename" + paramIndex + ")", {
+          [`filename${paramIndex}`]: `%${item.value}%`,
         });
       } else {
-        queryBuilder.andWhere("LOWER(media.path) NOT LIKE LOWER(:search" + paramIndex + ")", {
-          [`search${paramIndex}`]: `%${item.value}%`,
+        queryBuilder.andWhere("LOWER(media.path) NOT LIKE LOWER(:filename" + paramIndex + ")", {
+          [`filename${paramIndex}`]: `%${item.value}%`,
         });
       }
       break;
@@ -169,7 +135,7 @@ export const buildFilterGroupQuery = (
   let paramIndex = 0;
 
   filters.forEach((group) => {
-    if (!validateFilterGroup(group) || group.items.length === 0) {
+    if (group.items.length === 0) {
       return;
     }
 
@@ -214,8 +180,8 @@ export const filterItemToString = (item: FilterItem): string => {
       return `Tag: ${item.id}`;
     case "shoot":
       return `Shoot: ${item.id}`;
-    case "search":
-      return `Search: "${item.value}"`;
+    case "filename":
+      return `Filename: "${item.value}"`;
     case "caption":
       return `Caption: "${item.value}"`;
     case "posted":
@@ -254,16 +220,8 @@ export const mediaFiltersToString = (filters: MediaFilters): string => {
   return groupStrings.join(" | ");
 };
 
-export const createFilterGroup = (include: boolean, items: FilterItem[] = []): FilterGroup => ({
-  include,
-  items: items.filter(validateFilterItem),
-});
-
 export const addFilterItemToGroup = (group: FilterGroup, item: FilterItem): FilterGroup => {
-  if (!validateFilterItem(item)) {
-    return group;
-  }
-
+  console.log("addFilterItemToGroup", group, item);
   return {
     ...group,
     items: [...group.items, item],
@@ -286,7 +244,7 @@ export const updateFilterItemInGroup = (
   index: number,
   newItem: FilterItem
 ): FilterGroup => {
-  if (index < 0 || index >= group.items.length || !validateFilterItem(newItem)) {
+  if (index < 0 || index >= group.items.length) {
     return group;
   }
 
@@ -343,7 +301,7 @@ export const convertLegacyFilterToGroups = (legacyFilter: LegacyFilter): MediaFi
     legacyFilter.search.trim()
   ) {
     includeItems.push({
-      type: "search",
+      type: "filename",
       value: legacyFilter.search.trim(),
     });
   }
@@ -382,18 +340,17 @@ export const convertLegacyFilterToGroups = (legacyFilter: LegacyFilter): MediaFi
 
   // Create filter groups
   if (includeItems.length > 0) {
-    filterGroups.push(createFilterGroup(true, includeItems));
+    filterGroups.push({ include: true, items: includeItems });
   }
 
   if (excludeItems.length > 0) {
-    filterGroups.push(createFilterGroup(false, excludeItems));
+    filterGroups.push({ include: false, items: excludeItems });
   }
 
   return filterGroups;
 };
 
 export const sanitizeFilterInput = (filter: unknown): MediaFilters => {
-  // Handle null/undefined
   if (!filter) {
     return [];
   }
@@ -412,16 +369,9 @@ export const sanitizeFilterInput = (filter: unknown): MediaFilters => {
     return convertLegacyFilterToGroups(filter);
   }
 
-  // Handle array format (new format)
   if (Array.isArray(filter)) {
-    // Validate and return clean filter groups
-    if (validateMediaFilters(filter)) {
-      return filter;
-    }
-    // If invalid, return empty array
-    return [];
+    return filter;
   }
 
-  // Unknown format, return empty array
   return [];
 };

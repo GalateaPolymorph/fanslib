@@ -16,7 +16,7 @@ export type FilterItem =
       id: string;
     }
   | {
-      type: "search" | "caption";
+      type: "filename" | "caption";
       value: string;
     }
   | {

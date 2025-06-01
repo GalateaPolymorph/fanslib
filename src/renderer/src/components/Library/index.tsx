@@ -5,7 +5,8 @@ import { Gallery } from "../../pages/Manage/Gallery/Gallery";
 import { GalleryPagination } from "../../pages/Manage/Gallery/GalleryPagination";
 import { GalleryViewSettings } from "../../pages/Manage/Gallery/GalleryViewSettings";
 import { LibrarySortOptions } from "../../pages/Manage/Gallery/LibrarySortOptions";
-import { MediaFilters as MediaFiltersComponent } from "../MediaFilters/";
+import { FilterActions, MediaFilters as MediaFiltersComponent } from "../MediaFilters/";
+import { MediaFiltersProvider } from "../MediaFilters/MediaFiltersContext";
 import { ScanButton } from "./Scan/ScanButton";
 import { ScanProgress } from "./Scan/ScanProgress";
 import { useScan } from "./Scan/useScan";
@@ -24,6 +25,13 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
     return null;
   }
 
+  const updateFilters = (filters: any) => {
+    updatePreferences({
+      filter: filters,
+      pagination: { page: 1 },
+    });
+  };
+
   return (
     <div className="h-full w-full overflow-hidden flex flex-col">
       {showHeader && (
@@ -35,16 +43,11 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
       <div className="flex-1 min-h-0 p-6 flex flex-col">
         <div className="flex justify-between items-center mb-4 flex-none">
           <div className="flex items-center w-full justify-between gap-4">
-            <MediaFiltersComponent
-              value={preferences.filter}
-              onChange={(filters) => {
-                updatePreferences({
-                  filter: filters,
-                  pagination: { page: 1 },
-                });
-              }}
-            />
+            <MediaFiltersComponent value={preferences.filter} onChange={updateFilters} />
             <div className="flex items-center gap-2">
+              <MediaFiltersProvider value={preferences.filter} onChange={updateFilters}>
+                <FilterActions />
+              </MediaFiltersProvider>
               <GalleryViewSettings />
               <LibrarySortOptions
                 value={preferences.sort}

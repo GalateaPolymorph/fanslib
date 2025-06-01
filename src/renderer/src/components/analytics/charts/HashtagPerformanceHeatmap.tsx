@@ -8,7 +8,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { createFilterGroup } from "../../../../../features/library/filter-helpers";
 import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 import { useHashtagAnalytics } from "../../../hooks/analytics/useHashtagAnalytics";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
@@ -63,7 +62,7 @@ export const HashtagPerformanceHeatmap = () => {
     if (data && data.hashtag) {
       // Update library preferences to search for the hashtag in captions
       updatePreferences({
-        filter: [createFilterGroup(true, [{ type: "caption", value: data.hashtag }])],
+        filter: [{ include: true, items: [{ type: "caption", value: data.hashtag }] }],
         pagination: {
           page: 1,
         },

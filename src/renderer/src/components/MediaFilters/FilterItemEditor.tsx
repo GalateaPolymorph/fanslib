@@ -27,7 +27,7 @@ const FILTER_TYPE_OPTIONS: { value: FilterItemType; label: string }[] = [
   { value: "subreddit", label: "Subreddit" },
   { value: "tag", label: "Tag" },
   { value: "shoot", label: "Shoot" },
-  { value: "search", label: "Search" },
+  { value: "filename", label: "Filename" },
   { value: "caption", label: "Caption" },
   { value: "posted", label: "Posted Status" },
   { value: "createdDateStart", label: "Created After" },
@@ -41,7 +41,7 @@ export const FilterItemEditor = ({
   onDelete,
   isEditing = false,
 }: FilterItemEditorProps) => {
-  const [type, setType] = useState<FilterItemType>(item?.type || "search");
+  const [type, setType] = useState<FilterItemType>(item?.type || "filename");
   const [stringValue, setStringValue] = useState("");
   const [booleanValue, setBooleanValue] = useState(true);
   const [dateValue, setDateValue] = useState<Date | undefined>(undefined);
@@ -79,7 +79,7 @@ export const FilterItemEditor = ({
       case "shoot":
         setIsValid(idValue.length > 0);
         break;
-      case "search":
+      case "filename":
       case "caption":
         setIsValid(stringValue.length > 0);
         break;
@@ -107,7 +107,7 @@ export const FilterItemEditor = ({
       case "shoot":
         newItem = { type, id: idValue };
         break;
-      case "search":
+      case "filename":
       case "caption":
         newItem = { type, value: stringValue };
         break;
@@ -171,7 +171,7 @@ export const FilterItemEditor = ({
           </div>
         );
 
-      case "search":
+      case "filename":
       case "caption":
         return (
           <div className="space-y-2">

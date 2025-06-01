@@ -94,11 +94,7 @@ export const MediaSelection = ({
               {`${mediaData.total} items available`}
             </span>
           </div>
-          <MediaFiltersComponent
-            value={filters}
-            onChange={handleFilterChange}
-            showClearButton={true}
-          />
+          <MediaFiltersComponent value={filters} onChange={handleFilterChange} />
         </div>
       </div>
 

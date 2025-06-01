@@ -68,7 +68,10 @@ export const LibraryPreferencesProvider = ({ children }: { children: React.React
   }, [preferences]);
 
   const updatePreferences = useCallback((updates: DeepPartial<LibraryPreferences>) => {
-    setPreferences((prev) => mergeDeepRight(prev, updates) as LibraryPreferences);
+    setPreferences((prev) => {
+      console.log("prev", prev, updates);
+      return mergeDeepRight(prev, updates) as LibraryPreferences;
+    });
   }, []);
 
   return (

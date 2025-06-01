@@ -197,11 +197,7 @@ export const ContentScheduleForm = ({
           Define which media should be eligible for this schedule. Only media matching these filters
           will be considered for posts.
         </p>
-        <MediaFiltersComponent
-          value={mediaFilters}
-          onChange={setMediaFilters}
-          showClearButton={true}
-        />
+        <MediaFiltersComponent value={mediaFilters} onChange={setMediaFilters} />
       </div>
 
       <div className="flex justify-end gap-2">
