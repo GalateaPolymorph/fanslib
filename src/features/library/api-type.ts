@@ -26,6 +26,10 @@ export type FilterItem =
   | {
       type: "createdDateStart" | "createdDateEnd";
       value: Date;
+    }
+  | {
+      type: "mediaType";
+      value: "image" | "video";
     };
 
 export type FilterGroup = {

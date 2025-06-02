@@ -98,6 +98,18 @@ export const buildFilterItemQuery = (
       }
       break;
 
+    case "mediaType":
+      if (include) {
+        queryBuilder.andWhere("media.type = :mediaType" + paramIndex, {
+          [`mediaType${paramIndex}`]: item.value,
+        });
+      } else {
+        queryBuilder.andWhere("media.type != :mediaType" + paramIndex, {
+          [`mediaType${paramIndex}`]: item.value,
+        });
+      }
+      break;
+
     case "createdDateStart":
       if (include) {
         queryBuilder.andWhere("media.fileCreationDate >= :startDate" + paramIndex, {
@@ -186,6 +198,8 @@ export const filterItemToString = (item: FilterItem): string => {
       return `Caption: "${item.value}"`;
     case "posted":
       return item.value ? "Posted" : "Unposted";
+    case "mediaType":
+      return `Media type: ${item.value === "image" ? "Image" : "Video"}`;
     case "createdDateStart":
       return `Created after: ${item.value.toLocaleDateString()}`;
     case "createdDateEnd":

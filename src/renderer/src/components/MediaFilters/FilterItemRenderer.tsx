@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { CalendarIcon, X } from "lucide-react";
+import { CalendarIcon, ImageIcon, VideoIcon, X } from "lucide-react";
 import { useState } from "react";
 import { FilterItem } from "../../../../features/library/api-type";
 import { cn } from "../../lib/utils";
@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { ChannelFilterSelector } from "./ChannelFilterSelector";
@@ -88,6 +89,36 @@ export const FilterItemRenderer = ({
                 : "Unposted"}
             </span>
           </div>
+        );
+
+      case "mediaType":
+        return (
+          <Select
+            value={
+              value && "value" in value && typeof value.value === "string" ? value.value : "image"
+            }
+            onValueChange={(mediaType: "image" | "video") =>
+              onChange({ type: "mediaType", value: mediaType })
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select media type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="image">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Image
+                </div>
+              </SelectItem>
+              <SelectItem value="video">
+                <div className="flex items-center gap-2">
+                  <VideoIcon className="h-4 w-4" />
+                  Video
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         );
 
       case "createdDateStart":

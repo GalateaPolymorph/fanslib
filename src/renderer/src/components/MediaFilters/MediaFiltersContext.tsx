@@ -65,6 +65,9 @@ export const MediaFiltersProvider = ({ value, onChange, children }: MediaFilters
       case "posted":
         defaultItem = { type: filterType, value: false };
         break;
+      case "mediaType":
+        defaultItem = { type: filterType, value: "image" };
+        break;
       case "createdDateStart":
       case "createdDateEnd":
         defaultItem = { type: filterType, value: new Date() };
@@ -124,6 +127,9 @@ export const MediaFiltersProvider = ({ value, onChange, children }: MediaFilters
         break;
       case "posted":
         defaultItem = { type: filterType, value: false };
+        break;
+      case "mediaType":
+        defaultItem = { type: filterType, value: "image" };
         break;
       case "createdDateStart":
       case "createdDateEnd":
