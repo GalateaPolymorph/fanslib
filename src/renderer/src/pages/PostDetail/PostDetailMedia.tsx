@@ -8,9 +8,11 @@ import {
 } from "@renderer/components/ui/tooltip";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
+import { useOsDrag } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { Folder, Trash2Icon } from "lucide-react";
 import { useState } from "react";
+import { Media } from "src/features/library/entity";
 import { Post } from "src/features/posts/entity";
 import { PostDetailAddMediaButton } from "./PostDetailAddMediaButton";
 
@@ -26,6 +28,7 @@ export const PostDetailMedia = ({
   variant = "default",
 }: PostDetailMediaProps) => {
   const { toast } = useToast();
+  const { startOsDrag } = useOsDrag();
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
   const removeMediaFromPost = async (postMediaId: string) => {
@@ -56,6 +59,10 @@ export const PostDetailMedia = ({
     }
   };
 
+  const handleOsDragStart = async (media: Media) => {
+    await startOsDrag([media]);
+  };
+
   return (
     <TooltipProvider>
       <MediaSelectionProvider media={post.postMedia.map((pm) => pm.media)}>
@@ -68,7 +75,14 @@ export const PostDetailMedia = ({
           {post.postMedia.map((postMedia, index) => (
             <Tooltip key={postMedia.id} delayDuration={0}>
               <TooltipTrigger asChild>
-                <div className="group relative aspect-square cursor-pointer rounded-lg overflow-hidden">
+                <div
+                  className="group relative aspect-square cursor-pointer rounded-lg overflow-hidden"
+                  draggable
+                  onDragStart={(e) => {
+                    e.preventDefault();
+                    handleOsDragStart(postMedia.media);
+                  }}
+                >
                   <div
                     className={cn("absolute inset-0 z-10 border-2 border-transparent rounded-lg")}
                   >

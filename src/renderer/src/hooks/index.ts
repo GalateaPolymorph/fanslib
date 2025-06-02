@@ -3,6 +3,7 @@ export * from "./ui/useDebounce";
 export * from "./ui/useDragOver";
 export * from "./ui/useGalleryKeyboardHandling";
 export * from "./ui/useMobile";
+export * from "./ui/useOsDrag";
 export * from "./ui/usePersistentScrollPosition";
 
 // API Hooks (React Query)
