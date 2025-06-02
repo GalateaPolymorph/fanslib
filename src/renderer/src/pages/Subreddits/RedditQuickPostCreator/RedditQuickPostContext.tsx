@@ -9,6 +9,7 @@ import { useMediaSelector } from "@renderer/hooks/business/useFilteredRandomMedi
 import { useCaptionGenerator } from "@renderer/hooks/business/useMediaCaption";
 import { useSubredditSelector } from "@renderer/hooks/business/useOptimalSubreddit";
 import { useRedditUrlGenerator } from "@renderer/hooks/business/useRedditUrlGenerator";
+import { useClipboard } from "@renderer/hooks/ui/useClipboard";
 import { useQueryClient } from "@tanstack/react-query";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { CHANNEL_TYPES } from "../../../../../features/channels/channelTypes";
@@ -81,6 +82,7 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   const { lookupRedgifsUrl } = useRedgifsLookup();
   const createPostMutation = useCreatePost();
   const queryClient = useQueryClient();
+  const { copyToClipboard } = useClipboard();
 
   // Essential computed data
   const subredditIds = subreddits.map((s) => s.id);
@@ -269,8 +271,8 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
       return;
     }
 
-    window.api["os:copyToClipboard"](postState.media.name);
-  }, [postState.media]);
+    copyToClipboard(postState.media.name);
+  }, [postState.media, copyToClipboard]);
 
   const markAsPosted = useCallback(async (): Promise<void> => {
     if (!postState.subreddit || !postState.media || !postState.caption.trim()) {

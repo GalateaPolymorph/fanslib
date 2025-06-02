@@ -3,6 +3,7 @@ import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useSettings } from "@renderer/contexts/SettingsContext";
+import { useClipboard } from "@renderer/hooks/ui/useClipboard";
 import { Copy, Edit3, ExternalLink, FolderOpen, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { MediaSelectionDialog } from "./MediaSelectionDialog";
@@ -12,6 +13,7 @@ export const MediaSection = () => {
   const [isMediaSelectionOpen, setIsMediaSelectionOpen] = useState(false);
   const { settings } = useSettings();
   const { toast } = useToast();
+  const { copyToClipboard } = useClipboard();
 
   const {
     postState,
@@ -31,7 +33,7 @@ export const MediaSection = () => {
 
     try {
       window.open("https://www.postpone.app/content-library", "_blank", "noopener,noreferrer");
-      window.api["os:copyToClipboard"](media.name);
+      copyToClipboard(media.name);
       toast({
         headline: "Postpone Opened",
         description: "Content library opened and media name copied to clipboard.",
