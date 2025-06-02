@@ -80,12 +80,10 @@ export const useFieldUpdate = <T>({
     return pendingValue !== null ? pendingValue : (post[fieldName] as T);
   }, [post, fieldName, pendingValue]);
 
-  const isUpdating = isPending || pendingValue !== null;
-
   return {
     updateField,
     getCurrentValue,
-    isUpdating,
+    isUpdating: isPending,
     hasPendingChanges: pendingValue !== null,
   };
 };

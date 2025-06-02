@@ -35,7 +35,6 @@ export const PostDetailCaptionInput = ({ post }: PostDetailCaptionInputProps) =>
           value={localCaption}
           onChange={(e) => updateCaption(e.target.value)}
           className="min-h-[200px] max-h-[400px] pr-10 resize-y"
-          disabled={isUpdating}
         />
         <HashtagButton
           channel={post.channel}
