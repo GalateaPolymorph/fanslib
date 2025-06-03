@@ -8,6 +8,7 @@ export type CreateTagDimensionDto = {
   validationSchema?: string;
   sortOrder?: number;
   stickerDisplay?: "none" | "color" | "short";
+  isExclusive?: boolean;
 };
 
 export type UpdateTagDimensionDto = {
@@ -16,6 +17,7 @@ export type UpdateTagDimensionDto = {
   validationSchema?: string;
   sortOrder?: number;
   stickerDisplay?: "none" | "color" | "short";
+  isExclusive?: boolean;
 };
 
 export type CreateTagDefinitionDto = {

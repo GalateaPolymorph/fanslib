@@ -37,9 +37,30 @@ export const createTagDimension = async (dto: CreateTagDimensionDto): Promise<Ta
     ...dto,
     sortOrder: dto.sortOrder ?? 0,
     stickerDisplay: dto.stickerDisplay ?? "none",
+    isExclusive: dto.isExclusive ?? false,
   });
 
   return repository.save(dimension);
+};
+
+// Helper function to validate existing assignments when changing to exclusive
+const validateExistingAssignments = async (dimensionId: number): Promise<void> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(MediaTag);
+
+  const violations = await repository
+    .createQueryBuilder("mt")
+    .select("mt.mediaId")
+    .where("mt.dimensionId = :dimensionId", { dimensionId })
+    .groupBy("mt.mediaId")
+    .having("COUNT(*) > 1")
+    .getRawMany();
+
+  if (violations.length > 0) {
+    throw new Error(
+      `Cannot make dimension exclusive: ${violations.length} media items have multiple tags in this dimension`
+    );
+  }
 };
 
 export const updateTagDimension = async (
@@ -54,6 +75,15 @@ export const updateTagDimension = async (
     throw new Error(
       `Invalid stickerDisplay value: ${dto.stickerDisplay}. Must be 'none', 'color', or 'short'.`
     );
+  }
+
+  // Validate isExclusive changes - check existing assignments if changing to exclusive
+  if (dto.isExclusive !== undefined && dto.isExclusive) {
+    // Get current dimension to check if we're changing from non-exclusive to exclusive
+    const currentDimension = await repository.findOne({ where: { id } });
+    if (currentDimension && !currentDimension.isExclusive) {
+      await validateExistingAssignments(id);
+    }
   }
 
   await repository.update(id, dto);
@@ -172,6 +202,25 @@ export const createTagDefinition = async (dto: CreateTagDefinitionDto): Promise<
 
   const dimension = await dimensionRepository.findOne({ where: { id: dto.dimensionId } });
 
+  if (!dimension) {
+    throw new Error(`TagDimension with id ${dto.dimensionId} not found`);
+  }
+
+  // Check if a tag with the same value already exists in this dimension
+  const trimmedValue = dto.value.trim();
+  const existingTag = await repository.findOne({
+    where: {
+      dimensionId: dto.dimensionId,
+      value: trimmedValue,
+    },
+  });
+
+  if (existingTag) {
+    throw new Error(
+      `Tag with value "${trimmedValue}" already exists in dimension "${dimension.name}"`
+    );
+  }
+
   // Validate color format if provided
   if (dto.color) {
     const colorError = validateHexColor(dto.color);
@@ -186,6 +235,7 @@ export const createTagDefinition = async (dto: CreateTagDefinitionDto): Promise<
 
   const tag = repository.create({
     ...dto,
+    value: trimmedValue,
     color: assignedColor,
     sortOrder: dto.sortOrder ?? 0,
   });
@@ -202,6 +252,36 @@ export const updateTagDefinition = async (
 ): Promise<TagDefinition> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(TagDefinition);
+
+  // Get the current tag to check dimension and current value
+  const currentTag = await repository.findOne({
+    where: { id },
+    relations: ["dimension"],
+  });
+
+  if (!currentTag) {
+    throw new Error(`TagDefinition with id ${id} not found`);
+  }
+
+  // If value is being updated, check for duplicates in the dimension
+  if (dto.value && dto.value !== currentTag.value) {
+    const trimmedValue = dto.value.trim();
+    const existingTag = await repository.findOne({
+      where: {
+        dimensionId: currentTag.dimensionId,
+        value: trimmedValue,
+      },
+    });
+
+    if (existingTag && existingTag.id !== id) {
+      throw new Error(
+        `Tag with value "${trimmedValue}" already exists in dimension "${currentTag.dimension.name}"`
+      );
+    }
+
+    // Use the trimmed value for the update
+    dto.value = trimmedValue;
+  }
 
   // Validate color format if provided
   if (dto.color) {
@@ -424,22 +504,6 @@ export const assignTagsToMedia = async (dto: AssignTagsDto): Promise<MediaTag[]>
     return [];
   }
 
-  // Remove existing tags for this media and dimension(s) to avoid duplicates
-  const tagDefinitions = await dataSource
-    .getRepository(TagDefinition)
-    .findBy({ id: In(validTagDefinitionIds) });
-  const dimensionIds = [...new Set(tagDefinitions.map((td) => td.dimensionId))];
-
-  await repository
-    .createQueryBuilder()
-    .delete()
-    .where("mediaId = :mediaId", { mediaId: dto.mediaId })
-    .andWhere(
-      "tagDefinitionId IN (SELECT id FROM tag_definition WHERE dimensionId IN (:...dimensionIds))",
-      { dimensionIds }
-    )
-    .execute();
-
   // Load the media entity and tag definitions with their relations
   const media = await dataSource.getRepository(Media).findOne({ where: { id: dto.mediaId } });
   const tagDefinitionsWithRelations = await dataSource.getRepository(TagDefinition).find({
@@ -449,6 +513,48 @@ export const assignTagsToMedia = async (dto: AssignTagsDto): Promise<MediaTag[]>
 
   if (!media) {
     throw new Error(`Media with id ${dto.mediaId} not found`);
+  }
+
+  // Group tag definitions by dimension
+  const dimensionGroups = new Map<number, TagDefinition[]>();
+  tagDefinitionsWithRelations.forEach((td) => {
+    const existing = dimensionGroups.get(td.dimensionId) || [];
+    existing.push(td);
+    dimensionGroups.set(td.dimensionId, existing);
+  });
+
+  // Handle dimension constraints and existing tag removal
+  for (const [dimensionId, tagsInDimension] of dimensionGroups) {
+    const dimension = tagsInDimension[0].dimension;
+
+    if (dimension.isExclusive) {
+      // For exclusive dimensions, validate only one tag and remove all existing tags
+      if (tagsInDimension.length > 1) {
+        throw new Error(
+          `Only one tag allowed per exclusive dimension. Violations in dimension: ${dimension.name}`
+        );
+      }
+
+      // Remove all existing tags for this dimension
+      await repository
+        .createQueryBuilder()
+        .delete()
+        .where("mediaId = :mediaId", { mediaId: dto.mediaId })
+        .andWhere(
+          "tagDefinitionId IN (SELECT id FROM tag_definition WHERE dimensionId = :dimensionId)",
+          { dimensionId }
+        )
+        .execute();
+    } else {
+      // For non-exclusive dimensions, only remove tags that are being re-assigned
+      const tagDefinitionIds = tagsInDimension.map((td) => td.id);
+      await repository
+        .createQueryBuilder()
+        .delete()
+        .where("mediaId = :mediaId", { mediaId: dto.mediaId })
+        .andWhere("tagDefinitionId IN (:...tagDefinitionIds)", { tagDefinitionIds })
+        .execute();
+    }
   }
 
   // Create new tag assignments with proper entity relations and denormalized fields
@@ -517,6 +623,37 @@ export const bulkAssignTags = async (assignments: AssignTagsDto[]): Promise<Medi
       (result) => `Media ${result.assignment.mediaId}: ${result.validation.errors.join(", ")}`
     );
     throw new Error(`Bulk assignment validation failed:\n${errors.join("\n")}`);
+  }
+
+  // Additional validation for exclusive dimensions in bulk operations
+  const dataSource = await db();
+  for (const { assignment } of validationResults) {
+    const validTagDefinitionIds = assignment.tagDefinitionIds;
+
+    if (validTagDefinitionIds.length > 0) {
+      const tagDefinitionsWithRelations = await dataSource.getRepository(TagDefinition).find({
+        where: { id: In(validTagDefinitionIds) },
+        relations: ["dimension"],
+      });
+
+      // Group by dimension to validate exclusive constraints
+      const dimensionGroups = new Map<number, TagDefinition[]>();
+      tagDefinitionsWithRelations.forEach((td) => {
+        const existing = dimensionGroups.get(td.dimensionId) || [];
+        existing.push(td);
+        dimensionGroups.set(td.dimensionId, existing);
+      });
+
+      // Validate exclusive dimension constraints
+      for (const [_dimensionId, tagsInDimension] of dimensionGroups) {
+        const dimension = tagsInDimension[0].dimension;
+        if (dimension.isExclusive && tagsInDimension.length > 1) {
+          throw new Error(
+            `Bulk assignment failed for media ${assignment.mediaId}: Only one tag allowed per exclusive dimension. Violation in dimension: ${dimension.name}`
+          );
+        }
+      }
+    }
   }
 
   // Process all assignments (validation is already done in assignTagsToMedia)

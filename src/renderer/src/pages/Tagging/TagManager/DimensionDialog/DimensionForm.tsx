@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components/ui/select";
+import { Switch } from "../../../../components/ui/switch";
 import { Textarea } from "../../../../components/ui/textarea";
 import {
   BooleanSchema,
@@ -44,6 +45,7 @@ export const DimensionForm = ({
     validationSchema: initialData?.validationSchema || "",
     sortOrder: initialData?.sortOrder || 0,
     stickerDisplay: initialData?.stickerDisplay || "none",
+    isExclusive: initialData?.isExclusive || false,
   });
 
   const [booleanSchema, setBooleanSchema] = useState<BooleanSchema>(() =>
@@ -98,12 +100,14 @@ export const DimensionForm = ({
             validationSchema: formData.validationSchema || undefined,
             sortOrder: formData.sortOrder,
             stickerDisplay: formData.stickerDisplay,
+            isExclusive: formData.isExclusive,
           }
         : {
             dataType: formData.dataType,
             validationSchema: formData.validationSchema || undefined,
             sortOrder: formData.sortOrder,
             stickerDisplay: formData.stickerDisplay,
+            isExclusive: formData.isExclusive,
           }),
     };
 
@@ -161,17 +165,6 @@ export const DimensionForm = ({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description || ""}
-          onChange={(e) => updateFormData({ description: e.target.value })}
-          placeholder="Optional description of what this dimension represents"
-          rows={3}
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="stickerDisplay">Sticker Display Mode</Label>
         <Select
           value={formData.stickerDisplay || "none"}
@@ -209,6 +202,42 @@ export const DimensionForm = ({
             </SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Tag Selection Mode - Only for categorical dimensions */}
+      {(formData.dataType === "categorical" || !isEditing) && (
+        <div className="space-y-2">
+          <Label htmlFor="isExclusive">Tag Selection Mode</Label>
+          <div className="flex items-center space-x-3">
+            <Switch
+              id="isExclusive"
+              checked={formData.isExclusive || false}
+              onCheckedChange={(checked) => updateFormData({ isExclusive: checked })}
+              disabled={formData.dataType !== "categorical"}
+            />
+            <div className="flex-1">
+              <div className="font-medium">
+                {formData.isExclusive ? "Single Selection" : "Multiple Selection"}
+              </div>
+              <div className="text-xs text-gray-500">
+                {formData.isExclusive
+                  ? "Only one tag can be assigned per media item"
+                  : "Multiple tags can be assigned per media item"}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={formData.description || ""}
+          onChange={(e) => updateFormData({ description: e.target.value })}
+          placeholder="Optional description of what this dimension represents"
+          rows={3}
+        />
       </div>
 
       {/* Configuration sections for specific data types */}

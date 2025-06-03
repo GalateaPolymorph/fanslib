@@ -37,6 +37,9 @@ export class TagDimension {
   @Column("varchar", { default: "none" })
   stickerDisplay: StickerDisplayMode;
 
+  @Column("boolean", { default: false })
+  isExclusive: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

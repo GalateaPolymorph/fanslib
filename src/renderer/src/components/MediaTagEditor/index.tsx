@@ -6,8 +6,8 @@ import { SelectionState } from "@renderer/lib/selection-state";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
 import { DimensionTagSelector } from "./DimensionTagSelector";
 
 type MediaTagEditorProps = {
@@ -108,27 +108,11 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
     }
   };
 
-  const getDimensionNameColor = (dataType: string) => {
-    switch (dataType) {
-      case "categorical":
-        return "text-blue-700";
-      case "numerical":
-        return "text-green-700";
-      case "boolean":
-        return "text-purple-700";
-      default:
-        return "text-gray-700";
-    }
-  };
-
   const isLoading = dimensionsLoading || tagStates.isLoading;
 
   if (isLoading) {
     return (
       <div className={className}>
-        <h3 className="text-lg font-medium mb-4">
-          Tags {media.length > 1 && `(${media.length} items)`}
-        </h3>
         <div className="space-y-4">
           <div className="animate-pulse">
             <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
@@ -151,10 +135,6 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
 
   return (
     <div className={className}>
-      <h3 className="text-lg font-medium mb-4">
-        Tags {media.length > 1 && `(${media.length} items)`}
-      </h3>
-
       {/* Available Dimensions Pills */}
       {getAvailableDimensions().length > 0 && (
         <div className="mb-6">
@@ -163,13 +143,18 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
               <button
                 key={dimension.id}
                 onClick={() => addDimension(dimension.id)}
-                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-colors border cursor-pointer ${getDimensionColor(
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-base font-medium transition-colors border cursor-pointer ${getDimensionColor(
                   dimension.dataType
                 )}`}
                 aria-label={`Add ${dimension.name} tag dimension`}
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 {dimension.name}
+                {dimension.isExclusive && (
+                  <Badge variant="outline" size="sm" className="text-xs ml-1">
+                    Single
+                  </Badge>
+                )}
               </button>
             ))}
           </div>
@@ -177,38 +162,29 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
       )}
 
       {/* Active Dimension Selectors */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {getActiveDimensionData().map((dimension) => (
-          <Card key={dimension.id}>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <span
-                    className={`text-sm font-medium ${getDimensionNameColor(dimension.dataType)}`}
-                  >
-                    {dimension.name}
-                  </span>
-                  {dimension.description && (
-                    <p className="text-xs text-gray-500 mt-0.5">{dimension.description}</p>
-                  )}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeDimension(dimension.id)}
-                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                  aria-label={`Remove ${dimension.name} tag dimension`}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </Button>
+          <div key={dimension.id} className="pb-6 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-medium text-gray-900">{dimension.name}</span>
               </div>
-              <DimensionTagSelector
-                dimension={dimension}
-                tagStates={tagStates.tagStates}
-                onTagToggle={handleTagToggle}
-              />
-            </CardContent>
-          </Card>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => removeDimension(dimension.id)}
+                className="h-8 w-8 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                aria-label={`Remove ${dimension.name} tag dimension`}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <DimensionTagSelector
+              dimension={dimension}
+              tagStates={tagStates.tagStates}
+              onTagToggle={handleTagToggle}
+            />
+          </div>
         ))}
 
         {getActiveDimensionData().length === 0 && (
