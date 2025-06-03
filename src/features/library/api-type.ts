@@ -76,6 +76,7 @@ const methods = [
   "get",
   "update",
   "delete",
+  "adjacentMedia",
   "onScanProgress",
   "onScanComplete",
 ] as const;
@@ -87,6 +88,11 @@ export type LibraryHandlers = {
   getAll: (_: unknown, params?: GetAllMediaParams) => Promise<PaginatedResponse<Media>>;
   update: (_: unknown, id: string, updates: UpdateMediaPayload) => Promise<Media | null>;
   delete: (_: unknown, id: string, deleteFile?: boolean) => Promise<void>;
+  adjacentMedia: (
+    _: unknown,
+    mediaId: string,
+    params?: GetAllMediaParams
+  ) => Promise<{ previous: Media | null; next: Media | null }>;
   onScanProgress: (
     _: unknown,
     listener: (_: unknown, progress: LibraryScanProgress) => void

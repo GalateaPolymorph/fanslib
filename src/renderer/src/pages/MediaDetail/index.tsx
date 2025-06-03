@@ -1,3 +1,4 @@
+import { MediaTagEditor } from "@renderer/components/MediaTagEditor";
 import { Button } from "@renderer/components/ui/button";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useMedia } from "@renderer/hooks";
@@ -9,9 +10,9 @@ import { MediaView } from "../../components/MediaView";
 import { PostponeRedgifsButton } from "../../components/PostponeRedgifsButton";
 import { CreatePostDialog } from "./CreatePostDialog";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
+import { MediaDetailNavigation } from "./MediaDetailNavigation";
 import { MediaDetailRevealInFinderButton } from "./MediaDetailRevealInFinderButton";
 import { MediaPosts } from "./MediaPosts";
-import { MediaTagEditor } from "@renderer/components/MediaTagEditor";
 
 export const MediaDetail = () => {
   const { mediaId } = useParams();
@@ -46,10 +47,14 @@ export const MediaDetail = () => {
       />
       <div className="overflow-y-auto">
         <div className="max-w-[1280px] px-8 mx-auto pt-8 pb-12">
-          <Button className="mb-2" variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="ghost" onClick={() => navigate(-1)}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <div className="flex-1" />
+            <MediaDetailNavigation />
+          </div>
           <div className="flex justify-between">
             <h1 className="text-3xl font-semibold tracking-tight">{media.name}</h1>
             <div className="flex gap-2">

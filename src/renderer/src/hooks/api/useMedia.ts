@@ -1,5 +1,6 @@
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { GetAllMediaParams } from "../../../../features/library/api-type";
 import { Media } from "../../../../features/library/entity";
 
 // Query keys
@@ -7,6 +8,7 @@ export const mediaKeys = {
   all: ["media"] as const,
   byId: (id: string) => ["media", id] as const,
   byMediaId: (mediaId: string) => ["posts", "byMediaId", mediaId] as const,
+  adjacent: (id: string, params?: GetAllMediaParams) => ["media", id, "adjacent", params] as const,
 };
 
 // Fetch single media
@@ -22,6 +24,20 @@ export const useMedia = (id: string | undefined) => {
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Fetch adjacent media
+export const useAdjacentMedia = (mediaId: string | undefined, params?: GetAllMediaParams) => {
+  return useQuery({
+    queryKey: mediaKeys.adjacent(mediaId!, params),
+    queryFn: async () => {
+      if (!mediaId) throw new Error("Media ID is required");
+      return await window.api["library:adjacentMedia"](mediaId, params);
+    },
+    enabled: !!mediaId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 

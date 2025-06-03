@@ -24,7 +24,7 @@ export const TagBadge = ({
   const getIcon = () => {
     if (selectionMode === "radio") {
       return selectionState === "checked" ? (
-        <Circle className="w-3 h-3 fill-current" />
+        <Check className="w-3 h-3" />
       ) : (
         <Circle className="w-3 h-3" />
       );

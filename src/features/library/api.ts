@@ -1,7 +1,13 @@
 import { prefixNamespaceObject } from "../../lib/namespace";
 import { loadSettings } from "../settings/load";
 import { LibraryHandlers, namespace } from "./api-type";
-import { deleteMedia, fetchAllMedia, getMediaById, updateMedia } from "./operations";
+import {
+  deleteMedia,
+  fetchAllMedia,
+  findAdjacentMedia,
+  getMediaById,
+  updateMedia,
+} from "./operations";
 import { scanFile, scanLibrary } from "./scan";
 
 // Export filter helper functions for use throughout the application
@@ -36,6 +42,10 @@ export const handlers: LibraryHandlers = {
 
   delete: async (_, id: string, deleteFile = false) => {
     return deleteMedia(id, deleteFile);
+  },
+
+  adjacentMedia: async (_, mediaId: string, params) => {
+    return findAdjacentMedia(mediaId, params);
   },
 
   onScanProgress: (_) => {

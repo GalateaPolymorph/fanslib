@@ -200,3 +200,122 @@ export const deleteMedia = async (id: string, deleteFile = false) => {
     }
   }
 };
+
+export const findAdjacentMedia = async (
+  mediaId: string,
+  params?: GetAllMediaParams
+): Promise<{ previous: Media | null; next: Media | null }> => {
+  const database = await db();
+
+  // First, get the current media to understand its position
+  const currentMedia = await database.manager.findOne(Media, {
+    where: { id: mediaId },
+  });
+
+  if (!currentMedia) {
+    return { previous: null, next: null };
+  }
+
+  // Build the base query with the same filters and sorting as the library
+  const buildQuery = () => {
+    const queryBuilder = database.manager
+      .createQueryBuilder(Media, "media")
+      .leftJoinAndSelect("media.postMedia", "postMedia")
+      .leftJoinAndSelect("postMedia.post", "post")
+      .leftJoinAndSelect("post.channel", "channel")
+      .leftJoinAndSelect("post.subreddit", "subreddit");
+
+    // Apply the same filters as the library
+    if (params?.filters) {
+      buildFilterGroupQuery(params.filters, queryBuilder);
+    }
+
+    return queryBuilder;
+  };
+
+  // Determine sort field and direction
+  const sortField = params?.sort?.field || "fileModificationDate";
+  const sortDirection = params?.sort?.direction || "DESC";
+
+  let previousCondition: string;
+  let nextCondition: string;
+  let currentValue: any;
+
+  // Build conditions based on sort field
+  switch (sortField) {
+    case "fileModificationDate":
+    case "fileCreationDate":
+      currentValue = currentMedia[sortField];
+      if (sortDirection === "DESC") {
+        previousCondition = `media.${sortField} > :currentValue`;
+        nextCondition = `media.${sortField} < :currentValue`;
+      } else {
+        previousCondition = `media.${sortField} < :currentValue`;
+        nextCondition = `media.${sortField} > :currentValue`;
+      }
+      break;
+    case "lastPosted": {
+      // For lastPosted, we need to get the max post date for the current media
+      const lastPostedQuery = await database.manager
+        .createQueryBuilder()
+        .select("MAX(p.date)", "lastPostDate")
+        .from("post", "p")
+        .innerJoin("post.postMedia", "pm")
+        .where("pm.mediaId = :mediaId", { mediaId })
+        .getRawOne();
+
+      currentValue = lastPostedQuery?.lastPostDate;
+      if (sortDirection === "DESC") {
+        previousCondition = currentValue
+          ? `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) > :currentValue`
+          : `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) IS NOT NULL`;
+        nextCondition = currentValue
+          ? `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) < :currentValue OR (SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) IS NULL`
+          : `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) IS NULL AND media.id < :mediaId`;
+      } else {
+        previousCondition = currentValue
+          ? `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) < :currentValue OR (SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) IS NULL`
+          : `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) IS NULL AND media.id > :mediaId`;
+        nextCondition = currentValue
+          ? `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) > :currentValue`
+          : `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id) IS NOT NULL`;
+      }
+      break;
+    }
+    case "random":
+      // For random sort, we can't really determine previous/next in a meaningful way
+      // So we'll fall back to creation date
+      currentValue = currentMedia.fileCreationDate;
+      previousCondition = `media.fileCreationDate > :currentValue`;
+      nextCondition = `media.fileCreationDate < :currentValue`;
+      break;
+  }
+
+  const [previous, next] = await Promise.all([
+    // Find previous media
+    buildQuery()
+      .where(previousCondition, currentValue ? { currentValue, mediaId } : { mediaId })
+      .orderBy(
+        sortField === "lastPosted"
+          ? `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id)`
+          : `media.${sortField}`,
+        sortDirection === "DESC" ? "ASC" : "DESC"
+      )
+      .limit(1)
+      .getOne(),
+
+    // Find next media
+    buildQuery()
+      .where(nextCondition, currentValue ? { currentValue, mediaId } : { mediaId })
+      .orderBy(
+        sortField === "lastPosted"
+          ? `(SELECT MAX(p.date) FROM post p INNER JOIN post_media pm ON p.id = pm.postId WHERE pm.mediaId = media.id)`
+          : `media.${sortField}`,
+        sortDirection
+      )
+      .limit(1)
+      .getOne(),
+  ]);
+
+  return { previous, next };
+};
