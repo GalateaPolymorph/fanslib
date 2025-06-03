@@ -1,6 +1,7 @@
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
+import { useAddMediaToPost, useCreatePost } from "@renderer/hooks/api/usePost";
 import { STORAGE_KEYS, useLocalStorageState } from "@renderer/lib/local-storage";
 import { VirtualPost, isVirtualPost } from "@renderer/lib/virtual-posts";
 import { useRef, useState } from "react";
@@ -28,6 +29,8 @@ export const usePostPreviewDrag = ({
   const dragEnterCountRef = useRef(0);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
   const [shouldRedirect] = useLocalStorageState(STORAGE_KEYS.REDIRECT_TO_POST_DETAIL, true);
+  const createPostMutation = useCreatePost();
+  const addMediaMutation = useAddMediaToPost();
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -76,19 +79,16 @@ export const usePostPreviewDrag = ({
 
     try {
       if (isVirtualPost(post)) {
-        const newPost = await window.api["post:create"](
-          {
+        const newPost = await createPostMutation.mutateAsync({
+          postData: {
             date: post.date,
             channelId: post.channelId,
             status: "draft",
             caption: "",
           },
-          draggedMedias.map((media) => media.id)
-        );
-        await onUpdate();
-        toast({
-          title: "Post created",
+          mediaIds: draggedMedias.map((media) => media.id),
         });
+        await onUpdate();
         endMediaDrag();
         refetch();
 
@@ -98,25 +98,15 @@ export const usePostPreviewDrag = ({
         return;
       }
 
-      await window.api["post:addMedia"](
-        post.id,
-        draggedMedias.map((media) => media.id)
-      );
-      await onUpdate();
-      toast({
-        title:
-          draggedMedias.length === 1
-            ? "Media added to post"
-            : `${draggedMedias.length} media items added to post`,
+      await addMediaMutation.mutateAsync({
+        postId: post.id,
+        mediaIds: draggedMedias.map((media) => media.id),
       });
+      await onUpdate();
       endMediaDrag();
       refetch();
     } catch (error) {
       console.error("Failed to add media to post:", error);
-      toast({
-        title: "Failed to add media to post",
-        variant: "destructive",
-      });
     } finally {
       setIsDraggedOver(false);
       if (wasClosedRef.current) {

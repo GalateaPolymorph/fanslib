@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { Media } from "../../../../features/library/entity";
 import { usePostsByMediaId } from "../api/usePost";
@@ -7,29 +8,40 @@ type CaptionGeneratorResult = {
 };
 
 export const useCaptionGenerator = (): CaptionGeneratorResult => {
-  const generateCaption = useCallback(async (media: Media | null): Promise<string> => {
-    if (!media) {
-      return "";
-    }
+  const queryClient = useQueryClient();
 
-    try {
-      // We need to fetch posts for this media directly
-      const posts = await window.api["post:byMediaId"](media.id);
+  const generateCaption = useCallback(
+    async (media: Media | null): Promise<string> => {
+      if (!media) {
+        return "";
+      }
 
-      // Filter posts that have captions and sort by most recent
-      const postsWithCaptions = posts
-        .filter((post) => post.caption && post.caption.trim().length > 0)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      try {
+        // Try to get posts from the cache first, or fetch if needed
+        const posts = await queryClient.fetchQuery({
+          queryKey: ["posts", "byMediaId", media.id],
+          queryFn: async () => {
+            return window.api["post:byMediaId"](media.id);
+          },
+          staleTime: 2 * 60 * 1000, // 2 minutes
+        });
 
-      // Use the most recent post's caption, or empty string if none found
-      const caption = postsWithCaptions.length > 0 ? postsWithCaptions[0].caption || "" : "";
+        // Filter posts that have captions and sort by most recent
+        const postsWithCaptions = posts
+          .filter((post) => post.caption && post.caption.trim().length > 0)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      return caption;
-    } catch (error) {
-      console.warn("Failed to generate caption for media:", error);
-      return "";
-    }
-  }, []);
+        // Use the most recent post's caption, or empty string if none found
+        const caption = postsWithCaptions.length > 0 ? postsWithCaptions[0].caption || "" : "";
+
+        return caption;
+      } catch (error) {
+        console.warn("Failed to generate caption for media:", error);
+        return "";
+      }
+    },
+    [queryClient]
+  );
 
   return {
     generateCaption,

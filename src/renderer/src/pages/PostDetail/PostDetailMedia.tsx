@@ -9,6 +9,7 @@ import {
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useOsDrag } from "@renderer/hooks";
+import { useRemoveMediaFromPost } from "@renderer/hooks/api/usePost";
 import { cn } from "@renderer/lib/utils";
 import { Folder, Trash2Icon } from "lucide-react";
 import { useState } from "react";
@@ -30,20 +31,22 @@ export const PostDetailMedia = ({
   const { toast } = useToast();
   const { startOsDrag } = useOsDrag();
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
+  const removeMediaMutation = useRemoveMediaFromPost();
 
   const removeMediaFromPost = async (postMediaId: string) => {
+    // Find the postMedia item to get the media ID for invalidation
+    const postMediaItem = post.postMedia.find((pm) => pm.id === postMediaId);
+    if (!postMediaItem) return;
+
     try {
-      await window.api["post:removeMedia"](post.id, [postMediaId]);
-      // The mutation will automatically refresh the post data
-      toast({
-        title: "Media removed from post",
+      await removeMediaMutation.mutateAsync({
+        postId: post.id,
+        postMediaIdsToRemove: [postMediaId],
+        mediaIdsToInvalidate: [postMediaItem.media.id],
       });
+      setConfirmingDelete(null);
     } catch (error) {
       console.error("Failed to remove media from post:", error);
-      toast({
-        title: "Failed to remove media from post",
-        variant: "destructive",
-      });
     }
   };
 
@@ -123,16 +126,20 @@ export const PostDetailMedia = ({
                     e.stopPropagation();
                     if (confirmingDelete === postMedia.id) {
                       removeMediaFromPost(postMedia.id);
-                      setConfirmingDelete(null);
                     } else {
                       setConfirmingDelete(postMedia.id);
                     }
                   }}
                   onMouseLeave={() => setConfirmingDelete(null)}
+                  disabled={removeMediaMutation.isPending}
                 >
                   <div className="flex items-center gap-1.5">
                     <Trash2Icon size={14} />
-                    {confirmingDelete === postMedia.id && <span className="text-xs">Sure?</span>}
+                    {confirmingDelete === postMedia.id && (
+                      <span className="text-xs">
+                        {removeMediaMutation.isPending ? "..." : "Sure?"}
+                      </span>
+                    )}
                   </div>
                 </Button>
               </TooltipContent>

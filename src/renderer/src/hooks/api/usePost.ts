@@ -103,12 +103,27 @@ export const useUpdatePost = () => {
         variant: "destructive",
       });
     },
-    onSuccess: (updatedPost, { postId }) => {
+    onSuccess: (updatedPost, { postId, newMediaPathsInOrder }, context) => {
       // Update the cache with the actual server response
       queryClient.setQueryData(postKeys.byId(postId), updatedPost);
 
       // Invalidate adjacent posts in case the update affects navigation
       queryClient.invalidateQueries({ queryKey: postKeys.adjacent(postId) });
+
+      // If media was updated, invalidate media-related queries for both old and new media
+      if (newMediaPathsInOrder !== undefined) {
+        const previousMediaIds = context?.previousPost?.postMedia.map((pm) => pm.media.id) || [];
+        const newMediaIds = updatedPost.postMedia.map((pm) => pm.media.id);
+
+        // Combine old and new media IDs to ensure all affected media queries are invalidated
+        const allAffectedMediaIds = [...new Set([...previousMediaIds, ...newMediaIds])];
+
+        allAffectedMediaIds.forEach((mediaId) => {
+          queryClient.invalidateQueries({
+            queryKey: ["posts", "byMediaId", mediaId],
+          });
+        });
+      }
 
       toast({
         title: "Post updated",
@@ -129,16 +144,26 @@ export const useDeletePost = () => {
 
   return useMutation({
     mutationFn: async (postId: string) => {
+      // Get the post data before deletion to extract media IDs
+      const post = queryClient.getQueryData<Post>(postKeys.byId(postId));
       await window.api["post:delete"](postId);
-      return postId;
+      return { postId, mediaIds: post?.postMedia.map((pm) => pm.media.id) || [] };
     },
-    onSuccess: (postId) => {
+    onSuccess: ({ postId, mediaIds }) => {
       // Remove the post from cache
       queryClient.removeQueries({ queryKey: postKeys.byId(postId) });
       queryClient.removeQueries({ queryKey: postKeys.adjacent(postId) });
 
       // Invalidate any list queries that might include this post
       queryClient.invalidateQueries({ queryKey: postKeys.all });
+
+      // Invalidate media-related queries for each media item that was in the deleted post
+      // This ensures Media Detail pages show the updated posts list
+      mediaIds.forEach((mediaId) => {
+        queryClient.invalidateQueries({
+          queryKey: ["posts", "byMediaId", mediaId],
+        });
+      });
 
       toast({
         title: "Post deleted successfully",
@@ -179,12 +204,20 @@ export const useCreatePost = () => {
       if (!result) throw new Error("Failed to create post");
       return result;
     },
-    onSuccess: (newPost) => {
+    onSuccess: (newPost, { mediaIds }) => {
       // Add the new post to cache
       queryClient.setQueryData(postKeys.byId(newPost.id), newPost);
 
       // Invalidate list queries to include the new post
       queryClient.invalidateQueries({ queryKey: postKeys.all });
+
+      // Invalidate media-related queries for each media item in the new post
+      // This ensures Media Detail pages show the updated posts list
+      mediaIds.forEach((mediaId) => {
+        queryClient.invalidateQueries({
+          queryKey: ["posts", "byMediaId", mediaId],
+        });
+      });
 
       toast({
         title: "Post created successfully",
@@ -203,22 +236,118 @@ export const useCreatePost = () => {
 
 // Custom hook for debounced post field updates
 export const useDebouncedPostUpdate = (post: Post | undefined) => {
-  const updateMutation = useUpdatePost();
+  const updatePostMutation = useUpdatePost();
 
   const updateField = async (updates: Partial<Post>) => {
-    if (!post) {
-      throw new Error("Post is required");
+    if (!post) return;
+
+    try {
+      await updatePostMutation.mutateAsync({
+        postId: post.id,
+        updates,
+      });
+    } catch (error) {
+      console.error("Failed to update post:", error);
     }
-
-    return updateMutation.mutateAsync({
-      postId: post.id,
-      updates,
-    });
   };
 
-  return {
-    updateField,
-    isUpdating: updateMutation.isPending,
-    error: updateMutation.error,
-  };
+  return { updateField, isLoading: updatePostMutation.isPending };
+};
+
+// Add media to post mutation
+export const useAddMediaToPost = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ postId, mediaIds }: { postId: string; mediaIds: string[] }) => {
+      const result = await window.api["post:addMedia"](postId, mediaIds);
+      if (!result) throw new Error("Failed to add media to post");
+      return result;
+    },
+    onSuccess: (updatedPost, { postId, mediaIds }) => {
+      // Update the post cache with the new data
+      queryClient.setQueryData(postKeys.byId(postId), updatedPost);
+
+      // Invalidate all post-related queries
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
+      queryClient.invalidateQueries({ queryKey: postKeys.byId(postId) });
+
+      // Invalidate media-related queries for each added media item
+      // This ensures Media Detail pages show the updated posts list
+      mediaIds.forEach((mediaId) => {
+        queryClient.invalidateQueries({
+          queryKey: ["posts", "byMediaId", mediaId],
+        });
+      });
+
+      toast({
+        title:
+          mediaIds.length === 1
+            ? "Media added to post"
+            : `${mediaIds.length} media items added to post`,
+        duration: 2000,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to add media to post",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+// Remove media from post mutation
+export const useRemoveMediaFromPost = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({
+      postId,
+      postMediaIdsToRemove,
+      mediaIdsToInvalidate,
+    }: {
+      postId: string;
+      postMediaIdsToRemove: string[];
+      mediaIdsToInvalidate: string[];
+    }) => {
+      const result = await window.api["post:removeMedia"](postId, postMediaIdsToRemove);
+      if (!result) throw new Error("Failed to remove media from post");
+      return result;
+    },
+    onSuccess: (updatedPost, { postId, mediaIdsToInvalidate }) => {
+      // Update the post cache with the new data
+      queryClient.setQueryData(postKeys.byId(postId), updatedPost);
+
+      // Invalidate all post-related queries
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
+      queryClient.invalidateQueries({ queryKey: postKeys.byId(postId) });
+
+      // Invalidate media-related queries for each removed media item
+      // This ensures Media Detail pages show the updated posts list
+      mediaIdsToInvalidate.forEach((mediaId) => {
+        queryClient.invalidateQueries({
+          queryKey: ["posts", "byMediaId", mediaId],
+        });
+      });
+
+      toast({
+        title:
+          mediaIdsToInvalidate.length === 1
+            ? "Media removed from post"
+            : `${mediaIdsToInvalidate.length} media items removed from post`,
+        duration: 2000,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to remove media from post",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    },
+  });
 };

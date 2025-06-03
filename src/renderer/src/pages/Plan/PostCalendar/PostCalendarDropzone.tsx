@@ -1,7 +1,8 @@
 import { useToast } from "@renderer/components/ui/use-toast";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { usePostDrag } from "@renderer/contexts/PostDragContext";
-import { useDragOver } from "@renderer/hooks";
+import { useAddMediaToPost } from "@renderer/hooks/api/usePost";
+import { useDragOver } from "@renderer/hooks/ui/useDragOver";
 import { cn } from "@renderer/lib/utils";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";
 import { Plus } from "lucide-react";
@@ -24,6 +25,7 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
     caption?: string;
   } | null>(null);
   const { toast } = useToast();
+  const addMediaMutation = useAddMediaToPost();
 
   const isDragging = isMediaDragging || isPostDragging;
 
@@ -32,21 +34,13 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
       if (!isVirtualPost(post)) {
         if (isMediaDragging && draggedMedias.length > 0) {
           try {
-            const mediaIds = draggedMedias.map((media) => media.id);
-            await window.api["post:addMedia"](post.id, mediaIds);
-            toast({
-              title:
-                draggedMedias.length === 1
-                  ? "Media added to post"
-                  : `${draggedMedias.length} media items added to post`,
+            await addMediaMutation.mutateAsync({
+              postId: post.id,
+              mediaIds: draggedMedias.map((media) => media.id),
             });
             await onUpdate?.();
           } catch (error) {
             console.error("Failed to add media to post:", error);
-            toast({
-              title: "Failed to add media to post",
-              variant: "destructive",
-            });
           }
           endMediaDrag();
         }
@@ -66,6 +60,15 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
       }
     },
   });
+
+  const closeCreatePostDialog = () => {
+    setCreatePostData(null);
+  };
+
+  const handlePostCreated = async () => {
+    await onUpdate?.();
+    closeCreatePostDialog();
+  };
 
   return (
     <>
@@ -90,11 +93,7 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
       </div>
       <CreatePostDialog
         open={createPostData !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setCreatePostData(null);
-          }
-        }}
+        onOpenChange={closeCreatePostDialog}
         media={createPostData?.media ?? []}
         initialDate={new Date(post.date)}
         initialChannelId={post.channel.id}

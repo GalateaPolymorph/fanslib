@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@renderer/components/ui/dialog";
 import { useToast } from "@renderer/components/ui/use-toast";
+import { useAddMediaToPost } from "@renderer/hooks/api/usePost";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -30,6 +31,7 @@ export const PostDetailAddMediaButton = ({
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media[]>([]);
+  const addMediaMutation = useAddMediaToPost();
 
   const updateDialogOpen = async (newOpen: boolean) => {
     setOpen(newOpen);
@@ -50,49 +52,36 @@ export const PostDetailAddMediaButton = ({
 
   const addMediaToPost = async () => {
     try {
-      await window.api["post:addMedia"](
-        post.id,
-        selectedMedia.map((m) => m.id)
-      );
-      // React Query will automatically refresh the post data
-      setOpen(false);
-      toast({
-        title: "Media added to post",
+      await addMediaMutation.mutateAsync({
+        postId: post.id,
+        mediaIds: selectedMedia.map((m) => m.id),
       });
+      setOpen(false);
+      setSelectedMedia([]);
     } catch (error) {
       console.error("Failed to add media to post:", error);
-      toast({
-        title: "Failed to add media to post",
-        variant: "destructive",
-      });
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={updateDialogOpen}>
       <DialogTrigger asChild>
-        <div
+        <Button
+          variant="outline"
+          size="sm"
           className={cn(
-            "relative cursor-pointer rounded-lg overflow-hidden",
-            variant === "detail" && "col-span-2 min-h-24",
-            variant === "default" && "aspect-square"
+            "flex items-center gap-1 transition-all duration-200",
+            variant === "detail" && "h-10 px-4",
+            isDraggingMedia
+              ? "border-primary border-2 border-dashed bg-primary/10 text-primary hover:bg-primary/20"
+              : "hover:bg-muted"
           )}
         >
-          <div
-            className={cn(
-              "absolute inset-0 z-10 border-2 border-dashed rounded-lg flex items-center justify-center transition-colors duration-200",
-              isDraggingMedia ? "border-primary bg-primary/10" : "border-border"
-            )}
-          >
-            <Plus
-              className={cn(
-                "size-6 transition-colors duration-200",
-                isDraggingMedia ? "text-primary" : "text-border"
-              )}
-            />
-          </div>
-        </div>
+          <Plus size={16} />
+          {variant === "detail" ? "Add Media" : ""}
+        </Button>
       </DialogTrigger>
+
       <DialogContent className="max-w-4xl h-[80vh] flex flex-col min-h-0 overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Media to Post</DialogTitle>
@@ -126,8 +115,13 @@ export const PostDetailAddMediaButton = ({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={addMediaToPost} disabled={selectedMedia.length === 0}>
-              Add {selectedMedia.length} {selectedMedia.length === 1 ? "item" : "items"}
+            <Button
+              onClick={addMediaToPost}
+              disabled={selectedMedia.length === 0 || addMediaMutation.isPending}
+            >
+              {addMediaMutation.isPending
+                ? "Adding..."
+                : `Add ${selectedMedia.length} ${selectedMedia.length === 1 ? "item" : "items"}`}
             </Button>
           </div>
         </div>
