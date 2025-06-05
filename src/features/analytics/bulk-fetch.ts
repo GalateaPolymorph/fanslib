@@ -175,7 +175,6 @@ class BulkAnalyticsFetcher {
         .leftJoinAndSelect("post.fanslyAnalyticsAggregate", "analytics")
         .where("channel.typeId = :typeId", { typeId: "fansly" })
         .andWhere("post.fanslyStatisticsId IS NOT NULL")
-        .andWhere("analytics.id IS NOT NULL") // Only posts that are currently displayed (have analytics)
         .orderBy("post.date", "DESC")
         .getMany();
 
