@@ -72,6 +72,9 @@ export const MediaFiltersProvider = ({ value, onChange, children }: MediaFilters
       case "createdDateEnd":
         defaultItem = { type: filterType, value: new Date() };
         break;
+      case "dimensionEmpty":
+        defaultItem = { type: filterType, dimensionId: 0 };
+        break;
       default:
         defaultItem = { type: "filename", value: "" };
     }
@@ -134,6 +137,9 @@ export const MediaFiltersProvider = ({ value, onChange, children }: MediaFilters
       case "createdDateStart":
       case "createdDateEnd":
         defaultItem = { type: filterType, value: new Date() };
+        break;
+      case "dimensionEmpty":
+        defaultItem = { type: filterType, dimensionId: 0 };
         break;
       default:
         defaultItem = { type: "filename", value: "" };

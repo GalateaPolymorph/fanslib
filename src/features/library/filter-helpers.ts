@@ -133,6 +133,17 @@ export const buildFilterItemQuery = (
         });
       }
       break;
+
+    case "dimensionEmpty":
+      queryBuilder.andWhere(
+        `${operator}EXISTS (
+          SELECT 1 FROM media_tag mt
+          WHERE mt.media_id = media.id
+          AND mt.dimensionId = :dimensionId${paramIndex}
+        )`,
+        { [`dimensionId${paramIndex}`]: item.dimensionId }
+      );
+      break;
   }
 };
 
@@ -204,6 +215,8 @@ export const filterItemToString = (item: FilterItem): string => {
       return `Created after: ${item.value.toLocaleDateString()}`;
     case "createdDateEnd":
       return `Created before: ${item.value.toLocaleDateString()}`;
+    case "dimensionEmpty":
+      return `Missing tags from dimension: ${item.dimensionId}`;
     default:
       return "Unknown filter";
   }

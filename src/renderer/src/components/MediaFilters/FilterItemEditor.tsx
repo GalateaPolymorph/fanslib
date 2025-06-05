@@ -11,6 +11,7 @@ import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
+import { DimensionFilterSelector } from "./DimensionFilterSelector";
 
 type FilterItemEditorProps = {
   item?: FilterItem;
@@ -26,6 +27,7 @@ const FILTER_TYPE_OPTIONS: { value: FilterItemType; label: string }[] = [
   { value: "channel", label: "Channel" },
   { value: "subreddit", label: "Subreddit" },
   { value: "tag", label: "Tag" },
+  { value: "dimensionEmpty", label: "Missing dimension tags" },
   { value: "shoot", label: "Shoot" },
   { value: "filename", label: "Filename" },
   { value: "caption", label: "Caption" },
@@ -46,6 +48,7 @@ export const FilterItemEditor = ({
   const [booleanValue, setBooleanValue] = useState(true);
   const [dateValue, setDateValue] = useState<Date | undefined>(undefined);
   const [idValue, setIdValue] = useState("");
+  const [dimensionIdValue, setDimensionIdValue] = useState(0);
   const [isValid, setIsValid] = useState(false);
 
   const { data: channels = [] } = useChannels();
@@ -63,37 +66,42 @@ export const FilterItemEditor = ({
         }
       } else if ("id" in item) {
         setIdValue(item.id);
+      } else if ("dimensionId" in item) {
+        setDimensionIdValue(item.dimensionId);
       }
     }
   }, [item]);
 
   useEffect(() => {
-    validateItem();
-  }, [type, stringValue, booleanValue, dateValue, idValue]);
+    const validateCurrentItem = () => {
+      switch (type) {
+        case "channel":
+        case "subreddit":
+        case "tag":
+        case "shoot":
+          setIsValid(idValue.length > 0);
+          break;
+        case "filename":
+        case "caption":
+          setIsValid(stringValue.length > 0);
+          break;
+        case "posted":
+          setIsValid(true);
+          break;
+        case "createdDateStart":
+        case "createdDateEnd":
+          setIsValid(dateValue !== undefined);
+          break;
+        case "dimensionEmpty":
+          setIsValid(dimensionIdValue > 0);
+          break;
+        default:
+          setIsValid(false);
+      }
+    };
 
-  const validateItem = () => {
-    switch (type) {
-      case "channel":
-      case "subreddit":
-      case "tag":
-      case "shoot":
-        setIsValid(idValue.length > 0);
-        break;
-      case "filename":
-      case "caption":
-        setIsValid(stringValue.length > 0);
-        break;
-      case "posted":
-        setIsValid(true);
-        break;
-      case "createdDateStart":
-      case "createdDateEnd":
-        setIsValid(dateValue !== undefined);
-        break;
-      default:
-        setIsValid(false);
-    }
-  };
+    validateCurrentItem();
+  }, [type, stringValue, booleanValue, dateValue, idValue, dimensionIdValue]);
 
   const saveItem = () => {
     if (!isValid) return;
@@ -118,6 +126,9 @@ export const FilterItemEditor = ({
       case "createdDateEnd":
         newItem = { type, value: dateValue! };
         break;
+      case "dimensionEmpty":
+        newItem = { type, dimensionId: dimensionIdValue };
+        break;
     }
 
     onSave(newItem);
@@ -128,6 +139,7 @@ export const FilterItemEditor = ({
     setBooleanValue(true);
     setDateValue(undefined);
     setIdValue("");
+    setDimensionIdValue(0);
   };
 
   const handleTypeChange = (newType: FilterItemType) => {
@@ -218,6 +230,17 @@ export const FilterItemEditor = ({
                 <Calendar mode="single" selected={dateValue} onSelect={setDateValue} initialFocus />
               </PopoverContent>
             </Popover>
+          </div>
+        );
+
+      case "dimensionEmpty":
+        return (
+          <div className="space-y-2">
+            <Label>Dimension</Label>
+            <DimensionFilterSelector
+              value={dimensionIdValue || undefined}
+              onChange={setDimensionIdValue}
+            />
           </div>
         );
 

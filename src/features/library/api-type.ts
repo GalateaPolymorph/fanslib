@@ -30,6 +30,10 @@ export type FilterItem =
   | {
       type: "mediaType";
       value: "image" | "video";
+    }
+  | {
+      type: "dimensionEmpty";
+      dimensionId: number;
     };
 
 export type FilterGroup = {

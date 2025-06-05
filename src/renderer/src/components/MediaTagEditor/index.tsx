@@ -3,11 +3,7 @@ import { useRemoveTagsFromMedia } from "@renderer/hooks/api/tags/useRemoveTagsFr
 import { useTagDimensions } from "@renderer/hooks/api/tags/useTagDimensions";
 import { useTagStates } from "@renderer/hooks/tags/useTagStates";
 import { SelectionState } from "@renderer/lib/selection-state";
-import { Plus, X } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import { DimensionTagSelector } from "./DimensionTagSelector";
 
 type MediaTagEditorProps = {
@@ -16,27 +12,10 @@ type MediaTagEditorProps = {
 };
 
 export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
-  const [activeDimensions, setActiveDimensions] = useState<Set<number>>(new Set());
-
   const { data: dimensions, isLoading: dimensionsLoading } = useTagDimensions();
   const tagStates = useTagStates(media);
   const assignMutation = useAssignTagsToMedia();
   const removeMutation = useRemoveTagsFromMedia();
-
-  // Auto-activate dimensions that have tags
-  useEffect(() => {
-    if (tagStates.tagStates && Object.keys(tagStates.tagStates).length > 0) {
-      // Find dimensions that have any tags assigned
-      const tagIds = Object.keys(tagStates.tagStates).map(Number);
-      if (dimensions && tagIds.length > 0) {
-        // We need to find which dimensions these tags belong to
-        // For now, we'll activate all dimensions that have any tags
-        // This could be optimized by fetching tag definitions to get their dimensions
-        const allDimensionIds = new Set(dimensions.map((d) => d.id));
-        setActiveDimensions((prev) => new Set([...prev, ...allDimensionIds]));
-      }
-    }
-  }, [tagStates.tagStates, dimensions]);
 
   const handleTagToggle = async (tagId: number, currentState: SelectionState) => {
     if (currentState === "unchecked") {
@@ -63,18 +42,6 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
       }));
       await assignMutation.mutateAsync(assignments);
     }
-  };
-
-  const addDimension = (dimensionId: number) => {
-    setActiveDimensions((prev) => new Set([...prev, dimensionId]));
-  };
-
-  const removeDimension = (dimensionId: number) => {
-    setActiveDimensions((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(dimensionId);
-      return newSet;
-    });
 
     // Clear any existing tags for this dimension
     // Find all tags in this dimension that are currently assigned
@@ -83,16 +50,6 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
       // fetch tag definitions to know which tags belong to which dimension
       // For now, we'll skip the auto-removal to avoid complexity
     }
-  };
-
-  const getAvailableDimensions = () => {
-    if (!dimensions) return [];
-    return dimensions.filter((dim) => !activeDimensions.has(dim.id));
-  };
-
-  const getActiveDimensionData = () => {
-    if (!dimensions) return [];
-    return dimensions.filter((dim) => activeDimensions.has(dim.id));
   };
 
   const getDimensionColor = (dataType: string) => {
@@ -108,7 +65,7 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
     }
   };
 
-  const isLoading = dimensionsLoading || tagStates.isLoading;
+  const isLoading = tagStates.isLoading;
 
   if (isLoading) {
     return (
@@ -135,65 +92,16 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
 
   return (
     <div className={className}>
-      {/* Available Dimensions Pills */}
-      {getAvailableDimensions().length > 0 && (
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            {getAvailableDimensions().map((dimension) => (
-              <button
-                key={dimension.id}
-                onClick={() => addDimension(dimension.id)}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-base font-medium transition-colors border cursor-pointer ${getDimensionColor(
-                  dimension.dataType
-                )}`}
-                aria-label={`Add ${dimension.name} tag dimension`}
-              >
-                <Plus className="w-4 h-4" />
-                {dimension.name}
-                {dimension.isExclusive && (
-                  <Badge variant="outline" size="sm" className="text-xs ml-1">
-                    Single
-                  </Badge>
-                )}
-              </button>
-            ))}
-          </div>
+      {dimensions?.map((dimension) => (
+        <div key={dimension.id} className="pb-6 p-4">
+          <span className="flex text-lg font-medium text-gray-900 mb-2">{dimension.name}</span>
+          <DimensionTagSelector
+            dimension={dimension}
+            tagStates={tagStates.tagStates}
+            onTagToggle={handleTagToggle}
+          />
         </div>
-      )}
-
-      {/* Active Dimension Selectors */}
-      <div className="space-y-2">
-        {getActiveDimensionData().map((dimension) => (
-          <div key={dimension.id} className="pb-6 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-medium text-gray-900">{dimension.name}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => removeDimension(dimension.id)}
-                className="h-8 w-8 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                aria-label={`Remove ${dimension.name} tag dimension`}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-            <DimensionTagSelector
-              dimension={dimension}
-              tagStates={tagStates.tagStates}
-              onTagToggle={handleTagToggle}
-            />
-          </div>
-        ))}
-
-        {getActiveDimensionData().length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <p className="text-sm">No tag types selected</p>
-            <p className="text-xs mt-1">Click on a tag type above to start adding tags</p>
-          </div>
-        )}
-      </div>
+      ))}
 
       {(assignMutation.isPending || removeMutation.isPending) && (
         <div className="text-sm text-gray-500 mt-4 flex items-center gap-2">

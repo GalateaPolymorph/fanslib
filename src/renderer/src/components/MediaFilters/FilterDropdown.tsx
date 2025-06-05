@@ -31,6 +31,7 @@ const FILTER_TYPE_OPTIONS = [
   { value: "channel", label: "Channel", icon: Hash },
   { value: "subreddit", label: "Subreddit", icon: MessageSquare },
   { value: "tag", label: "Tag", icon: Tag },
+  { value: "dimensionEmpty", label: "Tag Dimension", icon: Tag },
   { value: "shoot", label: "Shoot", icon: Camera },
   { value: "mediaType", label: "Media Type", icon: FileVideo },
   { value: "filename", label: "Filename", icon: Search },

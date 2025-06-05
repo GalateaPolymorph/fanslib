@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { ChannelFilterSelector } from "./ChannelFilterSelector";
+import { DimensionFilterSelector } from "./DimensionFilterSelector";
 import { ShootFilterSelector } from "./ShootFilterSelector";
 import { SubredditFilterSelector } from "./SubredditFilterSelector";
 import { TagFilterSelector } from "./TagFilterSelector";
@@ -61,6 +62,14 @@ export const FilterItemRenderer = ({
           <ShootFilterSelector
             value={value && "id" in value ? value.id : undefined}
             onChange={(shootId) => onChange({ type: "shoot", id: shootId })}
+          />
+        );
+
+      case "dimensionEmpty":
+        return (
+          <DimensionFilterSelector
+            value={value && "dimensionId" in value ? value.dimensionId : undefined}
+            onChange={(dimensionId) => onChange({ type: "dimensionEmpty", dimensionId })}
           />
         );
 
