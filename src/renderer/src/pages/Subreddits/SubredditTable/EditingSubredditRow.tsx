@@ -1,4 +1,9 @@
-import { MediaFilters as MediaFiltersComponent } from "@renderer/components/MediaFilters";
+import {
+  FilterActions,
+  MediaFilters as MediaFiltersComponent,
+  RedditChannelFilterPreset,
+} from "@renderer/components/MediaFilters";
+import { MediaFiltersProvider } from "@renderer/components/MediaFilters/MediaFiltersContext";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import {
@@ -121,12 +126,32 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
         </Button>
       </div>
       <div className="col-span-full p-4 border-t">
-        <MediaFiltersComponent
-          value={editingSubreddit.eligibleMediaFilter}
-          onChange={(filter) =>
-            setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
-          }
-        />
+        <div className="space-y-3">
+          <MediaFiltersProvider
+            value={editingSubreddit.eligibleMediaFilter}
+            onChange={(filter) =>
+              setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
+            }
+          >
+            <div className="flex items-center justify-end">
+              <RedditChannelFilterPreset
+                onApplyFilter={(filter) =>
+                  setEditingSubreddit({
+                    ...editingSubreddit,
+                    eligibleMediaFilter: sanitizeFilterInput(filter),
+                  })
+                }
+              />
+              <FilterActions />
+            </div>
+            <MediaFiltersComponent
+              value={editingSubreddit.eligibleMediaFilter}
+              onChange={(filter) =>
+                setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
+              }
+            />
+          </MediaFiltersProvider>
+        </div>
       </div>
     </div>
   );

@@ -38,3 +38,4 @@ export const MediaFilters = ({ value, onChange, className = "" }: MediaFiltersPr
 };
 
 export { FilterActions } from "./FilterActions";
+export { RedditChannelFilterPreset } from "./RedditChannelFilterPreset";

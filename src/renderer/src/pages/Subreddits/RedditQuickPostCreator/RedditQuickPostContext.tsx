@@ -5,17 +5,26 @@ import {
   subredditLastPostDateKeys,
   useSubredditLastPostDates,
 } from "@renderer/hooks/api/useSubredditLastPostDates";
-import { useMediaSelector } from "@renderer/hooks/business/useFilteredRandomMedia";
+import { selectRandomMedia } from "@renderer/hooks/business/useFilteredRandomMedia";
 import { useCaptionGenerator } from "@renderer/hooks/business/useMediaCaption";
 import { useSubredditSelector } from "@renderer/hooks/business/useOptimalSubreddit";
 import { useRedditUrlGenerator } from "@renderer/hooks/business/useRedditUrlGenerator";
 import { useClipboard } from "@renderer/hooks/ui/useClipboard";
+import { isEmptyObject } from "@renderer/lib/object";
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { CHANNEL_TYPES } from "../../../../../features/channels/channelTypes";
 import { Subreddit } from "../../../../../features/channels/subreddit";
 import { Media } from "../../../../../features/library/entity";
-import { GenerationError, PostState } from "./types";
+import { PostState } from "./types";
 
 type RedditQuickPostContextType = {
   postState: PostState;
@@ -76,8 +85,8 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   });
 
   // Function provider hooks
-  const { selectOptimalSubreddit } = useSubredditSelector(subreddits);
-  const { selectRandomMedia } = useMediaSelector();
+  const { selectOptimalSubreddit, isLoading: isSubredditLoading } =
+    useSubredditSelector(subreddits);
   const { generateCaption } = useCaptionGenerator();
   const { lookupRedgifsUrl } = useRedgifsLookup();
   const createPostMutation = useCreatePost();
@@ -104,21 +113,25 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   }, []);
 
   const generateRandomPost = useCallback(async (): Promise<void> => {
-    if (subreddits.length === 0) {
+    if (subreddits.length === 0 || isSubredditLoading) {
       return;
     }
 
+    const redditChannel = channels.find((c) => c.type.id === CHANNEL_TYPES.reddit.id);
     setPostState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Step 1: Select optimal subreddit
       const subreddit = await selectOptimalSubreddit();
       if (!subreddit) {
         throw new Error("No eligible subreddit found");
       }
 
+      const eligibleMediaFilter = isEmptyObject(subreddit.eligibleMediaFilter)
+        ? redditChannel?.eligibleMediaFilter
+        : subreddit.eligibleMediaFilter;
+
       // Step 2: Select random media for the subreddit
-      const { media, totalAvailable } = await selectRandomMedia(subreddit.eligibleMediaFilter);
+      const { media, totalAvailable } = await selectRandomMedia(eligibleMediaFilter);
       if (!media) {
         throw new Error("No media found for the selected subreddit");
       }
@@ -144,20 +157,20 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         hasPostedToReddit: false,
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      const generationError: GenerationError = {
-        type: "general",
-        message: `Failed to generate quick post: ${errorMessage}`,
-        retryable: true,
-      };
-
       setPostState((prev) => ({
         ...prev,
         isLoading: false,
-        error: generationError,
+        error: error,
       }));
     }
-  }, [subreddits, selectOptimalSubreddit, selectRandomMedia, generateCaption, lookupRedgifsUrl]);
+  }, [
+    subreddits,
+    isSubredditLoading,
+    selectOptimalSubreddit,
+    generateCaption,
+    lookupRedgifsUrl,
+    channels,
+  ]);
 
   const refreshPost = useCallback(async (): Promise<void> => {
     await generateRandomPost();
@@ -203,27 +216,23 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         hasPostedToReddit: false,
       }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      const generationError: GenerationError = {
-        type: "general",
-        message: `Failed to refresh media: ${errorMessage}`,
-        retryable: true,
-      };
-
       setPostState((prev) => ({
         ...prev,
         isLoading: false,
-        error: generationError,
+        error: error,
       }));
     }
-  }, [postState.subreddit, selectRandomMedia, generateCaption, lookupRedgifsUrl]);
+  }, [postState.subreddit, generateCaption, lookupRedgifsUrl]);
 
-  // Initial load effect - generate a post when component mounts
+  const hasGeneratedInitialPost = useRef(false);
   useEffect(() => {
-    if (subreddits.length > 0 && !postState.subreddit && !postState.isLoading) {
-      generateRandomPost();
+    if (isSubredditLoading || subreddits.length === 0 || hasGeneratedInitialPost.current) {
+      return;
     }
-  }, [subreddits.length, generateRandomPost, postState.subreddit, postState.isLoading]);
+
+    hasGeneratedInitialPost.current = true;
+    generateRandomPost();
+  }, [subreddits.length, isSubredditLoading, generateRandomPost]);
 
   const selectSpecificMedia = useCallback((media: Media) => {
     setPostState((prev) => ({ ...prev, media }));
@@ -341,17 +350,10 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         isUrlReady: true,
       }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      const generationError: GenerationError = {
-        type: "general",
-        message: `Failed to refresh RedGIFs URL: ${errorMessage}`,
-        retryable: true,
-      };
-
       setPostState((prev) => ({
         ...prev,
         isLoading: false,
-        error: generationError,
+        error: error,
       }));
     }
   }, [postState.media, lookupRedgifsUrl]);

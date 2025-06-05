@@ -61,7 +61,7 @@ export const useRedditUrlGenerator = ({
         // Image - create text post with upload guidance
         const uploadText = `Upload your image file manually to Reddit.\n\nImage: ${media.name}\n\n${caption || ""}`;
         const encodedText = encodeURIComponent(uploadText);
-        return `${baseUrl}?selftext=true&title=${encodedTitle}&text=${encodedText}`;
+        return `${baseUrl}?selftext=true&title=${encodedTitle}&text=${encodedText}&type=IMAGE`;
       }
 
       return null;

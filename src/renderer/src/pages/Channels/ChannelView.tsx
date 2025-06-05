@@ -1,5 +1,9 @@
 import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
-import { MediaFilters as MediaFiltersComponent } from "@renderer/components/MediaFilters";
+import {
+  FilterActions,
+  MediaFilters as MediaFiltersComponent,
+} from "@renderer/components/MediaFilters";
+import { MediaFiltersProvider } from "@renderer/components/MediaFilters/MediaFiltersContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -119,10 +123,15 @@ export const ChannelView = ({
                 placeholder="Channel description (optional)"
                 rows={2}
               />
-              <MediaFiltersComponent
-                value={eligibleMediaFilter}
-                onChange={setEligibleMediaFilter}
-              />
+              <div className="flex items-center gap-2">
+                <MediaFiltersComponent
+                  value={eligibleMediaFilter}
+                  onChange={setEligibleMediaFilter}
+                />
+                <MediaFiltersProvider value={eligibleMediaFilter} onChange={setEligibleMediaFilter}>
+                  <FilterActions />
+                </MediaFiltersProvider>
+              </div>
             </div>
             <div>
               <div className="sticky top-4 space-y-4">
