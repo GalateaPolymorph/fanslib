@@ -306,14 +306,16 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         mediaIds: [postState.media.id],
       });
 
-      // Generate a new random post after successfully creating the post
-      await generateRandomPost();
+      // Invalidate subreddit queries first to ensure fresh data
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: channelKeys.subreddits }),
+        queryClient.invalidateQueries({
+          queryKey: subredditLastPostDateKeys.lastPostDates(subredditIds),
+        }),
+      ]);
 
-      // Invalidate subreddit queries
-      queryClient.invalidateQueries({ queryKey: channelKeys.subreddits });
-      queryClient.invalidateQueries({
-        queryKey: subredditLastPostDateKeys.lastPostDates(subredditIds),
-      });
+      // Generate a new random post after queries are invalidated
+      await generateRandomPost();
     } catch (error) {
       throw new Error(
         `Failed to create post: ${error instanceof Error ? error.message : "Unknown error"}`
