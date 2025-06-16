@@ -38,20 +38,26 @@ export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
 
   const media = post.postMedia[0];
 
+  // Prepare thread submission with expiry settings
+  const threadSubmission = {
+    text: post.caption,
+    order: 1,
+    contentWarning: "PORN",
+    languages: ["en"],
+    mediaName: media?.media.name,
+    // Add expiry settings if configured
+    ...(settings.blueskyDefaultExpiryDays && {
+      removeAtAmount: settings.blueskyDefaultExpiryDays,
+      removeAtUnit: "day",
+    }),
+  };
+
   return fetchPostpone<{ scheduleBlueskyPost: { success: boolean } }>(SCHEDULE_BLUESKY_POST, {
     input: {
       username: settings.blueskyUsername,
       postAt: new Date(post.date).toISOString(),
       publishingStatus: "DRAFT",
-      thread: [
-        {
-          text: post.caption,
-          order: 1,
-          contentWarning: "PORN",
-          languages: ["en"],
-          mediaName: media?.media.name,
-        },
-      ],
+      thread: [threadSubmission],
     },
   }).then((result) => ({ success: result.scheduleBlueskyPost.success }));
 };

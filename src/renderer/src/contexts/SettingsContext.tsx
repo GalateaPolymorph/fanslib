@@ -5,6 +5,7 @@ type Settings = {
   theme: "light" | "dark";
   blueskyUsername?: string;
   postponeToken?: string;
+  blueskyDefaultExpiryDays?: number;
 };
 
 type SettingsContextType = {

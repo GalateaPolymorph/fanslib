@@ -3,6 +3,7 @@ export type Settings = {
   readonly libraryPath: string;
   readonly blueskyUsername?: string;
   readonly postponeToken?: string;
+  readonly blueskyDefaultExpiryDays?: number;
 };
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = {
@@ -10,4 +11,5 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   libraryPath: "",
   blueskyUsername: "",
   postponeToken: "",
+  blueskyDefaultExpiryDays: 7,
 } as const;
