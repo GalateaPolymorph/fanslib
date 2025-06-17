@@ -1,9 +1,11 @@
 import { cn } from "@renderer/lib/utils";
+import { useEffect, useRef } from "react";
 import { Media } from "../../../../../features/library/entity";
 import { MediaTile } from "../../../components/MediaTile";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 import { MediaSelectionProvider, useMediaSelection } from "../../../contexts/MediaSelectionContext";
+import { useDynamicPageSize } from "../../../hooks/ui/useDynamicPageSize";
 import { GalleryActionBar } from "./GalleryActionBar";
 import { GalleryEmpty } from "./GalleryEmpty";
 
@@ -15,7 +17,21 @@ type GalleryProps = {
 };
 
 const GalleryContent = ({ medias, error, libraryPath, onScan }: GalleryProps) => {
-  const { preferences } = useLibraryPreferences();
+  const { preferences, updatePreferences } = useLibraryPreferences();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { pageSize } = useDynamicPageSize(containerRef, preferences.view.gridSize);
+
+  useEffect(() => {
+    if (pageSize !== preferences.pagination.limit && pageSize > 0) {
+      updatePreferences({
+        pagination: {
+          limit: pageSize,
+          page: 1,
+        },
+      });
+    }
+  }, [pageSize, preferences.pagination.limit, updatePreferences]);
 
   const { selectedMediaIds, clearSelection } = useMediaSelection();
   const selectedMediaItems = medias.filter((m) => selectedMediaIds.has(m.id));
@@ -35,7 +51,7 @@ const GalleryContent = ({ medias, error, libraryPath, onScan }: GalleryProps) =>
         selectedMedia={selectedMediaItems}
         onClearSelection={clearSelection}
       />
-      <ScrollArea className="h-[calc(100%-3rem)] @container">
+      <ScrollArea className="h-[calc(100%-3rem)] @container" ref={containerRef}>
         <div
           className={cn(
             "grid gap-4 p-4 grid-cols-3",
