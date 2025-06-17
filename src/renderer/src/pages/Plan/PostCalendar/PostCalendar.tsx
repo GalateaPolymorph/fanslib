@@ -26,9 +26,10 @@ type PostCalendarProps = {
   className?: string;
   posts: (Post | VirtualPost)[];
   onUpdate: () => Promise<void>;
+  scrollRef?: React.RefObject<HTMLDivElement>;
 };
 
-export const PostCalendar = ({ className, posts, onUpdate }: PostCalendarProps) => {
+export const PostCalendar = ({ className, posts, onUpdate, scrollRef }: PostCalendarProps) => {
   const { preferences, updatePreferences } = usePlanPreferences();
   const [currentMonth, setCurrentMonth] = useState(() => {
     return format(new Date(preferences.filter.dateRange?.startDate || new Date()), "MMM-yyyy");
@@ -112,7 +113,10 @@ export const PostCalendar = ({ className, posts, onUpdate }: PostCalendarProps) 
           <div key={i}>{day}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0 overflow-auto gap-y-8 gap-x-2">
+      <div
+        className="grid grid-cols-7 mt-2 text-sm flex-1 min-h-0 overflow-auto gap-y-8 gap-x-2"
+        ref={scrollRef}
+      >
         {days.map((day, dayIdx) => {
           const dayPosts = posts.filter((post) => isSameDay(new Date(post.date), day));
 

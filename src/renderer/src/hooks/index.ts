@@ -5,7 +5,7 @@ export * from "./ui/useDragOver";
 export * from "./ui/useGalleryKeyboardHandling";
 export * from "./ui/useMobile";
 export * from "./ui/useOsDrag";
-export * from "./ui/usePersistentScrollPosition";
+export * from "./ui/useScrollPosition";
 
 // API Hooks (React Query)
 export * from "./api/useChannels";

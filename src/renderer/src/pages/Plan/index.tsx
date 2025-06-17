@@ -5,6 +5,7 @@ import {
   PlanPreferencesProvider,
   usePlanPreferences,
 } from "@renderer/contexts/PlanPreferencesContext";
+import { useScrollPosition } from "@renderer/hooks";
 import { useChannels } from "@renderer/hooks/api/useChannels";
 import { useCallback, useEffect, useState } from "react";
 import { Post } from "../../../../features/posts/entity";
@@ -22,8 +23,13 @@ const PlanPageContent = () => {
   const { data: channels = [] } = useChannels();
   const { preferences, updatePreferences } = usePlanPreferences();
   const [posts, setPosts] = useState<(Post | VirtualPost)[]>([]);
+  const [isPostsLoaded, setIsPostsLoaded] = useState(false);
 
   const { refetch: refetchLibrary } = useLibrary();
+
+  // Persist scroll position only for calendar view and after posts are loaded
+  const shouldRestoreScroll = preferences.view.viewType === "calendar" && isPostsLoaded;
+  const scrollRef = useScrollPosition<HTMLDivElement>(shouldRestoreScroll);
 
   const tabs = [
     {
@@ -45,6 +51,7 @@ const PlanPageContent = () => {
   });
 
   const fetchPosts = useCallback(async () => {
+    setIsPostsLoaded(false);
     try {
       // Posts are already enriched with channel and category data
       const [filteredPosts, allPosts, schedules] = await Promise.all([
@@ -74,18 +81,16 @@ const PlanPageContent = () => {
           )
         : [];
 
-      console.log({
-        allPosts,
-        dateRange: preferences.filter.dateRange,
-      });
       // Combine and sort all posts by date
       const allPostsCombined = [...filteredPosts, ...virtualPosts].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
       setPosts(allPostsCombined);
+      setIsPostsLoaded(true);
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setIsPostsLoaded(true);
     }
   }, [preferences.filter]);
 
@@ -120,7 +125,7 @@ const PlanPageContent = () => {
               <PostTimeline posts={posts} onUpdate={refetchPostsAndLibrary} />
             )}
             {channels.length && preferences.view.viewType === "calendar" && (
-              <PostCalendar posts={posts} onUpdate={refetchPostsAndLibrary} />
+              <PostCalendar posts={posts} onUpdate={refetchPostsAndLibrary} scrollRef={scrollRef} />
             )}
           </div>
         </div>

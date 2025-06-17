@@ -7,7 +7,7 @@ import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useShootContext } from "@renderer/contexts/ShootContext";
 import { ShootPreferencesProvider } from "@renderer/contexts/ShootPreferencesContext";
-import { usePersistentScrollPosition } from "@renderer/hooks";
+import { useScrollPosition } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { type FC } from "react";
 import { ShootViewSettings } from "./ShootViewSettings";
@@ -21,7 +21,7 @@ const ShootsContent: FC<ShootsProps> = ({ className }) => {
   const { refetch: refetchLibrary } = useLibrary();
   const { shoots, isLoading, error, refetch } = useShootContext();
   const { isDragging } = useMediaDrag();
-  const scrollRef = usePersistentScrollPosition<HTMLDivElement>([shoots, isLoading]);
+  const scrollRef = useScrollPosition<HTMLDivElement>(!isLoading);
   const { allMedia, shootsMedia } = useShootsMedia(shoots);
 
   if (error) {
