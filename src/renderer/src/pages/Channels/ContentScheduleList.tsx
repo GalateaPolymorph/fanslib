@@ -58,8 +58,8 @@ export const ContentScheduleList = ({ schedules, onEdit, onDelete }: ContentSche
                 )}
                 <MediaFilterSummary
                   mediaFilters={parseMediaFilters(schedule.mediaFilters)}
-                  compact={true}
-                  layout="grouped"
+                  compact={false}
+                  layout="inline"
                 />
               </div>
               <div className="flex gap-2">
