@@ -11,7 +11,12 @@ type SubredditSelectorResult = {
 
 export const useSubredditSelector = (subreddits: Subreddit[]): SubredditSelectorResult => {
   const subredditIds = subreddits.map((s) => s.id);
-  const { data: lastPostDates = {}, isLoading, error } = useSubredditLastPostDates(subredditIds);
+  const {
+    data: lastPostDates = {},
+    isLoading,
+    error,
+    refetch,
+  } = useSubredditLastPostDates(subredditIds);
 
   const selectOptimalSubreddit = useCallback(async (): Promise<Subreddit | null> => {
     if (isLoading) {
@@ -21,6 +26,8 @@ export const useSubredditSelector = (subreddits: Subreddit[]): SubredditSelector
     if (error) {
       throw error;
     }
+
+    await refetch();
 
     // Filter eligible subreddits based on post frequency rules
     const eligibleSubreddits = subreddits.filter((subreddit) => {
@@ -54,7 +61,7 @@ export const useSubredditSelector = (subreddits: Subreddit[]): SubredditSelector
         : null;
 
     return selectedSubreddit;
-  }, [subreddits, lastPostDates, isLoading, error]);
+  }, [subreddits, lastPostDates, isLoading, error, refetch]);
 
   // Calculate eligible subreddits for display purposes
   const eligibleSubreddits = subreddits.filter((subreddit) => {

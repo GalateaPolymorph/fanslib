@@ -184,12 +184,14 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     setPostState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Step 1: Use current subreddit
       const currentSubreddit = postState.subreddit;
+      const redditChannel = channels.find((c) => c.type.id === CHANNEL_TYPES.reddit.id);
+      const redditChannelEligibleMediaFilter = redditChannel?.eligibleMediaFilter;
 
-      // Step 2: Select new random media for the current subreddit
       const { media, totalAvailable } = await selectRandomMedia(
-        currentSubreddit.eligibleMediaFilter
+        Array.isArray(currentSubreddit.eligibleMediaFilter)
+          ? currentSubreddit.eligibleMediaFilter
+          : redditChannelEligibleMediaFilter
       );
       if (!media) {
         throw new Error("No media found for the current subreddit");
@@ -216,13 +218,14 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         hasPostedToReddit: false,
       }));
     } catch (error) {
+      console.error(error);
       setPostState((prev) => ({
         ...prev,
         isLoading: false,
         error: error,
       }));
     }
-  }, [postState.subreddit, generateCaption, lookupRedgifsUrl]);
+  }, [postState.subreddit, generateCaption, lookupRedgifsUrl, channels]);
 
   const hasGeneratedInitialPost = useRef(false);
   useEffect(() => {
