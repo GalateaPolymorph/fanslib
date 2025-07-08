@@ -1,4 +1,3 @@
-import { useToast } from "@renderer/components/ui/use-toast";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { usePostDrag } from "@renderer/contexts/PostDragContext";
 import { useAddMediaToPost } from "@renderer/hooks/api/usePost";
@@ -24,7 +23,6 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
     media: Media[];
     caption?: string;
   } | null>(null);
-  const { toast } = useToast();
   const addMediaMutation = useAddMediaToPost();
 
   const isDragging = isMediaDragging || isPostDragging;
@@ -63,11 +61,6 @@ export const PostCalendarDropzone = ({ post, children, onUpdate }: PostCalendarD
 
   const closeCreatePostDialog = () => {
     setCreatePostData(null);
-  };
-
-  const handlePostCreated = async () => {
-    await onUpdate?.();
-    closeCreatePostDialog();
   };
 
   return (

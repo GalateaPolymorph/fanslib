@@ -12,7 +12,7 @@ type MediaTagEditorProps = {
 };
 
 export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
-  const { data: dimensions, isLoading: dimensionsLoading } = useTagDimensions();
+  const { data: dimensions } = useTagDimensions();
   const tagStates = useTagStates(media);
   const assignMutation = useAssignTagsToMedia();
   const removeMutation = useRemoveTagsFromMedia();
@@ -49,19 +49,6 @@ export const MediaTagEditor = ({ media, className }: MediaTagEditorProps) => {
       // This is a simplified approach - in a real implementation, you'd want to
       // fetch tag definitions to know which tags belong to which dimension
       // For now, we'll skip the auto-removal to avoid complexity
-    }
-  };
-
-  const getDimensionColor = (dataType: string) => {
-    switch (dataType) {
-      case "categorical":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200 hover:border-blue-300";
-      case "numerical":
-        return "bg-green-100 text-green-800 hover:bg-green-200 border-green-200 hover:border-green-300";
-      case "boolean":
-        return "bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200 hover:border-purple-300";
-      default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200 hover:border-gray-300";
     }
   };
 

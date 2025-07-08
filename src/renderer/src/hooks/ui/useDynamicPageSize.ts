@@ -127,7 +127,7 @@ export const useDynamicPageSize = (
   }, [updatePageSize]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return () => {};
 
     const resizeObserver = new ResizeObserver(updatePageSize);
     resizeObserver.observe(containerRef.current);
@@ -138,7 +138,7 @@ export const useDynamicPageSize = (
         clearTimeout(debounceRef.current);
       }
     };
-  }, [updatePageSize]);
+  }, [updatePageSize, containerRef]);
 
   return { pageSize, updatePageSize };
 };

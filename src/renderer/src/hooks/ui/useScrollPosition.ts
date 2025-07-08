@@ -12,6 +12,7 @@ export const useScrollPosition = <T extends HTMLElement>(
   );
 
   // Track when element becomes available
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (elementRef.current !== element) {
       setElement(elementRef.current);
@@ -25,7 +26,7 @@ export const useScrollPosition = <T extends HTMLElement>(
   }, [setCondition, scrollYStorage, element]);
 
   useEffect(() => {
-    if (!element) return;
+    if (!element) return () => {};
 
     let scrollTimeout: NodeJS.Timeout;
 

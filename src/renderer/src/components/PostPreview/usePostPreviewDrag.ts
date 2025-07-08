@@ -1,4 +1,3 @@
-import { useToast } from "@renderer/components/ui/use-toast";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { useAddMediaToPost, useCreatePost } from "@renderer/hooks/api/usePost";
@@ -22,7 +21,6 @@ export const usePostPreviewDrag = ({
   onUpdate,
 }: UsePostPreviewDragProps) => {
   const { refetch } = useLibrary();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const { draggedMedias, endMediaDrag, isDragging } = useMediaDrag();
   const wasClosedRef = useRef(false);

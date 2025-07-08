@@ -19,7 +19,7 @@ export const useDebouncedFieldUpdate = <T>({
   transform = (v) => v,
 }: UseDebouncedFieldUpdateProps<T>) => {
   const debouncedValue = useDebounce(value, debounceMs);
-  const { updateField, isUpdating, error } = useDebouncedPostUpdate(post);
+  const { updateField } = useDebouncedPostUpdate(post);
   const currentPostIdRef = useRef<string | undefined>(post?.id);
   const lastUpdateRef = useRef<T | undefined>(undefined);
   const initialValueRef = useRef<T | undefined>(undefined);
@@ -71,8 +71,6 @@ export const useDebouncedFieldUpdate = <T>({
   }, [debouncedValue, post, fieldName, transform, updateField]);
 
   return {
-    isUpdating,
-    error,
     updateField,
   };
 };

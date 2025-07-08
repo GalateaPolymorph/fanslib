@@ -13,6 +13,7 @@ asarUnpack:
   - resources/**
 win:
   executableName: fanslib
+  icon: assets/icons/icon.png
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

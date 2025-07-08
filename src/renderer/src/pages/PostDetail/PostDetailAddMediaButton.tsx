@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@renderer/components/ui/dialog";
-import { useToast } from "@renderer/components/ui/use-toast";
 import { useAddMediaToPost } from "@renderer/hooks/api/usePost";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";
@@ -28,7 +27,6 @@ export const PostDetailAddMediaButton = ({
   isDraggingMedia = false,
   variant = "default",
 }: PostDetailAddMediaButtonProps) => {
-  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media[]>([]);
   const addMediaMutation = useAddMediaToPost();

@@ -308,7 +308,6 @@ export const useRemoveMediaFromPost = () => {
     mutationFn: async ({
       postId,
       postMediaIdsToRemove,
-      mediaIdsToInvalidate,
     }: {
       postId: string;
       postMediaIdsToRemove: string[];
