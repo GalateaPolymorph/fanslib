@@ -4,6 +4,11 @@ import {
   APIPostponeIpcHandlers,
   apiPostponeMethods,
 } from "./api-postpone/api-type";
+import {
+  AutomationIpcChannel,
+  AutomationIpcHandlers,
+  automationMethods,
+} from "./automation/api-type";
 import { ChannelIpcChannel, ChannelIpcHandlers, channelMethods } from "./channels/api-type";
 import {
   ContentScheduleIpcChannel,
@@ -34,7 +39,8 @@ export type IpcHandlers = ChannelIpcHandlers &
   HashtagIpcHandlers &
   APIPostponeIpcHandlers &
   AnalyticsIpcHandlers &
-  TagIpcHandlers;
+  TagIpcHandlers &
+  AutomationIpcHandlers;
 
 export const ipcMethods = [
   ...channelMethods,
@@ -49,6 +55,7 @@ export const ipcMethods = [
   ...apiPostponeMethods,
   ...analyticsMethods,
   ...tagMethods,
+  ...automationMethods,
 ];
 
 export type IpcChannel =
@@ -63,4 +70,5 @@ export type IpcChannel =
   | HashtagIpcChannel
   | APIPostponeIpcChannel
   | AnalyticsIpcChannel
-  | TagIpcChannel;
+  | TagIpcChannel
+  | AutomationIpcChannel;

@@ -13,6 +13,7 @@ import { FanslyAnalyticsAggregate, FanslyAnalyticsDatapoint } from "../analytics
 import { Channel } from "../channels/entity";
 import { Subreddit } from "../channels/subreddit";
 import { Media } from "../library/entity";
+
 export type PostStatus = "draft" | "scheduled" | "posted";
 
 @Entity()

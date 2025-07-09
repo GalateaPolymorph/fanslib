@@ -88,6 +88,12 @@ export const SubredditRow = ({
         />
       </div>
       <div className="p-2 min-h-12 flex items-center">
+        <span className={textClasses}>{subreddit.defaultFlair ?? "-"}</span>
+      </div>
+      <div className="p-2 min-h-12 flex items-center">
+        <span className={textClasses}>{subreddit.captionPrefix ?? "-"}</span>
+      </div>
+      <div className="p-2 min-h-12 flex items-center">
         <span className={textClasses}>{subreddit.notes ?? "-"}</span>
       </div>
       <div className="p-2 pr-4 min-h-12 flex items-center justify-end gap-2">

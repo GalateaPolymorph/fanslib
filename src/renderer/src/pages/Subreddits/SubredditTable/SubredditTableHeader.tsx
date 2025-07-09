@@ -9,6 +9,8 @@ export const SubredditTableHeader = () => {
       <div className="p-2 font-medium">Post Frequency (hours)</div>
       <div className="p-2 font-medium">Post Status</div>
       <div className="p-2 font-medium">Verification</div>
+      <div className="p-2 font-medium">Default Flair</div>
+      <div className="p-2 font-medium">Caption Prefix</div>
       <div className="p-2 font-medium">Notes</div>
       <div className="p-2 pr-4 font-medium"></div>
     </div>

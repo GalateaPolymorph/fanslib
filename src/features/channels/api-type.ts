@@ -18,6 +18,8 @@ export type SubredditCreatePayload = {
   memberCount?: number;
   verificationStatus?: VerificationStatus;
   eligibleMediaFilter?: MediaFilters;
+  defaultFlair?: string;
+  captionPrefix?: string;
 };
 
 export type SubredditUpdatePayload = {
@@ -27,6 +29,8 @@ export type SubredditUpdatePayload = {
   memberCount?: number;
   verificationStatus?: VerificationStatus;
   eligibleMediaFilter?: MediaFilters;
+  defaultFlair?: string;
+  captionPrefix?: string;
 };
 
 const methods = [

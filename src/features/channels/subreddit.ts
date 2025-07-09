@@ -24,4 +24,13 @@ export class Subreddit {
 
   @Column("varchar", { default: VERIFICATION_STATUS.UNKNOWN })
   verificationStatus!: VerificationStatus;
+
+  @Column("varchar", { nullable: true })
+  defaultFlair?: string;
+
+  /**
+   * Gets added to the beginning of the caption in auto-posting.
+   */
+  @Column("varchar", { nullable: true })
+  captionPrefix?: string;
 }

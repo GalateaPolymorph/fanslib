@@ -52,6 +52,8 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
           memberCount: parseViewCount(unparsedMemberCount.replaceAll(",", ".")),
           verificationStatus: editingSubreddit.verificationStatus,
           eligibleMediaFilter: editingSubreddit.eligibleMediaFilter,
+          defaultFlair: editingSubreddit.defaultFlair,
+          captionPrefix: editingSubreddit.captionPrefix,
         },
       });
       onUpdate();
@@ -112,6 +114,22 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="p-2 min-h-12 flex items-center">
+        <Input
+          value={editingSubreddit.defaultFlair ?? ""}
+          onChange={(e) => setEditingSubreddit({ ...editingSubreddit, defaultFlair: e.target.value })}
+          className="h-8"
+          placeholder="Default flair"
+        />
+      </div>
+      <div className="p-2 min-h-12 flex items-center">
+        <Input
+          value={editingSubreddit.captionPrefix ?? ""}
+          onChange={(e) => setEditingSubreddit({ ...editingSubreddit, captionPrefix: e.target.value })}
+          className="h-8"
+          placeholder="Caption prefix"
+        />
       </div>
       <div className="p-2 min-h-12 flex items-center">
         <Input

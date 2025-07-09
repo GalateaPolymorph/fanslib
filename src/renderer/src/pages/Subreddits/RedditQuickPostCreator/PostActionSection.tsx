@@ -2,6 +2,7 @@ import { Button } from "@renderer/components/ui/button";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { CheckCircle, Loader2, Send } from "lucide-react";
 import { useState } from "react";
+import { AutoPostButton } from "./AutoPostButton";
 import { useRedditQuickPostContext } from "./RedditQuickPostContext";
 
 export const PostActionSection = () => {
@@ -56,6 +57,8 @@ export const PostActionSection = () => {
           <Send className="h-5 w-5" />
           Post to Reddit
         </Button>
+
+        <AutoPostButton onPostSuccess={handleMarkAsPosted} />
 
         {hasPostedToReddit && (
           <Button

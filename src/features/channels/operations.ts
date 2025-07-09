@@ -40,6 +40,8 @@ export const createSubreddit = async (data: SubredditCreatePayload): Promise<Sub
     notes: data.notes,
     verificationStatus: data.verificationStatus ?? VERIFICATION_STATUS.UNKNOWN,
     eligibleMediaFilter: data.eligibleMediaFilter,
+    defaultFlair: data.defaultFlair,
+    captionPrefix: data.captionPrefix,
   });
 
   await repository.save(subreddit);
@@ -55,6 +57,12 @@ export const listSubreddits = async (): Promise<Subreddit[]> => {
       memberCount: "DESC",
     },
   });
+};
+
+export const fetchSubredditById = async (id: string): Promise<Subreddit | null> => {
+  const dataSource = await db();
+  const repository = dataSource.getRepository(Subreddit);
+  return repository.findOne({ where: { id } });
 };
 
 export const updateSubreddit = async (

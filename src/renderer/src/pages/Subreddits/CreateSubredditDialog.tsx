@@ -42,6 +42,8 @@ export const CreateSubredditDialog = ({
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>(
     VERIFICATION_STATUS.UNKNOWN
   );
+  const [defaultFlair, setDefaultFlair] = useState("");
+  const [captionPrefix, setCaptionPrefix] = useState("");
 
   const resetForm = () => {
     setName("");
@@ -49,6 +51,8 @@ export const CreateSubredditDialog = ({
     setNotes("");
     setMemberCount("");
     setVerificationStatus(VERIFICATION_STATUS.UNKNOWN);
+    setDefaultFlair("");
+    setCaptionPrefix("");
   };
 
   const createSubreddit = async () => {
@@ -69,6 +73,8 @@ export const CreateSubredditDialog = ({
         notes: notes.trim() || undefined,
         memberCount: memberCount ? parseViewCount(memberCount) : undefined,
         verificationStatus,
+        defaultFlair: defaultFlair.trim() || undefined,
+        captionPrefix: captionPrefix.trim() || undefined,
       });
 
       onSubredditCreated();
@@ -143,6 +149,30 @@ export const CreateSubredditDialog = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid gap-2">
+            <label htmlFor="defaultFlair" className="text-sm font-medium">
+              Default Flair
+            </label>
+            <Input
+              id="defaultFlair"
+              value={defaultFlair}
+              onChange={(e) => setDefaultFlair(e.target.value)}
+              placeholder="e.g., NSFW"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <label htmlFor="captionPrefix" className="text-sm font-medium">
+              Caption Prefix
+            </label>
+            <Input
+              id="captionPrefix"
+              value={captionPrefix}
+              onChange={(e) => setCaptionPrefix(e.target.value)}
+              placeholder="e.g., Check out my latest post:"
+            />
           </div>
 
           <div className="grid gap-2">

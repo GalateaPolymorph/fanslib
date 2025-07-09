@@ -9,4 +9,6 @@ export type EditingSubreddit = {
   memberCount?: number;
   verificationStatus: VerificationStatus;
   eligibleMediaFilter?: MediaFilters;
+  defaultFlair?: string;
+  captionPrefix?: string;
 };
