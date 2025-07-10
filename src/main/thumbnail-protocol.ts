@@ -20,7 +20,8 @@ export const registerThumbnailSchemeAsPrivileged = () => {
 
 export const registerThumbnailProtocolHandler = () => {
   protocol.handle("thumbnail", async (req) => {
-    const mediaId = decodeURIComponent(new URL(req.url).href.replace("thumbnail:/", ""));
+    const url = new URL(req.url);
+    const mediaId = decodeURIComponent(url.hostname || url.pathname.replace(/^\/+/, ""));
     const thumbnailPath = getThumbnailPath(mediaId);
 
     try {

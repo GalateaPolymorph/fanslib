@@ -22,7 +22,8 @@ export const registerMediaSchemeAsPrivileged = () => {
 
 export const registerMediaProtocolHandler = () => {
   protocol.handle("media", async (req) => {
-    const requestParam = decodeURIComponent(new URL(req.url).href.replace("media:/", ""));
+    const url = new URL(req.url);
+    const requestParam = decodeURIComponent(url.hostname || url.pathname.replace(/^\/+/, ""));
 
     try {
       const { createReadStream, stat } = await import("fs");
