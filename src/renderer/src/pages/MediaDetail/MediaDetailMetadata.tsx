@@ -1,5 +1,4 @@
 import { format, formatDistanceToNow } from "date-fns";
-import { useEffect, useState } from "react";
 import { Media } from "../../../../features/library/entity";
 import { formatBytes } from "../../lib/format";
 
@@ -8,20 +7,6 @@ type Props = {
 };
 
 export const MediaDetailMetadata = ({ media }: Props) => {
-  const [relativePath, setRelativePath] = useState<string>("");
-
-  useEffect(() => {
-    const getLibraryPath = async () => {
-      const settings = await window.api["settings:load"]();
-      const libraryPath = settings.libraryPath;
-      if (media.path.startsWith(libraryPath)) {
-        setRelativePath(media.path.slice(libraryPath.length + 1));
-      }
-    };
-
-    getLibraryPath();
-  }, [media.path]);
-
   return (
     <div className="grid grid-cols-[1fr_3fr] gap-x-4 gap-y-2 text-sm">
       <h3 className="text-lg font-medium col-span-2">Metadata</h3>
@@ -39,8 +24,8 @@ export const MediaDetailMetadata = ({ media }: Props) => {
       )}
 
       <span className="text-muted-foreground">Path</span>
-      <span className="truncate" title={relativePath}>
-        {relativePath}
+      <span className="truncate" title={media.relativePath}>
+        {media.relativePath}
       </span>
 
       <span className="text-muted-foreground">Created</span>

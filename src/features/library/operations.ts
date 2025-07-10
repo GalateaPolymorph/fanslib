@@ -2,12 +2,14 @@ import * as fs from "fs/promises";
 import { In } from "typeorm";
 import { db } from "../../lib/db";
 import { PaginatedResponse } from "../_common/pagination";
+import { loadSettings } from "../settings/load";
 import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 import { buildFilterGroupQuery } from "./filter-helpers";
+import { convertRelativeToAbsolute } from "./path-utils";
 
 export const createMedia = async ({
-  path,
+  relativePath,
   name,
   type,
   size,
@@ -15,7 +17,7 @@ export const createMedia = async ({
   fileCreationDate,
   fileModificationDate,
 }: {
-  path: string;
+  relativePath: string;
   name: string;
   type: "image" | "video";
   size: number;
@@ -27,7 +29,7 @@ export const createMedia = async ({
   const repository = dataSource.getRepository(Media);
 
   const media = repository.create({
-    path,
+    relativePath,
     name,
     type,
     size,
@@ -116,12 +118,12 @@ export const fetchAllMedia = async (
   };
 };
 
-export const fetchMediaByPath = async (path: string): Promise<Media | null> => {
+export const fetchMediaByPath = async (relativePath: string): Promise<Media | null> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
   return repository.findOne({
-    where: { path },
+    where: { relativePath },
     relations: {
       postMedia: {
         post: {
@@ -132,12 +134,12 @@ export const fetchMediaByPath = async (path: string): Promise<Media | null> => {
   });
 };
 
-export const fetchMediaByPaths = async (paths: string[]): Promise<Media[]> => {
+export const fetchMediaByPaths = async (relativePaths: string[]): Promise<Media[]> => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
   return repository.find({
-    where: { path: In(paths) },
+    where: { relativePath: In(relativePaths) },
     relations: {
       postMedia: {
         post: {
@@ -193,7 +195,9 @@ export const deleteMedia = async (id: string, deleteFile = false) => {
   // Delete the file if requested
   if (deleteFile && media) {
     try {
-      await fs.unlink(media.path);
+      const settings = await loadSettings();
+      const filePath = convertRelativeToAbsolute(media.relativePath, settings.libraryPath);
+      await fs.unlink(filePath);
     } catch (error) {
       console.error("Failed to delete file:", error);
       // Don't throw since we already deleted from DB

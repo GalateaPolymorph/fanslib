@@ -18,13 +18,13 @@ export const MediaView = ({
   const mediaContent =
     media.type === "image" ? (
       <img
-        src={`media://${media.path}`}
+        src={`media://${media.id}`}
         alt={media.name}
         className="object-contain w-full h-full"
       />
     ) : (
       <video
-        src={`media://${media.path}`}
+        src={`media://${media.id}`}
         controls={controls}
         className="object-contain bg-muted w-full h-full"
       />

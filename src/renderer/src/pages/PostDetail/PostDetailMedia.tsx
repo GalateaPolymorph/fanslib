@@ -8,6 +8,7 @@ import {
 } from "@renderer/components/ui/tooltip";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
+import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useOsDrag } from "@renderer/hooks";
 import { useRemoveMediaFromPost } from "@renderer/hooks/api/usePost";
 import { cn } from "@renderer/lib/utils";
@@ -30,6 +31,7 @@ export const PostDetailMedia = ({
 }: PostDetailMediaProps) => {
   const { toast } = useToast();
   const { startOsDrag } = useOsDrag();
+  const { settings } = useSettings();
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const removeMediaMutation = useRemoveMediaFromPost();
 
@@ -50,9 +52,15 @@ export const PostDetailMedia = ({
     }
   };
 
-  const revealInFinder = async (path: string) => {
+  const revealInFinder = async (media: Media) => {
     try {
-      await window.api["os:revealInFinder"](path);
+      if (settings?.libraryPath) {
+        const mediaPath =
+          settings.libraryPath +
+          (settings.libraryPath.endsWith("/") ? "" : "/") +
+          media.relativePath;
+        await window.api["os:revealInFinder"](mediaPath);
+      }
     } catch (error) {
       console.error("Failed to reveal in finder:", error);
       toast({
@@ -110,7 +118,7 @@ export const PostDetailMedia = ({
                   className="h-7 w-7 text-muted-foreground hover:text-accent-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
-                    revealInFinder(postMedia.media.path);
+                    revealInFinder(postMedia.media);
                   }}
                 >
                   <Folder size={14} />

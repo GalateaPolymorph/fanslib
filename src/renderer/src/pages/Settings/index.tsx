@@ -1,53 +1,30 @@
 import { ThemeSwitch } from "@renderer/components/ThemeSwitch";
 import { Separator } from "@renderer/components/ui/separator";
-import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButton";
-import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { FanslySettings } from "./FanslySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
 import { PostponeSettings } from "./PostponeSettings";
 
-export const SettingsPage = () => {
+export const Settings = () => {
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">Manage your library and application preferences.</p>
-      </div>
+    <div className="p-6 max-w-2xl">
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold">Settings</h2>
+          <p className="text-sm text-muted-foreground">Configure your application preferences</p>
+        </div>
 
-      <Separator />
+        <Separator />
 
-      <div className="space-y-16">
-        <SettingsSection
-          title="Library"
-          description="Configure your library location and organization preferences."
-        >
-          <LibraryPathInput />
-        </SettingsSection>
+        <LibraryPathInput />
+        <ThemeSwitch />
 
-        <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">
-          <ThemeSwitch />
-        </SettingsSection>
+        <Separator />
 
-        <SettingsSection
-          title="Fansly Analytics"
-          description="Configure your Fansly authentication for analytics data fetching."
-        >
-          <FanslySettings />
-        </SettingsSection>
+        <FanslySettings />
 
-        <SettingsSection
-          title="Postpone"
-          description="Configure your Postpone integration settings."
-        >
-          <PostponeSettings />
-        </SettingsSection>
+        <Separator />
 
-        <SettingsSection
-          title="Danger Zone"
-          description="These actions are destructive and cannot be undone."
-        >
-          <ResetDatabaseButton />
-        </SettingsSection>
+        <PostponeSettings />
       </div>
     </div>
   );

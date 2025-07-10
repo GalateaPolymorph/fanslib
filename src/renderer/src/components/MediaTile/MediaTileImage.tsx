@@ -12,7 +12,7 @@ export const MediaTileImage = ({ media, cover }: MediaTileImageProps) => {
 
   return (
     <img
-      src={imageError ? `media://${media.path}` : `thumbnail://${media.id}`}
+      src={imageError ? `media://${media.id}` : `thumbnail://${media.id}`}
       alt={media.name}
       className={cn("w-full h-full", cover ? "object-cover" : "object-contain")}
       onError={() => setImageError(true)}

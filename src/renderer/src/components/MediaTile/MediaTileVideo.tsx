@@ -40,7 +40,7 @@ export const MediaTileVideo = ({
       )}
       <video
         ref={videoRef}
-        src={`media://${media.path}`}
+        src={`media://${media.id}`}
         className={cn(
           "absolute inset-0 w-full h-full",
           cover ? "object-cover" : "object-contain",

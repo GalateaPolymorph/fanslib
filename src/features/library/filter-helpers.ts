@@ -60,11 +60,11 @@ export const buildFilterItemQuery = (
 
     case "filename":
       if (include) {
-        queryBuilder.andWhere("LOWER(media.path) LIKE LOWER(:filename" + paramIndex + ")", {
+        queryBuilder.andWhere("LOWER(media.name) LIKE LOWER(:filename" + paramIndex + ")", {
           [`filename${paramIndex}`]: `%${item.value}%`,
         });
       } else {
-        queryBuilder.andWhere("LOWER(media.path) NOT LIKE LOWER(:filename" + paramIndex + ")", {
+        queryBuilder.andWhere("LOWER(media.name) NOT LIKE LOWER(:filename" + paramIndex + ")", {
           [`filename${paramIndex}`]: `%${item.value}%`,
         });
       }

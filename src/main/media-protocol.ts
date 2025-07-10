@@ -1,4 +1,7 @@
 import { protocol } from "electron";
+import { getMediaById } from "../features/library/operations";
+import { convertRelativeToAbsolute } from "../features/library/path-utils";
+import { loadSettings } from "../features/settings/load";
 import { streamToResponse } from "./stream";
 
 export const registerMediaSchemeAsPrivileged = () => {
@@ -19,12 +22,37 @@ export const registerMediaSchemeAsPrivileged = () => {
 
 export const registerMediaProtocolHandler = () => {
   protocol.handle("media", async (req) => {
-    const pathToMedia = decodeURIComponent(new URL(req.url).href.replace("media:/", ""));
+    const url = new URL(req.url);
+    const requestParam = decodeURIComponent(url.hostname || url.pathname.replace(/^\/+/, ""));
 
     try {
       const { createReadStream, stat } = await import("fs");
       const { promisify } = await import("util");
       const statAsync = promisify(stat);
+
+      let pathToMedia: string;
+
+      // Check if the parameter is a UUID (media ID) or a file path
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        requestParam
+      );
+
+      if (isUuid) {
+        // It's a media ID, resolve to path
+        const media = await getMediaById(requestParam);
+        if (!media) {
+          return new Response("Media not found", { status: 404 });
+        }
+
+        const settings = await loadSettings();
+        pathToMedia = convertRelativeToAbsolute(media.relativePath, settings.libraryPath);
+        if (!pathToMedia.startsWith(settings.libraryPath)) {
+          return new Response("Invalid path", { status: 400 });
+        }
+      } else {
+        // It's a direct file path (backward compatibility)
+        pathToMedia = requestParam;
+      }
 
       const stats = await statAsync(pathToMedia);
       const fileSize = stats.size;

@@ -1,4 +1,5 @@
 import { Folder } from "lucide-react";
+import { Media } from "../../../../features/library/entity";
 import { Button } from "../../components/ui/button";
 import {
   Tooltip,
@@ -6,15 +7,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../components/ui/tooltip";
+import { useSettings } from "../../contexts/SettingsContext";
 
 type Props = {
-  path: string;
+  media: Media;
 };
 
-export const MediaDetailRevealInFinderButton = ({ path }: Props) => {
+export const MediaDetailRevealInFinderButton = ({ media }: Props) => {
+  const { settings } = useSettings();
+
   const handleRevealInFinder = async () => {
     try {
-      await window.api["os:revealInFinder"](path);
+      if (settings?.libraryPath) {
+        // Use relative path with library path
+        const resolvedPath =
+          settings.libraryPath +
+          (settings.libraryPath.endsWith("/") ? "" : "/") +
+          media.relativePath;
+        await window.api["os:revealInFinder"](resolvedPath);
+      }
     } catch (error) {
       console.error("Failed to reveal in finder:", error);
     }

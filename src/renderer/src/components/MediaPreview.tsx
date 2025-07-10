@@ -20,7 +20,7 @@ export const MediaPreview = memo(
     }, [onImageError]);
 
     const thumbnailUrl = `thumbnail://${media.id}`;
-    const mediaUrl = `media://${media.path}`;
+    const mediaUrl = `media://${media.id}`;
 
     return (
       <div className={cn("relative aspect-square bg-muted rounded-md overflow-hidden", className)}>

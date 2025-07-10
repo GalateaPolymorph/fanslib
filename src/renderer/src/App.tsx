@@ -20,7 +20,7 @@ import { ManagePage } from "./pages/Manage";
 import { MediaDetail } from "./pages/MediaDetail";
 import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
-import { SettingsPage } from "./pages/Settings";
+import { Settings } from "./pages/Settings";
 import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
 
@@ -63,16 +63,15 @@ const routes = [
       },
       {
         path: "/settings",
-        element: <SettingsPage />,
+        element: <Settings />,
       },
     ],
   },
 ];
 
 // Use hash router for production (file:// URLs) and browser router for development
-const router = process.env.NODE_ENV === 'production' 
-  ? createHashRouter(routes)
-  : createBrowserRouter(routes);
+const router =
+  process.env.NODE_ENV === "production" ? createHashRouter(routes) : createBrowserRouter(routes);
 
 const queryClient = new QueryClient({
   defaultOptions: {
