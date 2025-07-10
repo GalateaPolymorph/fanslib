@@ -58,7 +58,7 @@ export const PostActionSection = () => {
           Post to Reddit
         </Button>
 
-        <AutoPostButton onPostSuccess={handleMarkAsPosted} />
+        <AutoPostButton />
 
         {hasPostedToReddit && (
           <Button
