@@ -1,13 +1,9 @@
 {
   "mcpServers": {
-    "shrimp-task-manager": {
+    "fanslib-electron": {
       "command": "node",
-      "args": ["/Users/ameliaheydorn/dev/private/mcp-shrimp-task-manager/dist/index.js"],
-      "env": {
-        "DATA_DIR": "/Users/ameliaheydorn/dev/private/fanslib/.shrimp-tasks",
-        "TEMPLATES_USE": "en",
-        "ENABLE_GUI": "true"
-      }
+      "args": ["./mcp-server/dist/index.js"],
+      "env": {}
     }
   }
 }

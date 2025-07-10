@@ -1,3 +1,4 @@
+import { useSettings } from "@renderer/contexts/SettingsContext";
 import { channelKeys, useChannels } from "@renderer/hooks/api/useChannels";
 import { useCreatePost } from "@renderer/hooks/api/usePost";
 import { useRedgifsLookup } from "@renderer/hooks/api/useRedgifsUrl";
@@ -92,6 +93,7 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   const createPostMutation = useCreatePost();
   const queryClient = useQueryClient();
   const { copyToClipboard } = useClipboard();
+  const { settings } = useSettings();
 
   // Essential computed data
   const subredditIds = subreddits.map((s) => s.id);
@@ -255,12 +257,18 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     // Also reveal image in Finder if the selected media is an image
     if (postState.media && postState.media.type === "image") {
       try {
-        window.api["os:revealInFinder"](postState.media.path);
+        if (settings?.libraryPath) {
+          const mediaPath =
+            settings.libraryPath +
+            (settings.libraryPath.endsWith("/") ? "" : "/") +
+            postState.media.relativePath;
+          window.api["os:revealInFinder"](mediaPath);
+        }
       } catch (_error) {
         console.warn("Failed to reveal image in Finder:", _error);
       }
     }
-  }, [generateUrl, postState.media]);
+  }, [generateUrl, postState.media, settings]);
 
   const openRedgifsUrl = useCallback(() => {
     if (!postState.redgifsUrl) {
@@ -275,8 +283,14 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
       return;
     }
 
-    window.api["os:revealInFinder"](postState.media.path);
-  }, [postState.media]);
+    if (settings?.libraryPath) {
+      const mediaPath =
+        settings.libraryPath +
+        (settings.libraryPath.endsWith("/") ? "" : "/") +
+        postState.media.relativePath;
+      window.api["os:revealInFinder"](mediaPath);
+    }
+  }, [postState.media, settings]);
 
   const copyMediaNameToClipboard = useCallback(() => {
     if (!postState.media) {

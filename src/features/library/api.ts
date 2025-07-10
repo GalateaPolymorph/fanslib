@@ -55,16 +55,6 @@ export const handlers: LibraryHandlers = {
   onScanComplete: (_) => {
     //Stub
   },
-
-  migrateToRelativePaths: async (_, libraryPath: string) => {
-    const { migrateMediaToRelativePaths } = await import("./path-utils");
-    return migrateMediaToRelativePaths(libraryPath);
-  },
-
-  validateMigration: async (_, libraryPath: string) => {
-    const { validateMigration } = await import("./path-utils");
-    return validateMigration(libraryPath);
-  },
 };
 
 export const libraryHandlers = prefixNamespaceObject(namespace, handlers);

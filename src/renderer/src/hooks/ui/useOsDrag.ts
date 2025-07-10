@@ -21,14 +21,14 @@ export const useOsDrag = (): UseOsDragReturn => {
         throw new Error("Library path not configured");
       }
 
-      // Resolve media paths using the library path
+      // Resolve media paths using the library path and relativePath
       const filePaths = medias.map((media) => {
-        if (media.relativePath) {
-          // Use path joining to avoid issues with separators
-          return settings.libraryPath + (settings.libraryPath.endsWith('/') ? '' : '/') + media.relativePath;
-        }
-        // Fallback to absolute path
-        return media.path;
+        // Use path joining to avoid issues with separators
+        return (
+          settings.libraryPath +
+          (settings.libraryPath.endsWith("/") ? "" : "/") +
+          media.relativePath
+        );
       });
 
       await window.api["os:startDrag"](filePaths);

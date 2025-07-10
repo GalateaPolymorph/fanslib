@@ -1,8 +1,8 @@
 import { protocol } from "electron";
-import { streamToResponse } from "./stream";
 import { getMediaById } from "../features/library/operations";
-import { resolveMediaPath } from "../features/library/path-utils";
+import { convertRelativeToAbsolute } from "../features/library/path-utils";
 import { loadSettings } from "../features/settings/load";
+import { streamToResponse } from "./stream";
 
 export const registerMediaSchemeAsPrivileged = () => {
   protocol.registerSchemesAsPrivileged([
@@ -33,17 +33,19 @@ export const registerMediaProtocolHandler = () => {
       let pathToMedia: string;
 
       // Check if the parameter is a UUID (media ID) or a file path
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestParam);
-      
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        requestParam
+      );
+
       if (isUuid) {
         // It's a media ID, resolve to path
         const media = await getMediaById(requestParam);
         if (!media) {
           return new Response("Media not found", { status: 404 });
         }
-        
+
         const settings = await loadSettings();
-        pathToMedia = resolveMediaPath(media, settings.libraryPath);
+        pathToMedia = convertRelativeToAbsolute(media.relativePath, settings.libraryPath);
       } else {
         // It's a direct file path (backward compatibility)
         pathToMedia = requestParam;

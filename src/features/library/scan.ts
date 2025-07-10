@@ -5,23 +5,31 @@ import path from "path";
 import { db } from "../../lib/db";
 import { getVideoDuration } from "../../lib/video";
 import { walkDirectory } from "../../lib/walkDirectory";
+import { loadSettings } from "../settings/load";
 import { FileScanResult, LibraryScanProgress, LibraryScanResult } from "./api-type";
 import { Media } from "./entity";
 import { createMedia, deleteMedia, fetchMediaByPath, updateMedia } from "./operations";
-import { resolveMediaPath } from "./path-utils";
+import { convertRelativeToAbsolute } from "./path-utils";
 import { generateThumbnail, thumbnailExists } from "./thumbnail";
 import { repairUppercaseExtension } from "./uppercase-extensions";
-import { loadSettings } from "../settings/load";
 
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov", ".avi", ".mkv"]);
+
+// Helper function to convert absolute path to relative path
+const convertToRelativePath = (absolutePath: string, libraryPath: string): string => {
+  if (!path.isAbsolute(absolutePath)) {
+    return absolutePath;
+  }
+  return path.relative(libraryPath, absolutePath);
+};
 
 /**
  * Try to find a media entry that matches the given file stats
  * This helps identify renamed files by matching size and creation time
  * Only considers it a match if the original file no longer exists at its old location
  */
-const findMediaByStats = async (stats: Stats) => {
+const findMediaByStats = async (stats: Stats, libraryPath: string) => {
   // Find all media with matching size and creation date
   const mediaRepo = (await db()).getRepository(Media);
   const potentialMatches = await mediaRepo.find({
@@ -36,8 +44,7 @@ const findMediaByStats = async (stats: Stats) => {
     try {
       // Check if the original file still exists using path resolution
       try {
-        const settings = await loadSettings();
-        const resolvedPath = resolveMediaPath(media, settings.libraryPath);
+        const resolvedPath = convertRelativeToAbsolute(media.relativePath, libraryPath);
         await fs.access(resolvedPath);
         // If we can access the file, it still exists, so this is not our moved file
         continue;
@@ -46,7 +53,7 @@ const findMediaByStats = async (stats: Stats) => {
         return media;
       }
     } catch (error) {
-      console.error(`Failed to process potential match ${media.path}:`, error);
+      console.error(`Failed to process potential match ${media.relativePath}:`, error);
     }
   }
 
@@ -79,25 +86,24 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
     throw new Error(`Unsupported file type: ${filePath}`);
   }
 
+  const settings = await loadSettings();
+  const relativePath = convertToRelativePath(filePath, settings.libraryPath);
   const stats = await fs.stat(filePath);
-  let existingMedia = await fetchMediaByPath(filePath);
+  let existingMedia = await fetchMediaByPath(relativePath);
 
   if (!existingMedia) {
-    existingMedia = await findMediaByStats(stats);
+    existingMedia = await findMediaByStats(stats, settings.libraryPath);
   }
 
   if (!existingMedia) {
-    const media: Omit<Media, "id" | "createdAt" | "updatedAt"> = {
-      path: filePath,
+    const media = {
+      relativePath,
       type,
       name: path.basename(filePath),
       size: stats.size,
       fileCreationDate: stats.birthtime,
       fileModificationDate: stats.mtime,
-      postMedia: existingMedia?.postMedia || [],
-      shoots: [],
       duration: type === "video" ? await getVideoDuration(filePath) : undefined,
-      mediaTags: [],
     };
 
     const newMedia = await createMedia(media);
@@ -113,7 +119,7 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
   const hasThumbnail = await thumbnailExists(existingMedia.id);
 
   const needsUpdate =
-    existingMedia.path !== filePath ||
+    existingMedia.relativePath !== relativePath ||
     !isSameSecond(stats.mtime, existingMedia.fileModificationDate) ||
     existingMedia.size !== stats.size ||
     !hasThumbnail;
@@ -124,7 +130,7 @@ export const scanFile = async (filePath: string): Promise<FileScanResult> => {
 
   const updatedMedia = await updateMedia(existingMedia.id, {
     ...existingMedia,
-    path: filePath,
+    relativePath,
     name: path.basename(filePath),
     fileModificationDate: stats.mtime,
     size: stats.size,
@@ -236,9 +242,14 @@ class LibraryScanner {
           continue;
         }
 
+        // Skip if media doesn't have relativePath set (needs migration)
+        if (!media.relativePath) {
+          continue;
+        }
+
         // Check if the file still exists using path resolution
         try {
-          const resolvedPath = resolveMediaPath(media, settings.libraryPath);
+          const resolvedPath = convertRelativeToAbsolute(media.relativePath, settings.libraryPath);
           await fs.access(resolvedPath);
           // File exists, keep it
           continue;

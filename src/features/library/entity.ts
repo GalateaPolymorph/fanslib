@@ -20,10 +20,7 @@ export class Media {
   id: string;
 
   @Column({ type: "varchar", unique: true })
-  path: string;
-
-  @Column({ type: "varchar", nullable: true })
-  relativePath?: string;
+  relativePath!: string;
 
   @Column("varchar")
   type!: MediaType;
