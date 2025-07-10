@@ -28,6 +28,7 @@ const methods = [
   "clearFanslyCredentials",
   "importDatabase",
   "validateImportedDatabase",
+  "toggleSfwMode",
 ] as const;
 export type SettingsHandlers = {
   load: (_: any) => Promise<Settings>;
@@ -38,6 +39,7 @@ export type SettingsHandlers = {
   clearFanslyCredentials: (_: any) => Promise<void>;
   importDatabase: (_: any, sourcePath: string) => Promise<DatabaseImportResult>;
   validateImportedDatabase: (_: any, libraryPath: string) => Promise<ValidationResult>;
+  toggleSfwMode: (_: any) => Promise<Settings>;
 };
 
 export const namespace = "settings" as const;

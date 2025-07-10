@@ -1,11 +1,12 @@
 import "reflect-metadata";
 
-import { app, BrowserWindow, session, shell } from "electron";
+import { app, BrowserWindow, globalShortcut, session, shell } from "electron";
 import { join } from "path";
 import icon from "../../assets/icons/icon.png?asset";
 import { startCronJobs, stopCronJobs } from "../features/_common/cron";
 import { initializeAnalyticsAggregates } from "../features/analytics/operations";
 import { loadChannelTypeFixtures } from "../features/channels/fixtures";
+import { toggleSfwMode } from "../features/settings/toggle-sfw-mode";
 import { db } from "../lib/db";
 import { IpcRegistry } from "./IpcRegistry";
 import { registerMediaProtocolHandler, registerMediaSchemeAsPrivileged } from "./media-protocol";
@@ -65,6 +66,8 @@ const createWindow = () => {
   } else {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
+
+  return mainWindow;
 };
 
 // This method will be called when Electron has finished
@@ -93,7 +96,18 @@ app.whenReady().then(async () => {
   ipcRegistry.registerAll();
 
   // Create window
-  createWindow();
+  const mainWindow = createWindow();
+
+  // Register global hotkey for SFW mode toggle
+  globalShortcut.register("CommandOrControl+Shift+S", async () => {
+    try {
+      await toggleSfwMode();
+      // Notify renderer that settings have changed
+      mainWindow.webContents.send("settings-changed");
+    } catch (error) {
+      console.error("Failed to toggle SFW mode:", error);
+    }
+  });
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
@@ -104,7 +118,12 @@ app.whenReady().then(async () => {
 
 app.on("window-all-closed", () => {
   stopCronJobs();
+  globalShortcut.unregisterAll();
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
 });

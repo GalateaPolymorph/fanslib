@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Media } from "../../../features/library/entity";
+import { useSfwMode } from "../hooks/ui/useSfwMode";
 import { cn } from "../lib/utils";
 
 type MediaViewProps = {
@@ -15,18 +16,24 @@ export const MediaView = ({
   controls = false,
   linkToMediaDetail = false,
 }: MediaViewProps) => {
+  const { handleMouseEnter, handleMouseLeave, getBlurClassName } = useSfwMode();
+
   const mediaContent =
     media.type === "image" ? (
       <img
         src={`media://${media.id}`}
         alt={media.name}
-        className="object-contain w-full h-full"
+        className={getBlurClassName("object-contain w-full h-full")}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       />
     ) : (
       <video
         src={`media://${media.id}`}
         controls={controls}
-        className="object-contain bg-muted w-full h-full"
+        className={getBlurClassName("object-contain bg-muted w-full h-full")}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       />
     );
 
