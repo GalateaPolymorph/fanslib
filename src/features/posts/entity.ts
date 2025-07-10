@@ -68,6 +68,9 @@ export class Post {
   @Column("varchar", { nullable: true })
   fanslyStatisticsId?: string;
 
+  @Column("boolean", { default: false })
+  fypPromotion: boolean;
+
   @Column({
     type: "varchar",
     enum: ["draft", "scheduled", "posted"],

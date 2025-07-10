@@ -8,6 +8,7 @@ import { PostDetailCaptionInput } from "@renderer/pages/PostDetail/PostDetailCap
 import { PostDetailDateInput } from "@renderer/pages/PostDetail/PostDetailDateInput";
 import { PostDetailDeleteButton } from "@renderer/pages/PostDetail/PostDetailDeleteButton";
 import { PostDetailFanslyStatisticsInput } from "@renderer/pages/PostDetail/PostDetailFanslyStatisticsInput";
+import { PostDetailFypPromotionSwitch } from "@renderer/pages/PostDetail/PostDetailFypPromotionCheckbox";
 import { PostDetailMedia } from "@renderer/pages/PostDetail/PostDetailMedia";
 import { PostDetailNavigation } from "@renderer/pages/PostDetail/PostDetailNavigation";
 import { PostDetailPostponeButton } from "@renderer/pages/PostDetail/PostDetailPostponeButton";
@@ -114,6 +115,11 @@ export const PostDetailPage = () => {
                       />
                     </button>
                   ))}
+                </div>
+              )}
+              {(post.channel.type?.id || post.channel.typeId) === "fansly" && (
+                <div className="mt-4">
+                  <PostDetailFypPromotionSwitch post={post} />
                 </div>
               )}
               <PostDetailPostponeButton post={post} />

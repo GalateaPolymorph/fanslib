@@ -19,6 +19,7 @@ export type PostCreateData = {
   url?: string;
   fanslyStatisticsId?: string;
   subredditId?: string;
+  fypPromotion?: boolean;
 };
 
 export const methods = [

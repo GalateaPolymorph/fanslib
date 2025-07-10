@@ -32,6 +32,10 @@ export const createPost = async (postData: PostCreateData, mediaIds: string[]): 
     ...postData,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    fypPromotion:
+      typeof postData.fypPromotion === "undefined" && channel.type.id === CHANNEL_TYPES.fansly.id
+        ? true
+        : postData.fypPromotion,
   });
 
   await postRepo.save(post);
