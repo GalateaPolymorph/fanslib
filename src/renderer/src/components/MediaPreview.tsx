@@ -1,5 +1,6 @@
 import { memo, useCallback, useState } from "react";
 import { Media } from "../../../features/library/entity";
+import { useSfwMode } from "../hooks/ui/useSfwMode";
 import { cn } from "../lib/utils";
 
 export type MediaPreviewProps = {
@@ -13,6 +14,7 @@ export const MediaPreview = memo(
   ({ media, className, onImageError, imageError: controlledImageError }: MediaPreviewProps) => {
     const [localImageError, setLocalImageError] = useState(false);
     const imageError = controlledImageError ?? localImageError;
+    const { handleMouseEnter, handleMouseLeave, getBlurClassName } = useSfwMode();
 
     const handleImageError = useCallback(() => {
       setLocalImageError(true);
@@ -23,11 +25,15 @@ export const MediaPreview = memo(
     const mediaUrl = `media://${media.id}`;
 
     return (
-      <div className={cn("relative aspect-square bg-muted rounded-md overflow-hidden", className)}>
+      <div
+        className={cn("relative aspect-square bg-muted rounded-md overflow-hidden", className)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <img
           src={imageError ? mediaUrl : thumbnailUrl}
           alt={media.name}
-          className="w-full h-full object-contain"
+          className={getBlurClassName("w-full h-full object-contain")}
           onError={handleImageError}
           loading="lazy"
           draggable={false}

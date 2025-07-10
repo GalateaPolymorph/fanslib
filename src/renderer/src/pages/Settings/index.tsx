@@ -3,6 +3,7 @@ import { Separator } from "@renderer/components/ui/separator";
 import { FanslySettings } from "./FanslySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
 import { PostponeSettings } from "./PostponeSettings";
+import { SfwModeSettings } from "./SfwModeSettings";
 
 export const Settings = () => {
   return (
@@ -17,6 +18,10 @@ export const Settings = () => {
 
         <LibraryPathInput />
         <ThemeSwitch />
+
+        <Separator />
+
+        <SfwModeSettings />
 
         <Separator />
 

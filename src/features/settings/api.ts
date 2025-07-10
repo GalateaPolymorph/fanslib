@@ -9,6 +9,7 @@ import {
   loadFanslyCredentials,
   saveFanslyCredentials,
 } from "./secure-storage";
+import { toggleSfwMode } from "./toggle-sfw-mode";
 
 export const handlers: SettingsHandlers = {
   load: (_: any) => loadSettings(),
@@ -19,6 +20,7 @@ export const handlers: SettingsHandlers = {
   clearFanslyCredentials: (_: any) => clearFanslyCredentials(),
   importDatabase: (_: any, sourcePath: string) => importDatabase(sourcePath),
   validateImportedDatabase: (_: any, libraryPath: string) => validateImportedDatabase(libraryPath),
+  toggleSfwMode: (_: any) => toggleSfwMode(),
 };
 
 export const settingsHandlers = prefixNamespaceObject(namespace, handlers);

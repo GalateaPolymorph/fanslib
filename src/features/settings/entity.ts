@@ -4,6 +4,10 @@ export type Settings = {
   readonly blueskyUsername?: string;
   readonly postponeToken?: string;
   readonly blueskyDefaultExpiryDays?: number;
+  readonly sfwMode: boolean;
+  readonly sfwBlurIntensity: number;
+  readonly sfwDefaultMode: "off" | "on" | "remember";
+  readonly sfwHoverDelay: number;
 };
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = {
@@ -12,4 +16,8 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   blueskyUsername: "",
   postponeToken: "",
   blueskyDefaultExpiryDays: 7,
+  sfwMode: false,
+  sfwBlurIntensity: 5,
+  sfwDefaultMode: "off",
+  sfwHoverDelay: 300,
 } as const;

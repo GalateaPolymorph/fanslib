@@ -207,3 +207,50 @@
     }
   }
 }
+
+/* SFW Mode Blur Effects */
+@layer utilities {
+  .sfw-blur-1 {
+    filter: blur(2px);
+  }
+
+  .sfw-blur-2 {
+    filter: blur(4px);
+  }
+
+  .sfw-blur-3 {
+    filter: blur(6px);
+  }
+
+  .sfw-blur-4 {
+    filter: blur(8px);
+  }
+
+  .sfw-blur-5 {
+    filter: blur(10px);
+  }
+
+  .sfw-blur-6 {
+    filter: blur(12px);
+  }
+
+  .sfw-blur-7 {
+    filter: blur(14px);
+  }
+
+  .sfw-blur-8 {
+    filter: blur(16px);
+  }
+
+  .sfw-blur-9 {
+    filter: blur(18px);
+  }
+
+  .sfw-blur-10 {
+    filter: blur(20px);
+  }
+
+  .sfw-blur-transition {
+    transition: filter 200ms ease-in-out;
+  }
+}
