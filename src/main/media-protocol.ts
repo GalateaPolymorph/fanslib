@@ -46,6 +46,9 @@ export const registerMediaProtocolHandler = () => {
 
         const settings = await loadSettings();
         pathToMedia = convertRelativeToAbsolute(media.relativePath, settings.libraryPath);
+        if (!pathToMedia.startsWith(settings.libraryPath)) {
+          return new Response("Invalid path", { status: 400 });
+        }
       } else {
         // It's a direct file path (backward compatibility)
         pathToMedia = requestParam;

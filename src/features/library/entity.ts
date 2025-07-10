@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -19,6 +20,7 @@ export class Media {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Index(["relativePath"])
   @Column({ type: "varchar", unique: true })
   relativePath!: string;
 
