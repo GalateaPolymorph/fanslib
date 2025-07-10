@@ -1,0 +1,20 @@
+{
+  "name": "fanslib-electron-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for FansLib Electron automation",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "playwright": "^1.53.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "typescript": "^5.5.2"
+  }
+}

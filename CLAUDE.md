@@ -85,6 +85,30 @@ Each feature module follows a consistent pattern:
 - **Routing**: React Router
 - **Styling**: Tailwind CSS
 
+## MCP Server for Electron Automation
+
+A custom MCP server is available in `mcp-server/` that allows Claude Code to interact with the FansLib Electron application programmatically. This enables automated validation of changes.
+
+### Setup MCP Server
+
+```bash
+cd mcp-server
+./setup.sh
+```
+
+### Available Tools
+
+- `electron_launch` - Launch the FansLib app
+- `electron_close` - Close the app
+- `electron_screenshot` - Take screenshots
+- `electron_click` - Click elements
+- `electron_type` - Type text
+- `electron_wait` - Wait for elements
+- `electron_evaluate` - Execute JavaScript
+- `electron_get_text` - Get text content
+
+See `mcp-server/README.md` for full documentation.
+
 ## Important Notes
 
 - The app manages sensitive adult content libraries locally

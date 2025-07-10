@@ -189,6 +189,8 @@ export const useUpdateSubreddit = () => {
         memberCount?: number;
         verificationStatus?: VerificationStatus;
         eligibleMediaFilter?: any;
+        defaultFlair?: string;
+        captionPrefix?: string;
       };
     }) => {
       const result = await window.api["channel:subreddit-update"](subredditId, updates);

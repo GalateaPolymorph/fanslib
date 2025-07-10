@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, createHashRouter } from "react-router-dom";
 import { NotificationListener } from "./components/NotificationListener";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
@@ -24,7 +24,7 @@ import { SettingsPage } from "./pages/Settings";
 import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
 
-const router = createBrowserRouter([
+const routes = [
   {
     path: "/",
     element: <Layout />,
@@ -67,7 +67,12 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+// Use hash router for production (file:// URLs) and browser router for development
+const router = process.env.NODE_ENV === 'production' 
+  ? createHashRouter(routes)
+  : createBrowserRouter(routes);
 
 const queryClient = new QueryClient({
   defaultOptions: {
