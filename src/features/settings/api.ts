@@ -1,5 +1,6 @@
 import { prefixNamespaceObject } from "../../lib/namespace";
 import { namespace, SettingsHandlers } from "./api-type";
+import { importDatabase, validateImportedDatabase } from "./import";
 import { loadSettings } from "./load";
 import { resetDatabase } from "./reset";
 import { saveSettings } from "./save";
@@ -16,6 +17,8 @@ export const handlers: SettingsHandlers = {
   saveFanslyCredentials: (_: any, credentials) => saveFanslyCredentials(credentials),
   loadFanslyCredentials: (_: any) => loadFanslyCredentials(),
   clearFanslyCredentials: (_: any) => clearFanslyCredentials(),
+  importDatabase: (_: any, sourcePath: string) => importDatabase(sourcePath),
+  validateImportedDatabase: (_: any, libraryPath: string) => validateImportedDatabase(libraryPath),
 };
 
 export const settingsHandlers = prefixNamespaceObject(namespace, handlers);

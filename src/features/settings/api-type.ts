@@ -8,6 +8,17 @@ type FanslyCredentials = {
   fanslyClientId?: string;
 };
 
+export type DatabaseImportResult = {
+  success: boolean;
+  error?: string;
+};
+
+export type ValidationResult = {
+  totalFiles: number;
+  missingFiles: string[];
+  validFiles: number;
+};
+
 const methods = [
   "load",
   "save",
@@ -15,6 +26,8 @@ const methods = [
   "saveFanslyCredentials",
   "loadFanslyCredentials",
   "clearFanslyCredentials",
+  "importDatabase",
+  "validateImportedDatabase",
 ] as const;
 export type SettingsHandlers = {
   load: (_: any) => Promise<Settings>;
@@ -23,6 +36,8 @@ export type SettingsHandlers = {
   saveFanslyCredentials: (_: any, credentials: Partial<FanslyCredentials>) => Promise<void>;
   loadFanslyCredentials: (_: any) => Promise<FanslyCredentials>;
   clearFanslyCredentials: (_: any) => Promise<void>;
+  importDatabase: (_: any, sourcePath: string) => Promise<DatabaseImportResult>;
+  validateImportedDatabase: (_: any, libraryPath: string) => Promise<ValidationResult>;
 };
 
 export const namespace = "settings" as const;

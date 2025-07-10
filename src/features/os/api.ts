@@ -1,8 +1,8 @@
-import { clipboard, nativeImage, shell } from "electron";
+import { clipboard, dialog, nativeImage, shell } from "electron";
 import fs from "fs";
 import path from "path";
 import { prefixNamespaceObject } from "../../lib/namespace";
-import { namespace, OsHandlers } from "./api-type";
+import { namespace, OsHandlers, ShowOpenDialogOptions } from "./api-type";
 
 export const handlers: OsHandlers = {
   revealInFinder: (_, filePath) => {
@@ -75,6 +75,18 @@ export const handlers: OsHandlers = {
       return { success: true, fileCount: validFiles.length };
     } catch (error) {
       console.error("Failed to start drag:", error);
+      throw error;
+    }
+  },
+  showOpenDialog: async (_, options: ShowOpenDialogOptions) => {
+    try {
+      const result = await dialog.showOpenDialog(options);
+      return {
+        canceled: result.canceled,
+        filePaths: result.filePaths || []
+      };
+    } catch (error) {
+      console.error("Failed to show open dialog:", error);
       throw error;
     }
   },
