@@ -39,7 +39,10 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   };
 
   useEffect(() => {
+    console.log("🔍 [DEBUG] SettingsContext: Loading settings...");
     window.api["settings:load"]().then((loadedSettings) => {
+      console.log("🔍 [DEBUG] SettingsContext: Loaded settings:", loadedSettings);
+      console.log("🔍 [DEBUG] SettingsContext: Library path:", loadedSettings?.libraryPath);
       setSettings(loadedSettings);
       setLoading(false);
     });

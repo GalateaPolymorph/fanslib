@@ -5,9 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsc && node dist/index.js"
+    "build": "tsc"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0",

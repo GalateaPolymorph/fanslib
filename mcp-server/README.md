@@ -5,6 +5,7 @@ This MCP server allows Claude Code to interact with your FansLib Electron applic
 ## Setup
 
 1. **Install dependencies and build:**
+
    ```bash
    cd mcp-server
    ./setup.sh
@@ -16,7 +17,7 @@ This MCP server allows Claude Code to interact with your FansLib Electron applic
      "mcpServers": {
        "fanslib-electron": {
          "command": "node",
-         "args": ["/path/to/your/fanslib/mcp-server/dist/index.js"],
+         "args": ["./mcp-server/dist/index.js"],
          "env": {}
        }
      }
@@ -26,43 +27,51 @@ This MCP server allows Claude Code to interact with your FansLib Electron applic
 ## Available Tools
 
 ### `electron_launch`
+
 - **Description**: Launch the FansLib Electron application
 - **Parameters**:
   - `build_first` (boolean, default: true): Whether to build the app first
 
 ### `electron_close`
+
 - **Description**: Close the FansLib Electron application
 
 ### `electron_screenshot`
+
 - **Description**: Take a screenshot of the Electron app
 - **Parameters**:
   - `path` (string, default: "screenshot.png"): Path to save the screenshot
   - `full_page` (boolean, default: true): Take a full page screenshot
 
 ### `electron_click`
+
 - **Description**: Click an element in the Electron app
 - **Parameters**:
   - `selector` (string): CSS selector for the element to click
   - `text` (string): Text content to find and click
 
 ### `electron_type`
+
 - **Description**: Type text into an input field
 - **Parameters**:
   - `selector` (string, required): CSS selector for the input field
   - `text` (string, required): Text to type
 
 ### `electron_wait`
+
 - **Description**: Wait for an element to appear
 - **Parameters**:
   - `selector` (string, required): CSS selector to wait for
   - `timeout` (number, default: 5000): Timeout in milliseconds
 
 ### `electron_evaluate`
+
 - **Description**: Execute JavaScript in the Electron renderer process
 - **Parameters**:
   - `code` (string, required): JavaScript code to execute
 
 ### `electron_get_text`
+
 - **Description**: Get text content from an element
 - **Parameters**:
   - `selector` (string, required): CSS selector for the element

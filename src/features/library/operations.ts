@@ -5,6 +5,8 @@ import { PaginatedResponse } from "../_common/pagination";
 import { GetAllMediaParams, UpdateMediaPayload } from "./api-type";
 import { Media } from "./entity";
 import { buildFilterGroupQuery } from "./filter-helpers";
+import { convertAbsoluteToRelative } from "./path-utils";
+import { loadSettings } from "../settings/load";
 
 export const createMedia = async ({
   path,
@@ -26,8 +28,20 @@ export const createMedia = async ({
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 
+  // Generate relative path from absolute path
+  let relativePath: string | undefined;
+  try {
+    const settings = await loadSettings();
+    if (settings.libraryPath) {
+      relativePath = convertAbsoluteToRelative(path, settings.libraryPath);
+    }
+  } catch (error) {
+    console.warn("Could not convert to relative path:", error);
+  }
+
   const media = repository.create({
     path,
+    relativePath,
     name,
     type,
     size,
@@ -193,7 +207,10 @@ export const deleteMedia = async (id: string, deleteFile = false) => {
   // Delete the file if requested
   if (deleteFile && media) {
     try {
-      await fs.unlink(media.path);
+      const settings = await loadSettings();
+      const { resolveMediaPath } = await import("./path-utils");
+      const filePath = resolveMediaPath(media, settings.libraryPath);
+      await fs.unlink(filePath);
     } catch (error) {
       console.error("Failed to delete file:", error);
       // Don't throw since we already deleted from DB

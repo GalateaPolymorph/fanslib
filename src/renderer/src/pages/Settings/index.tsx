@@ -4,6 +4,7 @@ import { ResetDatabaseButton } from "@renderer/pages/Settings/ResetDatabaseButto
 import { SettingsSection } from "@renderer/pages/Settings/SettingsSection";
 import { FanslySettings } from "./FanslySettings";
 import { LibraryPathInput } from "./LibraryPathInput";
+import { PathMigration } from "./PathMigration";
 import { PostponeSettings } from "./PostponeSettings";
 
 export const SettingsPage = () => {
@@ -21,7 +22,10 @@ export const SettingsPage = () => {
           title="Library"
           description="Configure your library location and organization preferences."
         >
-          <LibraryPathInput />
+          <div className="space-y-4">
+            <LibraryPathInput />
+            <PathMigration />
+          </div>
         </SettingsSection>
 
         <SettingsSection title="Appearance" description="Customize how FansLib looks and feels.">

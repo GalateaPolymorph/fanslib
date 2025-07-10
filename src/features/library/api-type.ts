@@ -73,6 +73,19 @@ export type UpdateMediaPayload = Partial<
   Omit<Media, "id" | "createdAt" | "updatedAt" | "postMedia">
 >;
 
+export type PathMigrationResult = {
+  readonly success: boolean;
+  readonly migratedCount: number;
+  readonly errors: ValidationResult[];
+};
+
+export type ValidationResult = {
+  readonly type: "error" | "warning";
+  readonly message: string;
+  readonly mediaId?: string;
+  readonly path?: string;
+};
+
 const methods = [
   "scan",
   "scanFile",
@@ -83,6 +96,8 @@ const methods = [
   "adjacentMedia",
   "onScanProgress",
   "onScanComplete",
+  "migrateToRelativePaths",
+  "validateMigration",
 ] as const;
 
 export type LibraryHandlers = {
@@ -102,6 +117,8 @@ export type LibraryHandlers = {
     listener: (_: unknown, progress: LibraryScanProgress) => void
   ) => void;
   onScanComplete: (_: unknown, listener: (_: unknown, result: LibraryScanResult) => void) => void;
+  migrateToRelativePaths: (_: unknown, libraryPath: string) => Promise<PathMigrationResult>;
+  validateMigration: (_: unknown, libraryPath: string) => Promise<ValidationResult[]>;
 };
 
 export const namespace = "library" as const;

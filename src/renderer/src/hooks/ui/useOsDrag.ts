@@ -1,4 +1,5 @@
 import { useToast } from "@renderer/components/ui/use-toast";
+import { useSettings } from "@renderer/contexts/SettingsContext";
 import { Media } from "../../../../features/library/entity";
 
 type UseOsDragReturn = {
@@ -8,6 +9,7 @@ type UseOsDragReturn = {
 
 export const useOsDrag = (): UseOsDragReturn => {
   const { toast } = useToast();
+  const { settings } = useSettings();
 
   const startOsDrag = async (medias: Media[]): Promise<void> => {
     try {
@@ -15,7 +17,20 @@ export const useOsDrag = (): UseOsDragReturn => {
         return;
       }
 
-      const filePaths = medias.map((media) => media.path);
+      if (!settings?.libraryPath) {
+        throw new Error("Library path not configured");
+      }
+
+      // Resolve media paths using the library path
+      const filePaths = medias.map((media) => {
+        if (media.relativePath) {
+          // Use path joining to avoid issues with separators
+          return settings.libraryPath + (settings.libraryPath.endsWith('/') ? '' : '/') + media.relativePath;
+        }
+        // Fallback to absolute path
+        return media.path;
+      });
+
       await window.api["os:startDrag"](filePaths);
     } catch (error) {
       console.error("Failed to start OS drag:", error);

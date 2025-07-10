@@ -22,6 +22,9 @@ export class Media {
   @Column({ type: "varchar", unique: true })
   path: string;
 
+  @Column({ type: "varchar", nullable: true })
+  relativePath?: string;
+
   @Column("varchar")
   type!: MediaType;
 

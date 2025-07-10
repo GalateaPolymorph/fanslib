@@ -8,8 +8,10 @@ import { walkDirectory } from "../../lib/walkDirectory";
 import { FileScanResult, LibraryScanProgress, LibraryScanResult } from "./api-type";
 import { Media } from "./entity";
 import { createMedia, deleteMedia, fetchMediaByPath, updateMedia } from "./operations";
+import { resolveMediaPath } from "./path-utils";
 import { generateThumbnail, thumbnailExists } from "./thumbnail";
 import { repairUppercaseExtension } from "./uppercase-extensions";
+import { loadSettings } from "../settings/load";
 
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov", ".avi", ".mkv"]);
@@ -32,9 +34,11 @@ const findMediaByStats = async (stats: Stats) => {
   // Check each potential match
   for (const media of potentialMatches) {
     try {
-      // Check if the original file still exists
+      // Check if the original file still exists using path resolution
       try {
-        await fs.access(media.path);
+        const settings = await loadSettings();
+        const resolvedPath = resolveMediaPath(media, settings.libraryPath);
+        await fs.access(resolvedPath);
         // If we can access the file, it still exists, so this is not our moved file
         continue;
       } catch {
@@ -225,15 +229,17 @@ class LibraryScanner {
       }
 
       // Cleanup: remove files that no longer exist and weren't processed
+      const settings = await loadSettings();
       for (const media of existingMedia) {
         // Skip if we've already processed this media (it was moved)
         if (processedMediaIds.has(media.id)) {
           continue;
         }
 
-        // Check if the file still exists at its original location
+        // Check if the file still exists using path resolution
         try {
-          await fs.access(media.path);
+          const resolvedPath = resolveMediaPath(media, settings.libraryPath);
+          await fs.access(resolvedPath);
           // File exists, keep it
           continue;
         } catch {

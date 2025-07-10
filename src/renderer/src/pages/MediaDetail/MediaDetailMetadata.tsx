@@ -11,16 +11,24 @@ export const MediaDetailMetadata = ({ media }: Props) => {
   const [relativePath, setRelativePath] = useState<string>("");
 
   useEffect(() => {
-    const getLibraryPath = async () => {
-      const settings = await window.api["settings:load"]();
-      const libraryPath = settings.libraryPath;
-      if (media.path.startsWith(libraryPath)) {
-        setRelativePath(media.path.slice(libraryPath.length + 1));
-      }
-    };
+    // Use the stored relative path if available, otherwise compute it
+    if (media.relativePath) {
+      setRelativePath(media.relativePath);
+    } else {
+      const getLibraryPath = async () => {
+        const settings = await window.api["settings:load"]();
+        const libraryPath = settings.libraryPath;
+        if (media.path.startsWith(libraryPath)) {
+          setRelativePath(media.path.slice(libraryPath.length + 1));
+        } else {
+          // Fallback to showing just the filename if not within library
+          setRelativePath(media.name);
+        }
+      };
 
-    getLibraryPath();
-  }, [media.path]);
+      getLibraryPath();
+    }
+  }, [media.path, media.relativePath, media.name]);
 
   return (
     <div className="grid grid-cols-[1fr_3fr] gap-x-4 gap-y-2 text-sm">
