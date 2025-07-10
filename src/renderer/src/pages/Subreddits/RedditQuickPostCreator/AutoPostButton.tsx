@@ -5,7 +5,7 @@ import { Bot, Loader2 } from "lucide-react";
 import { PostToRedditPayload, RedditPostResult } from "../../../../../features/automation/api-type";
 import { useRedditQuickPostContext } from "./RedditQuickPostContext";
 
-const useAutomatedRedditPost = () => {
+const useAutomatedRedditPost = (generateRandomPost: () => Promise<void>) => {
   const { toast } = useToast();
 
   return useMutation<RedditPostResult, Error, PostToRedditPayload>({
@@ -16,11 +16,14 @@ const useAutomatedRedditPost = () => {
       }
       return result;
     },
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       toast({
         title: "Automated post successful",
         description: result.url ? `Posted to Reddit: ${result.url}` : "Post completed successfully",
       });
+      
+      // Generate a new random post after successful auto-post
+      await generateRandomPost();
     },
     onError: (error) => {
       toast({
@@ -32,13 +35,11 @@ const useAutomatedRedditPost = () => {
   });
 };
 
-export type AutoPostButtonProps = {
-  onPostSuccess?: () => void;
-};
+export type AutoPostButtonProps = Record<string, never>;
 
-export const AutoPostButton = ({ onPostSuccess }: AutoPostButtonProps) => {
-  const { postState } = useRedditQuickPostContext();
-  const automatedPostMutation = useAutomatedRedditPost();
+export const AutoPostButton = () => {
+  const { postState, generateRandomPost } = useRedditQuickPostContext();
+  const automatedPostMutation = useAutomatedRedditPost(generateRandomPost);
 
   const { subreddit, media, caption, isUrlReady, isLoading } = postState;
   const isReadyToPost = subreddit && media && caption.trim();
@@ -59,8 +60,6 @@ export const AutoPostButton = ({ onPostSuccess }: AutoPostButtonProps) => {
 
     console.log("Automated post payload:", payload);
     automatedPostMutation.mutate(payload);
-
-    onPostSuccess?.();
   };
 
   return (
@@ -75,7 +74,7 @@ export const AutoPostButton = ({ onPostSuccess }: AutoPostButtonProps) => {
       ) : (
         <Bot className="h-5 w-5" />
       )}
-      {automatedPostMutation.isPending ? "Posting..." : "Auto Post"}
+      {automatedPostMutation.isPending ? "Posting & generating new draft..." : "Auto Post"}
     </Button>
   );
 };
