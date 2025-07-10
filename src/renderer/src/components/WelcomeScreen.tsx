@@ -23,19 +23,25 @@ export const WelcomeScreen = () => {
           <div className="flex flex-col items-center gap-2">
             <Settings className="w-12 h-12 text-muted-foreground" />
             <h1 className="text-2xl font-semibold">Welcome to FansLib</h1>
-            <p className="text-muted-foreground">Get started by setting up your library or importing an existing database.</p>
+            <p className="text-muted-foreground">
+              Get started by setting up your library or importing an existing database.
+            </p>
           </div>
-          
+
           <div className="flex flex-col gap-3 w-full max-w-sm">
-            <Button onClick={() => navigate("/settings")} className="flex items-center gap-2" size="lg">
+            <Button
+              onClick={() => navigate("/settings")}
+              className="flex items-center gap-2"
+              size="lg"
+            >
               <Settings className="w-4 h-4" />
               Set up new library
             </Button>
-            
-            <Button 
-              onClick={() => setShowImportWizard(true)} 
-              variant="outline" 
-              className="flex items-center gap-2" 
+
+            <Button
+              onClick={() => setShowImportWizard(true)}
+              variant="outline"
+              className="flex items-center gap-2"
               size="lg"
             >
               <Database className="w-4 h-4" />

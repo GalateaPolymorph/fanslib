@@ -4,7 +4,10 @@ import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
 import { Progress } from "@renderer/components/ui/progress";
 import { useToast } from "@renderer/components/ui/use-toast";
-import { useImportDatabase, useValidateImportedDatabase } from "@renderer/hooks/api/useImportDatabase";
+import {
+  useImportDatabase,
+  useValidateImportedDatabase,
+} from "@renderer/hooks/api/useImportDatabase";
 import { useUpdateSettings } from "@renderer/hooks/api/useSettings";
 import { AlertCircle, CheckCircle, Database, FolderOpen, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -18,7 +21,11 @@ type DatabaseImportWizardProps = {
   onSuccess?: () => void;
 };
 
-export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: DatabaseImportWizardProps) => {
+export const DatabaseImportWizard = ({
+  open,
+  onOpenChange,
+  onSuccess,
+}: DatabaseImportWizardProps) => {
   const [currentStep, setCurrentStep] = useState<ImportStep>("file-selection");
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [libraryPath, setLibraryPath] = useState<string>("");
@@ -35,9 +42,9 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
         title: "Select Database File",
         filters: [
           { name: "SQLite Database", extensions: ["sqlite", "sqlite3", "db"] },
-          { name: "All Files", extensions: ["*"] }
+          { name: "All Files", extensions: ["*"] },
         ],
-        properties: ["openFile"]
+        properties: ["openFile"],
       });
 
       if (!result.canceled && result.filePaths.length > 0) {
@@ -48,7 +55,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
       toast({
         title: "Error",
         description: "Failed to select database file",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -57,7 +64,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
     try {
       const result = await window.api["os:showOpenDialog"]({
         title: "Select Library Folder",
-        properties: ["openDirectory"]
+        properties: ["openDirectory"],
       });
 
       if (!result.canceled && result.filePaths.length > 0) {
@@ -68,7 +75,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
       toast({
         title: "Error",
         description: "Failed to select library folder",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -78,12 +85,12 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
 
     try {
       const result = await importDatabase.mutateAsync(selectedFile);
-      
+
       if (!result.success) {
         toast({
           title: "Import Failed",
           description: result.error || "Unknown error occurred",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -93,7 +100,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
       toast({
         title: "Import Failed",
         description: "Failed to import database",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -104,19 +111,19 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
     try {
       // Update library path in settings
       await updateSettings.mutateAsync({ libraryPath });
-      
+
       setCurrentStep("validation");
-      
+
       // Validate the imported database
       const result = await validateDatabase.mutateAsync(libraryPath);
       setValidationResult(result);
-      
+
       setCurrentStep("success");
     } catch (error) {
       toast({
         title: "Validation Failed",
         description: "Failed to validate library path",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -124,7 +131,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
   const handleFinish = () => {
     onOpenChange(false);
     onSuccess?.();
-    
+
     // Reset wizard state
     setCurrentStep("file-selection");
     setSelectedFile("");
@@ -176,7 +183,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
               <p className="text-sm text-muted-foreground">
                 Select the fanslib.sqlite database file from your other machine.
               </p>
-              
+
               <div className="space-y-2">
                 <Label>Database File</Label>
                 <div className="flex gap-2">
@@ -196,7 +203,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleImportDatabase}
                   disabled={!selectedFile || importDatabase.isPending}
                 >
@@ -212,7 +219,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
               <p className="text-sm text-muted-foreground">
                 Select the folder where your media files are located.
               </p>
-              
+
               <div className="space-y-2">
                 <Label>Library Path</Label>
                 <div className="flex gap-2">
@@ -232,13 +239,13 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
                 <Button variant="outline" onClick={() => setCurrentStep("file-selection")}>
                   Back
                 </Button>
-                <Button 
+                <Button
                   onClick={handleLibraryPathSubmit}
                   disabled={!libraryPath || updateSettings.isPending || validateDatabase.isPending}
                 >
-                  {(updateSettings.isPending || validateDatabase.isPending) && 
+                  {(updateSettings.isPending || validateDatabase.isPending) && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  }
+                  )}
                   Validate & Complete
                 </Button>
               </div>
@@ -250,9 +257,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
-              <p className="text-center text-sm text-muted-foreground">
-                Validating media files...
-              </p>
+              <p className="text-center text-sm text-muted-foreground">Validating media files...</p>
             </div>
           )}
 
@@ -290,9 +295,7 @@ export const DatabaseImportWizard = ({ open, onOpenChange, onSuccess }: Database
               )}
 
               <div className="flex justify-end">
-                <Button onClick={handleFinish}>
-                  Finish
-                </Button>
+                <Button onClick={handleFinish}>Finish</Button>
               </div>
             </div>
           )}

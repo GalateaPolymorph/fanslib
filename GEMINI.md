@@ -53,7 +53,6 @@ Each feature module follows a consistent pattern:
 - **Routing**: React Router
 - **Styling**: Tailwind CSS
 
-
 ## Important Notes
 
 - The app manages sensitive adult content libraries locally
@@ -78,31 +77,35 @@ Your output **must** be a well-structured GitHub Issue, formatted in Markdown, c
 ## **Feature/Bugfix Title: [A concise and descriptive title for the issue]**
 
 ### **Description of Requirements**
-* Provide a detailed explanation of the user's requirement.
-* Clearly state what the new feature should accomplish or how the bug should be resolved from a user's perspective.
-* Include any specific acceptance criteria or expected behaviors.
+
+- Provide a detailed explanation of the user's requirement.
+- Clearly state what the new feature should accomplish or how the bug should be resolved from a user's perspective.
+- Include any specific acceptance criteria or expected behaviors.
 
 ### **Prerequisites**
-* List any other issues, pull requests, or foundational work that *must* be completed before this issue can be started.
-* For each prerequisite, provide a link to its corresponding GitHub Issue (e.g., `#123` or `https://github.com/your-org/your-repo/issues/123`).
-* If there are no prerequisites, state "None."
+
+- List any other issues, pull requests, or foundational work that _must_ be completed before this issue can be started.
+- For each prerequisite, provide a link to its corresponding GitHub Issue (e.g., `#123` or `https://github.com/your-org/your-repo/issues/123`).
+- If there are no prerequisites, state "None."
 
 ### **List of Tasks**
-* Break down the overall requirement into an actionable list of tasks.
-* Each task should be clearly defined and represent a distinct, manageable unit of work.
-* Consider all phases of development, including:
-    * **Analysis/Research:** (e.g., "Analyze existing API endpoints for X functionality")
-    * **Database Changes:** (e.g., "Add `isActive` property to `media` entity")
-    * **Backend:** (e.g., "Implement new `createUser()` method")
-    * **Frontend:** (e.g., "Develop `UserRegistrationForm` component")
-    * **Testing:** (e.g., "Write unit tests for `AuthService`")
-    * **Documentation:** (e.g., "Update API documentation for new `/users` endpoint")
-* You don't need to specify every phase, if not strictly necessary. e.g. testing might not make sense for every issue.
-* Use GitHub task list checkboxes where appropriate (e.g., `- [ ] Task Description`).
+
+- Break down the overall requirement into an actionable list of tasks.
+- Each task should be clearly defined and represent a distinct, manageable unit of work.
+- Consider all phases of development, including:
+  - **Analysis/Research:** (e.g., "Analyze existing API endpoints for X functionality")
+  - **Database Changes:** (e.g., "Add `isActive` property to `media` entity")
+  - **Backend:** (e.g., "Implement new `createUser()` method")
+  - **Frontend:** (e.g., "Develop `UserRegistrationForm` component")
+  - **Testing:** (e.g., "Write unit tests for `AuthService`")
+  - **Documentation:** (e.g., "Update API documentation for new `/users` endpoint")
+- You don't need to specify every phase, if not strictly necessary. e.g. testing might not make sense for every issue.
+- Use GitHub task list checkboxes where appropriate (e.g., `- [ ] Task Description`).
 
 ### **Implementation Approach**
-* Detail the proposed technical solution and how the requirement will be fulfilled within the existing codebase.
-* Describe any new architectural considerations, design patterns, or technologies that will be introduced or leveraged.
+
+- Detail the proposed technical solution and how the requirement will be fulfilled within the existing codebase.
+- Describe any new architectural considerations, design patterns, or technologies that will be introduced or leveraged.
 
 ---
 

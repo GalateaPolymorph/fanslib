@@ -41,9 +41,9 @@ export const importDatabase = async (sourcePath: string): Promise<DatabaseImport
     return { success: true };
   } catch (error) {
     console.error("Error importing database:", error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error occurred" 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 };
@@ -52,13 +52,13 @@ export const validateImportedDatabase = async (libraryPath: string): Promise<Val
   try {
     const database = await db();
     const mediaRepository = database.getRepository(Media);
-    
+
     // Get all media files from the database
     const allMedia = await mediaRepository.find();
-    
+
     let validFiles = 0;
     const missingFiles: string[] = [];
-    
+
     // Check each media file
     for (const media of allMedia) {
       try {
@@ -69,18 +69,18 @@ export const validateImportedDatabase = async (libraryPath: string): Promise<Val
         missingFiles.push(media.relativePath);
       }
     }
-    
+
     return {
       totalFiles: allMedia.length,
       missingFiles,
-      validFiles
+      validFiles,
     };
   } catch (error) {
     console.error("Error validating imported database:", error);
     return {
       totalFiles: 0,
       missingFiles: [],
-      validFiles: 0
+      validFiles: 0,
     };
   }
 };

@@ -21,7 +21,7 @@ const useAutomatedRedditPost = (generateRandomPost: () => Promise<void>) => {
         title: "Automated post successful",
         description: result.url ? `Posted to Reddit: ${result.url}` : "Post completed successfully",
       });
-      
+
       // Generate a new random post after successful auto-post
       await generateRandomPost();
     },

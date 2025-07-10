@@ -118,7 +118,9 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
       <div className="p-2 min-h-12 flex items-center">
         <Input
           value={editingSubreddit.defaultFlair ?? ""}
-          onChange={(e) => setEditingSubreddit({ ...editingSubreddit, defaultFlair: e.target.value })}
+          onChange={(e) =>
+            setEditingSubreddit({ ...editingSubreddit, defaultFlair: e.target.value })
+          }
           className="h-8"
           placeholder="Default flair"
         />
@@ -126,7 +128,9 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
       <div className="p-2 min-h-12 flex items-center">
         <Input
           value={editingSubreddit.captionPrefix ?? ""}
-          onChange={(e) => setEditingSubreddit({ ...editingSubreddit, captionPrefix: e.target.value })}
+          onChange={(e) =>
+            setEditingSubreddit({ ...editingSubreddit, captionPrefix: e.target.value })
+          }
           className="h-8"
           placeholder="Caption prefix"
         />

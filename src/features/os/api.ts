@@ -83,7 +83,7 @@ export const handlers: OsHandlers = {
       const result = await dialog.showOpenDialog(options);
       return {
         canceled: result.canceled,
-        filePaths: result.filePaths || []
+        filePaths: result.filePaths || [],
       };
     } catch (error) {
       console.error("Failed to show open dialog:", error);
