@@ -20,11 +20,12 @@ import { ManagePage } from "./pages/Manage";
 import { MediaDetail } from "./pages/MediaDetail";
 import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
-import { SettingsLayout } from "./pages/Settings/SettingsLayout";
-import { GeneralSettings } from "./pages/Settings/GeneralSettings";
 import { AppearanceSettings } from "./pages/Settings/AppearanceSettings";
 import { ContentSafetySettings } from "./pages/Settings/ContentSafetySettings";
+import { FilterPresetSettings } from "./pages/Settings/FilterPresetSettings";
+import { GeneralSettings } from "./pages/Settings/GeneralSettings";
 import { IntegrationsSettings } from "./pages/Settings/IntegrationsSettings";
+import { SettingsLayout } from "./pages/Settings/SettingsLayout";
 import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
 
@@ -88,6 +89,10 @@ const routes = [
           {
             path: "integrations",
             element: <IntegrationsSettings />,
+          },
+          {
+            path: "filter-presets",
+            element: <FilterPresetSettings />,
           },
         ],
       },

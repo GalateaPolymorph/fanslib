@@ -11,6 +11,7 @@ import {
 import { Channel, ChannelType } from "../features/channels/entity";
 import { Subreddit } from "../features/channels/subreddit";
 import { ContentSchedule } from "../features/content-schedules/entity";
+import { FilterPreset } from "../features/filter-presets/entity";
 import { Hashtag, HashtagChannelStats } from "../features/hashtags/entity";
 import { Media } from "../features/library/entity";
 import { Post, PostMedia } from "../features/posts/entity";
@@ -39,6 +40,7 @@ export const AppDataSource = new DataSource({
     TagDimension,
     TagDefinition,
     MediaTag,
+    FilterPreset,
   ],
   synchronize: true,
   logging: false,

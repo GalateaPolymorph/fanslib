@@ -1,9 +1,7 @@
-import {
-  FilterActions,
-  MediaFilters as MediaFiltersComponent,
-  RedditChannelFilterPreset,
-} from "@renderer/components/MediaFilters";
+import { FilterActions } from "@renderer/components/MediaFilters/FilterActions";
+import { MediaFilters as MediaFiltersComponent } from "@renderer/components/MediaFilters/MediaFilters";
 import { MediaFiltersProvider } from "@renderer/components/MediaFilters/MediaFiltersContext";
+import { RedditChannelFilterPreset } from "@renderer/components/MediaFilters/RedditChannelFilterPreset";
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
 import {
@@ -166,12 +164,7 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
               />
               <FilterActions />
             </div>
-            <MediaFiltersComponent
-              value={editingSubreddit.eligibleMediaFilter}
-              onChange={(filter) =>
-                setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
-              }
-            />
+            <MediaFiltersComponent />
           </MediaFiltersProvider>
         </div>
       </div>

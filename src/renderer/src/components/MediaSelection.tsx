@@ -5,7 +5,8 @@ import { PaginatedResponse } from "../../../features/_common/pagination";
 import { MediaFilters, MediaSort } from "../../../features/library/api-type";
 import { Media } from "../../../features/library/entity";
 import { sanitizeFilterInput } from "../../../features/library/filter-helpers";
-import { MediaFilters as MediaFiltersComponent } from "./MediaFilters/";
+import { MediaFilters as MediaFiltersComponent } from "./MediaFilters/MediaFilters";
+import { MediaFiltersProvider } from "./MediaFilters/MediaFiltersContext";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -94,7 +95,9 @@ export const MediaSelection = ({
               {`${mediaData.total} items available`}
             </span>
           </div>
-          <MediaFiltersComponent value={filters} onChange={handleFilterChange} />
+          <MediaFiltersProvider value={filters} onChange={handleFilterChange}>
+            <MediaFiltersComponent />
+          </MediaFiltersProvider>
         </div>
       </div>
 

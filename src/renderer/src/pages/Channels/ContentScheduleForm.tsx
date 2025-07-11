@@ -14,7 +14,8 @@ import { ContentScheduleCreateData } from "../../../../features/content-schedule
 import { ContentSchedule, parseMediaFilters } from "../../../../features/content-schedules/entity";
 import { MediaFilters } from "../../../../features/library/api-type";
 import { sanitizeFilterInput } from "../../../../features/library/filter-helpers";
-import { MediaFilters as MediaFiltersComponent } from "../../components/MediaFilters";
+import { MediaFilters as MediaFiltersComponent } from "../../components/MediaFilters/MediaFilters";
+import { MediaFiltersProvider } from "../../components/MediaFilters/MediaFiltersContext";
 
 type ContentScheduleFormProps = {
   schedule?: ContentSchedule;
@@ -197,7 +198,9 @@ export const ContentScheduleForm = ({
           Define which media should be eligible for this schedule. Only media matching these filters
           will be considered for posts.
         </p>
-        <MediaFiltersComponent value={mediaFilters} onChange={setMediaFilters} />
+        <MediaFiltersProvider value={mediaFilters} onChange={setMediaFilters}>
+          <MediaFiltersComponent />
+        </MediaFiltersProvider>
       </div>
 
       <div className="flex justify-end gap-2">

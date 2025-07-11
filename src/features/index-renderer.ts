@@ -15,6 +15,11 @@ import {
   ContentScheduleIpcHandlers,
   contentScheduleMethods,
 } from "./content-schedules/api-type";
+import {
+  FilterPresetIpcChannel,
+  FilterPresetIpcHandlers,
+  filterPresetMethods,
+} from "./filter-presets/api-type";
 import { HashtagIpcChannel, HashtagIpcHandlers, hashtagMethods } from "./hashtags/api-type";
 import { LibraryIpcChannel, LibraryIpcHandlers, libraryMethods } from "./library/api-type";
 import {
@@ -30,6 +35,7 @@ import { TagIpcChannel, TagIpcHandlers, tagMethods } from "./tags/api-type";
 
 export type IpcHandlers = ChannelIpcHandlers &
   ContentScheduleIpcHandlers &
+  FilterPresetIpcHandlers &
   LibraryIpcHandlers &
   NotificationIpcHandlers &
   OsIpcHandlers &
@@ -45,6 +51,7 @@ export type IpcHandlers = ChannelIpcHandlers &
 export const ipcMethods = [
   ...channelMethods,
   ...contentScheduleMethods,
+  ...filterPresetMethods,
   ...libraryMethods,
   ...notificationMethods,
   ...osMethods,
@@ -61,6 +68,7 @@ export const ipcMethods = [
 export type IpcChannel =
   | ChannelIpcChannel
   | ContentScheduleIpcChannel
+  | FilterPresetIpcChannel
   | LibraryIpcChannel
   | NotificationIpcChannel
   | OsIpcChannel
