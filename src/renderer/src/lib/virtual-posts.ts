@@ -132,7 +132,7 @@ export const generateVirtualPosts = (
       mediaFilters,
       fanslyAnalyticsAggregate: undefined,
       fanslyAnalyticsDatapoints: [],
-      fypPromotion: true,
+      fypRemovedAt: null,
     }));
   });
 };

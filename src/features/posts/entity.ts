@@ -68,8 +68,8 @@ export class Post {
   @Column("varchar", { nullable: true })
   fanslyStatisticsId?: string;
 
-  @Column("boolean", { default: false })
-  fypPromotion: boolean;
+  @Column("datetime", { nullable: true })
+  fypRemovedAt: Date | null;
 
   @Column({
     type: "varchar",
