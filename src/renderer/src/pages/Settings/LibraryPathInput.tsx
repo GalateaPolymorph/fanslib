@@ -37,6 +37,7 @@ export const LibraryPathInput = () => {
       onChange={handlePathChange}
       placeholder="Select library folder"
       directory
+      className="w-full"
     />
   );
 };

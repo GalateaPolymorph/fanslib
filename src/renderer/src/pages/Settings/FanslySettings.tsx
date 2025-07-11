@@ -1,10 +1,10 @@
 import { Button } from "@renderer/components/ui/button";
 import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { useToast } from "@renderer/components/ui/use-toast";
 import { AlertTriangle, Eye, EyeOff, InfoIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { SettingRow } from "./SettingRow";
 
 type FanslyCredentials = {
   fanslyAuth?: string;
@@ -167,37 +167,6 @@ export const FanslySettings = () => {
 
   return (
     <div className="space-y-4">
-      <div className="relative w-full rounded-lg border p-4 bg-background text-foreground">
-        <div className="flex">
-          <InfoIcon className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
-          <div className="text-sm">
-            To fetch analytics data from Fansly, copy a fetch request from Chrome DevTools. Go to
-            Fansly → Developer Tools → Network tab → find any API request → right-click → Copy as
-            fetch and paste it below.
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="grid items-center gap-1.5">
-          <Label htmlFor="fetch-request">Paste Fetch Request from Chrome DevTools</Label>
-          <Textarea
-            id="fetch-request"
-            placeholder="Paste the entire fetch request copied from Chrome DevTools Network tab here..."
-            value={fetchRequest}
-            onChange={(e) => setFetchRequest(e.target.value)}
-            className="min-h-[120px] font-mono text-xs"
-          />
-          <Button
-            onClick={parseFetchRequestAndUpdateCredentials}
-            disabled={!fetchRequest.trim()}
-            className="w-fit"
-          >
-            Parse Headers
-          </Button>
-        </div>
-      </div>
-
       {hasAnyCredentials && (
         <>
           {!hasAllCredentials && (
@@ -211,7 +180,7 @@ export const FanslySettings = () => {
             </div>
           )}
 
-          <div className="flex items-center gap-2">
+          <SettingRow title="Credentials" description="Fansly API credentials for analytics">
             <Button
               variant="outline"
               size="sm"
@@ -221,64 +190,97 @@ export const FanslySettings = () => {
               {showTokens ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
               {showTokens ? "Hide" : "Show"} Tokens
             </Button>
-          </div>
+          </SettingRow>
 
-          <div className="grid w-full max-w-2xl gap-4">
-            <div className="grid items-center gap-1.5">
-              <Label htmlFor="fansly-auth">Authorization Header *</Label>
-              <Input
-                type={inputType}
-                id="fansly-auth"
-                placeholder="Enter the authorization header value"
-                value={credentials.fanslyAuth ?? ""}
-                onChange={(e) => updateCredential("fanslyAuth", e.target.value)}
-              />
+          <SettingRow title="Authorization Header" variant="secondary" spacing="compact">
+            <Input
+              type={inputType}
+              id="fansly-auth"
+              placeholder="Enter the authorization header value"
+              value={credentials.fanslyAuth ?? ""}
+              onChange={(e) => updateCredential("fanslyAuth", e.target.value)}
+              className="max-w-md"
+            />
+          </SettingRow>
+
+          <SettingRow title="Session ID" variant="secondary" spacing="compact">
+            <Input
+              type={inputType}
+              id="fansly-session-id"
+              placeholder="Enter the fansly-session-id header value"
+              value={credentials.fanslySessionId ?? ""}
+              onChange={(e) => updateCredential("fanslySessionId", e.target.value)}
+              className="max-w-md"
+            />
+          </SettingRow>
+
+          <SettingRow title="Client Check" variant="secondary" spacing="compact">
+            <Input
+              type={inputType}
+              id="fansly-client-check"
+              placeholder="Enter the fansly-client-check header value"
+              value={credentials.fanslyClientCheck ?? ""}
+              onChange={(e) => updateCredential("fanslyClientCheck", e.target.value)}
+              className="max-w-md"
+            />
+          </SettingRow>
+
+          <SettingRow title="Client ID" variant="secondary" spacing="compact">
+            <Input
+              type={inputType}
+              id="fansly-client-id"
+              placeholder="Enter the fansly-client-id header value"
+              value={credentials.fanslyClientId ?? ""}
+              onChange={(e) => updateCredential("fanslyClientId", e.target.value)}
+              className="max-w-md"
+            />
+          </SettingRow>
+
+          <SettingRow>
+            <div className="flex gap-2">
+              <Button onClick={saveCredentials} disabled={isLoading || !hasAllCredentials}>
+                Save Credentials
+              </Button>
+              <Button variant="outline" onClick={clearCredentials} disabled={isLoading}>
+                Clear All
+              </Button>
             </div>
-
-            <div className="grid items-center gap-1.5">
-              <Label htmlFor="fansly-session-id">Session ID *</Label>
-              <Input
-                type={inputType}
-                id="fansly-session-id"
-                placeholder="Enter the fansly-session-id header value"
-                value={credentials.fanslySessionId ?? ""}
-                onChange={(e) => updateCredential("fanslySessionId", e.target.value)}
-              />
-            </div>
-
-            <div className="grid items-center gap-1.5">
-              <Label htmlFor="fansly-client-check">Client Check *</Label>
-              <Input
-                type={inputType}
-                id="fansly-client-check"
-                placeholder="Enter the fansly-client-check header value"
-                value={credentials.fanslyClientCheck ?? ""}
-                onChange={(e) => updateCredential("fanslyClientCheck", e.target.value)}
-              />
-            </div>
-
-            <div className="grid items-center gap-1.5">
-              <Label htmlFor="fansly-client-id">Client ID *</Label>
-              <Input
-                type={inputType}
-                id="fansly-client-id"
-                placeholder="Enter the fansly-client-id header value"
-                value={credentials.fanslyClientId ?? ""}
-                onChange={(e) => updateCredential("fanslyClientId", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button onClick={saveCredentials} disabled={isLoading || !hasAllCredentials}>
-              Save Credentials
-            </Button>
-            <Button variant="outline" onClick={clearCredentials} disabled={isLoading}>
-              Clear All
-            </Button>
-          </div>
+          </SettingRow>
         </>
       )}
+      <SettingRow
+        title="Parse credentials"
+        descriptionSlot={
+          <div className="relative w-full rounded-lg p-4 bg-background text-foreground">
+            <div className="flex">
+              <InfoIcon className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
+              <div className="text-sm">
+                To fetch analytics data from Fansly, copy a fetch request from Chrome DevTools.
+                <br />
+                Go to Fansly → Developer Tools → Network tab → find any API request → right-click →
+                Copy as fetch and paste it below.
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <div className="space-y-4 pt-8 w-full">
+          <Textarea
+            id="fetch-request"
+            placeholder="Paste the entire fetch request copied from Chrome DevTools Network tab here..."
+            value={fetchRequest}
+            onChange={(e) => setFetchRequest(e.target.value)}
+            className="min-h-[120px] font-mono text-xs"
+          />
+          <Button
+            onClick={parseFetchRequestAndUpdateCredentials}
+            disabled={!fetchRequest.trim()}
+            className="w-fit"
+          >
+            Parse
+          </Button>
+        </div>
+      </SettingRow>
     </div>
   );
 };

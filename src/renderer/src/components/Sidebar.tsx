@@ -23,7 +23,11 @@ export const AppSidebar = () => {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={location.pathname === item.url}
+                    isActive={
+                      item.url === "/settings" 
+                        ? location.pathname.startsWith("/settings")
+                        : location.pathname === item.url
+                    }
                     size="default"
                   >
                     <Link to={item.url} className="flex items-center gap-2">
