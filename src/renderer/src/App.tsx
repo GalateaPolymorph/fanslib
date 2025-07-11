@@ -20,7 +20,11 @@ import { ManagePage } from "./pages/Manage";
 import { MediaDetail } from "./pages/MediaDetail";
 import { PlanPage } from "./pages/Plan";
 import { PostDetailPage } from "./pages/PostDetail";
-import { Settings } from "./pages/Settings";
+import { SettingsLayout } from "./pages/Settings/SettingsLayout";
+import { GeneralSettings } from "./pages/Settings/GeneralSettings";
+import { AppearanceSettings } from "./pages/Settings/AppearanceSettings";
+import { ContentSafetySettings } from "./pages/Settings/ContentSafetySettings";
+import { IntegrationsSettings } from "./pages/Settings/IntegrationsSettings";
 import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
 
@@ -63,7 +67,29 @@ const routes = [
       },
       {
         path: "/settings",
-        element: <Settings />,
+        element: <SettingsLayout />,
+        children: [
+          {
+            index: true,
+            element: <GeneralSettings />,
+          },
+          {
+            path: "general",
+            element: <GeneralSettings />,
+          },
+          {
+            path: "appearance",
+            element: <AppearanceSettings />,
+          },
+          {
+            path: "content-safety",
+            element: <ContentSafetySettings />,
+          },
+          {
+            path: "integrations",
+            element: <IntegrationsSettings />,
+          },
+        ],
       },
     ],
   },

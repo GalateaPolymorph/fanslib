@@ -30,7 +30,8 @@ export const calculateFypPerformanceScore = async (
   const viewVelocity = timeSpanDays > 0 ? totalViews / timeSpanDays : 0;
 
   // Calculate sustained growth rate
-  const sustainedGrowth = calculateSustainedGrowth(sortedDatapoints);
+  // const sustainedGrowth = calculateSustainedGrowth(sortedDatapoints);
+  // TODO: Use sustainedGrowth in performance scoring algorithm
 
   // Get user's historical performance for dynamic threshold
   const userThreshold = await calculateUserPerformanceThreshold(post.channelId);
