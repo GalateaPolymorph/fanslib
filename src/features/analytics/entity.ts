@@ -36,6 +36,20 @@ export class FanslyAnalyticsAggregate {
   @Column("float", { default: 0 })
   averageEngagementPercent!: number;
 
+  @Column("float", { nullable: true })
+  fypPerformanceScore?: number;
+
+  @Column("json", { nullable: true })
+  fypMetrics?: {
+    viewVelocity: number;
+    sustainedGrowth: number;
+    plateauPoint: number;
+    isUnderperforming: boolean;
+  };
+
+  @Column("datetime", { nullable: true })
+  fypPlateauDetectedAt?: Date;
+
   @OneToOne(() => Post)
   @JoinColumn({ name: "postId" })
   post!: Post;

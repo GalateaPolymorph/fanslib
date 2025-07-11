@@ -4,6 +4,11 @@ import { FanslyAnalyticsResponse } from "../../lib/fansly-analytics/fansly-analy
 import { saveHashtagsFromAnalytics } from "../hashtags/operations";
 import { Post } from "../posts/entity";
 import { FanslyAnalyticsAggregate, FanslyAnalyticsDatapoint } from "./entity";
+import {
+  calculateFypMetrics,
+  calculateFypPerformanceScore,
+  findPlateauDay,
+} from "./fyp-performance";
 
 const gatherFanslyPostAnalyticsDatapoints = (
   response: FanslyAnalyticsResponse
@@ -91,6 +96,17 @@ export const addDatapointsToPost = async (
   // Update aggregate data
   const aggregatedData = aggregatePostAnalyticsData(postWithDatapoints, false);
 
+  // Calculate FYP performance metrics
+  const fypPerformanceScore = await calculateFypPerformanceScore(
+    postWithDatapoints,
+    savedDatapoints
+  );
+  const fypMetrics = await calculateFypMetrics(postWithDatapoints, savedDatapoints);
+  const plateauDay = findPlateauDay(savedDatapoints);
+
+  // Set plateau detection date if plateau is detected
+  const fypPlateauDetectedAt = plateauDay > 0 ? new Date() : null;
+
   const existingAggregate = await aggregateRepo.findOne({
     where: { postId },
   });
@@ -101,6 +117,9 @@ export const addDatapointsToPost = async (
       aggregatedData.at(-1)?.averageWatchTimeSeconds ?? 0;
     existingAggregate.averageEngagementPercent =
       aggregatedData.at(-1)?.averageWatchTimePercent ?? 0;
+    existingAggregate.fypPerformanceScore = fypPerformanceScore;
+    existingAggregate.fypMetrics = fypMetrics;
+    existingAggregate.fypPlateauDetectedAt = fypPlateauDetectedAt;
     await aggregateRepo.save(existingAggregate);
   } else {
     const newAggregate = aggregateRepo.create({
@@ -109,6 +128,9 @@ export const addDatapointsToPost = async (
       totalViews: aggregatedData.at(-1)?.Views ?? 0,
       averageEngagementSeconds: aggregatedData.at(-1)?.averageWatchTimeSeconds ?? 0,
       averageEngagementPercent: aggregatedData.at(-1)?.averageWatchTimePercent ?? 0,
+      fypPerformanceScore,
+      fypMetrics,
+      fypPlateauDetectedAt,
     });
     await aggregateRepo.save(newAggregate);
   }
@@ -140,6 +162,17 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
         return;
       }
 
+      // Calculate FYP performance metrics
+      const fypPerformanceScore = await calculateFypPerformanceScore(
+        post,
+        post.fanslyAnalyticsDatapoints
+      );
+      const fypMetrics = await calculateFypMetrics(post, post.fanslyAnalyticsDatapoints);
+      const plateauDay = findPlateauDay(post.fanslyAnalyticsDatapoints);
+
+      // Set plateau detection date if plateau is detected
+      const fypPlateauDetectedAt = plateauDay > 0 ? new Date() : null;
+
       const existingAggregate = await aggregateRepo.findOne({
         where: { postId: post.id },
       });
@@ -150,6 +183,9 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
           aggregated.at(-1)?.averageWatchTimeSeconds ?? 0;
         existingAggregate.averageEngagementPercent =
           aggregated.at(-1)?.averageWatchTimePercent ?? 0;
+        existingAggregate.fypPerformanceScore = fypPerformanceScore;
+        existingAggregate.fypMetrics = fypMetrics;
+        existingAggregate.fypPlateauDetectedAt = fypPlateauDetectedAt;
         await aggregateRepo.save(existingAggregate);
       } else {
         const newAggregate = aggregateRepo.create({
@@ -158,6 +194,9 @@ export const initializeAnalyticsAggregates = async (): Promise<void> => {
           totalViews: aggregated.at(-1)?.Views ?? 0,
           averageEngagementSeconds: aggregated.at(-1)?.averageWatchTimeSeconds ?? 0,
           averageEngagementPercent: aggregated.at(-1)?.averageWatchTimePercent ?? 0,
+          fypPerformanceScore,
+          fypMetrics,
+          fypPlateauDetectedAt,
         });
 
         await aggregateRepo.save(newAggregate);
