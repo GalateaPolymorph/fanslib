@@ -1,13 +1,13 @@
 import { Grid2X2, Grid3X3, Settings2 } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../components/ui/dropdown-menu";
-import { ToggleGroup, ToggleGroupItem } from "../../../components/ui/toggle-group";
+} from "../../../components/ui/DropdownMenu";
+import { ToggleGroup, ToggleGroupItem } from "../../../components/ui/ToggleGroup";
 import { GridSize, useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 
 export const GalleryViewSettings = () => {

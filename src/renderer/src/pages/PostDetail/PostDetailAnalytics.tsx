@@ -1,5 +1,5 @@
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
 import { useState } from "react";
 import { Post } from "../../../../features/posts/entity";
 import { parseAnalyticsResponse } from "../../../../lib/fansly-analytics";

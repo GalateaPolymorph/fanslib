@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { useTimeAnalytics } from "../../../hooks/analytics/useTimeAnalytics";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/Card";
 
 const getPerformanceColor = (engagement: number, maxEngagement: number): string => {
   const intensity = engagement / maxEngagement;

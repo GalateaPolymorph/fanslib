@@ -2,8 +2,8 @@ import { MediaTagEditor } from "@renderer/components/MediaTagEditor";
 import { Tag } from "lucide-react";
 import { useState } from "react";
 import { Media } from "../../../../../../features/library/entity";
-import { Button } from "../../../../components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
+import { Button } from "../../../../components/ui/Button";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/Popover";
 
 type TagAssignerProps = {
   selectedMedia: Media[];

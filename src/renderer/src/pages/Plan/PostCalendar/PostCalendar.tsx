@@ -16,7 +16,7 @@ import { de } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Post } from "../../../../../features/posts/entity";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../components/ui/Button";
 import { cn } from "../../../lib/utils";
 import { isVirtualPost, VirtualPost } from "../../../lib/virtual-posts";
 import { PostCalendarDayDropzone } from "./PostCalendarDayDropzone";

@@ -1,7 +1,7 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FileInput } from "../../components/ui/file-input";
-import { useToast } from "../../components/ui/use-toast";
+import { FileInput } from "../../components/ui/FileInput";
+import { useToast } from "../../components/ui/Toast/use-toast";
 
 export const LibraryPathInput = () => {
   const [path, setPath] = useState("");

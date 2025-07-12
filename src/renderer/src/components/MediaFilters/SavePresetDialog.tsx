@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "../ui/Dialog";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
 import { MediaFilters } from "../../../../features/library/api-type";
 import { useFilterPresetContext } from "../../contexts/FilterPresetContext";
 

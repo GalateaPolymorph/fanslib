@@ -2,9 +2,9 @@ import { Search, X } from "lucide-react";
 import { type FC } from "react";
 import { type DateRange } from "react-day-picker";
 import { useShootContext } from "../contexts/ShootContext";
-import { Button } from "./ui/button";
-import { DateRangePicker } from "./ui/date-range-picker";
-import { Input } from "./ui/input";
+import { Button } from "./ui/Button";
+import { DateRangePicker } from "./ui/DateRangePicker";
+import { Input } from "./ui/Input";
 
 type ShootsFilterProps = {
   className?: string;

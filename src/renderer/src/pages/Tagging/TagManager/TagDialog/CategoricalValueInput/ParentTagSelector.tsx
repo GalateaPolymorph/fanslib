@@ -1,8 +1,8 @@
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TagDefinition } from "../../../../../../../features/tags/entity";
-import { Button } from "../../../../../components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../../../components/ui/popover";
+import { Button } from "../../../../../components/ui/Button";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../../components/ui/Popover";
 import { cn } from "../../../../../lib/utils";
 import { HierarchicalTagList, TagHierarchyItem } from "./HierarchicalTagList";
 import { TagSearchInput } from "./TagSearchInput";

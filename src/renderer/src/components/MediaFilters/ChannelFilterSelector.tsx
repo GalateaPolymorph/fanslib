@@ -4,9 +4,9 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { ChannelTypeIcon, ChannelTypeId } from "../ChannelTypeIcon";
-import { Button } from "../ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/Button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/Command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 
 type ChannelFilterSelectorProps = {
   value?: string;

@@ -12,10 +12,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@renderer/components/ui/alert-dialog";
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
-import { Textarea } from "@renderer/components/ui/textarea";
+} from "@renderer/components/ui/AlertDialog";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
+import { Textarea } from "@renderer/components/ui/Textarea";
 import { cn } from "@renderer/lib/utils";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";

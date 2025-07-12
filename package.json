@@ -25,7 +25,9 @@
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "schema:fetch": "ts-node scripts/fetch-schema.ts",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -95,6 +97,13 @@
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/typescript": "^4.1.5",
     "@graphql-codegen/typescript-operations": "^4.5.1",
+    "@storybook/addon-actions": "^8.6.14",
+    "@storybook/addon-controls": "^8.6.14",
+    "@storybook/addon-docs": "^8.6.14",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/react-vite": "^8.6.14",
+    "@storybook/test": "^8.6.14",
     "@tailwindcss/postcss": "^4.0.0-beta.3",
     "@types/node": "^20.14.8",
     "@types/ramda": "^0.30.2",
@@ -119,6 +128,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sharp": "^0.34.2",
+    "storybook": "^8.6.14",
     "tailwindcss": "^4.0.0-beta.3",
     "ts-node": "^10.9.2",
     "ts-unused-exports": "^11.0.1",

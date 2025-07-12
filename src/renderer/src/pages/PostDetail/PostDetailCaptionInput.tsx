@@ -1,5 +1,5 @@
-import { Button } from "@renderer/components/ui/button";
-import { Textarea } from "@renderer/components/ui/textarea";
+import { Button } from "@renderer/components/ui/Button";
+import { Textarea } from "@renderer/components/ui/Textarea";
 import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
 import { useClipboard } from "@renderer/hooks/ui/useClipboard";
 import { Check, Copy } from "lucide-react";

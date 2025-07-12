@@ -2,7 +2,7 @@ import { cn } from "@renderer/lib/utils";
 import { Calendar, Camera, FileText, Filter, Hash, MapPin, Minus, Plus } from "lucide-react";
 import { MediaFilters } from "../../../features/library/api-type";
 import { FilterSummaryItem, useMediaFilterSummary } from "../hooks/business/useMediaFilterSummary";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/Tooltip";
 
 type MediaFilterSummaryProps = {
   mediaFilters: MediaFilters | null;

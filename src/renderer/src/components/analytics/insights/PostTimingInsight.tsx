@@ -1,7 +1,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { PostTimingInsight as PostTimingInsightType } from "../../../../../features/analytics/api-type";
-import { Badge } from "../../ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Badge } from "../../ui/Badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/Card";
 
 type PostTimingInsightProps = {
   insight: PostTimingInsightType;

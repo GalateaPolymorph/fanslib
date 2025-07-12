@@ -7,7 +7,7 @@ import {
   VideoLengthInsight as VideoLengthInsightType,
 } from "../../../../../features/analytics/api-type";
 import { useInsights } from "../../../hooks/analytics/useInsights";
-import { Alert, AlertDescription } from "../../ui/alert";
+import { Alert, AlertDescription } from "../../ui/Alert";
 import { ContentThemeInsight } from "./ContentThemeInsight";
 import { HashtagInsight } from "./HashtagInsight";
 import { PostTimingInsight } from "./PostTimingInsight";

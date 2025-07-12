@@ -2,16 +2,16 @@ import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { filtersFromFilterPreset } from "../../../../features/filter-presets/entity";
 import { useFilterPresetContext } from "../../contexts/FilterPresetContext";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/Dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Input } from "../ui/input";
-import { ScrollArea } from "../ui/scroll-area";
+} from "../ui/DropdownMenu";
+import { Input } from "../ui/Input";
+import { ScrollArea } from "../ui/ScrollArea";
 
 type FilterPresetManagerProps = {
   open: boolean;

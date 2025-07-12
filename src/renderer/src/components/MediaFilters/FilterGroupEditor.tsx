@@ -1,6 +1,6 @@
 import { Filter, FilterX, X } from "lucide-react";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Button } from "../ui/Button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/Tooltip";
 import { FilterDropdown } from "./FilterDropdown";
 import { FilterItemRenderer } from "./FilterItemRenderer";
 import { useMediaFilters } from "./MediaFiltersContext";

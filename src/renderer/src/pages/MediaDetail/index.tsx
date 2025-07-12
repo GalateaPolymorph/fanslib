@@ -1,5 +1,5 @@
 import { MediaTagEditor } from "@renderer/components/MediaTagEditor";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useMedia } from "@renderer/hooks";
 import { MediaDetailDeleteButton } from "@renderer/pages/MediaDetail/MediaDetailDeleteButton";

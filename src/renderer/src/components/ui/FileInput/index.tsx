@@ -1,8 +1,8 @@
 import { cn } from "@renderer/lib/utils";
 import { FolderOpen } from "lucide-react";
 import { useRef } from "react";
-import { Button } from "./button";
-import { Input } from "./input";
+import { Button } from "../Button";
+import { Input } from "../Input";
 
 export type FileInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

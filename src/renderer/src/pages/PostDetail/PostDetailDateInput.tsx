@@ -1,4 +1,4 @@
-import { Calendar } from "@renderer/components/ui/calendar";
+import { Calendar } from "@renderer/components/ui/Calendar";
 import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
 import { cn } from "@renderer/lib/utils";
 import { Post } from "src/features/posts/entity";

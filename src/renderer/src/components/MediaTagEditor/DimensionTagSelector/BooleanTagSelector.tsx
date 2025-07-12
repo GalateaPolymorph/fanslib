@@ -1,4 +1,4 @@
-import { Switch } from "@renderer/components/ui/switch";
+import { Switch } from "@renderer/components/ui/Switch";
 import {
   useCreateTagDefinition,
   useTagsByDimension,

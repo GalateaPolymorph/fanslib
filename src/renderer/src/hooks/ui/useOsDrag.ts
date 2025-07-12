@@ -1,4 +1,4 @@
-import { useToast } from "@renderer/components/ui/use-toast";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { Media } from "../../../../features/library/entity";
 

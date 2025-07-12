@@ -1,5 +1,5 @@
 import { CreateShootDialog } from "@renderer/components/Shoots/CreateShootDialog";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { cn } from "@renderer/lib/utils";
 import { TagAssigner } from "@renderer/pages/Manage/Gallery/GalleryActionBar/TagAssigner";
 import { CreatePostDialog } from "@renderer/pages/MediaDetail/CreatePostDialog";

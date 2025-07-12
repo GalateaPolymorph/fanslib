@@ -1,12 +1,12 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@renderer/components/ui/select";
-import { Stepper } from "@renderer/components/ui/stepper";
+} from "@renderer/components/ui/Select";
+import { Stepper } from "@renderer/components/ui/Stepper";
 import cn from "classnames";
 import { Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";

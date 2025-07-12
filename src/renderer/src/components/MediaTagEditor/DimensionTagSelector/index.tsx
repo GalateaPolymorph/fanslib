@@ -1,6 +1,6 @@
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@renderer/components/ui/radio-group";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
+import { RadioGroup, RadioGroupItem } from "@renderer/components/ui/RadioGroup";
 import {
   useCreateTagDefinition,
   useTagsByDimension,

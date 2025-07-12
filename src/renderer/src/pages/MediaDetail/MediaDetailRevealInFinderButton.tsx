@@ -1,12 +1,12 @@
 import { Folder } from "lucide-react";
 import { Media } from "../../../../features/library/entity";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/ui/Button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../../components/ui/tooltip";
+} from "../../components/ui/Tooltip";
 import { useSettings } from "../../contexts/SettingsContext";
 
 type Props = {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input } from "../../../components/ui/input";
+import { Input } from "../../../components/ui/Input";
 import { formatViewCount, parseViewCount } from "../../../lib/format-views";
 
 type HashtagViewInputProps = {

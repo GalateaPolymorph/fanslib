@@ -1,5 +1,5 @@
 import { RedditQuickPostCreator } from "@renderer/pages/Subreddits/RedditQuickPostCreator";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { useSubreddits } from "@renderer/hooks/api/useChannels";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";

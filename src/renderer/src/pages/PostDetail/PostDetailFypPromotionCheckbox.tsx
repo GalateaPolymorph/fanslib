@@ -1,4 +1,4 @@
-import { Switch } from "@renderer/components/ui/switch";
+import { Switch } from "@renderer/components/ui/Switch";
 import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
 import { format } from "date-fns";
 import { Post } from "src/features/posts/entity";

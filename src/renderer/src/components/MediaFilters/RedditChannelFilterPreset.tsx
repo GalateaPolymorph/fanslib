@@ -2,8 +2,8 @@ import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Copy } from "lucide-react";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import type { MediaFilters } from "../../../../features/library/api-type";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Button } from "../ui/Button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/Tooltip";
 
 type RedditChannelFilterPresetProps = {
   onApplyFilter: (filter: MediaFilters | undefined) => void;

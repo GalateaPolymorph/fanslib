@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/Tabs";
 import { Zap } from "lucide-react";
 import { FanslySettings } from "./FanslySettings";
 import { PostponeSettings } from "./PostponeSettings";

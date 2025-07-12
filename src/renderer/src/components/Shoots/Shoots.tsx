@@ -1,7 +1,7 @@
 import { ShootCreateDropZone } from "@renderer/components/Shoots/ShootCreateDropZone";
 import { ShootDetail } from "@renderer/components/Shoots/ShootDetail";
 import { ShootsFilter } from "@renderer/components/ShootsFilter";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import { ScrollArea } from "@renderer/components/ui/ScrollArea";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";

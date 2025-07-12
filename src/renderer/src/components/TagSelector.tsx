@@ -1,6 +1,6 @@
-import { Badge } from "@renderer/components/ui/badge";
-import { Slider } from "@renderer/components/ui/slider";
-import { Switch } from "@renderer/components/ui/switch";
+import { Badge } from "@renderer/components/ui/Badge";
+import { Slider } from "@renderer/components/ui/Slider";
+import { Switch } from "@renderer/components/ui/Switch";
 import { useMemo } from "react";
 import { useTagsByDimension } from "../hooks/api/tags/useTagDefinitions";
 import { useTagDimensions } from "../hooks/api/tags/useTagDimensions";

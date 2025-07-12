@@ -1,8 +1,8 @@
 import { GripVertical, PanelRightClose, PanelRightOpen } from "lucide-react";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
-import { cn } from "../../lib/utils";
-import { Button } from "./button";
+import { cn } from "@renderer/lib/utils";
+import { Button } from "../Button";
 
 type ResizableContextType = {
   isDragging: boolean;

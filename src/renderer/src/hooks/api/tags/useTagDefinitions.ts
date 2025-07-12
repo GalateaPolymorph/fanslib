@@ -4,7 +4,7 @@ import {
   UpdateTagDefinitionDto,
 } from "../../../../../features/tags/api-type";
 import { TagDefinition } from "../../../../../features/tags/entity";
-import { useToast } from "../../../components/ui/use-toast";
+import { useToast } from "../../../components/ui/Toast/use-toast";
 import { tagDimensionQueryKeys } from "./useTagDimensions";
 
 export const tagDefinitionQueryKeys = {

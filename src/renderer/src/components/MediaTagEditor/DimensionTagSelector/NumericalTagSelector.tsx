@@ -1,4 +1,4 @@
-import { Slider } from "@renderer/components/ui/slider";
+import { Slider } from "@renderer/components/ui/Slider";
 import {
   useCreateTagDefinition,
   useTagsByDimension,

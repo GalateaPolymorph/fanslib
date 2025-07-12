@@ -1,6 +1,6 @@
 import { Layers, ListX } from "lucide-react";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Button } from "../ui/Button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/Tooltip";
 import { FilterPresetDropdown } from "./FilterPresetDropdown";
 import { useMediaFilters } from "./MediaFiltersContext";
 

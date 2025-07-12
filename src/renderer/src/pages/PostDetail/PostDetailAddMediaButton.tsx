@@ -1,13 +1,13 @@
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { MediaSelection } from "@renderer/components/MediaSelection";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@renderer/components/ui/dialog";
+} from "@renderer/components/ui/Dialog";
 import { useAddMediaToPost } from "@renderer/hooks/api/usePost";
 import { cn } from "@renderer/lib/utils";
 import { Plus } from "lucide-react";

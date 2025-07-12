@@ -1,4 +1,4 @@
-import { Sticker } from "@renderer/components/ui/sticker";
+import { Sticker } from "@renderer/components/ui/Sticker";
 import { Media } from "src/features/library/entity";
 import { useTagsForMedia } from "../../hooks/api/tags/useTags";
 

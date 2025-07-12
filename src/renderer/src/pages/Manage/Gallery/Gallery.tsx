@@ -2,7 +2,7 @@ import { cn } from "@renderer/lib/utils";
 import { useEffect, useRef } from "react";
 import { Media } from "../../../../../features/library/entity";
 import { MediaTile } from "../../../components/MediaTile";
-import { ScrollArea } from "../../../components/ui/scroll-area";
+import { ScrollArea } from "../../../components/ui/ScrollArea";
 import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 import { MediaSelectionProvider, useMediaSelection } from "../../../contexts/MediaSelectionContext";
 import { useDynamicPageSize } from "../../../hooks/ui/useDynamicPageSize";

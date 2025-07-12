@@ -11,14 +11,14 @@ import {
   Search,
   Tag,
 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+} from "../ui/DropdownMenu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/Tooltip";
 import { useMediaFilters } from "./MediaFiltersContext";
 
 type FilterDropdownProps = {

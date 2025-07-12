@@ -1,9 +1,9 @@
-import { Button } from "@renderer/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@renderer/components/ui/dialog";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { Progress } from "@renderer/components/ui/progress";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { Button } from "@renderer/components/ui/Button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@renderer/components/ui/Dialog";
+import { Input } from "@renderer/components/ui/Input";
+import { Label } from "@renderer/components/ui/Label";
+import { Progress } from "@renderer/components/ui/Progress";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import {
   useImportDatabase,
   useValidateImportedDatabase,

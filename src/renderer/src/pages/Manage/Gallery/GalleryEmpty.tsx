@@ -1,4 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { RefreshCw } from "lucide-react";
 
 type GalleryEmptyProps = {

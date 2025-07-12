@@ -6,8 +6,8 @@ import { cn } from "@renderer/lib/utils";
 import { addHours, format, startOfHour } from "date-fns";
 import { ChevronLeft } from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Button } from "./ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 
 type TimePickerProps = {
   date: Date;

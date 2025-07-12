@@ -1,6 +1,6 @@
 import { type FC, useState } from "react";
 import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
-import { Input } from "../ui/input";
+import { Input } from "../ui/Input";
 
 type ShootDetailTitleProps = {
   shoot: ShootWithMedia;

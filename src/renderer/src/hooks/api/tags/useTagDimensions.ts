@@ -4,7 +4,7 @@ import {
   UpdateTagDimensionDto,
 } from "../../../../../features/tags/api-type";
 import { TagDimension } from "../../../../../features/tags/entity";
-import { useToast } from "../../../components/ui/use-toast";
+import { useToast } from "../../../components/ui/Toast/use-toast";
 
 export const tagDimensionQueryKeys = {
   dimensions: () => ["tag-dimensions"],

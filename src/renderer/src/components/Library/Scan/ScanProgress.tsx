@@ -1,5 +1,5 @@
 import { LibraryScanProgress, LibraryScanResult } from "../../../../../features/library/api-type";
-import { Progress } from "../../../components/ui/progress";
+import { Progress } from "../../../components/ui/Progress";
 
 type ScanProgressProps = {
   scanProgress: LibraryScanProgress | null;

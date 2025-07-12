@@ -1,5 +1,5 @@
 import { Media } from "../../../../features/library/entity";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/Tooltip";
 
 type MediaFileFilenameTooltipProps = {
   media: Media;

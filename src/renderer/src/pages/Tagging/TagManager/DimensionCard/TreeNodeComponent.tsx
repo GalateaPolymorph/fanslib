@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight, Edit, GripVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { TagDefinition } from "../../../../../../features/tags/entity";
-import { Button } from "../../../../components/ui/button";
+import { Button } from "../../../../components/ui/Button";
 import { useTagDrag } from "../../../../contexts/TagDragContext";
 import { useTagDropZone } from "../../../../hooks/tags/useTagDropZone";
 import { cn } from "../../../../lib/utils";

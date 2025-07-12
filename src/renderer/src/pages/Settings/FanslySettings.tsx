@@ -1,7 +1,7 @@
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
-import { Textarea } from "@renderer/components/ui/textarea";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
+import { Textarea } from "@renderer/components/ui/Textarea";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { AlertTriangle, Eye, EyeOff, InfoIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { SettingRow } from "./SettingRow";

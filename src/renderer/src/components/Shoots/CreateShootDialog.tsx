@@ -1,14 +1,14 @@
 import { DateTimePicker } from "@renderer/components/DateTimePicker";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@renderer/components/ui/dialog";
-import { Input } from "@renderer/components/ui/input";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
+} from "@renderer/components/ui/Dialog";
+import { Input } from "@renderer/components/ui/Input";
+import { ScrollArea } from "@renderer/components/ui/ScrollArea";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useShootContext } from "@renderer/contexts/ShootContext";
 import { format, formatDistanceToNow, isSameDay, parse } from "date-fns";

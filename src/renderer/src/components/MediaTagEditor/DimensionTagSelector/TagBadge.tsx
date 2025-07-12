@@ -1,4 +1,4 @@
-import { Badge } from "@renderer/components/ui/badge";
+import { Badge } from "@renderer/components/ui/Badge";
 import { SelectionState } from "@renderer/lib/selection-state";
 import { cn } from "@renderer/lib/utils";
 import { Check, Circle, Minus } from "lucide-react";

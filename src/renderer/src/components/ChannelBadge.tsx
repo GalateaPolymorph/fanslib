@@ -1,4 +1,4 @@
-import { Badge, BadgeProps } from "@renderer/components/ui/badge";
+import { Badge, BadgeProps } from "@renderer/components/ui/Badge";
 import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
 import { cn } from "../lib/utils";
 import { ChannelTypeIcon, ChannelTypeId } from "./ChannelTypeIcon";

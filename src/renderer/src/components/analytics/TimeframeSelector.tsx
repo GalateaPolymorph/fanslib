@@ -2,13 +2,13 @@ import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
 import { ChevronDownIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useAnalytics } from "../../contexts/AnalyticsContext";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../ui/DropdownMenu";
 
 export const TimeframeSelector = () => {
   const { timeframe, setTimeframe } = useAnalytics();

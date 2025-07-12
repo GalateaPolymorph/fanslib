@@ -1,5 +1,5 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { usePost } from "@renderer/hooks";
 import { useChannels } from "@renderer/hooks/api/useChannels";
 import { cn } from "@renderer/lib/utils";

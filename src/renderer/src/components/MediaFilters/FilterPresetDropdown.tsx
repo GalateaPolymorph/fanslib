@@ -2,7 +2,7 @@ import { Bookmark, Plus } from "lucide-react";
 import { useState } from "react";
 import { filtersFromFilterPreset } from "../../../../features/filter-presets/entity";
 import { useFilterPresetContext } from "../../contexts/FilterPresetContext";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../ui/DropdownMenu";
 import { useMediaFilters } from "./MediaFiltersContext";
 import { SavePresetDialog } from "./SavePresetDialog";
 

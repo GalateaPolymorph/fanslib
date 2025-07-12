@@ -1,5 +1,5 @@
-import { Button } from "@renderer/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/dialog";
+import { Button } from "@renderer/components/ui/Button";
+import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/Dialog";
 import { useChannels, useDeleteChannel } from "@renderer/hooks/api/useChannels";
 import { CreateChannelForm } from "@renderer/pages/Channels/CreateChannelForm";
 import { PlusCircle } from "lucide-react";

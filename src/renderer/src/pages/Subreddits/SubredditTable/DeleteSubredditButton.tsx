@@ -8,8 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@renderer/components/ui/alert-dialog";
-import { Button } from "@renderer/components/ui/button";
+} from "@renderer/components/ui/AlertDialog";
+import { Button } from "@renderer/components/ui/Button";
 import { useDeleteSubreddit } from "@renderer/hooks/api/useChannels";
 import { Trash2 } from "lucide-react";
 

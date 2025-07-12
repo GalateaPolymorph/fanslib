@@ -2,7 +2,7 @@ import { groupBy } from "ramda";
 import { memo, useMemo } from "react";
 import { PostMedia } from "../../../features/posts/entity";
 import { useTagsForMedias } from "../hooks/api/tags/useTags";
-import { Sticker } from "./ui/sticker";
+import { Sticker } from "./ui/Sticker";
 
 type PostTagStickersProps = {
   postMedia: PostMedia[];

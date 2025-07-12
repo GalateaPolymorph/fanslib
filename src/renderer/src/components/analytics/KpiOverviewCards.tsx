@@ -3,9 +3,9 @@ import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAnalytics } from "../../contexts/AnalyticsContext";
 import { MediaTileLite } from "../MediaTile/MediaTileLite";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Progress } from "../ui/progress";
-import { Skeleton } from "../ui/skeleton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/Card";
+import { Progress } from "../ui/Progress";
+import { Skeleton } from "../ui/Skeleton";
 
 // Helper function to format numbers with k/m suffixes
 const formatNumber = (num: number): string => {

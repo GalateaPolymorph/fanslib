@@ -1,12 +1,12 @@
 import { Settings2 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../ui/DropdownMenu";
 
 export const ShootViewSettings = () => {
   return (

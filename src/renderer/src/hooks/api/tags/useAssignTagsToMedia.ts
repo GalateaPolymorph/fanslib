@@ -1,4 +1,4 @@
-import { useToast } from "@renderer/components/ui/use-toast";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useMutation } from "@tanstack/react-query";
 
 import { useQueryClient } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-import { Input } from "@renderer/components/ui/input";
+import { Input } from "@renderer/components/ui/Input";
 import { Search } from "lucide-react";
 
 type TagSearchInputProps = {

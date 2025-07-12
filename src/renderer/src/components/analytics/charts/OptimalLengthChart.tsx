@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { useFanslyPostsWithAnalytics } from "../../../hooks/analytics/useFanslyPostsWithAnalytics";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/Card";
 
 type LengthRangeData = {
   range: string;
