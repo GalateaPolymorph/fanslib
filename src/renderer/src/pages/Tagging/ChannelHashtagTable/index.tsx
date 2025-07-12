@@ -1,7 +1,7 @@
 import { cn } from "@renderer/lib/utils";
 import { ChannelBadge } from "../../../components/ChannelBadge";
 import { HashtagInput } from "../../../components/HashtagInput";
-import { Skeleton } from "../../../components/ui/skeleton";
+import { Skeleton } from "../../../components/ui/Skeleton";
 import { useChannels } from "../../../hooks/api/useChannels";
 
 export const ChannelHashtagTable = () => {

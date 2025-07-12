@@ -2,10 +2,10 @@ import { Check, ChevronRight, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTagDimensions } from "../../hooks/api/tags/useTagDimensions";
 import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/Button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/Collapsible";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/Command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 
 type TagFilterSelectorProps = {
   value?: string;

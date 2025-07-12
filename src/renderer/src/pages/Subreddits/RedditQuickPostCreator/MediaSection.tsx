@@ -1,6 +1,6 @@
 import { MediaTile } from "@renderer/components/MediaTile";
-import { Button } from "@renderer/components/ui/button";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { Button } from "@renderer/components/ui/Button";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useClipboard } from "@renderer/hooks/ui/useClipboard";

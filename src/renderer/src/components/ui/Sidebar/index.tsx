@@ -3,14 +3,14 @@ import { cva } from "class-variance-authority";
 import { ArrowLeftSquare, ArrowRightSquare } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
-import { Separator } from "@renderer/components/ui/separator";
-import { Skeleton } from "@renderer/components/ui/skeleton";
-import { TooltipProvider } from "@renderer/components/ui/tooltip";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
+import { Separator } from "@renderer/components/ui/Separator";
+import { Skeleton } from "@renderer/components/ui/Skeleton";
+import { TooltipProvider } from "@renderer/components/ui/Tooltip";
 import { useIsMobile } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
-import { Logo } from "./logo";
+import { Logo } from "../Logo";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

@@ -1,6 +1,6 @@
 import { useRef, type ReactNode } from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./ui/Resizable";
 
 type SplitViewLayoutProps = {
   id;

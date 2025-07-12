@@ -4,7 +4,7 @@ import { RouterProvider, createBrowserRouter, createHashRouter } from "react-rou
 import { NotificationListener } from "./components/NotificationListener";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/Toaster";
-import { TooltipProvider } from "./components/ui/tooltip";
+import { TooltipProvider } from "./components/ui/Tooltip";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { LibraryProvider } from "./contexts/LibraryContext";
 import { LibraryPreferencesProvider } from "./contexts/LibraryPreferencesContext";

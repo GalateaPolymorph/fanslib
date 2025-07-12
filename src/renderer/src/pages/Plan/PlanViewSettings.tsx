@@ -1,15 +1,15 @@
-import { Switch } from "@renderer/components/ui/switch";
+import { Switch } from "@renderer/components/ui/Switch";
 import { PlanViewType, usePlanPreferences } from "@renderer/contexts/PlanPreferencesContext";
 import { CalendarDays, LayoutList, Settings2 } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
+} from "../../components/ui/DropdownMenu";
+import { ToggleGroup, ToggleGroupItem } from "../../components/ui/ToggleGroup";
 export const PlanViewSettings = () => {
   const { preferences, updatePreferences } = usePlanPreferences();
 

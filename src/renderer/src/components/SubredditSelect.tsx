@@ -3,9 +3,9 @@ import { formatViewCount } from "@renderer/lib/format-views";
 import { cn } from "@renderer/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "./ui/Button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/Command";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 type SubredditSelectProps = {
   value: string[];

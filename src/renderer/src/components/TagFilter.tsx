@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { TagFilter as TagFilterType } from "../../../features/library/api-type";
 import { TagSelectionState, TagSelector } from "./TagSelector";
-import { Button } from "./ui/button";
+import { Button } from "./ui/Button";
 
 type TagFilterProps = {
   dimensionName: string;

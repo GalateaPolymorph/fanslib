@@ -1,4 +1,4 @@
-import { Badge } from "@renderer/components/ui/badge";
+import { Badge } from "@renderer/components/ui/Badge";
 import { PostStatus } from "../../../features/posts/entity";
 import { STATUS_COLORS, STATUS_LABELS } from "../lib/post-status";
 

@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/Tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { BulkFetchButton } from "../../components/Analytics/BulkFetchButton";
@@ -16,7 +16,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card";
+} from "../../components/ui/Card";
 import { useBulkFetch } from "../../hooks/analytics/useBulkFetch";
 import { FanslyAnalyticsGrid } from "./FanslyAnalyticsGrid";
 

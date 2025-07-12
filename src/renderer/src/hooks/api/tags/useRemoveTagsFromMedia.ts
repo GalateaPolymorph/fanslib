@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "../../../components/ui/use-toast";
+import { useToast } from "../../../components/ui/Toast/use-toast";
 import { libraryQueryKeys } from "../useLibrary";
 import { mediaKeys } from "../useMedia";
 import { tagQueryKeys } from "./useTags";

@@ -1,4 +1,4 @@
-import { useToast } from "@renderer/components/ui/use-toast";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetAllMediaParams } from "../../../../features/library/api-type";
 import { Media } from "../../../../features/library/entity";

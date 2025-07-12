@@ -1,5 +1,5 @@
 import { ChannelTypeIcon } from "@renderer/components/ChannelTypeIcon";
-import { Badge } from "@renderer/components/ui/badge";
+import { Badge } from "@renderer/components/ui/Badge";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";
 import { Channel } from "../../../../features/channels/entity";
 

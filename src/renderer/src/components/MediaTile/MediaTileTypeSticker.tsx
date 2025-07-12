@@ -1,4 +1,4 @@
-import { Sticker } from "@renderer/components/ui/sticker";
+import { Sticker } from "@renderer/components/ui/Sticker";
 import { ImageIcon, Video } from "lucide-react";
 import { Media } from "src/features/library/entity";
 

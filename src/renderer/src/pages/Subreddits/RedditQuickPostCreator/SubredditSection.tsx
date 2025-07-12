@@ -1,4 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink, RefreshCw } from "lucide-react";
 import { useRedditQuickPostContext } from "./RedditQuickPostContext";

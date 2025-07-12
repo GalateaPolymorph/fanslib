@@ -3,9 +3,9 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { type DateRange } from "react-day-picker";
-import { Button } from "./button";
-import { Calendar } from "./calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Button } from "../Button";
+import { Calendar } from "../Calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../Popover";
 
 type DateRangePickerProps = {
   dateRange: DateRange | undefined;

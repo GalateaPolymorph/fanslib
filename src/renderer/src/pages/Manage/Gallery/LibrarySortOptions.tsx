@@ -1,5 +1,5 @@
-import { Button } from "@renderer/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/popover";
+import { Button } from "@renderer/components/ui/Button";
+import { Popover, PopoverContent, PopoverTrigger } from "@renderer/components/ui/Popover";
 import { cn } from "@renderer/lib/utils";
 import { ArrowUpDown, Check } from "lucide-react";
 import { useState } from "react";

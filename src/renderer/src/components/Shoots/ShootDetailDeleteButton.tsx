@@ -12,8 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
+} from "../ui/AlertDialog";
+import { Button } from "../ui/Button";
 
 type ShootDetailDeleteButtonProps = {
   shoot: ShootWithMedia;

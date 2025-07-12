@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { NotificationPayload } from "src/features/notifications/api-type";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "./ui/Toast/use-toast";
 
 export const NotificationListener = () => {
   const { toast } = useToast();

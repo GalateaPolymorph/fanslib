@@ -1,4 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@renderer/components/ui/dialog";
+} from "@renderer/components/ui/Dialog";
 import { useState } from "react";
 
 export const ResetDatabaseButton = () => {

@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { useLibraryPreferences } from "../../../contexts/LibraryPreferencesContext";
 import { useHashtagAnalytics } from "../../../hooks/analytics/useHashtagAnalytics";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/Card";
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {

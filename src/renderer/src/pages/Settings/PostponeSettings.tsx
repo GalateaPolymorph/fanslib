@@ -1,4 +1,4 @@
-import { Input } from "@renderer/components/ui/input";
+import { Input } from "@renderer/components/ui/Input";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useCallback } from "react";
 import { SettingRow } from "./SettingRow";

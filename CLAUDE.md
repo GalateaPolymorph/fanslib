@@ -31,6 +31,10 @@ npm run check        # Run all checks (format, lint, typecheck)
 npm run schema:fetch # Fetch Postpone GraphQL schema
 npm run codegen      # Generate Postpone GraphQL types
 
+# Storybook (Component Development)
+npm run storybook    # Start Storybook development server
+npm run build-storybook # Build static Storybook
+
 # Other utilities
 npm run unused       # Find unused exports
 npm run rebuild      # Rebuild native modules (sqlite3)

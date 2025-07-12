@@ -1,10 +1,10 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@renderer/components/ui/tooltip";
+} from "@renderer/components/ui/Tooltip";
 import { useUpdatePost } from "@renderer/hooks";
 import { CalendarDays, Check, Info, Undo2 } from "lucide-react";
 import { Post } from "src/features/posts/entity";

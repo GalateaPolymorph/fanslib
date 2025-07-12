@@ -17,7 +17,7 @@ import {
   UpdateTagDimensionDto,
 } from "../../../../../features/tags/api-type";
 import { TagDefinition, TagDimension } from "../../../../../features/tags/entity";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../components/ui/Button";
 import { TagDragProvider } from "../../../contexts/TagDragContext";
 import { DeleteTagDialog } from "./DeleteTagDialog";
 import { DimensionCard } from "./DimensionCard";

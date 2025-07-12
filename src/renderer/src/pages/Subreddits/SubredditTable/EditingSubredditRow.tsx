@@ -2,15 +2,15 @@ import { FilterActions } from "@renderer/components/MediaFilters/FilterActions";
 import { MediaFilters as MediaFiltersComponent } from "@renderer/components/MediaFilters/MediaFilters";
 import { MediaFiltersProvider } from "@renderer/components/MediaFilters/MediaFiltersContext";
 import { RedditChannelFilterPreset } from "@renderer/components/MediaFilters/RedditChannelFilterPreset";
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@renderer/components/ui/select";
+} from "@renderer/components/ui/Select";
 import { useUpdateSubreddit } from "@renderer/hooks/api/useChannels";
 import { formatViewCount, parseViewCount } from "@renderer/lib/format-views";
 import { Check } from "lucide-react";

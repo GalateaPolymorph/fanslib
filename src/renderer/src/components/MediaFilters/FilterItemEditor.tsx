@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { FilterItem } from "../../../../features/library/api-type";
 import { useChannels } from "../../hooks/api/useChannels";
 import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Switch } from "../ui/switch";
+import { Button } from "../ui/Button";
+import { Calendar } from "../ui/Calendar";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Switch } from "../ui/Switch";
 import { DimensionFilterSelector } from "./DimensionFilterSelector";
 
 type FilterItemEditorProps = {

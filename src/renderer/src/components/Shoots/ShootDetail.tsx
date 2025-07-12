@@ -1,4 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { useShootAccordionState } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
 import { useState, type FC } from "react";
@@ -6,7 +6,7 @@ import { Media } from "../../../../features/library/entity";
 import { ShootWithMedia, UpdateShootPayload } from "../../../../features/shoots/api-type";
 import { useLibraryPreferences } from "../../contexts/LibraryPreferencesContext";
 import { useMediaDrag } from "../../contexts/MediaDragContext";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/Accordion";
 import { ShootDetailDeleteButton } from "./ShootDetailDeleteButton";
 import { ShootDetailDropZone } from "./ShootDetailDropZone";
 import { ShootDetailEditButton } from "./ShootDetailEditButton";

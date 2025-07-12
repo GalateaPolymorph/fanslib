@@ -3,10 +3,10 @@ import { useState } from "react";
 import { ShootSummary } from "../../../features/shoots/api-type";
 import { useShootContext } from "../contexts/ShootContext";
 import { cn } from "../lib/utils";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Command, CommandEmpty, CommandInput, CommandItem } from "./ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
+import { Command, CommandEmpty, CommandInput, CommandItem } from "./ui/Command";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 type ShootSelectProps = {
   value?: string[];

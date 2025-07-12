@@ -1,4 +1,4 @@
-import { Input } from "@renderer/components/ui/input";
+import { Input } from "@renderer/components/ui/Input";
 import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
 import { useState } from "react";
 import { Post } from "src/features/posts/entity";

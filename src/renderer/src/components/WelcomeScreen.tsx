@@ -2,7 +2,7 @@ import { DatabaseImportWizard } from "@renderer/components/DatabaseImportWizard"
 import { Database, Settings } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
+import { Button } from "./ui/Button";
 
 export const WelcomeScreen = () => {
   const navigate = useNavigate();

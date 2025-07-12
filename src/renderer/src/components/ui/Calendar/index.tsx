@@ -1,4 +1,4 @@
-import { buttonVariants } from "@renderer/components/ui/button";
+import { buttonVariants } from "@renderer/components/ui/Button";
 import { cn } from "@renderer/lib/utils";
 import * as React from "react";
 import { DayPicker } from "react-day-picker";

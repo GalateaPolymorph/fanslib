@@ -1,5 +1,5 @@
-import { Button } from "@renderer/components/ui/button";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { Button } from "@renderer/components/ui/Button";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useChannels } from "@renderer/hooks/api/useChannels";
 import { Search } from "lucide-react";

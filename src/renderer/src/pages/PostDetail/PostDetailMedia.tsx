@@ -1,12 +1,12 @@
 import { MediaTile } from "@renderer/components/MediaTile";
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@renderer/components/ui/tooltip";
-import { useToast } from "@renderer/components/ui/use-toast";
+} from "@renderer/components/ui/Tooltip";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useOsDrag } from "@renderer/hooks";

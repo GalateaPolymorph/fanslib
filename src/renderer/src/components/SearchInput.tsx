@@ -1,8 +1,8 @@
 import { Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../lib/utils";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
 
 type SearchInputProps = {
   value: string;

@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
 import { useHashtags, useUpdateHashtagStats } from "../../hooks/api/useHashtags";
 import { ChannelHashtagTable } from "./ChannelHashtagTable";
 import { HashtagTable } from "./HashtagTable";

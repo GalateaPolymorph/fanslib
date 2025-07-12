@@ -1,7 +1,7 @@
 import { FilterPresetProvider } from "../../contexts/FilterPresetContext";
 import { FilterPresetManager } from "../../components/MediaFilters/FilterPresetManager";
 import { useState } from "react";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/ui/Button";
 import { Settings as SettingsIcon } from "lucide-react";
 
 export const FilterPresetSettings = () => {

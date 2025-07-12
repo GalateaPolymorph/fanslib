@@ -5,8 +5,8 @@ import { ArrowUpDown, Download } from "lucide-react";
 import { useState } from "react";
 import { FanslyPostWithAnalytics } from "../../../../features/analytics/api-type";
 import { formatNumber } from "../../../../lib/fansly-analytics";
-import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/Badge";
+import { Button } from "../../components/ui/Button";
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
+} from "../../components/ui/Table";
 
 type SortConfig = {
   sortBy: string;

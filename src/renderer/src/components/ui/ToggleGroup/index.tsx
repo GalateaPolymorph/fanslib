@@ -1,7 +1,7 @@
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
 import { cn } from "@renderer/lib/utils";
 import * as React from "react";
-import { toggleVariants } from "./toggle";
+import { toggleVariants } from "../Toggle";
 
 const ToggleGroup = React.forwardRef<
   React.ElementRef<typeof ToggleGroupPrimitive.Root>,

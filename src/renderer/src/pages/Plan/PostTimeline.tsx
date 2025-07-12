@@ -1,7 +1,7 @@
 import { PostPreview } from "@renderer/components/PostPreview/PostPreview";
 import { useState } from "react";
 import { type Post } from "../../../../features/posts/entity";
-import { ScrollArea } from "../../components/ui/scroll-area";
+import { ScrollArea } from "../../components/ui/ScrollArea";
 import { cn } from "../../lib/utils";
 import { isVirtualPost, VirtualPost } from "../../lib/virtual-posts";
 

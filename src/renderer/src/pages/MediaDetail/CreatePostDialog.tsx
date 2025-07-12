@@ -6,24 +6,24 @@ import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
 import { SubredditSelect } from "@renderer/components/SubredditSelect";
 import { TimePicker } from "@renderer/components/TimePicker";
-import { Button } from "@renderer/components/ui/button";
-import { Checkbox } from "@renderer/components/ui/checkbox";
+import { Button } from "@renderer/components/ui/Button";
+import { Checkbox } from "@renderer/components/ui/Checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@renderer/components/ui/collapsible";
-import { DatePicker } from "@renderer/components/ui/date-picker";
+} from "@renderer/components/ui/Collapsible";
+import { DatePicker } from "@renderer/components/ui/DatePicker";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@renderer/components/ui/dialog";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Textarea } from "@renderer/components/ui/textarea";
-import { useToast } from "@renderer/components/ui/use-toast";
+} from "@renderer/components/ui/Dialog";
+import { ScrollArea } from "@renderer/components/ui/ScrollArea";
+import { Textarea } from "@renderer/components/ui/Textarea";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { STORAGE_KEYS, useLocalStorageState } from "@renderer/lib/local-storage";
 import { cn } from "@renderer/lib/utils";

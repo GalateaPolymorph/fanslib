@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/Card";
 
 type ChartDataPoint = {
   x: number; // views

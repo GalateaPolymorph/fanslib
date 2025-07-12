@@ -1,4 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { useAdjacentPosts } from "@renderer/hooks";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect } from "react";

@@ -8,8 +8,8 @@ import { sanitizeFilterInput } from "../../../features/library/filter-helpers";
 import { MediaFilters as MediaFiltersComponent } from "./MediaFilters/MediaFilters";
 import { MediaFiltersProvider } from "./MediaFilters/MediaFiltersContext";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
+import { Button } from "./ui/Button";
+import { ScrollArea } from "./ui/ScrollArea";
 
 type MediaSelectionProps = {
   selectedMedia: Media[];

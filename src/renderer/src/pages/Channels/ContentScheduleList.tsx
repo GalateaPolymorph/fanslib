@@ -9,8 +9,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@renderer/components/ui/alert-dialog";
-import { Button } from "@renderer/components/ui/button";
+} from "@renderer/components/ui/AlertDialog";
+import { Button } from "@renderer/components/ui/Button";
 import { Edit, Trash2 } from "lucide-react";
 import { ContentSchedule, parseMediaFilters } from "../../../../features/content-schedules/entity";
 

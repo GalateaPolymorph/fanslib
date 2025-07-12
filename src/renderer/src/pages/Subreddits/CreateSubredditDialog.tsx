@@ -1,21 +1,21 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@renderer/components/ui/dialog";
-import { Input } from "@renderer/components/ui/input";
+} from "@renderer/components/ui/Dialog";
+import { Input } from "@renderer/components/ui/Input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@renderer/components/ui/select";
-import { Textarea } from "@renderer/components/ui/textarea";
-import { useToast } from "@renderer/components/ui/use-toast";
+} from "@renderer/components/ui/Select";
+import { Textarea } from "@renderer/components/ui/Textarea";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useCreateSubreddit } from "@renderer/hooks/api/useChannels";
 import { parseViewCount } from "@renderer/lib/format-views";
 import { useState } from "react";

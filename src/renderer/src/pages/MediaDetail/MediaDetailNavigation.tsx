@@ -1,4 +1,4 @@
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import { useLibraryPreferences } from "@renderer/contexts/LibraryPreferencesContext";
 import { useAdjacentMedia } from "@renderer/hooks/api/useMedia";
 import { ChevronLeft, ChevronRight } from "lucide-react";

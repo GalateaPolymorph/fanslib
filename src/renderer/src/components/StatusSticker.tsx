@@ -1,4 +1,4 @@
-import { Sticker } from "@renderer/components/ui/sticker";
+import { Sticker } from "@renderer/components/ui/Sticker";
 import { cn } from "@renderer/lib/utils";
 import { Check, Clock, Edit2Icon } from "lucide-react";
 

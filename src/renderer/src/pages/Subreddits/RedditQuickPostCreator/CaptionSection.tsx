@@ -1,4 +1,4 @@
-import { Textarea } from "@renderer/components/ui/textarea";
+import { Textarea } from "@renderer/components/ui/Textarea";
 import { useRedditQuickPostContext } from "./RedditQuickPostContext";
 
 export const CaptionSection = () => {

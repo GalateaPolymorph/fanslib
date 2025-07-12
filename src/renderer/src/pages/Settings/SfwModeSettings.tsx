@@ -1,9 +1,9 @@
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@renderer/components/ui/radio-group";
-import { Slider } from "@renderer/components/ui/slider";
-import { Switch } from "@renderer/components/ui/switch";
+import { Card } from "@renderer/components/ui/Card";
+import { Input } from "@renderer/components/ui/Input";
+import { Label } from "@renderer/components/ui/Label";
+import { RadioGroup, RadioGroupItem } from "@renderer/components/ui/RadioGroup";
+import { Slider } from "@renderer/components/ui/Slider";
+import { Switch } from "@renderer/components/ui/Switch";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useSfwMode } from "@renderer/hooks/ui/useSfwMode";
 import { cn } from "@renderer/lib/utils";

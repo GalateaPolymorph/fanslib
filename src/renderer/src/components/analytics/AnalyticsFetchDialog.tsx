@@ -1,7 +1,7 @@
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
 import { ChevronDownIcon, InfoIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -9,15 +9,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "../ui/Dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Textarea } from "../ui/textarea";
-import { useToast } from "../ui/use-toast";
+} from "../ui/DropdownMenu";
+import { Textarea } from "../ui/Textarea";
+import { useToast } from "../ui/Toast/use-toast";
 
 type TimeframeOption = {
   label: string;

@@ -1,12 +1,12 @@
 import { Plus } from "lucide-react";
 import { useTagDimensions } from "../hooks/api/tags/useTagDimensions";
-import { Button } from "./ui/button";
+import { Button } from "./ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "./ui/DropdownMenu";
 
 type TagFilterDimensionSelectProps = {
   excludeDimensions?: string[];

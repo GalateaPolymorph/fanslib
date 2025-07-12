@@ -7,7 +7,7 @@ import { PostStatus } from "src/features/posts/entity";
 import { ChannelSelect } from "./ChannelSelect";
 import { SearchInput } from "./SearchInput";
 import { StatusSelect } from "./StatusSelect";
-import { Button } from "./ui/button";
+import { Button } from "./ui/Button";
 
 type PostFiltersProps = {
   value: PlanFilterPreferences;

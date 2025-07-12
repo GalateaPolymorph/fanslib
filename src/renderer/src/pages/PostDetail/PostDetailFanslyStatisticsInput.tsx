@@ -1,6 +1,6 @@
-import { Button } from "@renderer/components/ui/button";
-import { Input } from "@renderer/components/ui/input";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { Button } from "@renderer/components/ui/Button";
+import { Input } from "@renderer/components/ui/Input";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useFieldUpdate } from "@renderer/hooks/forms/useFieldUpdate";
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";

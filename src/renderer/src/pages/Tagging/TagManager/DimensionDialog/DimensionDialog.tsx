@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../../../components/ui/dialog";
+} from "../../../../components/ui/Dialog";
 import { DimensionForm } from "./DimensionForm";
 
 export type EditingDimension =

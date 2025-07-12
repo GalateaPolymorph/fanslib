@@ -1,14 +1,14 @@
 import { MoreHorizontal, PenLine, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { TagDefinition, TagDimension } from "../../../../../../features/tags/entity";
-import { Button } from "../../../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
+import { Button } from "../../../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/Card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../../../components/ui/dropdown-menu";
+} from "../../../../components/ui/DropdownMenu";
 import { cn } from "../../../../lib/utils";
 import { DeleteDimensionDialog } from "../DeleteDimensionDialog";
 import { TagListView } from "./TagListView";

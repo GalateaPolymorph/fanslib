@@ -2,7 +2,7 @@ import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Post } from "src/features/posts/entity";
 
-import { Button } from "@renderer/components/ui/button";
+import { Button } from "@renderer/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@renderer/components/ui/dialog";
+} from "@renderer/components/ui/Dialog";
 import { useDeletePost } from "@renderer/hooks";
 
 type PostDetailDeleteButtonProps = {

@@ -8,7 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "./ui/sidebar";
+} from "./ui/Sidebar";
 
 export const AppSidebar = () => {
   const location = useLocation();

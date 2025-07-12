@@ -1,6 +1,6 @@
 import { PenLine, X } from "lucide-react";
 import { type FC } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 
 type ShootDetailEditButtonProps = {
   isEditing: boolean;

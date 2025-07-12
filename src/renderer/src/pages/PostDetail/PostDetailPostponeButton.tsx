@@ -1,5 +1,5 @@
-import { Button } from "@renderer/components/ui/button";
-import { useToast } from "@renderer/components/ui/use-toast";
+import { Button } from "@renderer/components/ui/Button";
+import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { Send } from "lucide-react";
 import { CHANNEL_TYPES } from "../../../../features/channels/channelTypes";

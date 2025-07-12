@@ -1,8 +1,8 @@
-import { Badge } from "@renderer/components/ui/badge";
+import { Badge } from "@renderer/components/ui/Badge";
 import { cn } from "@renderer/lib/utils";
 import { CSSProperties } from "react";
 import { HashtagWithStats } from "../../../../../features/hashtags/api-type";
-import { Skeleton } from "../../../components/ui/skeleton";
+import { Skeleton } from "../../../components/ui/Skeleton";
 import { useChannels } from "../../../hooks/api/useChannels";
 import { DeleteHashtagButton } from "./DeleteHashtagButton";
 import { HashtagTableHeader } from "./HashtagTableHeader";
