@@ -43,7 +43,7 @@ export const PostponeSettings = () => {
           className="max-w-sm"
         />
       </SettingRow>
-      
+
       <SettingRow
         title="Bluesky Username"
         description="Your Bluesky handle for cross-platform posting"
@@ -57,7 +57,7 @@ export const PostponeSettings = () => {
           className="max-w-sm"
         />
       </SettingRow>
-      
+
       <SettingRow
         title="Bluesky Default Expiry"
         description="Number of days after which Bluesky posts sent to Postpone will be automatically removed (1-365 days)"

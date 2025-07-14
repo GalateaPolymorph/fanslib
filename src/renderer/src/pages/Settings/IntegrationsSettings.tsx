@@ -18,11 +18,11 @@ export const IntegrationsSettings = () => {
           <TabsTrigger value="fansly">Fansly Analytics</TabsTrigger>
           <TabsTrigger value="postpone">Postpone</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="fansly" className="space-y-6">
           <FanslySettings />
         </TabsContent>
-        
+
         <TabsContent value="postpone" className="space-y-6">
           <PostponeSettings />
         </TabsContent>

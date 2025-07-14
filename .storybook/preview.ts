@@ -1,6 +1,6 @@
-import type { Preview } from '@storybook/react';
-import { createElement } from 'react';
-import '../src/renderer/src/index.css';
+import type { Preview } from "@storybook/react";
+import { createElement } from "react";
+import "../src/renderer/src/index.css";
 
 const preview: Preview = {
   parameters: {
@@ -16,14 +16,14 @@ const preview: Preview = {
   },
   globalTypes: {
     theme: {
-      description: 'Global theme for components',
-      defaultValue: 'light',
+      description: "Global theme for components",
+      defaultValue: "light",
       toolbar: {
-        title: 'Theme',
-        icon: 'paintbrush',
+        title: "Theme",
+        icon: "paintbrush",
         items: [
-          { value: 'light', title: 'Light' },
-          { value: 'dark', title: 'Dark' },
+          { value: "light", title: "Light" },
+          { value: "dark", title: "Dark" },
         ],
         dynamicTitle: true,
       },
@@ -31,13 +31,13 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      const theme = context.globals.theme || 'light';
+      const theme = context.globals.theme || "light";
       return createElement(
-        'div',
-        { className: theme === 'dark' ? 'dark' : '' },
+        "div",
+        { className: theme === "dark" ? "dark" : "" },
         createElement(
-          'div',
-          { className: 'bg-background text-foreground p-4' },
+          "div",
+          { className: "bg-background text-foreground p-4" },
           createElement(Story)
         )
       );

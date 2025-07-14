@@ -49,21 +49,21 @@ Create a `.stories.tsx` file next to your component:
 
 ```typescript
 // src/renderer/src/components/ui/your-component.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { YourComponent } from './your-component';
+import type { Meta, StoryObj } from "@storybook/react";
+import { YourComponent } from "./your-component";
 
 const meta: Meta<typeof YourComponent> = {
-  title: 'UI/YourComponent',
+  title: "UI/YourComponent",
   component: YourComponent,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     // Define controls for component props
     variant: {
-      control: { type: 'select' },
-      options: ['default', 'secondary'],
+      control: { type: "select" },
+      options: ["default", "secondary"],
     },
   },
 };
@@ -79,7 +79,7 @@ export const Default: Story = {
 
 export const Secondary: Story = {
   args: {
-    variant: 'secondary',
+    variant: "secondary",
   },
 };
 ```
@@ -133,9 +133,7 @@ All Tailwind classes work in Storybook stories. The theme system is fully integr
 
 ```tsx
 // Light/dark theme classes work automatically
-<div className="bg-background text-foreground">
-  Content that respects theme
-</div>
+<div className="bg-background text-foreground">Content that respects theme</div>
 ```
 
 ### Shadcn/ui Components

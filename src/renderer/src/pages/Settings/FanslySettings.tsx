@@ -1,8 +1,9 @@
+import { FanslyAutomationDialog } from "@renderer/components/Automation/FanslyAutomationDialog";
 import { Button } from "@renderer/components/ui/Button";
 import { Input } from "@renderer/components/ui/Input";
 import { Textarea } from "@renderer/components/ui/Textarea";
 import { useToast } from "@renderer/components/ui/Toast/use-toast";
-import { AlertTriangle, Eye, EyeOff, InfoIcon } from "lucide-react";
+import { AlertTriangle, Bot, Eye, EyeOff, InfoIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { SettingRow } from "./SettingRow";
 
@@ -52,6 +53,7 @@ export const FanslySettings = () => {
   const [showTokens, setShowTokens] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchRequest, setFetchRequest] = useState("");
+  const [showAutomationDialog, setShowAutomationDialog] = useState(false);
   const { toast } = useToast();
 
   const loadCredentials = useCallback(async () => {
@@ -115,6 +117,22 @@ export const FanslySettings = () => {
       ...prev,
       [key]: value || undefined,
     }));
+  };
+
+  const handleAutomationCredentials = (automationCredentials: any) => {
+    // Convert automation credentials to our format
+    const converted: FanslyCredentials = {
+      fanslyAuth: automationCredentials.authorization,
+      fanslySessionId: automationCredentials.fanslySessionId,
+      fanslyClientCheck: automationCredentials.fanslyClientCheck,
+      fanslyClientId: automationCredentials.fanslyClientId,
+    };
+
+    setCredentials(converted);
+    setShowAutomationDialog(false);
+    setImmediate(() => {
+      saveCredentials();
+    });
   };
 
   const parseFetchRequestAndUpdateCredentials = () => {
@@ -248,14 +266,40 @@ export const FanslySettings = () => {
           </SettingRow>
         </>
       )}
+
+      {/* Automation Section */}
       <SettingRow
-        title="Parse credentials"
+        title="Automated credential extraction"
+        descriptionSlot={
+          <div className="relative w-full rounded-lg p-4 bg-background text-foreground">
+            <div className="flex">
+              <Bot className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0 text-blue-500" />
+              <div className="text-sm">
+                <strong>New:</strong> Automatically extract credentials using browser automation.
+                <br />
+                This eliminates the need to manually copy fetch requests from Chrome DevTools.
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <div className="pt-4">
+          <Button onClick={() => setShowAutomationDialog(true)} className="w-fit" variant="default">
+            <Bot className="h-4 w-4 mr-2" />
+            Extract Credentials Automatically
+          </Button>
+        </div>
+      </SettingRow>
+
+      <SettingRow
+        title="Manual credential extraction"
         descriptionSlot={
           <div className="relative w-full rounded-lg p-4 bg-background text-foreground">
             <div className="flex">
               <InfoIcon className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                To fetch analytics data from Fansly, copy a fetch request from Chrome DevTools.
+                <strong>Fallback method:</strong> If automation fails, copy a fetch request from
+                Chrome DevTools.
                 <br />
                 Go to Fansly → Developer Tools → Network tab → find any API request → right-click →
                 Copy as fetch and paste it below.
@@ -281,6 +325,14 @@ export const FanslySettings = () => {
           </Button>
         </div>
       </SettingRow>
+
+      {/* Automation Dialog */}
+      <FanslyAutomationDialog
+        isOpen={showAutomationDialog}
+        onClose={() => setShowAutomationDialog(false)}
+        onCredentialsExtracted={handleAutomationCredentials}
+        mode="credentials"
+      />
     </div>
   );
 };

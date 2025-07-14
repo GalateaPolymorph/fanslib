@@ -2,6 +2,10 @@
   "name": "fanslib",
   "productName": "FansLib",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/galateapolymorph/fanslib.git"
+  },
   "description": "A tool for managing adult content creators' content libraries.",
   "main": "./out/main/index.js",
   "author": "Galatea Polymorph",

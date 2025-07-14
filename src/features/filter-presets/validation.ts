@@ -16,15 +16,17 @@ const validateFilterItem = async (item: FilterItem): Promise<boolean> => {
     case "subreddit": {
       // Subreddits are stored in Channel table with specific type
       if (!item.id) return false;
-      const subreddit = await database.manager.findOne(Channel, { 
+      const subreddit = await database.manager.findOne(Channel, {
         where: { id: item.id },
-        relations: { type: true }
+        relations: { type: true },
       });
       return !!subreddit && subreddit.type?.name === "reddit";
     }
     case "tag": {
       if (!item.id) return false;
-      const tag = await database.manager.findOne(TagDefinition, { where: { id: parseInt(item.id) } });
+      const tag = await database.manager.findOne(TagDefinition, {
+        where: { id: parseInt(item.id) },
+      });
       return !!tag;
     }
     case "shoot": {
@@ -51,7 +53,7 @@ export const validateAndCleanFilters = async (filters: MediaFilters): Promise<Me
 
   for (const group of filters) {
     const validItems: FilterItem[] = [];
-    
+
     for (const item of group.items) {
       const isValid = await validateFilterItem(item);
       if (isValid) {

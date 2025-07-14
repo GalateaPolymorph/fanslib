@@ -1,4 +1,9 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
+import type {
+  FanslyAutomationResult,
+  FanslyAutomationOptions,
+  PostDiscoveryOptions,
+} from "./playwright-fansly-automation/context";
 
 export type RedditPostResult = {
   success: boolean;
@@ -12,9 +17,43 @@ export type PostToRedditPayload = {
   caption: string;
 };
 
-const methods = ["postToReddit"] as const;
+// Fansly automation types
+export type FanslyFullAutomationPayload = FanslyAutomationOptions &
+  PostDiscoveryOptions & {
+    email?: string;
+    password?: string;
+  };
+
+export type FanslyCredentialExtractionPayload = FanslyAutomationOptions & {
+  email?: string;
+  password?: string;
+};
+
+export type FanslyPostDiscoveryPayload = FanslyAutomationOptions & PostDiscoveryOptions;
+
+const methods = [
+  "postToReddit",
+  "runFanslyFullAutomation",
+  "extractFanslyCredentials",
+  "discoverFanslyPosts",
+  "clearFanslySession",
+] as const;
+
 export type AutomationHandlers = {
   postToReddit: (_: any, payload: PostToRedditPayload) => Promise<RedditPostResult>;
+  runFanslyFullAutomation: (
+    _: any,
+    payload: FanslyFullAutomationPayload
+  ) => Promise<FanslyAutomationResult>;
+  extractFanslyCredentials: (
+    _: any,
+    payload: FanslyCredentialExtractionPayload
+  ) => Promise<FanslyAutomationResult>;
+  discoverFanslyPosts: (
+    _: any,
+    payload: FanslyPostDiscoveryPayload
+  ) => Promise<FanslyAutomationResult>;
+  clearFanslySession: (_: any) => Promise<void>;
 };
 
 export const namespace = "automation" as const;

@@ -12,19 +12,17 @@ export type UpdateFilterPresetPayload = {
   filters?: MediaFilters;
 };
 
-const methods = [
-  "getAll",
-  "get",
-  "create",
-  "update",
-  "delete",
-] as const;
+const methods = ["getAll", "get", "create", "update", "delete"] as const;
 
 export type FilterPresetHandlers = {
   getAll: (_: unknown) => Promise<FilterPreset[]>;
   get: (_: unknown, id: string) => Promise<FilterPreset | null>;
   create: (_: unknown, payload: CreateFilterPresetPayload) => Promise<FilterPreset>;
-  update: (_: unknown, id: string, payload: UpdateFilterPresetPayload) => Promise<FilterPreset | null>;
+  update: (
+    _: unknown,
+    id: string,
+    payload: UpdateFilterPresetPayload
+  ) => Promise<FilterPreset | null>;
   delete: (_: unknown, id: string) => Promise<void>;
 };
 

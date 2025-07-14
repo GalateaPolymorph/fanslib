@@ -29,6 +29,7 @@ When adding or modifying UI components in `src/renderer/src/components/`, you mu
 4. Follow the naming convention: `ComponentName.stories.tsx`
 
 Example structure:
+
 ```
 src/renderer/src/components/ui/
 ├── button.tsx

@@ -24,7 +24,7 @@ export const AppSidebar = () => {
                   <SidebarMenuButton
                     asChild
                     isActive={
-                      item.url === "/settings" 
+                      item.url === "/settings"
                         ? location.pathname.startsWith("/settings")
                         : location.pathname === item.url
                     }
