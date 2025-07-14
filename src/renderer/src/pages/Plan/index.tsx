@@ -1,4 +1,7 @@
 import { PostFilters } from "@renderer/components/PostFilters";
+import { PageContainer } from "@renderer/components/ui/PageContainer/PageContainer";
+import { PageHeader } from "@renderer/components/ui/PageHeader/PageHeader";
+import { SectionHeader } from "@renderer/components/ui/SectionHeader/SectionHeader";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import {
@@ -106,17 +109,21 @@ const PlanPageContent = () => {
     <SplitViewLayout
       id="plan"
       mainContent={
-        <div className="h-full w-full overflow-hidden flex flex-col">
-          <div className="flex gap-12 flex-col py-6 pl-6 pr-4 flex-none">
-            <h1 className="text-2xl font-bold">Plan</h1>
-            <div className="flex items-center justify-between gap-4">
+        <PageContainer padding="none" className="h-full w-full overflow-hidden flex flex-col">
+          <PageHeader
+            title="Plan"
+            description="Schedule and organize your content publication timeline"
+            className="py-6 pl-6 pr-4 flex-none"
+          />
+          <div className="px-6 pb-4">
+            <SectionHeader title="" spacing="default" actions={<PlanViewSettings />} />
+            <div className="mt-2">
               <PostFilters
                 value={preferences.filter}
                 onFilterChange={(filter) => {
                   updatePreferences({ filter });
                 }}
               />
-              <PlanViewSettings />
             </div>
           </div>
           <div className="flex-1 overflow-hidden px-6">
@@ -128,7 +135,7 @@ const PlanPageContent = () => {
               <PostCalendar posts={posts} onUpdate={refetchPostsAndLibrary} scrollRef={scrollRef} />
             )}
           </div>
-        </div>
+        </PageContainer>
       }
       sideContent={activeTab?.content}
       sideContentHeader={

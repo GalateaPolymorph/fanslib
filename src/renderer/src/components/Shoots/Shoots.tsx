@@ -1,7 +1,10 @@
 import { ShootCreateDropZone } from "@renderer/components/Shoots/ShootCreateDropZone";
 import { ShootDetail } from "@renderer/components/Shoots/ShootDetail";
 import { ShootsFilter } from "@renderer/components/ShootsFilter";
+import { EmptyState } from "@renderer/components/ui/EmptyState/EmptyState";
+import { ErrorState } from "@renderer/components/ui/ErrorState/ErrorState";
 import { ScrollArea } from "@renderer/components/ui/ScrollArea";
+import { SectionHeader } from "@renderer/components/ui/SectionHeader/SectionHeader";
 import { useLibrary } from "@renderer/contexts/LibraryContext";
 import { useMediaDrag } from "@renderer/contexts/MediaDragContext";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
@@ -9,6 +12,7 @@ import { useShootContext } from "@renderer/contexts/ShootContext";
 import { ShootPreferencesProvider } from "@renderer/contexts/ShootPreferencesContext";
 import { useScrollPosition } from "@renderer/hooks";
 import { cn } from "@renderer/lib/utils";
+import { Camera } from "lucide-react";
 import { type FC } from "react";
 import { ShootViewSettings } from "./ShootViewSettings";
 import { useShootsMedia } from "./useShootsMedia";
@@ -27,7 +31,12 @@ const ShootsContent: FC<ShootsProps> = ({ className }) => {
   if (error) {
     return (
       <div className={className}>
-        <div className="p-4 text-destructive">Error loading shoots: {error.message}</div>
+        <ErrorState
+          title="Failed to load shoots"
+          description={error.message}
+          onRetry={() => refetch()}
+          showRetry
+        />
       </div>
     );
   }
@@ -38,9 +47,13 @@ const ShootsContent: FC<ShootsProps> = ({ className }) => {
     >
       <div className={cn(className, "flex h-full flex-col")}>
         <div className="flex-none bg-background p-6">
-          <div className="flex items-center justify-between">
+          <SectionHeader
+            title="Shoots"
+            description="Organize your media into themed collections"
+            actions={<ShootViewSettings />}
+          />
+          <div className="mt-4">
             <ShootsFilter />
-            <ShootViewSettings />
           </div>
         </div>
         <div className="flex-1 min-h-0">
@@ -48,9 +61,11 @@ const ShootsContent: FC<ShootsProps> = ({ className }) => {
             <div className="flex flex-col px-6 pt-4 gap-2 pb-48">
               {shoots.length === 0
                 ? !isDragging && (
-                    <div className="text-center text-muted-foreground py-8">
-                      Drag media here to create your first shoot
-                    </div>
+                    <EmptyState
+                      icon={<Camera className="h-12 w-12" />}
+                      title="No shoots created"
+                      description="Drag media here to create your first shoot and organize your content."
+                    />
                   )
                 : shoots.map((shoot) => (
                     <ShootDetail

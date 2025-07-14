@@ -27,6 +27,8 @@ export type FormFieldProps = React.HTMLAttributes<HTMLDivElement> &
     error?: string;
     required?: boolean;
     description?: string;
+    helperText?: string;
+    layout?: "default" | "horizontal";
   };
 
 const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
@@ -37,7 +39,9 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
     htmlFor, 
     error, 
     required, 
-    description, 
+    description,
+    helperText,
+    layout: _layout = "default", 
     children, 
     ...props 
   }, ref) => (
@@ -62,6 +66,11 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
       {description && !error && (
         <p className="text-xs text-muted-foreground">
           {description}
+        </p>
+      )}
+      {helperText && !error && (
+        <p className="text-xs text-muted-foreground">
+          {helperText}
         </p>
       )}
       {error && (
