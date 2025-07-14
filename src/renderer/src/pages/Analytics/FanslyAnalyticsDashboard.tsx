@@ -1,4 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/Tabs";
+import { PageContainer } from "@renderer/components/ui/PageContainer/PageContainer";
+import { PageHeader } from "@renderer/components/ui/PageHeader/PageHeader";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { BulkFetchButton } from "../../components/Analytics/BulkFetchButton";
@@ -34,14 +36,18 @@ export const FanslyAnalyticsDashboard = () => {
   });
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Fansly Analytics Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <BulkFetchButton isFetching={isFetching} onStartFetch={startBulkFetch} />
-          <TimeframeSelector />
-        </div>
-      </div>
+    <PageContainer spacing="lg">
+      <PageHeader
+        title="Fansly Analytics Dashboard"
+        titleSize="lg"
+        description="Track your content performance and engagement metrics"
+        actions={
+          <div className="flex items-center gap-3">
+            <BulkFetchButton isFetching={isFetching} onStartFetch={startBulkFetch} />
+            <TimeframeSelector />
+          </div>
+        }
+      />
 
       <BulkAnalyticsFetchProgress fetchProgress={fetchProgress} fetchResult={fetchResult} />
 
@@ -81,6 +87,6 @@ export const FanslyAnalyticsDashboard = () => {
           <InsightsPanel />
         </TabsContent>
       </Tabs>
-    </div>
+    </PageContainer>
   );
 };

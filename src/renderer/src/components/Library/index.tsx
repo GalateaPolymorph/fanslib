@@ -10,6 +10,9 @@ import { LibrarySortOptions } from "../../pages/Manage/Gallery/LibrarySortOption
 import { FilterActions } from "../MediaFilters/FilterActions";
 import { MediaFilters as MediaFiltersComponent } from "../MediaFilters/MediaFilters";
 import { MediaFiltersProvider } from "../MediaFilters/MediaFiltersContext";
+import { PageContainer } from "../ui/PageContainer/PageContainer";
+import { PageHeader } from "../ui/PageHeader/PageHeader";
+import { SectionHeader } from "../ui/SectionHeader/SectionHeader";
 import { ScanButton } from "./Scan/ScanButton";
 import { ScanProgress } from "./Scan/ScanProgress";
 import { useScan } from "./Scan/useScan";
@@ -39,17 +42,20 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
   return (
     <FilterPresetProvider onFiltersChange={updateFilters}>
       <MediaFiltersProvider value={preferences.filter} onChange={updateFilters}>
-        <div className="h-full w-full overflow-hidden flex flex-col">
+        <PageContainer padding="none" className="h-full w-full overflow-hidden flex flex-col">
           {showHeader && (
-            <div className="flex justify-between items-center py-6 px-6 flex-none">
-              <h1 className="text-2xl font-bold">Library</h1>
-              <ScanButton isScanning={isScanning} onScan={handleScan} />
-            </div>
+            <PageHeader
+              title="Library"
+              description="Browse and manage your media collection"
+              actions={<ScanButton isScanning={isScanning} onScan={handleScan} />}
+              className="py-6 px-6 flex-none"
+            />
           )}
           <div className="flex-1 min-h-0 p-6 flex flex-col">
-            <div className="flex justify-between items-center mb-4 flex-none">
-              <div className="flex items-center w-full justify-between gap-4">
-                <MediaFiltersComponent />
+            <SectionHeader
+              title=""
+              spacing="default"
+              actions={
                 <div className="flex items-center gap-2">
                   <FilterActions />
                   <GalleryViewSettings />
@@ -63,7 +69,10 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
                     }}
                   />
                 </div>
-              </div>
+              }
+            />
+            <div className="mb-4">
+              <MediaFiltersComponent />
             </div>
 
             <ScanProgress scanProgress={scanProgress} scanResult={scanResult} />
@@ -78,7 +87,7 @@ export const Library = ({ showHeader = true }: LibraryProps) => {
             </div>
             <GalleryPagination totalPages={totalPages} totalItems={totalItems} />
           </div>
-        </div>
+        </PageContainer>
       </MediaFiltersProvider>
     </FilterPresetProvider>
   );

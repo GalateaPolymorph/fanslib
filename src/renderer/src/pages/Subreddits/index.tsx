@@ -1,5 +1,7 @@
 import { RedditQuickPostCreator } from "@renderer/pages/Subreddits/RedditQuickPostCreator";
 import { Button } from "@renderer/components/ui/Button";
+import { PageContainer } from "@renderer/components/ui/PageContainer/PageContainer";
+import { PageHeader } from "@renderer/components/ui/PageHeader/PageHeader";
 import { useSubreddits } from "@renderer/hooks/api/useChannels";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
@@ -20,14 +22,17 @@ export const SubredditsPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Subreddits</h1>
-        <Button variant="secondary" onClick={() => setIsCreateDialogOpen(true)}>
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Create Subreddit
-        </Button>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Subreddits"
+        description="Manage your Reddit communities and content distribution"
+        actions={
+          <Button variant="secondary" onClick={() => setIsCreateDialogOpen(true)}>
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Create Subreddit
+          </Button>
+        }
+      />
 
       <RedditQuickPostCreator subreddits={subreddits} />
 
@@ -42,6 +47,6 @@ export const SubredditsPage = () => {
         onOpenChange={setIsCreateDialogOpen}
         onSubredditCreated={handleSubredditCreated}
       />
-    </div>
+    </PageContainer>
   );
 };

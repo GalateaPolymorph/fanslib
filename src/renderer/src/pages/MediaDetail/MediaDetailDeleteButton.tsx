@@ -2,19 +2,9 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MediaType } from "../../../../features/library/entity";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../../components/ui/AlertDialog";
 import { Button } from "../../components/ui/Button";
 import { Checkbox } from "../../components/ui/Checkbox";
+import { DeleteConfirmDialog } from "../../components/ui/DeleteConfirmDialog/DeleteConfirmDialog";
 import {
   Tooltip,
   TooltipContent,
@@ -30,6 +20,7 @@ type Props = {
 export const MediaDetailDeleteButton = ({ id, mediaType }: Props) => {
   const navigate = useNavigate();
   const [deleteFile, setDeleteFile] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -41,46 +32,46 @@ export const MediaDetailDeleteButton = ({ id, mediaType }: Props) => {
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete this {mediaType}. This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="flex items-center space-x-2 py-4">
-                <Checkbox
-                  id="delete-file"
-                  checked={deleteFile}
-                  onCheckedChange={(checked) => setDeleteFile(checked as boolean)}
-                />
-                <label
-                  htmlFor="delete-file"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Also delete file from disk
-                </label>
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Delete media</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Delete media</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Delete Media"
+        description={`This will permanently delete this ${mediaType}. This action cannot be undone.`}
+        itemName={`${mediaType}`}
+        onConfirm={handleDelete}
+      >
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="delete-file"
+            checked={deleteFile}
+            onCheckedChange={(checked) => setDeleteFile(checked as boolean)}
+          />
+          <label
+            htmlFor="delete-file"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Also delete file from disk
+          </label>
+        </div>
+      </DeleteConfirmDialog>
+    </>
   );
 };
