@@ -10,6 +10,7 @@ import { MediaFiltersProvider } from "./MediaFilters/MediaFiltersContext";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/Button";
 import { ScrollArea } from "./ui/ScrollArea";
+import { GridContainer } from "./ui/GridContainer/GridContainer";
 
 type MediaSelectionProps = {
   selectedMedia: Media[];
@@ -104,7 +105,7 @@ export const MediaSelection = ({
       <div className="flex-1 min-h-0">
         <ScrollArea className="h-full border rounded-md">
           <div className="p-4">
-            <div className="grid grid-cols-4 lg:grid-cols-5 gap-4">
+            <GridContainer columns={5}>
               {mediaData.items.map((item) => (
                 <div
                   key={item.id}
@@ -129,7 +130,7 @@ export const MediaSelection = ({
                   <MediaTileLite media={item} isActivePreview={item.id === activePreviewId} />
                 </div>
               ))}
-            </div>
+            </GridContainer>
             {mediaData.items.length === 0 && (
               <div className="col-span-full text-center py-8 text-muted-foreground">
                 No related media found

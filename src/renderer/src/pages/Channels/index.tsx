@@ -1,5 +1,7 @@
 import { Button } from "@renderer/components/ui/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@renderer/components/ui/Dialog";
+import { PageContainer } from "@renderer/components/ui/PageContainer/PageContainer";
+import { PageHeader } from "@renderer/components/ui/PageHeader/PageHeader";
 import { useChannels, useDeleteChannel } from "@renderer/hooks/api/useChannels";
 import { CreateChannelForm } from "@renderer/pages/Channels/CreateChannelForm";
 import { PlusCircle } from "lucide-react";
@@ -31,21 +33,24 @@ export const ChannelsPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Channels</h1>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="secondary">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add Channel
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <CreateChannelForm onSubmit={handleNewChannel} />
-          </DialogContent>
-        </Dialog>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Channels"
+        description="Manage your content distribution channels"
+        actions={
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="secondary">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Add Channel
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <CreateChannelForm onSubmit={handleNewChannel} />
+            </DialogContent>
+          </Dialog>
+        }
+      />
 
       <div className="space-y-3 divide-y">
         {channels.map((channel) => (
@@ -60,6 +65,6 @@ export const ChannelsPage = () => {
           </div>
         ))}
       </div>
-    </div>
+    </PageContainer>
   );
 };

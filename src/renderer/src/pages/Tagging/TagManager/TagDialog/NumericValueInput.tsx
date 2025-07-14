@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Input } from "../../../../components/ui/Input";
-import { Label } from "../../../../components/ui/Label";
+import { FormField } from "../../../../components/ui/FormField/FormField";
 import { NumericSchema } from "../../../../lib/tagValidation";
 
 type NumericValueInputProps = {
@@ -74,10 +74,16 @@ export const NumericValueInput = ({
   };
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor="numericValue">
-        Value *{schema.unit && <span className="text-gray-500 ml-1">({schema.unit})</span>}
-      </Label>
+    <FormField
+      label={`Value *${schema.unit ? ` (${schema.unit})` : ""}`}
+      required
+      error={error}
+      helperText={
+        schema.min !== undefined || schema.max !== undefined
+          ? `Range: ${schema.min ?? "−∞"} to ${schema.max ?? "∞"}${schema.step ? ` (step: ${schema.step})` : ""}`
+          : undefined
+      }
+    >
       <Input
         id="numericValue"
         type="number"
@@ -87,15 +93,8 @@ export const NumericValueInput = ({
         min={schema.min}
         max={schema.max}
         step={schema.step}
-        className={error ? "border-red-500" : ""}
+        className={error ? "border-destructive" : ""}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
-      {schema.min !== undefined || schema.max !== undefined ? (
-        <p className="text-xs text-gray-500">
-          Range: {schema.min ?? "−∞"} to {schema.max ?? "∞"}
-          {schema.step && ` (step: ${schema.step})`}
-        </p>
-      ) : null}
-    </div>
+    </FormField>
   );
 };

@@ -1,13 +1,20 @@
 import { Link } from "react-router-dom";
+import { EmptyState } from "@renderer/components/ui/EmptyState/EmptyState";
+import { Button } from "@renderer/components/ui/Button";
+import { PlusCircle, Calendar } from "lucide-react";
 
 export const PlanEmptyState = () => (
-  <div className="text-center text-muted-foreground py-8">
-    You don&apos;t have any channels to post your content to yet.
-    <br />
-    Go to the{" "}
-    <Link to="/channels" className="underline">
-      channels page
-    </Link>{" "}
-    to add one.
-  </div>
+  <EmptyState
+    icon={<Calendar className="h-12 w-12" />}
+    title="No channels configured"
+    description="You don't have any channels to post your content to yet."
+    action={
+      <Button asChild>
+        <Link to="/channels">
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add Channel
+        </Link>
+      </Button>
+    }
+  />
 );

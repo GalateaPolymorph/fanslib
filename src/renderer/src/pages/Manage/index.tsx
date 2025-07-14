@@ -20,7 +20,6 @@ export const ManagePage = () => {
       id="manage-page"
       mainContent={<Library />}
       sideContent={<Shoots />}
-      sideContentHeader={<h1 className="text-2xl font-bold">Shoots</h1>}
       mainDefaultSize={50}
       sideDefaultSize={50}
       sideMaxSize={50}
