@@ -16,6 +16,7 @@ import { Hashtag, HashtagChannelStats } from "../features/hashtags/entity";
 import { Media } from "../features/library/entity";
 import { Post, PostMedia } from "../features/posts/entity";
 import { Shoot } from "../features/shoots/entity";
+import { CaptionSnippet } from "../features/snippets/entity";
 import { startPeriodicCleanup, stopPeriodicCleanup } from "../features/tags/drift-prevention";
 import { MediaTag, TagDefinition, TagDimension } from "../features/tags/entity";
 const dbPath = join(app.getPath("userData"), "fanslib.sqlite");
@@ -41,6 +42,7 @@ export const AppDataSource = new DataSource({
     TagDefinition,
     MediaTag,
     FilterPreset,
+    CaptionSnippet,
   ],
   synchronize: true,
   logging: false,

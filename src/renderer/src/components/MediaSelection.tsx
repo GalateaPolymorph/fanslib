@@ -7,6 +7,7 @@ import { Media } from "../../../features/library/entity";
 import { sanitizeFilterInput } from "../../../features/library/filter-helpers";
 import { MediaFilters as MediaFiltersComponent } from "./MediaFilters/MediaFilters";
 import { MediaFiltersProvider } from "./MediaFilters/MediaFiltersContext";
+import { FilterPresetProvider } from "../contexts/FilterPresetContext";
 import { MediaTileLite } from "./MediaTile/MediaTileLite";
 import { Button } from "./ui/Button";
 import { ScrollArea } from "./ui/ScrollArea";
@@ -96,9 +97,11 @@ export const MediaSelection = ({
               {`${mediaData.total} items available`}
             </span>
           </div>
-          <MediaFiltersProvider value={filters} onChange={handleFilterChange}>
-            <MediaFiltersComponent />
-          </MediaFiltersProvider>
+          <FilterPresetProvider onFiltersChange={handleFilterChange}>
+            <MediaFiltersProvider value={filters} onChange={handleFilterChange}>
+              <MediaFiltersComponent />
+            </MediaFiltersProvider>
+          </FilterPresetProvider>
         </div>
       </div>
 

@@ -26,6 +26,7 @@ import { FilterPresetSettings } from "./pages/Settings/FilterPresetSettings";
 import { GeneralSettings } from "./pages/Settings/GeneralSettings";
 import { IntegrationsSettings } from "./pages/Settings/IntegrationsSettings";
 import { SettingsLayout } from "./pages/Settings/SettingsLayout";
+import { SnippetSettings } from "./pages/Settings/SnippetSettings";
 import { SubredditsPage } from "./pages/Subreddits";
 import { TaggingPage } from "./pages/Tagging";
 
@@ -93,6 +94,10 @@ const routes = [
           {
             path: "filter-presets",
             element: <FilterPresetSettings />,
+          },
+          {
+            path: "snippets",
+            element: <SnippetSettings />,
           },
         ],
       },

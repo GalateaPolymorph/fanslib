@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { Post } from "src/features/posts/entity";
 import { HashtagButton } from "../../components/HashtagButton";
+import { SnippetSelector } from "../../components/SnippetSelector";
 
 type PostDetailCaptionInputProps = {
   post: Post;
@@ -64,12 +65,20 @@ export const PostDetailCaptionInput = ({ post }: PostDetailCaptionInputProps) =>
           onChange={(e) => updateCaption(e.target.value)}
           className="min-h-[200px] max-h-[400px] pr-10 resize-y"
         />
-        <HashtagButton
-          channel={post.channel}
-          caption={localCaption}
-          onCaptionChange={updateCaption}
-          className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-        />
+        <div className="absolute right-2 top-2 flex gap-1">
+          <SnippetSelector
+            channelId={post.channel?.id}
+            caption={localCaption}
+            onCaptionChange={updateCaption}
+            className="text-muted-foreground hover:text-foreground"
+          />
+          <HashtagButton
+            channel={post.channel}
+            caption={localCaption}
+            onCaptionChange={updateCaption}
+            className="text-muted-foreground hover:text-foreground"
+          />
+        </div>
         {isUpdating && (
           <div className="absolute right-2 bottom-2 bg-background p-1 rounded text-xs text-muted-foreground">
             Saving...
