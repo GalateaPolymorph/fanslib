@@ -22,6 +22,7 @@ import {
 } from "./filter-presets/api-type";
 import { HashtagIpcChannel, HashtagIpcHandlers, hashtagMethods } from "./hashtags/api-type";
 import { LibraryIpcChannel, LibraryIpcHandlers, libraryMethods } from "./library/api-type";
+import { SnippetIpcChannel, SnippetIpcHandlers, snippetMethods } from "./snippets/api-type";
 import {
   NotificationIpcChannel,
   NotificationIpcHandlers,
@@ -46,6 +47,7 @@ export type IpcHandlers = ChannelIpcHandlers &
   APIPostponeIpcHandlers &
   AnalyticsIpcHandlers &
   TagIpcHandlers &
+  SnippetIpcHandlers &
   AutomationIpcHandlers;
 
 export const ipcMethods = [
@@ -62,6 +64,7 @@ export const ipcMethods = [
   ...apiPostponeMethods,
   ...analyticsMethods,
   ...tagMethods,
+  ...snippetMethods,
   ...automationMethods,
 ];
 
@@ -79,4 +82,5 @@ export type IpcChannel =
   | APIPostponeIpcChannel
   | AnalyticsIpcChannel
   | TagIpcChannel
+  | SnippetIpcChannel
   | AutomationIpcChannel;
