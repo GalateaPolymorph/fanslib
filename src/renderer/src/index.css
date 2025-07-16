@@ -1,8 +1,10 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap");
+@plugin "daisyui";
 
 @variant dark (&:is(.dark *));
 
+/* Shadcn UI Theme */
 @theme {
   --text-2xs: 0.625rem;
   --color-border: hsl(var(--border));
@@ -46,6 +48,41 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
+@plugin "daisyui/theme" {
+  name: "fanslib";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(99% 0.014 308.299);
+  --color-base-300: oklch(95% 0.03 308.299);
+  --color-base-content: oklch(20% 0.149 302.717);
+  --color-primary: oklch(60% 0.25 292.717);
+  --color-primary-content: oklch(96% 0.016 293.756);
+  --color-secondary: oklch(94% 0.028 342.258);
+  --color-secondary-content: oklch(45% 0.187 3.815);
+  --color-accent: oklch(90% 0.182 98.111);
+  --color-accent-content: oklch(55% 0.135 66.442);
+  --color-neutral: oklch(94% 0.033 307.174);
+  --color-neutral-content: oklch(37% 0.044 257.287);
+  --color-info: oklch(90% 0.058 230.902);
+  --color-info-content: oklch(50% 0.134 242.749);
+  --color-success: oklch(79% 0.209 151.711);
+  --color-success-content: oklch(39% 0.095 152.535);
+  --color-warning: oklch(94% 0.129 101.54);
+  --color-warning-content: oklch(55% 0.135 66.442);
+  --color-error: oklch(63% 0.237 25.331);
+  --color-error-content: oklch(97% 0.013 17.38);
+  --radius-selector: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 0.5px;
+  --depth: 0;
+  --noise: 0;
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -64,6 +101,7 @@
   }
 }
 
+/* Shadcn UI Theme */
 @layer base {
   :root {
     --background: 0 0% 100%;
