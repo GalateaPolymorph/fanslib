@@ -1,6 +1,7 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { HashtagButton } from "@renderer/components/HashtagButton";
+import { SnippetSelector } from "@renderer/components/SnippetSelector";
 import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTile } from "@renderer/components/MediaTile";
 import { StatusSelect } from "@renderer/components/StatusSelect";
@@ -298,12 +299,20 @@ export const CreatePostDialog = ({
                         {caption?.length} / {channelCaptionMaxLength}
                       </p>
                     )}
-                    <HashtagButton
-                      channel={selectedChannelData}
-                      caption={caption}
-                      onCaptionChange={setCaption}
-                      className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-                    />
+                    <div className="absolute right-2 top-2 flex gap-1">
+                      <SnippetSelector
+                        channelId={selectedChannelData?.id}
+                        caption={caption}
+                        onCaptionChange={setCaption}
+                        className="text-muted-foreground hover:text-foreground"
+                      />
+                      <HashtagButton
+                        channel={selectedChannelData}
+                        caption={caption}
+                        onCaptionChange={setCaption}
+                        className="text-muted-foreground hover:text-foreground"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

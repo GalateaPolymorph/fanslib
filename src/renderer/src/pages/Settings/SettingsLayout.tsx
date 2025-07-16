@@ -1,5 +1,5 @@
 import { cn } from "@renderer/lib/utils";
-import { Filter, Palette, Settings2, Shield, Zap } from "lucide-react";
+import { FileText, Filter, Palette, Settings2, Shield, Zap } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 type SettingsNavItem = {
@@ -27,6 +27,12 @@ const settingsNavItems: SettingsNavItem[] = [
     href: "/settings/filter-presets",
     icon: Filter,
     description: "Manage saved filter presets",
+  },
+  {
+    title: "Caption Snippets",
+    href: "/settings/snippets",
+    icon: FileText,
+    description: "Manage reusable caption snippets",
   },
   {
     title: "Content Safety",

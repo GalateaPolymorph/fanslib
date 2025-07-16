@@ -10,6 +10,7 @@ import { osHandlers } from "./os/api";
 import { postHandlers } from "./posts/api";
 import { settingsHandlers } from "./settings/api";
 import { shootHandlers } from "./shoots/api";
+import { snippetHandlers } from "./snippets/api";
 import { tagHandlers } from "./tags/api";
 import { automationHandlers } from "./automation/api";
 export * from "./index-renderer";
@@ -28,5 +29,6 @@ export const handlers = {
   ...apiPostponeHandlers,
   ...analyticsHandlers,
   ...tagHandlers,
+  ...snippetHandlers,
   ...automationHandlers,
 };
