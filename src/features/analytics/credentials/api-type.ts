@@ -4,3 +4,7 @@ export type FanslyCredentials = {
   fanslyClientCheck?: string;
   fanslyClientId?: string;
 };
+
+export type CredentialsHandlers = {
+  updateFanslyCredentialsFromFetch: (_: unknown, fetchRequest: string) => Promise<void>;
+};

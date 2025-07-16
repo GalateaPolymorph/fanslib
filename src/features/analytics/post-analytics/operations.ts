@@ -1,5 +1,5 @@
-import { db } from "../../lib/db";
-import { Post } from "../posts/entity";
+import { db } from "../../../lib/db";
+import { Post } from "../../posts/entity";
 import { FanslyPostWithAnalytics, HashtagAnalytics, TimeAnalytics } from "./api-type";
 
 export const getFanslyPostsWithAnalytics = async (
