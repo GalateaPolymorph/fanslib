@@ -69,3 +69,7 @@ export type PostTimingInsight = ActionableInsight & {
     }[];
   };
 };
+
+export type InsightsHandlers = {
+  generateInsights: (_: unknown) => Promise<ActionableInsight[]>;
+};

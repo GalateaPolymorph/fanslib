@@ -1,4 +1,4 @@
-import { saveFanslyCredentials } from "../settings/secure-storage";
+import { saveFanslyCredentials } from "../../settings/secure-storage";
 import { FanslyCredentials } from "./api-type";
 
 const parseFetchRequest = (fetchRequest: string): Partial<FanslyCredentials> => {

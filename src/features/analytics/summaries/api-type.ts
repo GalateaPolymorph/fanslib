@@ -25,3 +25,7 @@ export type AnalyticsSummary = {
     post: Post;
   }[];
 };
+
+export type SummariesHandlers = {
+  getAnalyticsSummary: (_: unknown, params?: AnalyticsSummaryParams) => Promise<AnalyticsSummary>;
+};

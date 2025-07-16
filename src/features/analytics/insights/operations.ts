@@ -1,11 +1,11 @@
 import {
   ActionableInsight,
   ContentThemeInsight,
-  FanslyPostWithAnalytics,
   HashtagInsight,
   PostTimingInsight,
   VideoLengthInsight,
 } from "./api-type";
+import { FanslyPostWithAnalytics } from "../post-analytics/api-type";
 
 const extractHashtagsFromCaption = (caption: string): string[] => {
   return caption?.match(/#\w+/g) || [];
