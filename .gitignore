@@ -24,6 +24,9 @@ release
 build
 out
 
+# Storybook
+storybook-static
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

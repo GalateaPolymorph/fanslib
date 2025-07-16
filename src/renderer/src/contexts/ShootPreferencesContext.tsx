@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type ShootViewPreferences = {};
+type ShootViewPreferences = Record<string, unknown>;
 
 const defaultPreferences: ShootViewPreferences = {};
 

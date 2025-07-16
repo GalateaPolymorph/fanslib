@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./index";
 
-const meta: Meta<typeof Accordion> = {
+const meta: Meta = {
   title: "UI/Accordion",
   component: Accordion,
   parameters: {
@@ -16,6 +16,10 @@ const meta: Meta<typeof Accordion> = {
     collapsible: {
       control: { type: "boolean" },
     },
+  },
+  args: {
+    type: "single",
+    collapsible: true,
   },
 };
 

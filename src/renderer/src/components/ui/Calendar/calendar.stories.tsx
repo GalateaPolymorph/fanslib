@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { DateRange } from "react-day-picker";
 import { Calendar } from "./index";
 
-const meta: Meta<typeof Calendar> = {
+const meta: Meta = {
   title: "UI/Calendar",
   component: Calendar,
   parameters: {
@@ -18,6 +19,9 @@ const meta: Meta<typeof Calendar> = {
       control: { type: "text" },
       description: "Custom CSS classes for selected days",
     },
+  },
+  args: {
+    showOutsideDays: true,
   },
 };
 
@@ -91,7 +95,7 @@ export const MultipleSelection: Story = {
 
 export const RangeSelection: Story = {
   render: () => {
-    const [selected, setSelected] = useState<{ from?: Date; to?: Date } | undefined>();
+    const [selected, setSelected] = useState<DateRange | undefined>();
 
     return (
       <div className="space-y-4">

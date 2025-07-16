@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { CheckedState } from "@radix-ui/react-checkbox";
 import { useState } from "react";
 import { Checkbox } from "./index";
 
-const meta: Meta<typeof Checkbox> = {
+const meta: Meta = {
   title: "UI/Checkbox",
   component: Checkbox,
   parameters: {
@@ -16,6 +17,10 @@ const meta: Meta<typeof Checkbox> = {
     disabled: {
       control: { type: "boolean" },
     },
+  },
+  args: {
+    checked: false,
+    disabled: false,
   },
 };
 
@@ -82,7 +87,7 @@ export const WithLabelAndDescription: Story = {
 
 export const Interactive: Story = {
   render: () => {
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState<CheckedState>(false);
 
     return (
       <div className="flex items-center space-x-2">
