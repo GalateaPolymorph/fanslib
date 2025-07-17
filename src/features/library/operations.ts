@@ -8,6 +8,16 @@ import { Media } from "./entity";
 import { buildFilterGroupQuery } from "./filter-helpers";
 import { convertRelativeToAbsolute } from "./path-utils";
 
+export type CreateMediaPayload = {
+  relativePath: string;
+  name: string;
+  type: "image" | "video";
+  size: number;
+  duration?: number;
+  fileCreationDate: Date;
+  fileModificationDate: Date;
+};
+
 export const createMedia = async ({
   relativePath,
   name,
@@ -16,15 +26,7 @@ export const createMedia = async ({
   duration,
   fileCreationDate,
   fileModificationDate,
-}: {
-  relativePath: string;
-  name: string;
-  type: "image" | "video";
-  size: number;
-  duration?: number;
-  fileCreationDate: Date;
-  fileModificationDate: Date;
-}) => {
+}: CreateMediaPayload) => {
   const dataSource = await db();
   const repository = dataSource.getRepository(Media);
 

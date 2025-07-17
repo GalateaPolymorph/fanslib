@@ -6,6 +6,7 @@ import icon from "../../assets/icons/icon.png?asset";
 import { startCronJobs, stopCronJobs } from "../features/_common/cron";
 import { initializeAnalyticsAggregates } from "../features/analytics/operations";
 import { loadChannelTypeFixtures } from "../features/channels/fixtures";
+import { loadAllFixtures } from "../fixtures";
 import { runFYPPromotionMigrationIfNeeded } from "../features/posts/migration";
 import { toggleSfwMode } from "../features/settings/toggle-sfw-mode";
 import { db } from "../lib/db";
@@ -84,7 +85,15 @@ app.whenReady().then(async () => {
   }
 
   await db();
-  await loadChannelTypeFixtures();
+  
+  // Load fixtures in development mode
+  if (process.env.DEVELOPMENT_MODE === "true") {
+    console.log("🚀 Development mode enabled - loading fixtures...");
+    await loadAllFixtures();
+  } else {
+    await loadChannelTypeFixtures();
+  }
+  
   await runFYPPromotionMigrationIfNeeded();
   await initializeAnalyticsAggregates();
   registerMediaProtocolHandler();

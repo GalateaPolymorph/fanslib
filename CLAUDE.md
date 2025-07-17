@@ -12,6 +12,9 @@ FansLib is an Electron application built with React and TypeScript for managing 
 # Start development server
 npm run dev
 
+# Start development server with fixtures (separate database)
+npm run dev:fixtures
+
 # Build for production
 npm run build
 
@@ -112,6 +115,70 @@ cd mcp-server
 - `electron_get_text` - Get text content
 
 See `mcp-server/README.md` for full documentation.
+
+## Development Mode
+
+The application supports a development mode that provides a completely separate database environment with comprehensive fixture data, allowing safe development without affecting production data.
+
+### Activation
+
+```bash
+# Start development server with fixtures
+npm run dev:fixtures
+
+# Or set environment variable manually
+DEVELOPMENT_MODE=true npm run dev
+```
+
+### Features
+
+- **Separate Database**: Uses `fanslib-dev.sqlite` instead of `fanslib.sqlite`
+- **Comprehensive Fixtures**: Automatically loads realistic test data for all entity types
+- **Dummy Media Files**: Creates placeholder media files in `src/fixtures/media/`
+- **Persistent Data**: Development database persists between sessions
+- **Reset Capability**: Can reset development database and reload fixtures
+
+### Fixture Data Includes
+
+- **50+ Media files** with realistic metadata and dummy files
+- **25+ Posts** across different platforms and statuses
+- **8+ Channels** covering all platform types
+- **Tag System** with dimensions, definitions, and associations
+- **Analytics Data** with sample performance metrics
+- **Hashtag Statistics** and channel-specific data
+- **Content Schedules** and posting automation
+- **Caption Snippets** and filter presets
+- **Shoot Organization** and subreddit configurations
+
+### Database Reset
+
+The development database can be reset programmatically:
+
+```typescript
+import { resetDevelopmentDatabase } from "../lib/db";
+
+// Only works when DEVELOPMENT_MODE=true
+await resetDevelopmentDatabase();
+```
+
+### File Structure
+
+```
+src/fixtures/
+├── index.ts              # Main fixture loader
+├── media/                # Dummy media files
+├── analytics.ts          # Analytics fixtures
+├── channels.ts           # Channel fixtures
+├── contentSchedules.ts   # Content schedule fixtures
+├── filterPresets.ts      # Filter preset fixtures
+├── hashtags.ts           # Hashtag fixtures
+├── media.ts              # Media fixtures
+├── posts.ts              # Post fixtures
+├── shoots.ts             # Shoot fixtures
+├── snippets.ts           # Caption snippet fixtures
+├── subreddits.ts         # Subreddit fixtures
+└── tags.ts               # Tag system fixtures
+```
 
 ## Important Notes
 

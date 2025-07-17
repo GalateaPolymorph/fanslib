@@ -9,6 +9,7 @@
     "!src/features/**/renderer/**/*.ts",
     "src/lib/database/**/*",
     "src/lib/**/*",
+    "src/fixtures/**/*",
     "src/graphql/postpone/**/*"
   ],
   "compilerOptions": {

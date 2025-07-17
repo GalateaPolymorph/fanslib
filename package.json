@@ -17,6 +17,7 @@
     "unused": "ts-unused-exports tsconfig.web.json --showLineNumber",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
+    "dev:fixtures": "DEVELOPMENT_MODE=true electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "rebuild": "electron-rebuild -f -w sqlite3",
     "postinstall": "electron-builder install-app-deps",
