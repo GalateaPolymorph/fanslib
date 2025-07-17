@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
-import { db } from "../../lib/db";
-import { Post } from "../posts/entity";
-import { AnalyticsFetchHistory } from "./entity";
+import { db } from "../../../lib/db";
+import { Post } from "../../posts/entity";
+import { AnalyticsFetchHistory } from "../entity";
 import { fetchFanslyAnalyticsData } from "./fetch-fansly-data";
 import { classifyTimeframe, isFetchExpired } from "./timeframe-utils";
 

@@ -1,10 +1,12 @@
-import { db } from "../../lib/db";
-import { Post } from "../posts/entity";
+import { db } from "../../../lib/db";
+import { Post } from "../../posts/entity";
 import { FanslyPostWithAnalytics, HashtagAnalytics, TimeAnalytics } from "./api-type";
 
 export const getFanslyPostsWithAnalytics = async (
   sortBy = "date",
-  sortDirection: "asc" | "desc" = "desc"
+  sortDirection: "asc" | "desc" = "desc",
+  startDate?: string,
+  endDate?: string
 ): Promise<FanslyPostWithAnalytics[]> => {
   const dataSource = await db();
   const postRepository = dataSource.getRepository(Post);
@@ -15,8 +17,15 @@ export const getFanslyPostsWithAnalytics = async (
     .leftJoinAndSelect("post.postMedia", "postMedia")
     .leftJoinAndSelect("postMedia.media", "media")
     .leftJoinAndSelect("post.fanslyAnalyticsAggregate", "analytics")
-    .where("channel.typeId = :typeId", { typeId: "fansly" })
-    .andWhere("analytics.id IS NOT NULL");
+    .where("channel.typeId = :typeId", { typeId: "fansly" });
+
+  // Add date range filtering if provided
+  if (startDate) {
+    queryBuilder.andWhere("post.date >= :startDate", { startDate });
+  }
+  if (endDate) {
+    queryBuilder.andWhere("post.date <= :endDate", { endDate });
+  }
 
   // Add sorting
   switch (sortBy) {
@@ -50,11 +59,14 @@ export const getFanslyPostsWithAnalytics = async (
     date: post.date,
     caption: post.caption,
     thumbnailUrl: post.postMedia[0]?.media ? `thumbnail://${post.postMedia[0].media.id}` : "",
+    postUrl: post.url,
+    statisticsUrl: post.fanslyStatisticsId ? `https://fansly.com/statistics/${post.fanslyStatisticsId}` : undefined,
     totalViews: post.fanslyAnalyticsAggregate?.totalViews || 0,
     averageEngagementSeconds: post.fanslyAnalyticsAggregate?.averageEngagementSeconds || 0,
     averageEngagementPercent: post.fanslyAnalyticsAggregate?.averageEngagementPercent || 0,
     hashtags: post.caption?.match(/#\w+/g) || [],
     videoLength: post.postMedia[0]?.media?.duration || 0,
+    media: post.postMedia[0]?.media,
   }));
 };
 

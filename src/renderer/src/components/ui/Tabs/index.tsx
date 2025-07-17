@@ -1,52 +1,86 @@
-import * as TabsPrimitive from "@radix-ui/react-tabs";
-import * as React from "react";
-import { cn } from "@renderer/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ReactNode } from "react";
+import { cn } from "../../../lib/utils";
 
-const Tabs = TabsPrimitive.Root;
+const tabsVariants = cva("tabs", {
+  variants: {
+    variant: {
+      default: "",
+      border: "tabs-border",
+      box: "tabs-box",
+    },
+    size: {
+      xs: "tabs-xs",
+      sm: "tabs-sm",
+      md: "tabs-md",
+      lg: "tabs-lg",
+      xl: "tabs-xl",
+    },
+    placement: {
+      bottom: "tabs-bottom",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "md",
+  },
+});
 
-const TabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.List
-    ref={ref}
-    className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
-      className
-    )}
-    {...props}
-  />
-));
-TabsList.displayName = TabsPrimitive.List.displayName;
+type TabItem = {
+  id: string;
+  label: ReactNode;
+  content?: ReactNode;
+  disabled?: boolean;
+};
 
-const TabsTrigger = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-      className
-    )}
-    {...props}
-  />
-));
-TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
+type TabsProps = {
+  items: TabItem[];
+  activeTab?: string;
+  onTabChange?: (tabId: string) => void;
+  className?: string;
+  tabClassName?: string;
+  contentClassName?: string;
+  name?: string;
+} & VariantProps<typeof tabsVariants>;
 
-const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Content
-    ref={ref}
-    className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      className
-    )}
-    {...props}
-  />
-));
-TabsContent.displayName = TabsPrimitive.Content.displayName;
+export const Tabs = ({
+  items,
+  onTabChange,
+  variant,
+  size,
+  placement,
+  className,
+  tabClassName,
+  contentClassName,
+  name = `tabs-${Math.random().toString(36).substr(2, 9)}`,
+}: TabsProps) => {
+  return (
+    <div className={cn(tabsVariants({ variant, size, placement }), className)}>
+      {items.map((item, index) => (
+        <>
+          <input
+            defaultChecked={index === 0}
+            type="radio"
+            name={name}
+            className={cn("tab", tabClassName, { "tab-disabled": item.disabled })}
+            aria-label={typeof item.label === "string" ? item.label : `Tab ${index + 1}`}
+            onChange={() => !item.disabled && onTabChange?.(item.id)}
+            disabled={item.disabled}
+          />
+          {item.content && (
+            <div
+              className={cn(
+                "tab-content bg-base-100 border-base-300 rounded-box p-6",
+                contentClassName
+              )}
+            >
+              {item.content}
+            </div>
+          )}
+        </>
+      ))}
+    </div>
+  );
+};
 
-export { Tabs, TabsContent, TabsList, TabsTrigger };
+export type { TabItem, TabsProps };

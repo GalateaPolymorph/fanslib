@@ -8,7 +8,7 @@ import {
   calculateFypMetrics,
   calculateFypPerformanceScore,
   findPlateauDay,
-} from "./fyp-performance";
+} from "./post-analytics/fyp-performance";
 
 const gatherFanslyPostAnalyticsDatapoints = (
   response: FanslyAnalyticsResponse

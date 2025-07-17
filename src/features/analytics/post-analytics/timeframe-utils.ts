@@ -1,5 +1,5 @@
-import { db } from "../../lib/db";
-import { AnalyticsFetchHistory } from "./entity";
+import { db } from "../../../lib/db";
+import { AnalyticsFetchHistory } from "../entity";
 
 export type TimeframeClassification = {
   type: "rolling" | "fixed";

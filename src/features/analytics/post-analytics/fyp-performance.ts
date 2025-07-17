@@ -1,6 +1,6 @@
-import { db } from "../../lib/db";
-import { Post } from "../posts/entity";
-import { FanslyAnalyticsDatapoint } from "./entity";
+import { db } from "../../../lib/db";
+import { Post } from "../../posts/entity";
+import { FanslyAnalyticsDatapoint } from "../entity";
 
 export type FypMetrics = {
   viewVelocity: number;

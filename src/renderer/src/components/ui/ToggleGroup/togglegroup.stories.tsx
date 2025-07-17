@@ -23,7 +23,7 @@ import {
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "./index";
 
-const meta: Meta<typeof ToggleGroup> = {
+const meta: Meta = {
   title: "UI/ToggleGroup",
   component: ToggleGroup,
   parameters: {
@@ -41,6 +41,10 @@ const meta: Meta<typeof ToggleGroup> = {
       options: ["horizontal", "vertical"],
       description: "Group orientation",
     },
+  },
+  args: {
+    type: "single",
+    orientation: "horizontal",
   },
 };
 
