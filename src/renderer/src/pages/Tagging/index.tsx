@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
 import { PageContainer } from "../../components/ui/PageContainer/PageContainer";
 import { PageHeader } from "../../components/ui/PageHeader/PageHeader";
+import { Tabs } from "../../components/ui/Tabs";
 import { useHashtags, useUpdateHashtagStats } from "../../hooks/api/useHashtags";
 import { ChannelHashtagTable } from "./ChannelHashtagTable";
 import { HashtagTable } from "./HashtagTable";
@@ -32,26 +32,30 @@ export const TaggingPage = () => {
         spacing="lg"
       />
 
-      <Tabs defaultValue="hashtags" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="hashtags">Hashtags</TabsTrigger>
-          <TabsTrigger value="dimensions">Tag Dimensions</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="hashtags" className="space-y-8">
-          <ChannelHashtagTable />
-          <HashtagTable
-            hashtags={hashtags}
-            onStatsChange={updateHashtagStats}
-            onHashtagCreated={handleHashtagUpdated}
-            onHashtagDeleted={handleHashtagUpdated}
-          />
-        </TabsContent>
-
-        <TabsContent value="dimensions">
-          <TagManager />
-        </TabsContent>
-      </Tabs>
+      <Tabs
+        items={[
+          {
+            id: "hashtags",
+            label: "Hashtags",
+            content: (
+              <div className="space-y-8">
+                <ChannelHashtagTable />
+                <HashtagTable
+                  hashtags={hashtags}
+                  onStatsChange={updateHashtagStats}
+                  onHashtagCreated={handleHashtagUpdated}
+                  onHashtagDeleted={handleHashtagUpdated}
+                />
+              </div>
+            ),
+          },
+          {
+            id: "dimensions",
+            label: "Tag Dimensions",
+            content: <TagManager />,
+          },
+        ]}
+      />
     </PageContainer>
   );
 };
