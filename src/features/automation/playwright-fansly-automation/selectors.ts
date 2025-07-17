@@ -11,7 +11,7 @@ export const PROFILE_AVATAR_SELECTOR = "app-account-avatar";
 export const PROFILE_LINK_SELECTOR = "app-account-avatar > a";
 
 // Post discovery selectors
-export const TIMELINE_SELECTOR = "app-timeline";
+export const TIMELINE_SELECTOR = "app-profile-timeline-route";
 export const POST_ITEM_SELECTOR = "app-post";
 export const POST_LINK_SELECTOR = 'a[href*="/post/"]';
 export const LOAD_MORE_BUTTON_SELECTOR = '[data-testid="load-more"]';

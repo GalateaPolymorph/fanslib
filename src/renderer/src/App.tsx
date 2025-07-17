@@ -120,10 +120,10 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <AnalyticsProvider>
-      <ThemeProvider>
-        <SettingsProvider>
-          <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AnalyticsProvider>
+        <ThemeProvider>
+          <SettingsProvider>
             <ShootProvider>
               <LibraryPreferencesProvider>
                 <LibraryProvider>
@@ -142,10 +142,10 @@ const App = () => {
                 </LibraryProvider>
               </LibraryPreferencesProvider>
             </ShootProvider>
-          </QueryClientProvider>
-        </SettingsProvider>
-      </ThemeProvider>
-    </AnalyticsProvider>
+          </SettingsProvider>
+        </ThemeProvider>
+      </AnalyticsProvider>
+    </QueryClientProvider>
   );
 };
 

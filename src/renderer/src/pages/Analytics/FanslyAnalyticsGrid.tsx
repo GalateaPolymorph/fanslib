@@ -1,77 +1,16 @@
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { ArrowUpDown, Download, Grid3X3, List } from "lucide-react";
+import { ArrowUpDown, Grid3X3, List } from "lucide-react";
 import { useState } from "react";
 import { AnalyticsPostTile } from "../../components/Analytics/AnalyticsPostTile";
 import { Button } from "../../components/ui/Button";
 import { useAnalytics } from "../../contexts/AnalyticsContext";
 import { cn } from "../../lib/utils";
 
-type SortConfig = {
-  sortBy: string;
-  sortDirection: "asc" | "desc";
-};
-
 type ViewMode = "list" | "grid";
 
 export const FanslyAnalyticsGrid = () => {
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
-    sortBy: "date",
-    sortDirection: "desc",
-  });
   const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const { timeframe } = useAnalytics();
-
-  const { data: posts = [], isLoading } = useQuery({
-    queryKey: ["fanslyPosts", sortConfig, timeframe],
-    queryFn: () =>
-      window.api["analytics:getFanslyPostsWithAnalytics"](
-        sortConfig.sortBy,
-        sortConfig.sortDirection,
-        timeframe.startDate.toISOString(),
-        timeframe.endDate.toISOString()
-      ),
-  });
-
-  const exportToCsv = () => {
-    const headers = [
-      "Date",
-      "Caption",
-      "Post URL",
-      "Statistics URL",
-      "Views",
-      "Avg. Engagement (s)",
-      "Engagement %",
-      "Video Length (s)",
-      "Hashtags",
-    ];
-    const csvData = posts.map((post) => [
-      format(new Date(post.date), "yyyy-MM-dd"),
-      post.caption,
-      post.postUrl || "N/A",
-      post.statisticsUrl || "N/A",
-      post.totalViews,
-      post.averageEngagementSeconds.toFixed(1),
-      post.averageEngagementPercent.toFixed(1),
-      post.videoLength,
-      post.hashtags.join(", "),
-    ]);
-
-    const csvContent = [
-      headers.join(","),
-      ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `fansly-analytics-${format(new Date(), "yyyy-MM-dd")}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const { posts, isLoading, sortConfig, setSortConfig } = useAnalytics();
 
   const handleSort = (field: string) => {
     setSortConfig({
@@ -160,12 +99,6 @@ export const FanslyAnalyticsGrid = () => {
               {getSortIcon("engagement")}
             </Button>
           </div>
-
-          {/* Export button */}
-          <Button onClick={exportToCsv} variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Export CSV
-          </Button>
         </div>
       </div>
 

@@ -14,32 +14,18 @@ import {
 export const navigateToProfile = async (page: Page): Promise<void> => {
   console.log("[Fansly Automation] Navigating to profile");
 
-  // Find the profile link in the avatar element and get its href
-  const profileLink = page.locator("app-account-avatar > a").first();
+  const avatar = page.locator(".user-account.sm-mobile-hidden > .avatar-container").first();
+  await avatar.waitFor({ timeout: 10000 });
+  await avatar.click();
 
+  const profileLink = page
+    .locator("div")
+    .filter({ hasText: /^Profile$/ })
+    .first();
   await profileLink.waitFor({ timeout: 10000 });
-
-  const profileHref = await profileLink.getAttribute("href");
-
-  if (!profileHref) {
-    throw new Error("Could not extract profile href from avatar link");
-  }
-
-  console.log(`[Fansly Automation] Found profile URL: ${profileHref}`);
-
-  // Navigate to the profile URL
-  const fullProfileUrl = profileHref.startsWith("http")
-    ? profileHref
-    : `https://fansly.com${profileHref}`;
-
-  await page.goto(fullProfileUrl, {
-    waitUntil: "networkidle",
-    timeout: 15000,
-  });
+  await profileLink.click();
 
   console.log("[Fansly Automation] Arrived at profile page");
-
-  // Wait for posts to be visible (the page should load with posts by default)
   await page.waitForSelector(TIMELINE_SELECTOR, { timeout: 10000 });
 };
 
@@ -63,6 +49,8 @@ export const discoverPostsOnCurrentPage = async (page: Page): Promise<FanslyPost
 
   // Get all post items on the current page
   const postElements = await page.$$(POST_ITEM_SELECTOR);
+  console.log("Found", postElements.length, "posts on the current page");
+  await page.pause();
 
   for (const postElement of postElements) {
     try {

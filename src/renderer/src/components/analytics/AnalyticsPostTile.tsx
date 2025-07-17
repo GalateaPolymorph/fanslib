@@ -23,7 +23,6 @@ export const AnalyticsPostTile = ({ post, className }: AnalyticsPostTileProps) =
   return (
     <div className={cn("bg-card rounded-lg border p-4 space-y-4", className)}>
       <div className="flex gap-4">
-        {/* Media Tile */}
         <div className="flex-shrink-0">
           {post.media ? (
             <MediaTile

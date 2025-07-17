@@ -1,7 +1,7 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
 import type {
-  FanslyAutomationResult,
   FanslyAutomationOptions,
+  FanslyAutomationResult,
   PostDiscoveryOptions,
 } from "./playwright-fansly-automation/context";
 
@@ -33,7 +33,6 @@ export type FanslyPostDiscoveryPayload = FanslyAutomationOptions & PostDiscovery
 
 const methods = [
   "postToReddit",
-  "runFanslyFullAutomation",
   "extractFanslyCredentials",
   "discoverFanslyPosts",
   "clearFanslySession",
@@ -41,10 +40,6 @@ const methods = [
 
 export type AutomationHandlers = {
   postToReddit: (_: any, payload: PostToRedditPayload) => Promise<RedditPostResult>;
-  runFanslyFullAutomation: (
-    _: any,
-    payload: FanslyFullAutomationPayload
-  ) => Promise<FanslyAutomationResult>;
   extractFanslyCredentials: (
     _: any,
     payload: FanslyCredentialExtractionPayload
