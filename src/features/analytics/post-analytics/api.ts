@@ -9,8 +9,14 @@ export const postAnalyticsHandlers: PostAnalyticsHandlers = {
   addDatapointsToPost: (_: unknown, postId: string, datapoints: FanslyAnalyticsResponse) => {
     return addDatapointsToPost(postId, datapoints);
   },
-  getFanslyPostsWithAnalytics: async (_: unknown, sortBy = "date", sortDirection: "asc" | "desc" = "desc") => {
-    return getFanslyPostsWithAnalytics(sortBy, sortDirection);
+  getFanslyPostsWithAnalytics: async (
+    _: unknown,
+    sortBy = "date",
+    sortDirection: "asc" | "desc" = "desc",
+    startDate?: string,
+    endDate?: string
+  ) => {
+    return getFanslyPostsWithAnalytics(sortBy, sortDirection, startDate, endDate);
   },
   getHashtagAnalytics: async (_: unknown) => {
     return getHashtagAnalytics();

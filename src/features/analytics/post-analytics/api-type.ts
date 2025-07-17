@@ -1,13 +1,18 @@
+import { Media } from "../../library/entity";
+
 export type FanslyPostWithAnalytics = {
   id: string;
   date: string;
   caption: string;
   thumbnailUrl: string;
+  postUrl?: string;
+  statisticsUrl?: string;
   totalViews: number;
   averageEngagementSeconds: number;
   averageEngagementPercent: number;
   hashtags: string[];
   videoLength: number;
+  media?: Media;
 };
 
 export type BulkFetchParams = {
@@ -38,7 +43,9 @@ export type PostAnalyticsHandlers = {
   getFanslyPostsWithAnalytics: (
     _: unknown,
     sortBy?: string,
-    sortDirection?: "asc" | "desc"
+    sortDirection?: "asc" | "desc",
+    startDate?: string,
+    endDate?: string
   ) => Promise<FanslyPostWithAnalytics[]>;
   getHashtagAnalytics: (_: unknown) => Promise<HashtagAnalytics>;
   getTimeAnalytics: (_: unknown) => Promise<TimeAnalytics>;
