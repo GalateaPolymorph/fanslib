@@ -34,7 +34,7 @@ export const Status = ({
   ...props
 }: StatusProps) => {
   return (
-    <div>
+    <div className="flex items-center gap-1">
       <div className={cn(statusVariants({ variant, size }), className)} {...props}></div>
       {children}
     </div>

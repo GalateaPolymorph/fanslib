@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Calendar, Clock, ExternalLink, Eye } from "lucide-react";
+import { Calendar, ChartBar, Clock, ExternalLink, Eye } from "lucide-react";
 import { FanslyPostWithAnalytics } from "../../../../features/analytics/api-type";
 import { formatNumber } from "../../../../lib/fansly-analytics";
 import { cn } from "../../lib/utils";
@@ -67,24 +67,20 @@ export const AnalyticsPostTile = ({ post, className }: AnalyticsPostTileProps) =
                   View Post
                 </a>
               ) : (
-                <Status variant="error" size="sm">
-                  No Post URL
-                </Status>
+                <Status variant="error">No Post URL</Status>
               )}
               {post.statisticsUrl ? (
                 <a
                   href={post.statisticsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
+                  className="text-neutral-400 hover:text-neutral-800 flex items-center gap-1 text-sm"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  View Stats
+                  <ChartBar className="w-4 h-4" />
+                  Stats
                 </a>
               ) : (
-                <Status variant="error" size="lg">
-                  No Stats URL
-                </Status>
+                <Status variant="error">No Stats URL</Status>
               )}
             </div>
           </div>
@@ -137,10 +133,8 @@ export const AnalyticsPostTile = ({ post, className }: AnalyticsPostTileProps) =
               </div>
             </div>
           ) : (
-            <div className="pt-2 border-t">
-              <Status variant="neutral" size="sm">
-                No analytics data available
-              </Status>
+            <div className="pt-2 border-t text-muted-foreground">
+              <Status variant="neutral">No analytics data available</Status>
             </div>
           )}
         </div>

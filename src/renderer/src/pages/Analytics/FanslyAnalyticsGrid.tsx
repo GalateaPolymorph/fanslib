@@ -1,10 +1,11 @@
+import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ArrowUpDown, Download, Grid3X3, List } from "lucide-react";
 import { useState } from "react";
+import { AnalyticsPostTile } from "../../components/Analytics/AnalyticsPostTile";
 import { Button } from "../../components/ui/Button";
 import { useAnalytics } from "../../contexts/AnalyticsContext";
-import { AnalyticsPostTile } from "../../components/Analytics/AnalyticsPostTile";
 import { cn } from "../../lib/utils";
 
 type SortConfig = {
@@ -75,7 +76,8 @@ export const FanslyAnalyticsGrid = () => {
   const handleSort = (field: string) => {
     setSortConfig({
       sortBy: field,
-      sortDirection: sortConfig.sortBy === field && sortConfig.sortDirection === "asc" ? "desc" : "asc",
+      sortDirection:
+        sortConfig.sortBy === field && sortConfig.sortDirection === "asc" ? "desc" : "asc",
     });
   };
 
@@ -105,9 +107,7 @@ export const FanslyAnalyticsGrid = () => {
       {/* Header with controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {posts.length} posts found
-          </span>
+          <span className="text-sm text-muted-foreground">{posts.length} posts found</span>
         </div>
         <div className="flex items-center gap-2">
           {/* View mode toggle */}
@@ -129,7 +129,7 @@ export const FanslyAnalyticsGrid = () => {
               <Grid3X3 className="h-4 w-4" />
             </Button>
           </div>
-          
+
           {/* Sort controls */}
           <div className="flex items-center gap-1">
             <Button
@@ -160,7 +160,7 @@ export const FanslyAnalyticsGrid = () => {
               {getSortIcon("engagement")}
             </Button>
           </div>
-          
+
           {/* Export button */}
           <Button onClick={exportToCsv} variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
@@ -170,18 +170,20 @@ export const FanslyAnalyticsGrid = () => {
       </div>
 
       {/* Posts display */}
-      <div className={cn(
-        viewMode === "list" 
-          ? "space-y-4" 
-          : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-      )}>
-        {posts.map((post) => (
-          <AnalyticsPostTile 
-            key={post.id} 
-            post={post}
-            className={viewMode === "grid" ? "h-full" : ""}
-          />
-        ))}
+      <div
+        className={cn(
+          viewMode === "list" ? "space-y-4" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        )}
+      >
+        <MediaSelectionProvider media={[]}>
+          {posts.map((post) => (
+            <AnalyticsPostTile
+              key={post.id}
+              post={post}
+              className={viewMode === "grid" ? "h-full" : ""}
+            />
+          ))}
+        </MediaSelectionProvider>
       </div>
     </div>
   );

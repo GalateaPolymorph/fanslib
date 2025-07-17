@@ -1,7 +1,7 @@
 import { PageContainer } from "@renderer/components/ui/PageContainer/PageContainer";
 import { PageHeader } from "@renderer/components/ui/PageHeader/PageHeader";
-import { AnalyticsProvider } from "../../contexts/AnalyticsContext";
 import { TimeframeSelector } from "../../components/Analytics/TimeframeSelector";
+import { AnalyticsProvider } from "../../contexts/AnalyticsContext";
 import { FanslyAnalyticsGrid } from "./FanslyAnalyticsGrid";
 
 export const FanslyAnalyticsDashboard = () => {
