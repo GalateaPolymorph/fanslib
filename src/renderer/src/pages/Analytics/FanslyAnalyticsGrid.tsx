@@ -1,38 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ArrowUpDown, Download } from "lucide-react";
+import { ArrowUpDown, Download, Grid3X3, List } from "lucide-react";
 import { useState } from "react";
-import { FanslyPostWithAnalytics } from "../../../../features/analytics/api-type";
-import { formatNumber } from "../../../../lib/fansly-analytics";
-import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/Table";
+import { useAnalytics } from "../../contexts/AnalyticsContext";
+import { AnalyticsPostTile } from "../../components/Analytics/AnalyticsPostTile";
+import { cn } from "../../lib/utils";
 
 type SortConfig = {
   sortBy: string;
   sortDirection: "asc" | "desc";
 };
 
+type ViewMode = "list" | "grid";
+
 export const FanslyAnalyticsGrid = () => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     sortBy: "date",
     sortDirection: "desc",
   });
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const { timeframe } = useAnalytics();
 
   const { data: posts = [], isLoading } = useQuery({
-    queryKey: ["fanslyPosts", sortConfig],
+    queryKey: ["fanslyPosts", sortConfig, timeframe],
     queryFn: () =>
       window.api["analytics:getFanslyPostsWithAnalytics"](
         sortConfig.sortBy,
-        sortConfig.sortDirection
+        sortConfig.sortDirection,
+        timeframe.startDate.toISOString(),
+        timeframe.endDate.toISOString()
       ),
   });
 
@@ -40,6 +37,8 @@ export const FanslyAnalyticsGrid = () => {
     const headers = [
       "Date",
       "Caption",
+      "Post URL",
+      "Statistics URL",
       "Views",
       "Avg. Engagement (s)",
       "Engagement %",
@@ -49,6 +48,8 @@ export const FanslyAnalyticsGrid = () => {
     const csvData = posts.map((post) => [
       format(new Date(post.date), "yyyy-MM-dd"),
       post.caption,
+      post.postUrl || "N/A",
+      post.statisticsUrl || "N/A",
       post.totalViews,
       post.averageEngagementSeconds.toFixed(1),
       post.averageEngagementPercent.toFixed(1),
@@ -71,206 +72,116 @@ export const FanslyAnalyticsGrid = () => {
     document.body.removeChild(link);
   };
 
-  const columns: ColumnDef<FanslyPostWithAnalytics>[] = [
-    {
-      accessorKey: "date",
-      header: ({ column: _ }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            setSortConfig({
-              sortBy: "date",
-              sortDirection:
-                sortConfig.sortBy === "date" && sortConfig.sortDirection === "asc" ? "desc" : "asc",
-            })
-          }
-        >
-          Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => format(new Date(row.getValue("date")), "MMM d, yyyy"),
-    },
-    {
-      accessorKey: "thumbnailUrl",
-      header: "Thumbnail",
-      cell: ({ row }) => (
-        <img
-          src={row.getValue("thumbnailUrl")}
-          alt=""
-          className="h-24 w-24 object-contain rounded"
-        />
-      ),
-    },
-    {
-      accessorKey: "caption",
-      header: "Caption",
-      cell: ({ row }) => <div className="max-w-md truncate">{row.getValue("caption")}</div>,
-    },
-    {
-      accessorKey: "totalViews",
-      header: ({ column: _ }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            setSortConfig({
-              sortBy: "views",
-              sortDirection:
-                sortConfig.sortBy === "views" && sortConfig.sortDirection === "asc"
-                  ? "desc"
-                  : "asc",
-            })
-          }
-        >
-          Views
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-xl">{formatNumber(row.getValue("totalViews"))}</span>
-      ),
-    },
-    {
-      accessorKey: "averageEngagementSeconds",
-      header: ({ column: _ }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            setSortConfig({
-              sortBy: "engagement",
-              sortDirection:
-                sortConfig.sortBy === "engagement" && sortConfig.sortDirection === "asc"
-                  ? "desc"
-                  : "asc",
-            })
-          }
-        >
-          Avg. Engagement
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-xl">
-          {(row.getValue("averageEngagementSeconds") as number).toFixed(1)}s
-        </span>
-      ),
-    },
-    {
-      accessorKey: "averageEngagementPercent",
-      header: ({ column: _ }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            setSortConfig({
-              sortBy: "engagementPercent",
-              sortDirection:
-                sortConfig.sortBy === "engagementPercent" && sortConfig.sortDirection === "asc"
-                  ? "desc"
-                  : "asc",
-            })
-          }
-        >
-          Engagement %
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-xl">
-          {(row.getValue("averageEngagementPercent") as number).toFixed(1)}%
-        </span>
-      ),
-    },
-    {
-      accessorKey: "videoLength",
-      header: ({ column: _ }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            setSortConfig({
-              sortBy: "videoLength",
-              sortDirection:
-                sortConfig.sortBy === "videoLength" && sortConfig.sortDirection === "asc"
-                  ? "desc"
-                  : "asc",
-            })
-          }
-        >
-          Video Length
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-xl">{(row.getValue("videoLength") as number).toFixed(1)}s</span>
-      ),
-    },
-    {
-      accessorKey: "hashtags",
-      header: "Hashtags",
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {(row.getValue("hashtags") as string[]).map((tag) => (
-            <Badge key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      ),
-    },
-  ];
+  const handleSort = (field: string) => {
+    setSortConfig({
+      sortBy: field,
+      sortDirection: sortConfig.sortBy === field && sortConfig.sortDirection === "asc" ? "desc" : "asc",
+    });
+  };
 
-  const table = useReactTable({
-    data: posts,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const getSortIcon = (field: string) => {
+    if (sortConfig.sortBy !== field) return null;
+    return <ArrowUpDown className="ml-1 h-4 w-4" />;
+  };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-32">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-muted-foreground">No posts found for the selected timeframe.</div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={exportToCsv} variant="outline" size="sm">
-          <Download className="mr-2 h-4 w-4" />
-          Export CSV
-        </Button>
+      {/* Header with controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {posts.length} posts found
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* View mode toggle */}
+          <div className="flex items-center border rounded-md">
+            <Button
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              className="rounded-r-none"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="rounded-l-none"
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {/* Sort controls */}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleSort("date")}
+              className="text-xs"
+            >
+              Date
+              {getSortIcon("date")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleSort("views")}
+              className="text-xs"
+            >
+              Views
+              {getSortIcon("views")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleSort("engagement")}
+              className="text-xs"
+            >
+              Engagement
+              {getSortIcon("engagement")}
+            </Button>
+          </div>
+          
+          {/* Export button */}
+          <Button onClick={exportToCsv} variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
+        </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell className="text-center" key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+
+      {/* Posts display */}
+      <div className={cn(
+        viewMode === "list" 
+          ? "space-y-4" 
+          : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      )}>
+        {posts.map((post) => (
+          <AnalyticsPostTile 
+            key={post.id} 
+            post={post}
+            className={viewMode === "grid" ? "h-full" : ""}
+          />
+        ))}
       </div>
     </div>
   );
