@@ -3,9 +3,9 @@ import { Calendar, Clock, ExternalLink, Eye } from "lucide-react";
 import { FanslyPostWithAnalytics } from "../../../../features/analytics/api-type";
 import { formatNumber } from "../../../../lib/fansly-analytics";
 import { cn } from "../../lib/utils";
+import { MediaTile } from "../MediaTile/MediaTile";
 import { Badge } from "../ui/Badge";
 import { Status } from "../ui/Status";
-import { MediaTile } from "../MediaTile/MediaTile";
 
 export type AnalyticsPostTileProps = {
   post: FanslyPostWithAnalytics;
