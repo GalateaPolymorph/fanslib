@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Channel } from "../../../../features/channels/entity";
 import { Subreddit } from "../../../../features/channels/subreddit";
 import { VerificationStatus } from "../../../../features/channels/type";
+import type { SubredditPostingTime } from "../../../../features/channels/api-type";
 
 // Query keys
 export const channelKeys = {
@@ -158,7 +159,8 @@ export const useCreateSubreddit = () => {
       queryClient.invalidateQueries({ queryKey: channelKeys.subreddits });
       toast({
         title: "Subreddit created successfully",
-        duration: 2000,
+        description: "Posting times are being analyzed automatically",
+        duration: 3000,
       });
     },
     onError: (error) => {
@@ -191,6 +193,9 @@ export const useUpdateSubreddit = () => {
         eligibleMediaFilter?: any;
         defaultFlair?: string;
         captionPrefix?: string;
+        postingTimesData?: SubredditPostingTime[];
+        postingTimesLastFetched?: Date;
+        postingTimesTimezone?: string;
       };
     }) => {
       const result = await window.api["channel:subreddit-update"](subredditId, updates);
@@ -234,6 +239,41 @@ export const useDeleteSubreddit = () => {
     onError: (error) => {
       toast({
         title: "Failed to delete subreddit",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+// Analyze subreddit posting times mutation
+export const useAnalyzeSubredditPostingTimes = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ 
+      subredditId, 
+      timezone 
+    }: { 
+      subredditId: string; 
+      timezone?: string; 
+    }) => {
+      const result = await window.api["channel:subreddit-analyze-posting-times"](subredditId, timezone);
+      return result;
+    },
+    onSuccess: (_, { subredditId }) => {
+      queryClient.invalidateQueries({ queryKey: channelKeys.subreddits });
+      queryClient.invalidateQueries({ queryKey: channelKeys.subredditById(subredditId) });
+      toast({
+        title: "Posting times analyzed successfully",
+        description: "Optimal posting times have been updated for this subreddit",
+        duration: 3000,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to analyze posting times",
         description: error instanceof Error ? error.message : "Unknown error",
         variant: "destructive",
       });

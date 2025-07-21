@@ -4,6 +4,7 @@ import { ChannelHandlers, namespace } from "./api-type";
 import { CHANNEL_TYPES } from "./channelTypes";
 import { Channel } from "./entity";
 import {
+  analyzeSubredditPostingTimes,
   createChannel,
   createSubreddit,
   deleteChannel,
@@ -36,6 +37,7 @@ export const handlers: ChannelHandlers = {
   "subreddit-delete": (_, id) => deleteSubreddit(id),
   "subreddit-last-post-dates": (_, subredditIds: string[]) =>
     fetchLastPostDatesForSubreddits(subredditIds),
+  "subreddit-analyze-posting-times": (_, id, timezone) => analyzeSubredditPostingTimes(id, timezone),
 };
 
 export const channelHandlers = prefixNamespaceObject(namespace, handlers);

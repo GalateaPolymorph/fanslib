@@ -1,4 +1,5 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
+import type { SubredditPostingTime } from "../channels/api-type";
 
 export type PostponeBlueskyDraftPayload = {
   postId: string;
@@ -16,7 +17,18 @@ export type FindRedgifsURLResponse = {
   url: string;
 };
 
-const methods = ["draftBlueskyPost", "findRedgifsURL"] as const;
+export type FindSubredditPostingTimesPayload = {
+  subreddit: string;
+  timezone?: string;
+};
+
+export type FindSubredditPostingTimesResponse = {
+  postingTimes: SubredditPostingTime[];
+  subreddit: string;
+  timezone: string;
+};
+
+const methods = ["draftBlueskyPost", "findRedgifsURL", "findSubredditPostingTimes"] as const;
 
 export type APIPostponeHandlers = {
   draftBlueskyPost: (
@@ -24,6 +36,10 @@ export type APIPostponeHandlers = {
     data: PostponeBlueskyDraftPayload
   ) => Promise<PostponeBlueskyDraftResponse>;
   findRedgifsURL: (_: any, data: FindRedgifsURLPayload) => Promise<FindRedgifsURLResponse>;
+  findSubredditPostingTimes: (
+    _: any,
+    data: FindSubredditPostingTimesPayload
+  ) => Promise<FindSubredditPostingTimesResponse>;
 };
 
 export const namespace = "api-postpone" as const;

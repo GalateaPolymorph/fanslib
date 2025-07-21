@@ -16,7 +16,7 @@ import {
 } from "@renderer/components/ui/Select";
 import { Textarea } from "@renderer/components/ui/Textarea";
 import { useToast } from "@renderer/components/ui/Toast/use-toast";
-import { useCreateSubreddit } from "@renderer/hooks/api/useChannels";
+import { useCreateSubreddit, useAnalyzeSubredditPostingTimes } from "@renderer/hooks/api/useChannels";
 import { parseViewCount } from "@renderer/lib/format-views";
 import { useState } from "react";
 import { VERIFICATION_STATUS, type VerificationStatus } from "../../../../features/channels/type";
@@ -35,6 +35,7 @@ export const CreateSubredditDialog = ({
 }: CreateSubredditDialogProps) => {
   const { toast } = useToast();
   const createSubredditMutation = useCreateSubreddit();
+  const analyzePostingTimesMutation = useAnalyzeSubredditPostingTimes();
   const [name, setName] = useState("");
   const [maxPostFrequencyHours, setMaxPostFrequencyHours] = useState<string>("");
   const [notes, setNotes] = useState("");
@@ -67,7 +68,7 @@ export const CreateSubredditDialog = ({
     }
 
     try {
-      await createSubredditMutation.mutateAsync({
+      const createdSubreddit = await createSubredditMutation.mutateAsync({
         name: nameWithoutR,
         maxPostFrequencyHours: maxPostFrequencyHours ? parseInt(maxPostFrequencyHours) : 24,
         notes: notes.trim() || undefined,
@@ -76,6 +77,17 @@ export const CreateSubredditDialog = ({
         defaultFlair: defaultFlair.trim() || undefined,
         captionPrefix: captionPrefix.trim() || undefined,
       });
+
+      // Automatically analyze posting times for the new subreddit
+      try {
+        await analyzePostingTimesMutation.mutateAsync({
+          subredditId: createdSubreddit.id,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        });
+      } catch (analysisError) {
+        console.warn("Failed to analyze posting times for new subreddit:", analysisError);
+        // Don't show error to user - this is a nice-to-have feature
+      }
 
       onSubredditCreated();
       onOpenChange(false);
@@ -190,7 +202,17 @@ export const CreateSubredditDialog = ({
         </div>
 
         <DialogFooter>
-          <Button onClick={createSubreddit}>Create Subreddit</Button>
+          <Button 
+            onClick={createSubreddit} 
+            disabled={createSubredditMutation.isPending || analyzePostingTimesMutation.isPending}
+          >
+            {createSubredditMutation.isPending 
+              ? "Creating..." 
+              : analyzePostingTimesMutation.isPending 
+                ? "Analyzing posting times..." 
+                : "Create Subreddit"
+            }
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

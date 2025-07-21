@@ -3,7 +3,7 @@ import { Checkbox } from "@renderer/components/ui/Checkbox";
 import { usePostFrequencyStatus } from "@renderer/hooks";
 import { formatViewCount } from "@renderer/lib/format-views";
 import { cn } from "@renderer/lib/utils";
-import { ExternalLink, Pencil } from "lucide-react";
+import { ExternalLink, Pencil, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Subreddit } from "src/features/channels/subreddit";
 import { VerificationStatus } from "../../../components/VerificationStatus";
@@ -94,7 +94,17 @@ export const SubredditRow = ({
         <span className={textClasses}>{subreddit.captionPrefix ?? "-"}</span>
       </div>
       <div className="p-2 min-h-12 flex items-center">
-        <span className={textClasses}>{subreddit.notes ?? "-"}</span>
+        <div className="flex items-center gap-2 w-full">
+          <span className={textClasses}>{subreddit.notes ?? "-"}</span>
+          {subreddit.postingTimesData && subreddit.postingTimesData.length > 0 && (
+            <div 
+              className="inline-flex" 
+              title={`Posting times analyzed (${new Date(subreddit.postingTimesLastFetched || '').toLocaleDateString()})`}
+            >
+              <BarChart3 className="h-3 w-3 text-blue-500 flex-shrink-0" />
+            </div>
+          )}
+        </div>
       </div>
       <div className="p-2 pr-4 min-h-12 flex items-center justify-end gap-2">
         <Button

@@ -11,9 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@renderer/components/ui/Select";
-import { useUpdateSubreddit } from "@renderer/hooks/api/useChannels";
+import { FilterPresetProvider } from "@renderer/contexts/FilterPresetContext";
+import {
+  useAnalyzeSubredditPostingTimes,
+  useUpdateSubreddit,
+} from "@renderer/hooks/api/useChannels";
 import { formatViewCount, parseViewCount } from "@renderer/lib/format-views";
-import { Check } from "lucide-react";
+import { BarChart3, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Subreddit } from "src/features/channels/subreddit";
 import {
@@ -22,6 +26,7 @@ import {
 } from "../../../../../features/channels/type";
 import { sanitizeFilterInput } from "../../../../../features/library/filter-helpers";
 import { VerificationStatus as VerificationStatusComponent } from "../../../components/VerificationStatus";
+import { SubredditPostingTimesHeatmap } from "./SubredditPostingTimesHeatmap";
 import { EditingSubreddit } from "./type";
 
 type EditingSubredditRowProps = {
@@ -31,6 +36,7 @@ type EditingSubredditRowProps = {
 
 export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRowProps) => {
   const updateSubredditMutation = useUpdateSubreddit();
+  const analyzePostingTimesMutation = useAnalyzeSubredditPostingTimes();
   const [editingSubreddit, setEditingSubreddit] = useState<EditingSubreddit>({
     ...subreddit,
     eligibleMediaFilter: sanitizeFilterInput(subreddit.eligibleMediaFilter),
@@ -52,11 +58,32 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
           eligibleMediaFilter: editingSubreddit.eligibleMediaFilter,
           defaultFlair: editingSubreddit.defaultFlair,
           captionPrefix: editingSubreddit.captionPrefix,
+          postingTimesData: editingSubreddit.postingTimesData,
+          postingTimesLastFetched: editingSubreddit.postingTimesLastFetched,
+          postingTimesTimezone: editingSubreddit.postingTimesTimezone,
         },
       });
       onUpdate();
     } catch (error) {
       console.error("Failed to update subreddit", error);
+    }
+  };
+
+  const analyzePostingTimes = async () => {
+    try {
+      const result = await analyzePostingTimesMutation.mutateAsync({
+        subredditId: subreddit.id,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      // Update local state with the new posting times data
+      setEditingSubreddit({
+        ...editingSubreddit,
+        postingTimesData: result.postingTimesData,
+        postingTimesLastFetched: result.postingTimesLastFetched,
+        postingTimesTimezone: result.postingTimesTimezone,
+      });
+    } catch (error) {
+      console.error("Failed to analyze posting times", error);
     }
   };
 
@@ -146,26 +173,65 @@ export const EditingSubredditRow = ({ subreddit, onUpdate }: EditingSubredditRow
         </Button>
       </div>
       <div className="col-span-full p-4 border-t">
-        <div className="space-y-3">
-          <MediaFiltersProvider
-            value={editingSubreddit.eligibleMediaFilter}
-            onChange={(filter) =>
-              setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
-            }
-          >
-            <div className="flex items-center justify-end">
-              <RedditChannelFilterPreset
-                onApplyFilter={(filter) =>
-                  setEditingSubreddit({
-                    ...editingSubreddit,
-                    eligibleMediaFilter: sanitizeFilterInput(filter),
-                  })
-                }
-              />
-              <FilterActions />
+        <div className="space-y-6">
+          <div>
+            <MediaFiltersProvider
+              value={editingSubreddit.eligibleMediaFilter}
+              onChange={(filter) =>
+                setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter })
+              }
+            >
+              <FilterPresetProvider
+                onFiltersChange={(filter) => {
+                  setEditingSubreddit({ ...editingSubreddit, eligibleMediaFilter: filter });
+                }}
+              >
+                <div className="flex items-center justify-end">
+                  <RedditChannelFilterPreset
+                    onApplyFilter={(filter) =>
+                      setEditingSubreddit({
+                        ...editingSubreddit,
+                        eligibleMediaFilter: sanitizeFilterInput(filter),
+                      })
+                    }
+                  />
+                  <FilterActions />
+                </div>
+                <MediaFiltersComponent />
+              </FilterPresetProvider>
+            </MediaFiltersProvider>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-gray-700">Posting Times Analysis</h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={analyzePostingTimes}
+                disabled={analyzePostingTimesMutation.isPending}
+                className="gap-2"
+              >
+                {analyzePostingTimesMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <BarChart3 className="h-4 w-4" />
+                )}
+                {analyzePostingTimesMutation.isPending ? "Analyzing..." : "Analyze Posting Times"}
+              </Button>
             </div>
-            <MediaFiltersComponent />
-          </MediaFiltersProvider>
+
+            <SubredditPostingTimesHeatmap
+              postingTimes={editingSubreddit.postingTimesData || []}
+              timezone={editingSubreddit.postingTimesTimezone}
+            />
+
+            {editingSubreddit.postingTimesLastFetched && (
+              <p className="text-xs text-gray-500 text-center">
+                Last updated: {new Date(editingSubreddit.postingTimesLastFetched).toLocaleString()}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

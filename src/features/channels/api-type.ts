@@ -22,6 +22,13 @@ export type SubredditCreatePayload = {
   captionPrefix?: string;
 };
 
+export type SubredditPostingTime = {
+  day: number;
+  hour: number;
+  posts: number;
+  score: number; // Normalized score 1-100
+};
+
 export type SubredditUpdatePayload = {
   name: string;
   maxPostFrequencyHours?: number;
@@ -31,6 +38,9 @@ export type SubredditUpdatePayload = {
   eligibleMediaFilter?: MediaFilters;
   defaultFlair?: string;
   captionPrefix?: string;
+  postingTimesData?: SubredditPostingTime[];
+  postingTimesLastFetched?: Date;
+  postingTimesTimezone?: string;
 };
 
 const methods = [
@@ -46,6 +56,7 @@ const methods = [
   "subreddit-update",
   "subreddit-delete",
   "subreddit-last-post-dates",
+  "subreddit-analyze-posting-times",
 ] as const;
 
 export type ChannelHandlers = {
@@ -65,6 +76,7 @@ export type ChannelHandlers = {
   "subreddit-update": (_: any, id: string, updates: SubredditUpdatePayload) => Promise<Subreddit>;
   "subreddit-delete": (_: any, id: string) => Promise<void>;
   "subreddit-last-post-dates": (_: any, subredditIds: string[]) => Promise<Record<string, string>>;
+  "subreddit-analyze-posting-times": (_: any, id: string, timezone?: string) => Promise<Subreddit>;
 };
 
 export const namespace = "channel" as const;

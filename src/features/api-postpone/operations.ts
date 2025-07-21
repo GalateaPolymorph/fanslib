@@ -1,12 +1,18 @@
-import { FindRedgifsUrlQuery, FindRedgifsUrlQueryVariables } from "src/graphql/postpone/types";
+import { 
+  FindRedgifsUrlQuery, 
+  FindRedgifsUrlQueryVariables,
+  FindSubredditPostingTimesQuery,
+  FindSubredditPostingTimesQueryVariables 
+} from "src/graphql/postpone/types";
 import { db } from "../../lib/db";
 import { CHANNEL_TYPES } from "../channels/channelTypes";
 import { Media } from "../library/entity";
 import { Post } from "../posts/entity";
 import { loadSettings } from "../settings/load";
-import { FindRedgifsURLPayload, PostponeBlueskyDraftPayload } from "./api-type";
+import { FindRedgifsURLPayload, PostponeBlueskyDraftPayload, FindSubredditPostingTimesPayload } from "./api-type";
 import { fetchPostpone } from "./fetch";
 import { FIND_REDGIFS_URL } from "./gql/find-redgifs-url";
+import { FIND_SUBREDDIT_POSTING_TIMES } from "./gql/find-subreddit-posting-times";
 import { SCHEDULE_BLUESKY_POST } from "./gql/schedule-bluesky-post";
 
 export const draftBlueskyPost = async (data: PostponeBlueskyDraftPayload) => {
@@ -82,4 +88,41 @@ export const findRedgifsURL = async (data: FindRedgifsURLPayload) => {
 
     return { url: media.hostedUrl ?? null };
   });
+};
+
+export const findSubredditPostingTimes = async (data: FindSubredditPostingTimesPayload) => {
+  const timezone = data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  const result = await fetchPostpone<FindSubredditPostingTimesQuery, FindSubredditPostingTimesQueryVariables>(
+    FIND_SUBREDDIT_POSTING_TIMES, 
+    {
+      subreddit: data.subreddit,
+      timezone
+    }
+  );
+
+  if (!result.analytics?.posts) {
+    return {
+      postingTimes: [],
+      subreddit: data.subreddit,
+      timezone
+    };
+  }
+
+  // Normalize scores to 1-100 scale
+  const posts = result.analytics.posts.filter(p => p?.day !== null && p?.hour !== null && p?.posts !== null);
+  const maxPosts = Math.max(...posts.map(p => p!.posts!));
+  
+  const postingTimes = posts.map(p => ({
+    day: p!.day!,
+    hour: p!.hour!,
+    posts: p!.posts!,
+    score: maxPosts > 0 ? Math.round((p!.posts! / maxPosts) * 100) : 0
+  }));
+
+  return {
+    postingTimes,
+    subreddit: data.subreddit,
+    timezone
+  };
 };

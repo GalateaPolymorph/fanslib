@@ -30,6 +30,7 @@ import {
 } from "./notifications/api-type";
 import { OsIpcChannel, OsIpcHandlers, osMethods } from "./os/api-type";
 import { PostIpcChannel, PostIpcHandlers, postMethods } from "./posts/api-type";
+import { RedditPosterIpcChannel, RedditPosterIpcHandlers, redditPosterMethods } from "./reddit-poster/api-type";
 import { SettingsIpcChannel, SettingsIpcHandlers, settingsMethods } from "./settings/api-type";
 import { ShootIpcChannel, ShootIpcHandlers, shootMethods } from "./shoots/api-type";
 import { TagIpcChannel, TagIpcHandlers, tagMethods } from "./tags/api-type";
@@ -41,6 +42,7 @@ export type IpcHandlers = ChannelIpcHandlers &
   NotificationIpcHandlers &
   OsIpcHandlers &
   PostIpcHandlers &
+  RedditPosterIpcHandlers &
   SettingsIpcHandlers &
   ShootIpcHandlers &
   HashtagIpcHandlers &
@@ -58,6 +60,7 @@ export const ipcMethods = [
   ...notificationMethods,
   ...osMethods,
   ...postMethods,
+  ...redditPosterMethods,
   ...settingsMethods,
   ...shootMethods,
   ...hashtagMethods,
@@ -76,6 +79,7 @@ export type IpcChannel =
   | NotificationIpcChannel
   | OsIpcChannel
   | PostIpcChannel
+  | RedditPosterIpcChannel
   | SettingsIpcChannel
   | ShootIpcChannel
   | HashtagIpcChannel

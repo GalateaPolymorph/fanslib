@@ -201,3 +201,32 @@ export const fetchLastPostDatesForSubreddits = async (
     {} as Record<string, string>
   );
 };
+
+export const analyzeSubredditPostingTimes = async (
+  subredditId: string, 
+  timezone?: string
+): Promise<Subreddit> => {
+  const dataSource = await db();
+  const subredditRepository = dataSource.getRepository(Subreddit);
+
+  const subreddit = await subredditRepository.findOne({ where: { id: subredditId } });
+  if (!subreddit) {
+    throw new Error(`Subreddit with id ${subredditId} not found`);
+  }
+
+  // Import the api-postpone operation dynamically to avoid circular dependencies
+  const { findSubredditPostingTimes } = await import("../api-postpone/operations");
+  
+  const result = await findSubredditPostingTimes({
+    subreddit: subreddit.name,
+    timezone
+  });
+
+  // Update the subreddit with the posting times data
+  subreddit.postingTimesData = result.postingTimes;
+  subreddit.postingTimesLastFetched = new Date();
+  subreddit.postingTimesTimezone = result.timezone;
+
+  await subredditRepository.save(subreddit);
+  return subreddit;
+};

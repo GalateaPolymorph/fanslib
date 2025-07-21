@@ -28,6 +28,7 @@ export const MediaTile = (props: MediaTileProps) => {
   const withNavigation = props.withNavigation ?? false;
   const withFileName = props.withFileName ?? false;
   const cover = props.cover ?? false;
+  const withTags = props.withTags ?? false;
 
   const activatePreview = () => {
     if (!withPreview) return;
@@ -90,7 +91,7 @@ export const MediaTile = (props: MediaTileProps) => {
       {withSelection && <MediaTileSelectionCircle mediaId={media.id} />}
       <div className="absolute bottom-1 left-1 flex gap-1 z-10">
         {withPostsPopover && <MediaTilePostsPopover media={media} />}
-        <MediaTileTagStickers media={media} />
+        {withTags && <MediaTileTagStickers media={media} />}
         {withTypeIcon && <MediaTileTypeSticker media={media} />}
       </div>
     </div>

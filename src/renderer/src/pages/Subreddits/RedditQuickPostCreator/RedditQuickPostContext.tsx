@@ -1,17 +1,12 @@
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { channelKeys, useChannels } from "@renderer/hooks/api/useChannels";
 import { useCreatePost } from "@renderer/hooks/api/usePost";
-import { useRedgifsLookup } from "@renderer/hooks/api/useRedgifsUrl";
 import {
   subredditLastPostDateKeys,
   useSubredditLastPostDates,
 } from "@renderer/hooks/api/useSubredditLastPostDates";
-import { selectRandomMedia } from "@renderer/hooks/business/useFilteredRandomMedia";
-import { useCaptionGenerator } from "@renderer/hooks/business/useMediaCaption";
-import { useSubredditSelector } from "@renderer/hooks/business/useOptimalSubreddit";
 import { useRedditUrlGenerator } from "@renderer/hooks/business/useRedditUrlGenerator";
 import { useClipboard } from "@renderer/hooks/ui/useClipboard";
-import { isEmptyObject } from "@renderer/lib/object";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   createContext,
@@ -40,7 +35,6 @@ type RedditQuickPostContextType = {
   selectSpecificMedia: (media: Media) => void;
   refreshPost: () => Promise<void>;
   refreshMedia: () => Promise<void>;
-  refreshRedgifsUrl: () => Promise<void>;
   markAsPosted: () => Promise<void>;
 
   openRedditPost: () => void;
@@ -60,12 +54,6 @@ export const useRedditQuickPostContext = () => {
 
 export { RedditQuickPostContext };
 
-const removeHashtagsFromEnd = (caption: string): string => {
-  return caption
-    .replace(/(\n\s*#[^\n]*)+$/g, "")
-    .replace(/(^|\s)(#\w+\s*)+$/g, "$1")
-    .replace(/\n+$/, "");
-};
 
 type RedditQuickPostProviderProps = {
   children: ReactNode;
@@ -86,14 +74,18 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   });
 
   // Function provider hooks
-  const { selectOptimalSubreddit, isLoading: isSubredditLoading } =
-    useSubredditSelector(subreddits);
-  const { generateCaption } = useCaptionGenerator();
-  const { lookupRedgifsUrl } = useRedgifsLookup();
   const createPostMutation = useCreatePost();
   const queryClient = useQueryClient();
   const { copyToClipboard } = useClipboard();
   const { settings } = useSettings();
+
+  // Helper function to remove hashtags from end of caption (used only for user input)
+  const removeHashtagsFromEnd = (caption: string): string => {
+    if (!caption) return "";
+    
+    // Remove hashtags from the end of the caption
+    return caption.replace(/#[^\s]*(\s+#[^\s]*)*\s*$/, "").trim();
+  };
 
   // Essential computed data
   const subredditIds = subreddits.map((s) => s.id);
@@ -115,62 +107,58 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
   }, []);
 
   const generateRandomPost = useCallback(async (): Promise<void> => {
-    if (subreddits.length === 0 || isSubredditLoading) {
+    if (subreddits.length === 0) {
       return;
     }
 
     const redditChannel = channels.find((c) => c.type.id === CHANNEL_TYPES.reddit.id);
+    if (!redditChannel) {
+      setPostState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: {
+          type: "general",
+          message: "No Reddit channel found",
+          retryable: false,
+        },
+      }));
+      return;
+    }
+
     setPostState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const subreddit = await selectOptimalSubreddit();
-      if (!subreddit) {
-        throw new Error("No eligible subreddit found");
-      }
+      // Use the new backend API to generate a post
+      const generatedPost = await window.api["reddit-poster:generateRandomPost"](
+        subreddits,
+        redditChannel.id
+      );
 
-      const eligibleMediaFilter = isEmptyObject(subreddit.eligibleMediaFilter)
-        ? redditChannel?.eligibleMediaFilter
-        : subreddit.eligibleMediaFilter;
-
-      // Step 2: Select random media for the subreddit
-      const { media, totalAvailable } = await selectRandomMedia(eligibleMediaFilter);
-      if (!media) {
-        throw new Error("No media found for the selected subreddit");
-      }
-
-      // Step 3: Generate caption and RedGIFs URL in parallel
-      const [caption, redgifsUrl] = await Promise.all([
-        generateCaption(media),
-        media.type === "video" ? lookupRedgifsUrl(media) : Promise.resolve(null),
-      ]);
-
-      const cleanedCaption = removeHashtagsFromEnd(caption);
-
-      // Update state with all generated data
+      // Update state with generated data
       setPostState({
-        subreddit,
-        media,
-        caption: cleanedCaption,
-        redgifsUrl,
+        subreddit: generatedPost.subreddit,
+        media: generatedPost.media,
+        caption: generatedPost.caption,
+        redgifsUrl: generatedPost.redgifsUrl,
         isLoading: false,
         error: null,
         isUrlReady: true,
-        totalMediaAvailable: totalAvailable,
+        totalMediaAvailable: 1, // Backend doesn't return this yet
         hasPostedToReddit: false,
       });
     } catch (error) {
       setPostState((prev) => ({
         ...prev,
         isLoading: false,
-        error: error,
+        error: {
+          type: "general",
+          message: error instanceof Error ? error.message : "Unknown error",
+          retryable: true,
+        },
       }));
     }
   }, [
     subreddits,
-    isSubredditLoading,
-    selectOptimalSubreddit,
-    generateCaption,
-    lookupRedgifsUrl,
     channels,
   ]);
 
@@ -183,40 +171,40 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
       return;
     }
 
+    const redditChannel = channels.find((c) => c.type.id === CHANNEL_TYPES.reddit.id);
+    if (!redditChannel) {
+      setPostState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: {
+          type: "general",
+          message: "No Reddit channel found",
+          retryable: false,
+        },
+      }));
+      return;
+    }
+
     setPostState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const currentSubreddit = postState.subreddit;
-      const redditChannel = channels.find((c) => c.type.id === CHANNEL_TYPES.reddit.id);
-      const redditChannelEligibleMediaFilter = redditChannel?.eligibleMediaFilter;
 
-      const { media, totalAvailable } = await selectRandomMedia(
-        Array.isArray(currentSubreddit.eligibleMediaFilter)
-          ? currentSubreddit.eligibleMediaFilter
-          : redditChannelEligibleMediaFilter
+      // Use the new backend API to regenerate media for the current subreddit
+      const regeneratedMedia = await window.api["reddit-poster:regenerateMedia"](
+        postState.subreddit.id,
+        redditChannel.id
       );
-      if (!media) {
-        throw new Error("No media found for the current subreddit");
-      }
-
-      // Step 3: Generate caption and RedGIFs URL in parallel for the new media
-      const [caption, redgifsUrl] = await Promise.all([
-        generateCaption(media),
-        media.type === "video" ? lookupRedgifsUrl(media) : Promise.resolve(null),
-      ]);
-
-      const cleanedCaption = removeHashtagsFromEnd(caption);
 
       // Update state with new media data, keeping the same subreddit
       setPostState((prev) => ({
         ...prev,
-        media,
-        caption: cleanedCaption,
-        redgifsUrl,
+        media: regeneratedMedia.media,
+        caption: regeneratedMedia.caption,
+        redgifsUrl: regeneratedMedia.redgifsUrl,
         isLoading: false,
         error: null,
         isUrlReady: true,
-        totalMediaAvailable: totalAvailable,
+        totalMediaAvailable: 1, // Backend doesn't return this yet
         hasPostedToReddit: false,
       }));
     } catch (error) {
@@ -224,20 +212,24 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
       setPostState((prev) => ({
         ...prev,
         isLoading: false,
-        error: error,
+        error: {
+          type: "media",
+          message: error instanceof Error ? error.message : "Unknown error",
+          retryable: true,
+        },
       }));
     }
-  }, [postState.subreddit, generateCaption, lookupRedgifsUrl, channels]);
+  }, [postState.subreddit, channels]);
 
   const hasGeneratedInitialPost = useRef(false);
   useEffect(() => {
-    if (isSubredditLoading || subreddits.length === 0 || hasGeneratedInitialPost.current) {
+    if (subreddits.length === 0 || hasGeneratedInitialPost.current) {
       return;
     }
 
     hasGeneratedInitialPost.current = true;
     generateRandomPost();
-  }, [subreddits.length, isSubredditLoading, generateRandomPost]);
+  }, [subreddits.length, generateRandomPost]);
 
   const selectSpecificMedia = useCallback((media: Media) => {
     setPostState((prev) => ({ ...prev, media }));
@@ -349,33 +341,7 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     subredditIds,
   ]);
 
-  const refreshRedgifsUrl = useCallback(async (): Promise<void> => {
-    if (!postState.media) {
-      return;
-    }
-
-    setPostState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      // Step 1: Generate new RedGIFs URL for the current media
-      const redgifsUrl = await lookupRedgifsUrl(postState.media);
-
-      // Update state with new RedGIFs URL
-      setPostState((prev) => ({
-        ...prev,
-        redgifsUrl,
-        isLoading: false,
-        error: null,
-        isUrlReady: true,
-      }));
-    } catch (error) {
-      setPostState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: error,
-      }));
-    }
-  }, [postState.media, lookupRedgifsUrl]);
+  // RefreshRedgifsUrl is now handled by the backend API during media regeneration
 
   const contextValue = {
     // Unified state
@@ -391,7 +357,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     selectSpecificMedia,
     refreshPost,
     refreshMedia,
-    refreshRedgifsUrl,
     markAsPosted,
 
     // Legacy actions for compatibility

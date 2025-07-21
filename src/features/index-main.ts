@@ -8,6 +8,7 @@ import { libraryHandlers } from "./library/api";
 import { notificationHandlers } from "./notifications/api";
 import { osHandlers } from "./os/api";
 import { postHandlers } from "./posts/api";
+import { redditPosterHandlers } from "./reddit-poster/api";
 import { settingsHandlers } from "./settings/api";
 import { shootHandlers } from "./shoots/api";
 import { snippetHandlers } from "./snippets/api";
@@ -23,6 +24,7 @@ export const handlers = {
   ...notificationHandlers,
   ...osHandlers,
   ...postHandlers,
+  ...redditPosterHandlers,
   ...shootHandlers,
   ...settingsHandlers,
   ...hashtagHandlers,

@@ -2,6 +2,7 @@ import { Button } from "@renderer/components/ui/Button";
 import { PageContainer } from "@renderer/components/ui/PageContainer/PageContainer";
 import { PageHeader } from "@renderer/components/ui/PageHeader/PageHeader";
 import { useSubreddits } from "@renderer/hooks/api/useChannels";
+import { RedditBulkPostGenerator } from "@renderer/pages/Subreddits/RedditBulkPostGenerator";
 import { RedditQuickPostCreator } from "@renderer/pages/Subreddits/RedditQuickPostCreator";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
@@ -56,6 +57,11 @@ export const SubredditsPage = () => {
             id: "posting",
             label: "Reddit Posting",
             content: <RedditQuickPostCreator subreddits={subreddits} />,
+          },
+          {
+            id: "bulk-posting",
+            label: "Bulk Post Generator",
+            content: <RedditBulkPostGenerator subreddits={subreddits} />,
           },
         ]}
       ></Tabs>

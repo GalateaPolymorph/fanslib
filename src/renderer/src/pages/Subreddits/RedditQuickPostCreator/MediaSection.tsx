@@ -21,7 +21,6 @@ export const MediaSection = () => {
     openMediaInFinder,
     copyMediaNameToClipboard,
     selectSpecificMedia,
-    refreshRedgifsUrl,
   } = useRedditQuickPostContext();
 
   const { media, subreddit, redgifsUrl, isLoading, error, totalMediaAvailable } = postState;
@@ -212,7 +211,7 @@ export const MediaSection = () => {
                   <p className="text-lg text-orange-600">⚠ No RedGIFs URL found</p>
                   <Button
                     onClick={() => {
-                      refreshRedgifsUrl();
+                      refreshMedia();
                     }}
                     variant="ghost"
                     size="sm"
