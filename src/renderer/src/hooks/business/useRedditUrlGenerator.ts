@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Subreddit } from "../../../../features/channels/subreddit";
 import { Media } from "../../../../features/library/entity";
+import { useRedgifsUrl } from "../api/useRedgifsUrl";
 
 type RedditUrlGeneratorResult = {
   generateUrl: () => string | null;
@@ -13,17 +14,14 @@ type RedditUrlGeneratorParams = {
   subreddit: Subreddit | null;
   media: Media | null;
   caption: string;
-  redgifsUrl: string | null;
-  isRedgifsLoading: boolean;
 };
 
 export const useRedditUrlGenerator = ({
   subreddit,
   media,
   caption,
-  redgifsUrl,
-  isRedgifsLoading,
 }: RedditUrlGeneratorParams): RedditUrlGeneratorResult => {
+  const { url: redgifsUrl, isLoading: isRedgifsLoading } = useRedgifsUrl(media);
   const result = useMemo(() => {
     if (!subreddit || !media) {
       return {

@@ -9,7 +9,7 @@ import { CHANNEL_TYPES } from "../channels/channelTypes";
 import { Media } from "../library/entity";
 import { Post } from "../posts/entity";
 import { loadSettings } from "../settings/load";
-import { FindRedgifsURLPayload, PostponeBlueskyDraftPayload, FindSubredditPostingTimesPayload } from "./api-type";
+import { FindRedgifsURLPayload, RefreshRedgifsURLPayload, PostponeBlueskyDraftPayload, FindSubredditPostingTimesPayload } from "./api-type";
 import { fetchPostpone } from "./fetch";
 import { FIND_REDGIFS_URL } from "./gql/find-redgifs-url";
 import { FIND_SUBREDDIT_POSTING_TIMES } from "./gql/find-subreddit-posting-times";
@@ -77,16 +77,62 @@ export const findRedgifsURL = async (data: FindRedgifsURLPayload) => {
     throw new Error(`Media with id ${data.mediaId} not found`);
   }
 
+  // Check if we have a cached URL first
+  if (media.redgifsUrl) {
+    return { url: media.redgifsUrl };
+  }
+
+  // If no cached URL, fetch from Postpone API
   return fetchPostpone<FindRedgifsUrlQuery, FindRedgifsUrlQueryVariables>(FIND_REDGIFS_URL, {
     filename: media.name,
-  }).then((result) => {
-    const media = result.media.objects[0];
-    if (!media) return { url: null };
+  }).then(async (result) => {
+    const postponeMedia = result.media.objects[0];
+    if (!postponeMedia) return { url: null };
 
-    const isRedgifsUrl = media.hostedUrl.includes("redgifs.com");
+    const isRedgifsUrl = postponeMedia.hostedUrl.includes("redgifs.com");
     if (!isRedgifsUrl) return { url: null };
 
-    return { url: media.hostedUrl ?? null };
+    const url = postponeMedia.hostedUrl ?? null;
+
+    // Cache the successful result in the database
+    if (url) {
+      await mediaRepository.update(media.id, { redgifsUrl: url });
+    }
+
+    return { url };
+  });
+};
+
+export const refreshRedgifsURL = async (data: RefreshRedgifsURLPayload) => {
+  const dataSource = await db();
+  const mediaRepository = dataSource.getRepository(Media);
+  const media = await mediaRepository.findOne({ where: { id: data.mediaId } });
+
+  if (!media) {
+    throw new Error(`Media with id ${data.mediaId} not found`);
+  }
+
+  // Clear the cached URL first
+  await mediaRepository.update(media.id, { redgifsUrl: null });
+
+  // Fetch fresh URL from Postpone API
+  return fetchPostpone<FindRedgifsUrlQuery, FindRedgifsUrlQueryVariables>(FIND_REDGIFS_URL, {
+    filename: media.name,
+  }).then(async (result) => {
+    const postponeMedia = result.media.objects[0];
+    if (!postponeMedia) return { url: null };
+
+    const isRedgifsUrl = postponeMedia.hostedUrl.includes("redgifs.com");
+    if (!isRedgifsUrl) return { url: null };
+
+    const url = postponeMedia.hostedUrl ?? null;
+
+    // Cache the fresh result in the database
+    if (url) {
+      await mediaRepository.update(media.id, { redgifsUrl: url });
+    }
+
+    return { url };
   });
 };
 

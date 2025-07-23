@@ -7,7 +7,8 @@ import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MediaView } from "../../components/MediaView";
-import { PostponeRedgifsButton } from "../../components/PostponeRedgifsButton";
+import { CreatePostFromRedgifsURLButton } from "../../components/CreatePostFromRedgifsURLButton";
+import { RedgifsURLIndicator } from "../../components/RedgifsURLIndicator";
 import { CreatePostDialog } from "./CreatePostDialog";
 import { MediaDetailMetadata } from "./MediaDetailMetadata";
 import { MediaDetailNavigation } from "./MediaDetailNavigation";
@@ -83,13 +84,16 @@ export const MediaDetail = () => {
             >
               Create new post with this media
             </Button>
-            <PostponeRedgifsButton
-              media={media}
-              className="self-center"
-              onPostCreatedOrFound={(post) => {
-                navigate(`/posts/${post.id}`);
-              }}
-            />
+            <div className="flex flex-col gap-2 items-center">
+              <RedgifsURLIndicator media={media} />
+              <CreatePostFromRedgifsURLButton
+                media={media}
+                className="self-center"
+                onPostCreatedOrFound={(post) => {
+                  navigate(`/posts/${post.id}`);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

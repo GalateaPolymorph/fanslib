@@ -1,11 +1,9 @@
 import { MediaTile } from "@renderer/components/MediaTile";
+import { RedgifsURLIndicator } from "@renderer/components/RedgifsURLIndicator";
 import { Button } from "@renderer/components/ui/Button";
 import { Textarea } from "@renderer/components/ui/Textarea";
-import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
-import { useSettings } from "@renderer/contexts/SettingsContext";
-import { useClipboard } from "@renderer/hooks/ui/useClipboard";
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { GeneratedPost } from "../../../../../features/reddit-poster/api-type";
 
 // Helper function to format datetime-local input value
@@ -55,30 +53,6 @@ type PostGenerationCardProps = {
 };
 
 const PostGenerationCard = ({ post, onUpdatePost, onRegenerateMedia }: PostGenerationCardProps) => {
-  const { toast } = useToast();
-  const { copyToClipboard } = useClipboard();
-  const { settings } = useSettings();
-
-  const hasPostponeCredentials = settings?.postponeToken;
-
-  const openPostponeContentLibrary = () => {
-    if (!post.media) return;
-
-    try {
-      window.open("https://www.postpone.app/content-library", "_blank", "noopener,noreferrer");
-      copyToClipboard(post.media.name);
-      toast({
-        headline: "Postpone Opened",
-        description: "Content library opened and media name copied to clipboard.",
-      });
-    } catch {
-      toast({
-        variant: "destructive",
-        headline: "Failed to Open Postpone",
-        description: "Could not open Postpone content library.",
-      });
-    }
-  };
 
   return (
     <div className="shadow-sm rounded-lg p-4 bg-base-100">
@@ -108,34 +82,7 @@ const PostGenerationCard = ({ post, onUpdatePost, onRegenerateMedia }: PostGener
 
           {/* Media Info */}
           <div className="space-y-1">
-            {post.media.type === "video" && post.redgifsUrl ? (
-              <p className="text-xs text-green-600">✓ RedGIFs URL found</p>
-            ) : post.media.type === "video" ? (
-              <div className="group flex items-center gap-3">
-                <p className="text-xs text-orange-600">⚠ No RedGIFs URL found</p>
-                <Button
-                  onClick={onRegenerateMedia}
-                  variant="ghost"
-                  size="sm"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 px-2 text-orange-600 hover:text-orange-800"
-                  title="Refresh RedGIFs URL"
-                >
-                  <RefreshCw className="h-3 w-3" />
-                </Button>
-                {hasPostponeCredentials && (
-                  <Button
-                    onClick={openPostponeContentLibrary}
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-800"
-                    title="Open Postpone content library and copy media name"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    Open in Postpone
-                  </Button>
-                )}
-              </div>
-            ) : null}
+            <RedgifsURLIndicator media={post.media} className="text-xs" />
           </div>
         </div>
 

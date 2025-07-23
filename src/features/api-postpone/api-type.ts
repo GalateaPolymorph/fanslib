@@ -14,7 +14,15 @@ export type FindRedgifsURLPayload = {
 };
 
 export type FindRedgifsURLResponse = {
-  url: string;
+  url: string | null;
+};
+
+export type RefreshRedgifsURLPayload = {
+  mediaId: string;
+};
+
+export type RefreshRedgifsURLResponse = {
+  url: string | null;
 };
 
 export type FindSubredditPostingTimesPayload = {
@@ -28,7 +36,7 @@ export type FindSubredditPostingTimesResponse = {
   timezone: string;
 };
 
-const methods = ["draftBlueskyPost", "findRedgifsURL", "findSubredditPostingTimes"] as const;
+const methods = ["draftBlueskyPost", "findRedgifsURL", "refreshRedgifsURL", "findSubredditPostingTimes"] as const;
 
 export type APIPostponeHandlers = {
   draftBlueskyPost: (
@@ -36,6 +44,7 @@ export type APIPostponeHandlers = {
     data: PostponeBlueskyDraftPayload
   ) => Promise<PostponeBlueskyDraftResponse>;
   findRedgifsURL: (_: any, data: FindRedgifsURLPayload) => Promise<FindRedgifsURLResponse>;
+  refreshRedgifsURL: (_: any, data: RefreshRedgifsURLPayload) => Promise<RefreshRedgifsURLResponse>;
   findSubredditPostingTimes: (
     _: any,
     data: FindSubredditPostingTimesPayload

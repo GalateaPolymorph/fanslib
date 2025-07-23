@@ -1,7 +1,6 @@
+import type { SubredditPostingTime } from "../channels/api-type";
 import { Subreddit } from "../channels/subreddit";
 import { Post } from "../posts/entity";
-import type { SubredditPostingTime } from "../channels/api-type";
-
 
 const addMinutes = (date: Date, minutes: number): Date => {
   return new Date(date.getTime() + minutes * 60000);
@@ -86,10 +85,10 @@ const getValidTimeSlotsForDay = (
   channelPosts: Post[]
 ): Array<{ date: Date; score: number }> => {
   const dayOfWeek = dayDate.getDay();
-  
+
   // Filter posting times for the specific day
-  const dayPostingTimes = postingTimes.filter(pt => pt.day === dayOfWeek);
-  
+  const dayPostingTimes = postingTimes.filter((pt) => pt.day === dayOfWeek);
+
   // If no data for this day, return empty array
   if (dayPostingTimes.length === 0) {
     return [];
@@ -128,7 +127,6 @@ export const calculateOptimalScheduleDate = (
   subredditPosts: Post[],
   channelPosts: Post[]
 ): Date => {
-  // Use real posting times data if available
   const postingTimes = subreddit.postingTimesData || [];
   const now = new Date();
   const maxDaysToLookAhead = 14;
@@ -139,7 +137,6 @@ export const calculateOptimalScheduleDate = (
     subredditPosts
   );
 
-  // If no posting times data is available, use fallback immediately
   if (postingTimes.length === 0) {
     return generateFallbackDate(minAllowedPostTime, channelPosts);
   }
@@ -153,6 +150,10 @@ export const calculateOptimalScheduleDate = (
     )
     .map(getBestTimeSlotForDay)
     .find((timeSlot) => timeSlot !== null);
+
+  if (bestTimeSlot) {
+    bestTimeSlot.date = addMinutes(bestTimeSlot.date, Math.floor(Math.random() * 30));
+  }
 
   return bestTimeSlot?.date ?? generateFallbackDate(minAllowedPostTime, channelPosts);
 };

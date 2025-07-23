@@ -36,6 +36,9 @@ export class Media {
   @Column("float", { nullable: true })
   duration?: number;
 
+  @Column("varchar", { nullable: true })
+  redgifsUrl?: string;
+
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 

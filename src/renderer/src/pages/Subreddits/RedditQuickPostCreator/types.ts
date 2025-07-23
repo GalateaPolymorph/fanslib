@@ -11,7 +11,6 @@ export type PostState = {
   subreddit: Subreddit | null;
   media: Media | null;
   caption: string;
-  redgifsUrl: string | null;
   isLoading: boolean;
   error: GenerationError | null;
   isUrlReady: boolean;

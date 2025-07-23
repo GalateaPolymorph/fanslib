@@ -2,40 +2,32 @@ import { Button } from "@renderer/components/ui/Button";
 import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useChannels } from "@renderer/hooks/api/useChannels";
-import { Search } from "lucide-react";
+import { useRedgifsUrl } from "@renderer/hooks/api/useRedgifsUrl";
+import { CheckCircle, ExternalLink } from "lucide-react";
 import { Post } from "src/features/posts/entity";
 import { CHANNEL_TYPES } from "../../../features/channels/channelTypes";
 import { Media } from "../../../features/library/entity";
 
-type PostponeRedgifsButtonProps = {
+type CreatePostFromRedgifsURLButtonProps = {
   media: Media;
   onPostCreatedOrFound?: (post: Post) => void;
   className?: string;
 };
 
-export const PostponeRedgifsButton = ({
+export const CreatePostFromRedgifsURLButton = ({
   media,
   onPostCreatedOrFound,
   className,
-}: PostponeRedgifsButtonProps) => {
+}: CreatePostFromRedgifsURLButtonProps) => {
   const { toast } = useToast();
   const { settings } = useSettings();
   const { data: channels = [] } = useChannels();
+  const { url } = useRedgifsUrl(media);
 
-  const findRedgifsUrlAndCreatePost = async () => {
+  const createPostWithUrl = async (redgifsUrl: string) => {
     try {
-      // First find the RedGIFs URL
-      const { url } = await window.api["api-postpone:findRedgifsURL"]({ mediaId: media.id });
-      if (!url) {
-        toast({
-          title: "No RedGIFs URL found",
-          variant: "destructive",
-        });
-        return;
-      }
-
       // Check if there's already a post with this URL
-      const existingPost = await window.api["post:byUrl"](url);
+      const existingPost = await window.api["post:byUrl"](redgifsUrl);
       if (existingPost) {
         toast({
           title: "Post already exists",
@@ -63,7 +55,7 @@ export const PostponeRedgifsButton = ({
           channelId: redgifsChannel.id,
           status: "posted",
           caption: "",
-          url: url,
+          url: redgifsUrl,
         },
         [media.id]
       );
@@ -74,7 +66,7 @@ export const PostponeRedgifsButton = ({
 
       onPostCreatedOrFound?.(post);
     } catch (error) {
-      console.error("Failed to find RedGIFs URL and create post:", error);
+      console.error("Failed to create post:", error);
       toast({
         title: "Failed to create post",
         description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -85,14 +77,29 @@ export const PostponeRedgifsButton = ({
 
   const hasRedgifsChannel = channels.some((c) => c.typeId === CHANNEL_TYPES.redgifs.id);
   const hasPostponeToken = !!settings?.postponeToken;
-  if (!hasRedgifsChannel || !hasPostponeToken) {
+  
+  if (!hasRedgifsChannel || !hasPostponeToken || media?.type !== "video" || !url) {
     return null;
   }
 
   return (
-    <Button onClick={findRedgifsUrlAndCreatePost} className={className} variant="ghost">
-      <Search className="h-4 w-4" />
-      Check Postpone for RedGIFs URL
-    </Button>
+    <div className={`flex gap-2 ${className}`}>
+      <Button
+        onClick={() => createPostWithUrl(url)}
+        variant="ghost"
+        className="flex items-center gap-2"
+      >
+        <CheckCircle className="h-4 w-4 text-green-500" />
+        Create Post from RedGIFs URL
+      </Button>
+      <Button
+        onClick={() => window.open(url, '_blank')}
+        variant="ghost"
+        size="sm"
+        title="Open RedGIFs URL in browser"
+      >
+        <ExternalLink className="h-4 w-4" />
+      </Button>
+    </div>
   );
 };

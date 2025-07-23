@@ -65,7 +65,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     subreddit: null,
     media: null,
     caption: "",
-    redgifsUrl: null,
     isLoading: false,
     error: null,
     isUrlReady: false,
@@ -97,8 +96,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     subreddit: postState.subreddit,
     media: postState.media,
     caption: postState.caption,
-    redgifsUrl: postState.redgifsUrl,
-    isRedgifsLoading: false,
   });
 
   const updateCaption = useCallback((caption: string) => {
@@ -139,7 +136,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         subreddit: generatedPost.subreddit,
         media: generatedPost.media,
         caption: generatedPost.caption,
-        redgifsUrl: generatedPost.redgifsUrl,
         isLoading: false,
         error: null,
         isUrlReady: true,
@@ -200,7 +196,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
         ...prev,
         media: regeneratedMedia.media,
         caption: regeneratedMedia.caption,
-        redgifsUrl: regeneratedMedia.redgifsUrl,
         isLoading: false,
         error: null,
         isUrlReady: true,
@@ -262,13 +257,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
     }
   }, [generateUrl, postState.media, settings]);
 
-  const openRedgifsUrl = useCallback(() => {
-    if (!postState.redgifsUrl) {
-      return;
-    }
-
-    window.open(postState.redgifsUrl, "_blank", "noopener,noreferrer");
-  }, [postState.redgifsUrl]);
 
   const openMediaInFinder = useCallback(() => {
     if (!postState.media) {
@@ -361,7 +349,6 @@ export const RedditQuickPostProvider = ({ children, subreddits }: RedditQuickPos
 
     // Legacy actions for compatibility
     openRedditPost,
-    openRedgifsUrl,
     openMediaInFinder,
     copyMediaNameToClipboard,
   };

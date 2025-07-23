@@ -73,7 +73,6 @@ export const RedditBulkPostGenerator = ({ subreddits }: RedditBulkPostGeneratorP
       updatePost(index, {
         media: regeneratedData.media,
         caption: regeneratedData.caption,
-        redgifsUrl: regeneratedData.redgifsUrl,
       });
     } catch (error) {
       toast({

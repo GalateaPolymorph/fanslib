@@ -1,19 +1,14 @@
 import { MediaTile } from "@renderer/components/MediaTile";
+import { RedgifsURLIndicator } from "@renderer/components/RedgifsURLIndicator";
 import { Button } from "@renderer/components/ui/Button";
-import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { MediaSelectionProvider } from "@renderer/contexts/MediaSelectionContext";
-import { useSettings } from "@renderer/contexts/SettingsContext";
-import { useClipboard } from "@renderer/hooks/ui/useClipboard";
-import { Copy, Edit3, ExternalLink, FolderOpen, RefreshCw } from "lucide-react";
+import { Copy, Edit3, FolderOpen, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { MediaSelectionDialog } from "./MediaSelectionDialog";
 import { useRedditQuickPostContext } from "./RedditQuickPostContext";
 
 export const MediaSection = () => {
   const [isMediaSelectionOpen, setIsMediaSelectionOpen] = useState(false);
-  const { settings } = useSettings();
-  const { toast } = useToast();
-  const { copyToClipboard } = useClipboard();
 
   const {
     postState,
@@ -23,30 +18,9 @@ export const MediaSection = () => {
     selectSpecificMedia,
   } = useRedditQuickPostContext();
 
-  const { media, subreddit, redgifsUrl, isLoading, error, totalMediaAvailable } = postState;
+  const { media, subreddit, isLoading, error, totalMediaAvailable } = postState;
 
   const openMediaSelection = () => setIsMediaSelectionOpen(true);
-
-  const openPostponeContentLibrary = () => {
-    if (!media) return;
-
-    try {
-      window.open("https://www.postpone.app/content-library", "_blank", "noopener,noreferrer");
-      copyToClipboard(media.name);
-      toast({
-        headline: "Postpone Opened",
-        description: "Content library opened and media name copied to clipboard.",
-      });
-    } catch {
-      toast({
-        variant: "destructive",
-        headline: "Failed to Open Postpone",
-        description: "Could not open Postpone content library.",
-      });
-    }
-  };
-
-  const hasPostponeCredentials = settings?.postponeToken;
 
   if (!subreddit) {
     return (
@@ -204,36 +178,7 @@ export const MediaSection = () => {
               </Button>
             </div>
             <div className="space-y-3">
-              {media.type === "video" && redgifsUrl ? (
-                <p className="">✓ RedGIFs URL found</p>
-              ) : media.type === "video" ? (
-                <div className="group flex items-center gap-3">
-                  <p className="text-lg text-orange-600">⚠ No RedGIFs URL found</p>
-                  <Button
-                    onClick={() => {
-                      refreshMedia();
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-8 px-2 text-orange-600 hover:text-orange-800"
-                    title="Refresh RedGIFs URL"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                  {hasPostponeCredentials && (
-                    <Button
-                      onClick={openPostponeContentLibrary}
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800"
-                      title="Open Postpone content library and copy media name"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Open in Postpone
-                    </Button>
-                  )}
-                </div>
-              ) : null}
+              <RedgifsURLIndicator media={media} className="text-lg" />
             </div>
           </div>
         </div>

@@ -1,13 +1,11 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
-import { Media } from "../library/entity";
 import { Subreddit } from "../channels/subreddit";
-
+import { Media } from "../library/entity";
 
 export type GeneratedPost = {
   subreddit: Subreddit;
   media: Media;
   caption: string;
-  redgifsUrl: string | null;
   date: Date;
 };
 
@@ -30,12 +28,11 @@ export type ScheduledPost = {
 export type RegenerateMediaResult = {
   media: Media;
   caption: string;
-  redgifsUrl: string | null;
 };
 
 export const methods = [
   "generateRandomPost",
-  "generatePosts", 
+  "generatePosts",
   "regenerateMedia",
   "scheduleAllPosts",
   "getScheduledPosts",
@@ -58,15 +55,8 @@ export type RedditPosterHandlers = {
     subredditId: string,
     channelId: string
   ) => Promise<RegenerateMediaResult>;
-  scheduleAllPosts: (
-    _: any,
-    posts: PostToSchedule[],
-    channelId: string
-  ) => Promise<string[]>;
-  getScheduledPosts: (
-    _: any,
-    channelId: string
-  ) => Promise<ScheduledPost[]>;
+  scheduleAllPosts: (_: any, posts: PostToSchedule[], channelId: string) => Promise<string[]>;
+  getScheduledPosts: (_: any, channelId: string) => Promise<ScheduledPost[]>;
 };
 
 export const namespace = "reddit-poster" as const;

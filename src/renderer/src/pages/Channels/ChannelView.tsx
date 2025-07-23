@@ -16,6 +16,7 @@ import {
 import { Button } from "@renderer/components/ui/Button";
 import { Input } from "@renderer/components/ui/Input";
 import { Textarea } from "@renderer/components/ui/Textarea";
+import { FilterPresetProvider } from "@renderer/contexts/FilterPresetContext";
 import { cn } from "@renderer/lib/utils";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -123,8 +124,10 @@ export const ChannelView = ({
               />
               <div className="flex items-center gap-2">
                 <MediaFiltersProvider value={eligibleMediaFilter} onChange={setEligibleMediaFilter}>
-                  <MediaFiltersComponent />
-                  <FilterActions />
+                  <FilterPresetProvider onFiltersChange={setEligibleMediaFilter}>
+                    <MediaFiltersComponent />
+                    <FilterActions />
+                  </FilterPresetProvider>
                 </MediaFiltersProvider>
               </div>
             </div>

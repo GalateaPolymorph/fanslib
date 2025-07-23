@@ -74,10 +74,6 @@ const generateCaptionForMedia = async (media: Media): Promise<string> => {
   }
 };
 
-// TODO
-const getRedgifsUrl = async (_media: Media): Promise<string | null> => {
-  return null;
-};
 
 const getMediaFilterForSubreddit = async (
   subreddit: Subreddit,
@@ -138,11 +134,8 @@ export const generateRandomPost = async (
     throw new Error("No suitable media found");
   }
 
-  // Generate caption and RedGIFs URL in parallel
-  const [caption, redgifsUrl] = await Promise.all([
-    generateCaptionForMedia(selectedMedia),
-    selectedMedia.type === "video" ? getRedgifsUrl(selectedMedia) : Promise.resolve(null),
-  ]);
+  // Generate caption
+  const caption = await generateCaptionForMedia(selectedMedia);
 
   // Calculate optimal schedule date
   const date = calculateOptimalScheduleDate(subreddit, subredditPosts, channelPosts);
@@ -151,7 +144,6 @@ export const generateRandomPost = async (
     subreddit,
     media: selectedMedia,
     caption,
-    redgifsUrl,
     date,
   };
 };
@@ -201,11 +193,8 @@ export const generatePosts = async (
         continue;
       }
 
-      // Generate caption and RedGIFs URL
-      const [caption, redgifsUrl] = await Promise.all([
-        generateCaptionForMedia(selectedMedia),
-        selectedMedia.type === "video" ? getRedgifsUrl(selectedMedia) : Promise.resolve(null),
-      ]);
+      // Generate caption
+      const caption = await generateCaptionForMedia(selectedMedia);
 
       // Calculate optimal schedule date considering all posts (existing + already generated)
       const date = calculateOptimalScheduleDate(subreddit, subredditPosts, allPosts);
@@ -214,7 +203,6 @@ export const generatePosts = async (
         subreddit,
         media: selectedMedia,
         caption,
-        redgifsUrl,
         date,
       };
 
@@ -270,16 +258,12 @@ export const regenerateMedia = async (
     throw new Error("No suitable media found for this subreddit");
   }
 
-  // Generate caption and RedGIFs URL
-  const [caption, redgifsUrl] = await Promise.all([
-    generateCaptionForMedia(media),
-    media.type === "video" ? getRedgifsUrl(media) : Promise.resolve(null),
-  ]);
+  // Generate caption
+  const caption = await generateCaptionForMedia(media);
 
   return {
     media,
     caption,
-    redgifsUrl,
   };
 };
 
