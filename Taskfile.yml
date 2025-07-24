@@ -1,0 +1,85 @@
+version: "3"
+
+vars:
+  ELECTRON_DIR: packages/apps/electron
+  SERVER_DIR: packages/apps/server
+  REDDIT_AUTOMATION_DIR: packages/lib/reddit-automation
+
+includes:
+  electron:
+    taskfile: ./{{.ELECTRON_DIR}}/Taskfile.yml
+    dir: ./{{.ELECTRON_DIR}}
+  server:
+    taskfile: ./{{.SERVER_DIR}}/Taskfile.yml
+    dir: ./{{.SERVER_DIR}}
+  reddit-automation:
+    taskfile: ./{{.REDDIT_AUTOMATION_DIR}}/Taskfile.yml
+    dir: ./{{.REDDIT_AUTOMATION_DIR}}
+
+tasks:
+  default:
+    desc: List all tasks
+    cmds:
+      - task --list
+
+  dev:
+    desc: Start developing the electron app and server
+    deps:
+      - electron:dev
+      - server:dev
+
+  build:
+    deps:
+      - build:electron
+      - build:server
+
+  check:types:
+    desc: Check the types for the whole project
+    deps:
+      - electron:check:types
+      - server:check:types
+      - reddit-automation:check:types
+
+  check:lint:
+    desc: Lint the code for the whole project
+    deps:
+      - electron:check:lint
+      - server:check:lint
+      - reddit-automation:check:lint
+
+  check:lint:fix:
+    desc: Autofix linting errors for the whole project
+    deps:
+      - electron:check:lint:fix
+      - server:check:lint:fix
+      - reddit-automation:check:lint:fix
+
+  check:format:
+    desc: Format the code for the whole project
+    deps:
+      - electron:check:format
+      - server:check:format
+      - reddit-automation:check:format
+
+  check:format:fix:
+    desc: Autofix formatting errors for the whole project
+    deps:
+      - electron:check:format:fix
+      - server:check:format:fix
+      - reddit-automation:check:format:fix
+
+  check:
+    desc: Run all code checks for the whole project
+    deps:
+      - electron:check
+      - server:check
+      - reddit-automation:check
+
+  clean:
+    cmds:
+      - rm -rf {{.ELECTRON_DIR}}/out
+      - rm -rf {{.ELECTRON_DIR}}/dist
+      - rm -rf {{.SERVER_DIR}}/dist
+      - rm -rf {{.REDDIT_AUTOMATION_DIR}}/dist
+      - rm -rf node_modules/.vite
+    silent: true

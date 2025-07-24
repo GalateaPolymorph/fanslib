@@ -1,0 +1,36 @@
+{
+  "name": "@fanslib/eslint-config",
+  "version": "1.0.0",
+  "description": "Shared ESLint configuration for FansLib packages",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "base.js",
+    "react.js",
+    "node.js",
+    "index.js"
+  ],
+  "dependencies": {
+    "@eslint/js": "^9.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-functional": "^6.0.0",
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.16.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.18.0",
+    "typescript": "^5.5.2",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "eslint-plugin-react": {
+      "optional": true
+    },
+    "eslint-plugin-react-hooks": {
+      "optional": true
+    }
+  }
+}

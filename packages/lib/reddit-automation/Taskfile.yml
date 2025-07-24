@@ -1,0 +1,40 @@
+version: "3"
+
+tasks:
+  default:
+    desc: List all tasks
+    cmds:
+      - task --list
+    silent: true
+
+  check:types:
+    desc: Check the types for the project
+    cmds:
+      - bun run tsc --noEmit
+
+  check:lint:
+    desc: Lint the code
+    cmds:
+      - bun run eslint src --ext .ts --fix
+
+  check:lint:fix:
+    desc: Autofix linting errors
+    cmds:
+      - bun run eslint src --ext .ts
+
+  check:format:
+    desc: Format the code
+    cmds:
+      - bun run prettier --write .
+
+  check:format:check:
+    desc: Check the formatting of the code
+    cmds:
+      - bun run prettier --check .
+
+  check:
+    desc: Check the code for errors
+    deps:
+      - check:format:check
+      - check:lint:fix
+      - check:types

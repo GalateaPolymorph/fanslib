@@ -1,0 +1,15 @@
+services:
+  fanslib-server:
+    build: .
+    container_name: fanslib-server
+    restart: unless-stopped
+    x-bake:
+      platforms:
+        - linux/amd64
+    image: ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${DOCKERHUB_IMAGE_VERSION}
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - PORT=3000

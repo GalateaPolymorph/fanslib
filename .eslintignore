@@ -1,8 +1,0 @@
-node_modules/
-dist/
-out/
-build/
-.storybook/
-storybook-static/
-*.stories.tsx
-*.stories.ts

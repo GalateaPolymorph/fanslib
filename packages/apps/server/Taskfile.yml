@@ -1,0 +1,63 @@
+version: "3"
+
+tasks:
+  default:
+    desc: List all tasks
+    cmds:
+      - task --list
+
+  dev:
+    desc: Start the server in development mode
+    cmds:
+      - bun run --watch src/main.ts
+
+  start:
+    desc: Start the server in production mode
+    cmds:
+      - bun run src/main.ts
+
+  build:
+    desc: Build the server
+    cmds:
+      - bun build src/main.ts --outdir dist --target bun
+
+  check:types:
+    desc: Check the types for the server
+    cmds:
+      - bun run tsc --noEmit
+
+  check:lint:
+    desc: Lint the code
+    cmds:
+      - bun run eslint src --ext .ts --fix
+
+  check:lint:fix:
+    desc: Autofix linting errors
+    cmds:
+      - bun run eslint src --ext .ts
+
+  check:format:
+    desc: Format the code
+    cmds:
+      - bun run prettier --write .
+
+  check:format:check:
+    desc: Check the formatting of the code
+    cmds:
+      - bun run prettier --check .
+
+  check:
+    deps:
+      - check:format:check
+      - check:lint:fix
+      - check:types
+
+  push:
+    desc: Push the server to Docker Hub
+    cmds:
+      - ./push-to-dockerhub.sh
+
+  clean:
+    desc: Clean the build output
+    cmds:
+      - rm -rf dist
