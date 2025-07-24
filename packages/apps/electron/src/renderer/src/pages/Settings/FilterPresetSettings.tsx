@@ -2,7 +2,7 @@ import { FilterPresetProvider } from "../../contexts/FilterPresetContext";
 import { FilterPresetManager } from "../../components/MediaFilters/FilterPresetManager";
 import { useState } from "react";
 import { Button } from "../../components/ui/Button";
-import { Settings as SettingsIcon } from "lucide-react";
+import { Filter, Settings as SettingsIcon } from "lucide-react";
 
 export const FilterPresetSettings = () => {
   const [showManager, setShowManager] = useState(false);
@@ -12,13 +12,17 @@ export const FilterPresetSettings = () => {
 
   return (
     <FilterPresetProvider onFiltersChange={handleFiltersChange}>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div>
-          <h3 className="text-sm font-medium">Filter Presets</h3>
-          <p className="text-sm text-muted-foreground">
-            Manage your saved filter presets. Create, edit, and delete presets for quick filtering.
+          <h1 className="flex items-center gap-2 text-2xl font-semibold">
+            <Filter /> Filter Presets
+          </h1>
+          <p className="text-muted-foreground">
+            Manage your saved filter presets for quick media filtering
           </p>
         </div>
+
+        <div className="space-y-4">
         <div>
           <Button
             variant="outline"
@@ -30,6 +34,7 @@ export const FilterPresetSettings = () => {
           </Button>
         </div>
         <FilterPresetManager open={showManager} onOpenChange={setShowManager} />
+        </div>
       </div>
     </FilterPresetProvider>
   );

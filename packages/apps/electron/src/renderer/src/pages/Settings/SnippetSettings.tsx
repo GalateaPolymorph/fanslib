@@ -22,7 +22,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit, FileText, Globe, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { CaptionSnippet } from "src/features/snippets/entity";
-import { SettingsSection } from "./SettingsSection";
 
 type SnippetFormData = {
   name: string;
@@ -214,10 +213,13 @@ export const SnippetSettings = () => {
   };
 
   return (
-    <SettingsSection
-      title="Caption Snippets"
-      description="Create and manage reusable caption snippets for faster post creation"
-    >
+    <div className="space-y-6">
+      <div>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold">
+          <FileText /> Caption Snippets
+        </h1>
+        <p className="text-muted-foreground">Create and manage reusable caption snippets for faster post creation</p>
+      </div>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Your Snippets</h3>
@@ -372,6 +374,6 @@ export const SnippetSettings = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </SettingsSection>
+    </div>
   );
 };
