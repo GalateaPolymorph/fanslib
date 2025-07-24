@@ -2,7 +2,7 @@ import { Button } from "@renderer/components/ui/Button";
 import { Input } from "@renderer/components/ui/Input";
 import { Status } from "@renderer/components/ui/Status";
 import { useSettings } from "@renderer/contexts/SettingsContext";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Server } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { SettingRow } from "./SettingRow";
 
@@ -95,7 +95,15 @@ export const BackgroundJobsSettings = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold">
+          <Server /> Background Jobs
+        </h1>
+        <p className="text-muted-foreground">Configure background job server for automated tasks</p>
+      </div>
+
+      <div className="space-y-4">
       <SettingRow
         title="Server URL"
         description="URL of the background jobs server for automated Reddit posting and other tasks"
@@ -133,6 +141,7 @@ export const BackgroundJobsSettings = () => {
           </div>
         </div>
       </SettingRow>
+      </div>
     </div>
   );
 };
