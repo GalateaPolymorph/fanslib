@@ -52,7 +52,7 @@ export const ShootDetailDeleteButton: FC<ShootDetailDeleteButtonProps> = ({ shoo
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="text-destructive">
-          <Trash2 className="h-4 w-4" /> Delete
+          <Trash2 /> Delete
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
