@@ -6,6 +6,8 @@ import { Media } from "../library/entity";
 import { buildFilterGroupQuery } from "../library/filter-helpers";
 import { Post } from "../posts/entity";
 import { createPost, fetchPostsByChannel, fetchPostsByMediaId } from "../posts/operations";
+import { getMediaById } from "../library/operations";
+import { getServerJobs } from "../server-communication";
 import { GeneratedPost, PostToSchedule, RegenerateMediaResult, ScheduledPost } from "./api-type";
 import { calculateOptimalScheduleDate } from "./calculate-optimal-date";
 
@@ -300,6 +302,7 @@ export const getScheduledPosts = async (channelId: string): Promise<ScheduledPos
   const dataSource = await db();
   const postRepo = dataSource.getRepository(Post);
 
+  // Get local scheduled posts
   const posts = await postRepo.find({
     where: {
       channelId,
@@ -315,7 +318,7 @@ export const getScheduledPosts = async (channelId: string): Promise<ScheduledPos
   const now = new Date();
   const futurePosts = posts.filter((post) => new Date(post.date) > now);
 
-  return futurePosts.map((post) => ({
+  const localScheduledPosts = futurePosts.map((post) => ({
     id: post.id,
     subreddit: post.subreddit!,
     media: post.postMedia[0]?.media,
@@ -323,4 +326,41 @@ export const getScheduledPosts = async (channelId: string): Promise<ScheduledPos
     scheduledDate: post.date,
     createdAt: post.createdAt,
   }));
+
+  // Get server queue jobs and convert them to ScheduledPost format
+  const serverJobs = getServerJobs();
+  const serverScheduledPosts: ScheduledPost[] = [];
+
+  for (const job of serverJobs) {
+    if (job.status === "queued" && new Date(job.scheduledTime) > now) {
+      // Fetch media if mediaId is available, otherwise use a placeholder
+      let media: Media | null = null;
+      if (job.mediaId) {
+        media = await getMediaById(job.mediaId);
+      }
+
+      // Skip jobs without valid media (can't display properly)
+      if (!media) {
+        continue;
+      }
+
+      serverScheduledPosts.push({
+        id: `server-${job.id}`, // Prefix to distinguish from local posts
+        subreddit: { name: job.subreddit } as Subreddit, // Create minimal subreddit object
+        media,
+        caption: job.caption,
+        scheduledDate: job.scheduledTime,
+        createdAt: job.createdAt,
+        serverJobId: job.id, // Add reference to server job
+        status: job.status, // Add queue status
+      });
+    }
+  }
+
+  // Combine and sort by scheduled date
+  const allScheduledPosts = [...localScheduledPosts, ...serverScheduledPosts].sort(
+    (a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
+  );
+
+  return allScheduledPosts;
 };

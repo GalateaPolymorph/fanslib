@@ -19,10 +19,12 @@ export type PostToSchedule = {
 export type ScheduledPost = {
   id: string;
   subreddit: Subreddit;
-  media: Media;
+  media: Media; // Always populated, fetched on-demand for server jobs
   caption: string;
   scheduledDate: string;
   createdAt: string;
+  serverJobId?: string; // ID of the server queue job if applicable
+  status?: string; // Queue status if applicable
 };
 
 export type RegenerateMediaResult = {

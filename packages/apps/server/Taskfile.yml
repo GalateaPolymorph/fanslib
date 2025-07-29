@@ -61,3 +61,8 @@ tasks:
     desc: Clean the build output
     cmds:
       - rm -rf dist
+
+  rebuild:
+    desc: Rebuild native dependencies
+    cmds:
+      - bun run electron-rebuild -f -w better-sqlite3
