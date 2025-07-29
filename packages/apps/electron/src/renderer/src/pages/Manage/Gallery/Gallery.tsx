@@ -72,6 +72,7 @@ const GalleryContent = ({ medias, error, libraryPath, onScan }: GalleryProps) =>
               withPostsPopover
               withNavigation
               withFileName
+              withTags
               index={index}
             />
           ))}
