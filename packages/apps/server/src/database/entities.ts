@@ -79,3 +79,27 @@ export class RedditQueueLog {
   @Column("varchar")
   timestamp!: string;
 }
+
+@Entity("reddit_sessions")
+export class RedditSession {
+  @PrimaryColumn("varchar")
+  id!: string;
+
+  @Column("varchar", { nullable: true })
+  userId?: string; // For multi-user support in the future
+
+  @Column("text")
+  sessionData!: string; // JSON blob containing cookies, localStorage, etc.
+
+  @Column("varchar", { nullable: true })
+  username?: string; // Reddit username for display
+
+  @Column("varchar")
+  expiresAt!: string; // ISO timestamp when session expires
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+}

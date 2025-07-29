@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import "reflect-metadata";
 import { getDatabase } from "./database/config";
 import { redditQueueRoutes } from "./routes/reddit-queue";
+import { redditSessionRoutes } from "./routes/reddit-session";
 import { isRunning, start, stop } from "./services/cron-scheduler";
 
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ const startServer = async () => {
       scheduler: isRunning() ? "running" : "stopped",
     }))
     .use(redditQueueRoutes)
+    .use(redditSessionRoutes)
     .listen(port);
 
   start();

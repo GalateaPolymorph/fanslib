@@ -218,7 +218,9 @@ export const SnippetSettings = () => {
         <h1 className="flex items-center gap-2 text-2xl font-semibold">
           <FileText /> Caption Snippets
         </h1>
-        <p className="text-muted-foreground">Create and manage reusable caption snippets for faster post creation</p>
+        <p className="text-muted-foreground">
+          Create and manage reusable caption snippets for faster post creation
+        </p>
       </div>
       <div className="space-y-6">
         <div className="flex justify-between items-center">

@@ -1,6 +1,10 @@
 import { createQueueJob, getQueueStatus, deleteQueueJob, isServerAvailable } from "./api-client";
 import type { QueueJobResponse } from "./types";
 
+// Session expiration notification callback
+type SessionExpirationCallback = () => void;
+let sessionExpirationCallback: SessionExpirationCallback | null = null;
+
 // Module-level state - cache of server jobs for UI display
 const serverQueueJobs = new Map<string, QueueJobResponse>();
 let lastSyncTime: string | null = null;
@@ -17,6 +21,16 @@ export const syncStatusFromServer = async (): Promise<void> => {
     // Update our local cache of server jobs for UI display
     for (const job of response.jobs) {
       serverQueueJobs.set(job.id, job);
+
+      // Check for session expiration errors
+      if (job.status === "failed" && job.errorMessage === "session_expired") {
+        console.warn("⚠️ Reddit session expired for job", job.id);
+        if (sessionExpirationCallback) {
+          sessionExpirationCallback();
+          // Only call once per sync to avoid spam
+          sessionExpirationCallback = null;
+        }
+      }
     }
 
     lastSyncTime = response.lastUpdated;
@@ -69,4 +83,18 @@ export const createServerJob = async (jobData: {
     console.error(`❌ Failed to create server job:`, error);
     return null;
   }
+};
+
+export const setSessionExpirationCallback = (callback: SessionExpirationCallback): void => {
+  sessionExpirationCallback = callback;
+};
+
+export const clearSessionExpirationCallback = (): void => {
+  sessionExpirationCallback = null;
+};
+
+export const hasFailedSessionJobs = (): boolean => {
+  return Array.from(serverQueueJobs.values()).some(
+    (job) => job.status === "failed" && job.errorMessage === "session_expired"
+  );
 };

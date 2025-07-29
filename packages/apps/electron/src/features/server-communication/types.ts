@@ -33,3 +33,37 @@ export type ApiError = {
   error: string;
   details?: string;
 };
+
+// Reddit Session Types
+export type RedditSessionData = {
+  cookies: Array<{
+    name: string;
+    value: string;
+    domain: string;
+    path?: string;
+    expires?: number;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: "Strict" | "Lax" | "None";
+  }>;
+  localStorage: Record<string, string>;
+  sessionStorage: Record<string, string>;
+  userAgent: string;
+};
+
+export type CreateSessionRequest = {
+  sessionData: RedditSessionData;
+  username?: string;
+  userId?: string;
+  expiresAt?: string;
+};
+
+export type SessionResponse = {
+  id: string;
+  userId: string | null;
+  username: string | null;
+  expiresAt: string;
+  isValid: boolean;
+  createdAt: string;
+  updatedAt: string;
+};

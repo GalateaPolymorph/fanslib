@@ -1,4 +1,11 @@
-import type { QueueJobResponse, CreateQueueJobRequest, QueueListResponse, ApiError } from "./types";
+import type {
+  QueueJobResponse,
+  CreateQueueJobRequest,
+  QueueListResponse,
+  ApiError,
+  CreateSessionRequest,
+  SessionResponse,
+} from "./types";
 
 const baseUrl = "http://localhost:3000";
 
@@ -63,6 +70,89 @@ export const isServerAvailable = async (): Promise<boolean> => {
   try {
     await healthCheck();
     return true;
+  } catch {
+    return false;
+  }
+};
+
+// Reddit Session API functions
+export const createSession = async (
+  sessionData: CreateSessionRequest
+): Promise<SessionResponse> => {
+  const response = await request<{ success: boolean; session?: SessionResponse; error?: string }>(
+    "/api/reddit/session",
+    {
+      method: "POST",
+      body: JSON.stringify(sessionData),
+    }
+  );
+
+  if (!response.success || !response.session) {
+    throw new Error(response.error || "Failed to create session");
+  }
+
+  return response.session;
+};
+
+export const updateSession = async (
+  sessionData: CreateSessionRequest
+): Promise<SessionResponse> => {
+  const response = await request<{ success: boolean; session?: SessionResponse; error?: string }>(
+    "/api/reddit/session",
+    {
+      method: "PUT",
+      body: JSON.stringify(sessionData),
+    }
+  );
+
+  if (!response.success || !response.session) {
+    throw new Error(response.error || "Failed to update session");
+  }
+
+  return response.session;
+};
+
+export const getSession = async (userId?: string): Promise<SessionResponse | null> => {
+  try {
+    const params = userId ? `?userId=${encodeURIComponent(userId)}` : "";
+    const response = await request<{ success: boolean; session?: SessionResponse; error?: string }>(
+      `/api/reddit/session${params}`
+    );
+
+    if (!response.success) {
+      return null;
+    }
+
+    return response.session || null;
+  } catch {
+    return null;
+  }
+};
+
+export const getSessionStatus = async (userId?: string): Promise<boolean> => {
+  try {
+    const params = userId ? `?userId=${encodeURIComponent(userId)}` : "";
+    const response = await request<{ success: boolean; isValid?: boolean; error?: string }>(
+      `/api/reddit/session/status${params}`
+    );
+
+    return response.success && response.isValid === true;
+  } catch {
+    return false;
+  }
+};
+
+export const deleteSession = async (userId?: string): Promise<boolean> => {
+  try {
+    const params = userId ? `?userId=${encodeURIComponent(userId)}` : "";
+    const response = await request<{ success: boolean; error?: string }>(
+      `/api/reddit/session${params}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    return response.success;
   } catch {
     return false;
   }

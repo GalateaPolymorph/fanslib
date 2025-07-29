@@ -15,11 +15,23 @@ export {
   getServerJobById,
   removeServerJob,
   createServerJob,
+  setSessionExpirationCallback,
+  clearSessionExpirationCallback,
+  hasFailedSessionJobs,
 } from "./queue-sync";
+export {
+  transferElectronSessionToServer,
+  getServerSessionStatus,
+  clearServerSession,
+  syncSessionWithServer,
+} from "./session-manager";
 export type {
   QueueStatus,
   QueueJobResponse,
   CreateQueueJobRequest,
   QueueListResponse,
   ApiError,
+  RedditSessionData,
+  CreateSessionRequest,
+  SessionResponse,
 } from "./types";

@@ -1,9 +1,106 @@
 import { RedditPoster } from "@fanslib/reddit-automation";
+import type { SessionStorage } from "@fanslib/reddit-automation";
+import * as fs from "fs/promises";
+import * as path from "path";
+import * as os from "os";
 import type { QueueJobResponse } from "../types";
 import { addLog, getJobsDue, updateJobStatus } from "./queue-service";
+import { getSessionData } from "./session-service";
+import type { RedditSessionData } from "./session-service";
 
-const getRedditPoster = (jobId: string): RedditPoster => {
+// Database-backed SessionStorage implementation
+const createDatabaseSessionStorage = (userId?: string): SessionStorage => {
+  const tempDir = path.join(os.tmpdir(), "fanslib-server-sessions");
+  const sessionPath = path.join(tempDir, `reddit-session-${userId || "default"}.json`);
+
+  return {
+    getPath: () => sessionPath,
+
+    exists: async (): Promise<boolean> => {
+      try {
+        await fs.access(sessionPath);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+
+    read: async (): Promise<string> => {
+      try {
+        return await fs.readFile(sessionPath, "utf-8");
+      } catch (error) {
+        throw new Error(`Failed to read session file: ${error}`);
+      }
+    },
+
+    write: async (data: string): Promise<void> => {
+      try {
+        await fs.mkdir(tempDir, { recursive: true });
+        await fs.writeFile(sessionPath, data, "utf-8");
+      } catch (error) {
+        throw new Error(`Failed to write session file: ${error}`);
+      }
+    },
+
+    clear: async (): Promise<void> => {
+      try {
+        await fs.unlink(sessionPath);
+      } catch (error) {
+        // File might not exist, which is fine
+        console.warn(`Could not clear session file: ${error}`);
+      }
+    },
+  };
+};
+
+// Convert database session data to Playwright storage state format
+const convertToPlaywrightStorageState = (sessionData: RedditSessionData) => {
+  return {
+    cookies: sessionData.cookies,
+    origins: [
+      {
+        origin: "https://www.reddit.com",
+        localStorage: Object.entries(sessionData.localStorage).map(([name, value]) => ({
+          name,
+          value,
+        })),
+      },
+    ],
+  };
+};
+
+// Initialize session from database for the SessionStorage
+const initializeSessionFromDatabase = async (
+  sessionStorage: SessionStorage,
+  userId?: string
+): Promise<boolean> => {
+  try {
+    const sessionData = await getSessionData(userId);
+    if (!sessionData) {
+      console.log("No valid session found in database");
+      return false;
+    }
+
+    const playwrightStorageState = convertToPlaywrightStorageState(sessionData);
+    const sessionJson = JSON.stringify(playwrightStorageState, null, 2);
+
+    await sessionStorage.write(sessionJson);
+    console.log("✅ Session loaded from database to temporary file");
+    return true;
+  } catch (error) {
+    console.error("❌ Failed to initialize session from database:", error);
+    return false;
+  }
+};
+
+const getRedditPoster = async (jobId: string, userId?: string): Promise<RedditPoster> => {
+  const sessionStorage = createDatabaseSessionStorage(userId);
+
+  // Try to load session from database
+  await initializeSessionFromDatabase(sessionStorage, userId);
+
   return new RedditPoster({
+    sessionStorage,
     onProgress: async (progress) => {
       console.log(`📈 Job ${jobId} progress: ${progress.stage} - ${progress.message}`);
 
@@ -43,7 +140,7 @@ export const processJob = async (job: QueueJobResponse): Promise<void> => {
       return;
     }
 
-    const poster = getRedditPoster(job.id);
+    const poster = await getRedditPoster(job.id);
 
     // Prepare post data for Reddit API
     const postData = {
@@ -66,8 +163,15 @@ export const processJob = async (job: QueueJobResponse): Promise<void> => {
     } else {
       console.log(`❌ Failed to post job ${job.id}:`, result.error);
 
+      // Check if error is session-related
+      const errorMessage = result.error || "Unknown error occurred";
+      const isSessionError =
+        errorMessage.toLowerCase().includes("session") ||
+        errorMessage.toLowerCase().includes("login") ||
+        errorMessage.toLowerCase().includes("authentication");
+
       await updateJobStatus(job.id, "failed", {
-        errorMessage: result.error || "Unknown error occurred",
+        errorMessage: isSessionError ? "session_expired" : errorMessage,
       });
     }
   } catch (error) {

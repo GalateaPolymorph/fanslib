@@ -1,12 +1,12 @@
 import { DataSource } from "typeorm";
-import { RedditQueueJob, RedditQueueLog } from "./entities";
+import { RedditQueueJob, RedditQueueLog, RedditSession } from "./entities";
 
 const isDev = process.env.NODE_ENV === "development";
 
 export const AppDataSource = new DataSource({
   type: "sqlite",
   database: "fanslib-server.sqlite",
-  entities: [RedditQueueJob, RedditQueueLog],
+  entities: [RedditQueueJob, RedditQueueLog, RedditSession],
   synchronize: isDev,
   logging: isDev,
 });

@@ -47,7 +47,8 @@ export const LongContent: Story = {
         <p>
           <strong>Tagging System:</strong> Use our advanced tagging system to categorize your
           content. Tags can be hierarchical, allowing for detailed organization. For example, you
-          might use tags like &quot;photoshoot/outdoor/summer&quot; or &quot;video/tutorial/beginner&quot;.
+          might use tags like &quot;photoshoot/outdoor/summer&quot; or
+          &quot;video/tutorial/beginner&quot;.
         </p>
         <p>
           <strong>Content Scheduling:</strong> Plan your content releases using our scheduling
@@ -159,8 +160,8 @@ export const ChatMessages: Story = {
           <div className="flex-1 text-right">
             <div className="text-sm font-medium">Me</div>
             <div className="text-sm bg-blue-500 text-white rounded-lg p-2 mt-1 inline-block">
-              Yes! I scheduled a whole week&apos;s worth of posts yesterday. The analytics integration is
-              fantastic too.
+              Yes! I scheduled a whole week&apos;s worth of posts yesterday. The analytics
+              integration is fantastic too.
             </div>
             <div className="text-xs text-gray-500 mt-1">2:35 PM</div>
           </div>

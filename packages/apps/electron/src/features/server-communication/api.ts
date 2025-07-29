@@ -9,6 +9,12 @@ import {
   isServerAvailable,
 } from "./api-client";
 import { syncStatusFromServer, getServerJobs } from "./queue-sync";
+import {
+  transferElectronSessionToServer,
+  getServerSessionStatus,
+  clearServerSession,
+  syncSessionWithServer,
+} from "./session-manager";
 
 export const handlers: ServerCommunicationHandlers = {
   createJob: (_, jobData) => createQueueJob(jobData),
@@ -19,6 +25,10 @@ export const handlers: ServerCommunicationHandlers = {
   sync: (_) => syncStatusFromServer(),
   isServerAvailable: (_) => isServerAvailable(),
   getServerJobs: (_) => getServerJobs(),
+  transferSession: (_, userId) => transferElectronSessionToServer(userId),
+  getSessionStatus: (_, userId) => getServerSessionStatus(userId),
+  clearSession: (_, userId) => clearServerSession(userId),
+  syncSession: (_, userId) => syncSessionWithServer(userId),
 };
 
 export const serverCommunicationHandlers = prefixNamespaceObject(namespace, handlers);

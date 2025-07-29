@@ -1,5 +1,10 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
-import type { QueueJobResponse, CreateQueueJobRequest, QueueListResponse } from "./types";
+import type {
+  QueueJobResponse,
+  CreateQueueJobRequest,
+  QueueListResponse,
+  SessionResponse,
+} from "./types";
 
 export const methods = [
   "createJob",
@@ -10,6 +15,10 @@ export const methods = [
   "sync",
   "isServerAvailable",
   "getServerJobs",
+  "transferSession",
+  "getSessionStatus",
+  "clearSession",
+  "syncSession",
 ] as const;
 
 export type ServerCommunicationHandlers = {
@@ -21,6 +30,17 @@ export type ServerCommunicationHandlers = {
   sync: (_: any) => Promise<void>;
   isServerAvailable: (_: any) => Promise<boolean>;
   getServerJobs: (_: any) => QueueJobResponse[];
+  transferSession: (_: any, userId?: string) => Promise<SessionResponse | null>;
+  getSessionStatus: (
+    _: any,
+    userId?: string
+  ) => Promise<{
+    hasSession: boolean;
+    isValid: boolean;
+    session?: SessionResponse;
+  }>;
+  clearSession: (_: any, userId?: string) => Promise<boolean>;
+  syncSession: (_: any, userId?: string) => Promise<boolean>;
 };
 
 export const namespace = "server-communication" as const;

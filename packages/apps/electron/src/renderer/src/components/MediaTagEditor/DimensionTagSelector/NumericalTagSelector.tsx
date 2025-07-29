@@ -41,42 +41,45 @@ export const NumericalTagSelector = ({
     setSliderValue([defaultSliderValue]);
   }
 
-  const validateAndCreateTag = useCallback(async (value: number) => {
-    const validationError = validateNumericValue(value, schema);
-    if (validationError) {
-      setError(validationError);
-      return null;
-    }
+  const validateAndCreateTag = useCallback(
+    async (value: number) => {
+      const validationError = validateNumericValue(value, schema);
+      if (validationError) {
+        setError(validationError);
+        return null;
+      }
 
-    // Check if tag already exists (with tolerance for floating point precision)
-    const existingTag = availableTags?.find((tag) => {
-      const tagValue = parseFloat(tag.value);
-      return Math.abs(tagValue - value) < 0.0001;
-    });
-
-    if (existingTag) {
-      return existingTag;
-    }
-
-    // Create new tag
-    setIsCreating(true);
-    try {
-      const newTag = await createTagMutation.mutateAsync({
-        dimensionId: dimension.id,
-        value: value.toString(),
-        displayName: formatNumericValue(value, schema),
-        description: `${dimension.name}: ${formatNumericValue(value, schema)}`,
+      // Check if tag already exists (with tolerance for floating point precision)
+      const existingTag = availableTags?.find((tag) => {
+        const tagValue = parseFloat(tag.value);
+        return Math.abs(tagValue - value) < 0.0001;
       });
 
-      await refetchTags();
-      return newTag;
-    } catch {
-      setError("Failed to create tag");
-      return null;
-    } finally {
-      setIsCreating(false);
-    }
-  }, [schema, availableTags, dimension.id, dimension.name, createTagMutation, refetchTags]);
+      if (existingTag) {
+        return existingTag;
+      }
+
+      // Create new tag
+      setIsCreating(true);
+      try {
+        const newTag = await createTagMutation.mutateAsync({
+          dimensionId: dimension.id,
+          value: value.toString(),
+          displayName: formatNumericValue(value, schema),
+          description: `${dimension.name}: ${formatNumericValue(value, schema)}`,
+        });
+
+        await refetchTags();
+        return newTag;
+      } catch {
+        setError("Failed to create tag");
+        return null;
+      } finally {
+        setIsCreating(false);
+      }
+    },
+    [schema, availableTags, dimension.id, dimension.name, createTagMutation, refetchTags]
+  );
 
   const handleRemoveTag = () => {
     onTagsChange([]);
