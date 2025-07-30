@@ -3,31 +3,27 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 const badgeVariants = cva(
-  "inline-flex items-center font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center justify-center",
   {
     variants: {
       variant: {
-        default:
-          "border border-transparent bg-primary text-primary-foreground hover:bg-primary/80 [&.shape-tag]:border-none",
-        secondary:
-          "border border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        success: "border border-transparent bg-green-600 text-white hover:bg-green-600/80",
-        warning: "border border-transparent bg-yellow-600 text-white hover:bg-yellow-600/80",
-        destructive:
-          "border border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "border text-foreground [&.shape-tag]:bg-muted [&.shape-tag]:border-none",
+        default: "badge badge-soft badge-primary px-4 border border-primary/20",
+        secondary: "badge badge-secondary px-4 border border-secondary/40",
+        success: "badge badge-soft badge-success px-4 border border-success/20",
+        warning: "badge badge-warning px-4 border border-warning/40",
+        destructive: "badge badge-soft badge-error px-4 border border-error/20",
+        outline: "badge badge-outline border border-primary text-primary px-4",
         halfSelected:
-          "relative overflow-hidden text-[--half-selected-color] border-[--half-selected-color] before:absolute before:inset-0 before:text-white before:flex before:items-center before:bg-[var(--half-selected-color)] before-clip-path-diagonal-30 before:content-[attr(data-content)] before:justify-center [&.size-default:before]:px-2.5 [&.size-default:before]:py-0.5 [&.size-sm:before]:px-2 [&.size-sm:before]:py-0.5 [&.size-lg:before]:px-3 [&.size-lg:before]:py-1",
+          "badge badge-soft relative overflow-hidden border bg-transparent",
       },
       shape: {
-        default: "rounded-full",
-        tag: "",
-        iconOnly: "rounded aspect-square p-0.5 size-5",
+        default: "",
+        iconOnly: "aspect-square p-2 size-8 min-w-8",
       },
       size: {
-        default: "px-2.5 py-0.5 text-xs",
-        sm: "px-1 py-0.5 text-2xs",
-        lg: "px-3 py-1 text-sm",
+        default: "",
+        sm: "badge-sm px-3 [&.iconOnly]:size-6 [&.iconOnly]:min-w-6 [&.iconOnly]:p-1.5",
+        lg: "badge-lg px-6 [&.iconOnly]:size-10 [&.iconOnly]:min-w-10 [&.iconOnly]:p-2.5",
       },
     },
     defaultVariants: {
@@ -40,7 +36,8 @@ const badgeVariants = cva(
 
 export type BadgeProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof badgeVariants> & {
-    shape?: "default" | "tag" | "iconOnly";
+    shape?: "default" | "iconOnly";
+    halfSelectedColor?: string;
   };
 
 export const Badge = ({
@@ -48,22 +45,53 @@ export const Badge = ({
   variant,
   size = "default",
   shape = "default",
+  halfSelectedColor = "oklch(60% 0.25 292.717)", // Primary color from daisyUI theme
   children,
   ...props
 }: BadgeProps) => {
+  if (variant === "halfSelected") {
+    return (
+      <div
+        className={cn(
+          badgeVariants({ variant, size, shape }),
+          `size-${size}`,
+          `shape-${shape}`,
+          "halfSelected",
+          "cursor-default",
+          className
+        )}
+        style={{
+          "--half-selected-color": halfSelectedColor,
+          color: halfSelectedColor,
+          borderColor: halfSelectedColor,
+        } as React.CSSProperties & { "--half-selected-color": string }}
+        {...props}
+      >
+        <span className="relative z-0">{children}</span>
+        <span
+          className="absolute inset-0 flex items-center justify-center text-white z-10"
+          style={{
+            backgroundColor: halfSelectedColor,
+            clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
+            borderRadius: "inherit",
+          }}
+        >
+          {children}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
         badgeVariants({ variant, size, shape }),
         `size-${size}`,
         `shape-${shape}`,
+        shape === "iconOnly" && "iconOnly",
         "cursor-default",
         className
       )}
-      data-content={children}
-      style={{
-        clipPath: shape === "tag" ? "polygon(15% 0, 90% 0, 90% 100%, 15% 100%, 0 50%)" : undefined,
-      }}
       {...props}
     >
       {children}
