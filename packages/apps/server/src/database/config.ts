@@ -7,7 +7,7 @@ export const AppDataSource = new DataSource({
   type: "sqlite",
   database: "fanslib-server.sqlite",
   entities: [RedditQueueJob, RedditQueueLog, RedditSession],
-  synchronize: isDev,
+  synchronize: true,
   logging: isDev,
 });
 
