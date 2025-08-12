@@ -30,17 +30,17 @@ export type ServerCommunicationHandlers = {
   sync: (_: any) => Promise<void>;
   isServerAvailable: (_: any) => Promise<boolean>;
   getServerJobs: (_: any) => QueueJobResponse[];
-  transferSession: (_: any, userId?: string) => Promise<SessionResponse | null>;
+  transferSession: (_: any, username?: string) => Promise<SessionResponse | null>;
   getSessionStatus: (
     _: any,
-    userId?: string
+    username?: string
   ) => Promise<{
     hasSession: boolean;
     isValid: boolean;
     session?: SessionResponse;
   }>;
-  clearSession: (_: any, userId?: string) => Promise<boolean>;
-  syncSession: (_: any, userId?: string) => Promise<boolean>;
+  clearSession: (_: any, username?: string) => Promise<boolean>;
+  syncSession: (_: any, username?: string) => Promise<boolean>;
 };
 
 export const namespace = "server-communication" as const;

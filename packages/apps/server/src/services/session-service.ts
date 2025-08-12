@@ -74,10 +74,9 @@ export const getSession = async (userId?: string): Promise<SessionResponse | nul
   const db = await getDatabase();
   const sessionRepository = db.getRepository(RedditSession);
 
-  // For now, get the most recent session (in future, filter by userId)
   const session = await sessionRepository.findOne({
+    where: { userId },
     order: { updatedAt: "DESC" },
-    ...(userId && { where: { userId } }),
   });
 
   if (!session) return null;
@@ -101,8 +100,8 @@ export const getSessionData = async (userId?: string): Promise<RedditSessionData
   const sessionRepository = db.getRepository(RedditSession);
 
   const session = await sessionRepository.findOne({
+    where: { userId },
     order: { updatedAt: "DESC" },
-    ...(userId && { where: { userId } }),
   });
 
   if (!session) return null;
@@ -129,8 +128,8 @@ export const updateSession = async (
   const sessionRepository = db.getRepository(RedditSession);
 
   const existingSession = await sessionRepository.findOne({
+    where: { userId },
     order: { updatedAt: "DESC" },
-    ...(userId && { where: { userId } }),
   });
 
   if (!existingSession) {

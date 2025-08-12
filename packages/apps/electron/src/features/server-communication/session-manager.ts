@@ -41,49 +41,8 @@ const convertPlaywrightSession = (playwrightSession: any): RedditSessionData => 
   return sessionData;
 };
 
-// Extract Reddit username from session data
-const extractRedditUsername = (sessionData: RedditSessionData): string | undefined => {
-  // Try to find username in localStorage
-  const userKey = Object.keys(sessionData.localStorage).find(
-    (key) => key.includes("user") || key.includes("session") || key.includes("login")
-  );
-
-  if (userKey) {
-    try {
-      const userData = JSON.parse(sessionData.localStorage[userKey]);
-      if (userData.name || userData.username) {
-        return userData.name || userData.username;
-      }
-    } catch {
-      // Ignore parsing errors
-    }
-  }
-
-  // Try to find username in cookies
-  const authCookie = sessionData.cookies.find(
-    (cookie) =>
-      cookie.name.includes("session") ||
-      cookie.name.includes("auth") ||
-      cookie.name.includes("user")
-  );
-
-  if (authCookie) {
-    try {
-      const decoded = decodeURIComponent(authCookie.value);
-      const userMatch = decoded.match(/["|'](?:name|username)["|']:\s*["|']([^"']+)["|']/);
-      if (userMatch) {
-        return userMatch[1];
-      }
-    } catch {
-      // Ignore decoding errors
-    }
-  }
-
-  return undefined;
-};
-
 export const transferElectronSessionToServer = async (
-  userId?: string
+  username?: string
 ): Promise<SessionResponse | null> => {
   try {
     const sessionPath = getElectronSessionPath();
@@ -95,9 +54,6 @@ export const transferElectronSessionToServer = async (
     // Convert to our format
     const sessionData = convertPlaywrightSession(playwrightSession);
 
-    // Extract username if possible
-    const username = extractRedditUsername(sessionData);
-
     // Calculate expiry time (48 hours from now)
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 48);
@@ -105,12 +61,12 @@ export const transferElectronSessionToServer = async (
     const sessionRequest: CreateSessionRequest = {
       sessionData,
       username,
-      userId,
+      userId: username, // Use username as userId for consistency
       expiresAt: expiresAt.toISOString(),
     };
 
     // Check if session already exists on server
-    const existingSession = await getSession(userId);
+    const existingSession = await getSession(username);
 
     if (existingSession) {
       // Update existing session
@@ -128,19 +84,19 @@ export const transferElectronSessionToServer = async (
 };
 
 export const getServerSessionStatus = async (
-  userId?: string
+  username?: string
 ): Promise<{
   hasSession: boolean;
   isValid: boolean;
   session?: SessionResponse;
 }> => {
   try {
-    const session = await getSession(userId);
+    const session = await getSession(username);
     if (!session) {
       return { hasSession: false, isValid: false };
     }
 
-    const isValid = await getSessionStatus(userId);
+    const isValid = await getSessionStatus(username);
     return { hasSession: true, isValid, session };
   } catch (error) {
     console.error("Failed to get server session status:", error);
@@ -148,16 +104,16 @@ export const getServerSessionStatus = async (
   }
 };
 
-export const clearServerSession = async (userId?: string): Promise<boolean> => {
+export const clearServerSession = async (username?: string): Promise<boolean> => {
   try {
-    return await deleteSession(userId);
+    return await deleteSession(username);
   } catch (error) {
     console.error("Failed to clear server session:", error);
     return false;
   }
 };
 
-export const syncSessionWithServer = async (userId?: string): Promise<boolean> => {
+export const syncSessionWithServer = async (username?: string): Promise<boolean> => {
   try {
     const sessionPath = getElectronSessionPath();
 
@@ -170,7 +126,7 @@ export const syncSessionWithServer = async (userId?: string): Promise<boolean> =
     }
 
     // Transfer to server
-    const result = await transferElectronSessionToServer(userId);
+    const result = await transferElectronSessionToServer(username);
     return result !== null;
   } catch (error) {
     console.error("Failed to sync session with server:", error);

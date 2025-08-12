@@ -6,6 +6,8 @@ import {
   regenerateMedia,
   scheduleAllPosts,
   getScheduledPosts,
+  performRedditLogin,
+  checkRedditLoginStatus,
 } from "./operations";
 
 export const handlers: RedditPosterHandlers = {
@@ -14,6 +16,8 @@ export const handlers: RedditPosterHandlers = {
   regenerateMedia: (_, subredditId, channelId) => regenerateMedia(subredditId, channelId),
   scheduleAllPosts: (_, posts, channelId) => scheduleAllPosts(posts, channelId),
   getScheduledPosts: (_, channelId) => getScheduledPosts(channelId),
+  loginToReddit: (_, userId) => performRedditLogin(userId),
+  checkLoginStatus: (_, userId) => checkRedditLoginStatus(userId),
 };
 
 export const redditPosterHandlers = prefixNamespaceObject(namespace, handlers);

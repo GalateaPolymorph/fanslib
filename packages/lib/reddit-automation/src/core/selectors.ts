@@ -1,6 +1,5 @@
 import { RedditPostDraft } from "../types/post";
 
-export const LOGIN_SELECTOR = "shreddit-app[user-logged-in]";
 export const LINK_TAB_SELECTOR = '[data-select-value="LINK"]';
 export const FORM_SELECTOR = "#post-submit-form";
 export const TITLE_SELECTOR = "#post-composer__title faceplate-textarea-input";

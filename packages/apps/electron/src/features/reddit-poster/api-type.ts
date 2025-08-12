@@ -38,6 +38,8 @@ export const methods = [
   "regenerateMedia",
   "scheduleAllPosts",
   "getScheduledPosts",
+  "loginToReddit",
+  "checkLoginStatus",
 ] as const;
 
 export type RedditPosterHandlers = {
@@ -59,6 +61,11 @@ export type RedditPosterHandlers = {
   ) => Promise<RegenerateMediaResult>;
   scheduleAllPosts: (_: any, posts: PostToSchedule[], channelId: string) => Promise<string[]>;
   getScheduledPosts: (_: any, channelId: string) => Promise<ScheduledPost[]>;
+  loginToReddit: (_: any, userId?: string) => Promise<boolean>;
+  checkLoginStatus: (
+    _: any,
+    userId?: string
+  ) => Promise<{ isLoggedIn: boolean; username?: string }>;
 };
 
 export const namespace = "reddit-poster" as const;

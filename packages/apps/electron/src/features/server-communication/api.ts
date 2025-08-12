@@ -25,10 +25,10 @@ export const handlers: ServerCommunicationHandlers = {
   sync: (_) => syncStatusFromServer(),
   isServerAvailable: (_) => isServerAvailable(),
   getServerJobs: (_) => getServerJobs(),
-  transferSession: (_, userId) => transferElectronSessionToServer(userId),
-  getSessionStatus: (_, userId) => getServerSessionStatus(userId),
-  clearSession: (_, userId) => clearServerSession(userId),
-  syncSession: (_, userId) => syncSessionWithServer(userId),
+  transferSession: (_, username) => transferElectronSessionToServer(username),
+  getSessionStatus: (_, username) => getServerSessionStatus(username),
+  clearSession: (_, username) => clearServerSession(username),
+  syncSession: (_, username) => syncSessionWithServer(username),
 };
 
 export const serverCommunicationHandlers = prefixNamespaceObject(namespace, handlers);

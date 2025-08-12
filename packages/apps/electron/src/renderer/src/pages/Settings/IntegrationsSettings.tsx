@@ -18,7 +18,7 @@ export const IntegrationsSettings = () => {
         items={[
           {
             id: "fansly",
-            label: "Fansly Analytics",
+            label: "Fansly",
             content: <FanslySettings />,
           },
           {
