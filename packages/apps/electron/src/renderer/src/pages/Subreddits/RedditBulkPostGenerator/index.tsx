@@ -92,12 +92,11 @@ export const RedditBulkPostGenerator = ({ subreddits }: RedditBulkPostGeneratorP
         subredditId: post.subreddit.id,
         mediaId: post.media.id,
         caption: post.caption,
-        date: post.date, // Use the calculated optimal date
+        date: post.date,
       }));
 
       await window.api["reddit-poster:scheduleAllPosts"](postsToSchedule, redditChannel.id);
 
-      // Clear generated posts and refresh scheduled posts
       setGeneratedPosts([]);
       queryClient.invalidateQueries({ queryKey: channelKeys.subreddits });
       queryClient.invalidateQueries({

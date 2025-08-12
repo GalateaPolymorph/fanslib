@@ -34,8 +34,13 @@ export const SubredditsPage = () => {
         size="lg"
         items={[
           {
+            id: "bulk-posting",
+            label: "Post to Reddit",
+            content: <RedditBulkPostGenerator subreddits={subreddits} />,
+          },
+          {
             id: "subreddits",
-            label: "Subreddit Management",
+            label: "Manage Subreddits",
             content: (
               <div className="space-y-4">
                 <div className="flex items-center justify-end">
@@ -52,16 +57,6 @@ export const SubredditsPage = () => {
                 />
               </div>
             ),
-          },
-          {
-            id: "posting",
-            label: "Reddit Posting",
-            content: <RedditQuickPostCreator subreddits={subreddits} />,
-          },
-          {
-            id: "bulk-posting",
-            label: "Bulk Post Generator",
-            content: <RedditBulkPostGenerator subreddits={subreddits} />,
           },
         ]}
       ></Tabs>

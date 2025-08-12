@@ -9,9 +9,10 @@ const buttonVariants = cva("btn [&_svg]:pointer-events-none [&_svg]:shrink-0", {
     variant: {
       default: "btn-primary",
       destructive: "btn-error",
-      outline: "btn-outline border-base-300 hover:border-neutral hover:bg-neutral font-normal [&_svg]:size-3.5",
+      outline:
+        "btn-outline border-base-300 hover:border-neutral hover:bg-neutral font-normal [&_svg]:size-3.5",
       secondary: "btn-secondary",
-      ghost: "btn-ghost border-base-300 hover:border-neutral",
+      ghost: "btn-ghost hover:border-neutral",
       link: "btn-link",
     },
     size: {
