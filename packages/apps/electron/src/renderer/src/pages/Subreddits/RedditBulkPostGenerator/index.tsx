@@ -1,5 +1,9 @@
 import { useToast } from "@renderer/components/ui/Toast/use-toast";
+import { AuthenticationStatus } from "@renderer/components/RedditSettings/AuthenticationStatus";
 import { channelKeys, useChannels } from "@renderer/hooks/api/useChannels";
+import { useAuthStatusCache } from "@renderer/hooks/useAuthStatusCache";
+import { useSessionManagement } from "@renderer/hooks/useSessionManagement";
+import { getAuthenticationStatus } from "@renderer/utils/authStatusUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Clock2, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
@@ -21,7 +25,16 @@ export const RedditBulkPostGenerator = ({ subreddits }: RedditBulkPostGeneratorP
   const { data: channels = [] } = useChannels();
   const queryClient = useQueryClient();
 
+  // Authentication status
+  const { sessionStatus, loginStatus, lastChecked, isStale, updateCache } = useAuthStatusCache();
+  const { isLoading, loadSessionStatus } = useSessionManagement(updateCache);
+
   const redditChannel = channels.find((c) => c.type.id === CHANNEL_TYPES.reddit.id);
+
+  // Authentication refresh handler
+  const handleRefreshStatus = async () => {
+    await loadSessionStatus(loginStatus?.username);
+  };
 
   const generatePosts = async () => {
     if (!redditChannel) {
@@ -119,6 +132,9 @@ export const RedditBulkPostGenerator = ({ subreddits }: RedditBulkPostGeneratorP
     }
   };
 
+  // Calculate authentication status
+  const authStatus = getAuthenticationStatus(sessionStatus, loginStatus, isLoading, isStale);
+
   if (!redditChannel) {
     return (
       <div className="p-8 text-center">
@@ -131,6 +147,17 @@ export const RedditBulkPostGenerator = ({ subreddits }: RedditBulkPostGeneratorP
 
   return (
     <div className="flex flex-col h-full">
+      <div className="px-6 pt-4 pb-2 self-end">
+        <AuthenticationStatus
+          variant="compact"
+          authStatus={authStatus}
+          lastChecked={lastChecked}
+          isLoading={isLoading}
+          isCheckingLogin={false}
+          onRefresh={handleRefreshStatus}
+        />
+      </div>
+
       <div className="flex flex-1 gap-6 p-6 overflow-hidden max-h-[80vh]">
         <div className="flex-[2] flex flex-col overflow-hidden">
           {generatedPosts.length > 0 ? (

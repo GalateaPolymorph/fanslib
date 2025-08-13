@@ -20,7 +20,7 @@ export {
   hasFailedSessionJobs,
 } from "./queue-sync";
 export {
-  transferElectronSessionToServer,
+  storeSessionToServer,
   getServerSessionStatus,
   clearServerSession,
   syncSessionWithServer,

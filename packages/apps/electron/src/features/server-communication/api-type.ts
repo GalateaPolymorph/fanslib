@@ -30,7 +30,7 @@ export type ServerCommunicationHandlers = {
   sync: (_: any) => Promise<void>;
   isServerAvailable: (_: any) => Promise<boolean>;
   getServerJobs: (_: any) => QueueJobResponse[];
-  transferSession: (_: any, username?: string) => Promise<SessionResponse | null>;
+  transferSession: (_: any, params: { sessionData: any; username?: string }) => Promise<SessionResponse | null>;
   getSessionStatus: (
     _: any,
     username?: string

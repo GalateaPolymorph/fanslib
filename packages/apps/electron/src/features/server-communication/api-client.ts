@@ -3,9 +3,34 @@ import type {
   CreateQueueJobRequest,
   QueueListResponse,
   ApiError,
-  CreateSessionRequest,
   SessionResponse,
 } from "./types";
+
+// Use Playwright's native format
+export type PlaywrightSessionData = {
+  cookies: Array<{
+    name: string;
+    value: string;
+    domain: string;
+    path?: string;
+    expires?: number;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: "Strict" | "Lax" | "None";
+  }>;
+  origins?: Array<{
+    origin: string;
+    localStorage?: Array<{ name: string; value: string }>;
+    sessionStorage?: Array<{ name: string; value: string }>;
+  }>;
+};
+
+export type CreateSessionRequest = {
+  sessionData: PlaywrightSessionData;
+  username?: string;
+  userId?: string;
+  expiresAt?: string;
+};
 
 const baseUrl = "http://localhost:3000";
 
@@ -75,7 +100,7 @@ export const isServerAvailable = async (): Promise<boolean> => {
   }
 };
 
-// Reddit Session API functions
+// Simplified Reddit Session API functions - no more conversion needed!
 export const createSession = async (
   sessionData: CreateSessionRequest
 ): Promise<SessionResponse> => {
@@ -124,6 +149,23 @@ export const getSession = async (userId?: string): Promise<SessionResponse | nul
     }
 
     return response.session || null;
+  } catch {
+    return null;
+  }
+};
+
+export const getSessionData = async (userId?: string): Promise<PlaywrightSessionData | null> => {
+  try {
+    const params = userId ? `?userId=${encodeURIComponent(userId)}` : "";
+    const response = await request<{ success: boolean; sessionData?: PlaywrightSessionData; error?: string }>(
+      `/api/reddit/session/data${params}`
+    );
+
+    if (!response.success) {
+      return null;
+    }
+
+    return response.sessionData || null;
   } catch {
     return null;
   }

@@ -1,25 +1,18 @@
 import { RedditPoster } from "@fanslib/reddit-automation";
 import type { SessionStorage } from "@fanslib/reddit-automation";
-import * as fs from "fs/promises";
-import * as path from "path";
-import * as os from "os";
 import type { QueueJobResponse } from "../types";
 import { addLog, getJobsDue, updateJobStatus } from "./queue-service";
 import { getSessionData } from "./session-service";
-import type { RedditSessionData } from "./session-service";
 
-// Database-backed SessionStorage implementation
+// Direct database SessionStorage implementation (no files!)
 const createDatabaseSessionStorage = (userId?: string): SessionStorage => {
-  const tempDir = path.join(os.tmpdir(), "fanslib-server-sessions");
-  const sessionPath = path.join(tempDir, `reddit-session-${userId || "default"}.json`);
-
   return {
-    getPath: () => sessionPath,
+    getPath: () => `database://reddit-session-${userId || "default"}`,
 
     exists: async (): Promise<boolean> => {
       try {
-        await fs.access(sessionPath);
-        return true;
+        const sessionData = await getSessionData(userId);
+        return sessionData !== null;
       } catch {
         return false;
       }
@@ -27,77 +20,34 @@ const createDatabaseSessionStorage = (userId?: string): SessionStorage => {
 
     read: async (): Promise<string> => {
       try {
-        return await fs.readFile(sessionPath, "utf-8");
+        const sessionData = await getSessionData(userId);
+        if (!sessionData) {
+          throw new Error("No session data found in database");
+        }
+        return JSON.stringify(sessionData);
       } catch (error) {
-        throw new Error(`Failed to read session file: ${error}`);
+        throw new Error(`Failed to read session from database: ${error}`);
       }
     },
 
     write: async (data: string): Promise<void> => {
-      try {
-        await fs.mkdir(tempDir, { recursive: true });
-        await fs.writeFile(sessionPath, data, "utf-8");
-      } catch (error) {
-        throw new Error(`Failed to write session file: ${error}`);
-      }
+      // Writing not needed for server-only approach
+      // Session data is managed through the session API endpoints
+      console.warn("⚠️ Direct session write attempted - sessions should be managed via API");
     },
 
     clear: async (): Promise<void> => {
-      try {
-        await fs.unlink(sessionPath);
-      } catch (error) {
-        // File might not exist, which is fine
-        console.warn(`Could not clear session file: ${error}`);
-      }
+      // Clearing not needed for server-only approach
+      // Session deletion is managed through the session API endpoints
+      console.warn("⚠️ Direct session clear attempted - sessions should be managed via API");
     },
   };
-};
-
-// Convert database session data to Playwright storage state format
-const convertToPlaywrightStorageState = (sessionData: RedditSessionData) => {
-  return {
-    cookies: sessionData.cookies,
-    origins: [
-      {
-        origin: "https://www.reddit.com",
-        localStorage: Object.entries(sessionData.localStorage).map(([name, value]) => ({
-          name,
-          value,
-        })),
-      },
-    ],
-  };
-};
-
-// Initialize session from database for the SessionStorage
-const initializeSessionFromDatabase = async (
-  sessionStorage: SessionStorage,
-  userId?: string
-): Promise<boolean> => {
-  try {
-    const sessionData = await getSessionData(userId);
-    if (!sessionData) {
-      console.log("No valid session found in database");
-      return false;
-    }
-
-    const playwrightStorageState = convertToPlaywrightStorageState(sessionData);
-    const sessionJson = JSON.stringify(playwrightStorageState, null, 2);
-
-    await sessionStorage.write(sessionJson);
-    console.log("✅ Session loaded from database to temporary file");
-    return true;
-  } catch (error) {
-    console.error("❌ Failed to initialize session from database:", error);
-    return false;
-  }
 };
 
 const getRedditPoster = async (jobId: string, userId?: string): Promise<RedditPoster> => {
   const sessionStorage = createDatabaseSessionStorage(userId);
-
-  // Try to load session from database
-  await initializeSessionFromDatabase(sessionStorage, userId);
+  
+  // No initialization needed - reads directly from database!
 
   return new RedditPoster({
     sessionStorage,

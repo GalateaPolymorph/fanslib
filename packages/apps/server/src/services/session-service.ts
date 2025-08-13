@@ -1,7 +1,8 @@
 import { getDatabase } from "../database/config";
 import { RedditSession } from "../database/entities";
 
-export type RedditSessionData = {
+// Use Playwright's native format directly
+export type PlaywrightSessionData = {
   cookies: Array<{
     name: string;
     value: string;
@@ -12,9 +13,11 @@ export type RedditSessionData = {
     secure?: boolean;
     sameSite?: "Strict" | "Lax" | "None";
   }>;
-  localStorage: Record<string, string>;
-  sessionStorage: Record<string, string>;
-  userAgent: string;
+  origins?: Array<{
+    origin: string;
+    localStorage?: Array<{ name: string; value: string }>;
+    sessionStorage?: Array<{ name: string; value: string }>;
+  }>;
 };
 
 export type SessionResponse = {
@@ -39,7 +42,7 @@ const getDefaultExpiryTime = () => {
 };
 
 export const storeSession = async (
-  sessionData: RedditSessionData,
+  sessionData: PlaywrightSessionData,
   username?: string,
   userId?: string,
   expiresAt?: string
@@ -52,7 +55,7 @@ export const storeSession = async (
   const session = sessionRepository.create({
     id,
     userId,
-    sessionData: JSON.stringify(sessionData),
+    sessionData: JSON.stringify(sessionData), // Store raw Playwright format
     username,
     expiresAt: expiresAt || getDefaultExpiryTime(),
   });
@@ -95,7 +98,7 @@ export const getSession = async (userId?: string): Promise<SessionResponse | nul
   };
 };
 
-export const getSessionData = async (userId?: string): Promise<RedditSessionData | null> => {
+export const getSessionData = async (userId?: string): Promise<PlaywrightSessionData | null> => {
   const db = await getDatabase();
   const sessionRepository = db.getRepository(RedditSession);
 
@@ -112,14 +115,14 @@ export const getSessionData = async (userId?: string): Promise<RedditSessionData
   if (!isValid) return null;
 
   try {
-    return JSON.parse(session.sessionData) as RedditSessionData;
+    return JSON.parse(session.sessionData) as PlaywrightSessionData;
   } catch {
     return null;
   }
 };
 
 export const updateSession = async (
-  sessionData: RedditSessionData,
+  sessionData: PlaywrightSessionData,
   username?: string,
   userId?: string,
   expiresAt?: string
@@ -139,7 +142,7 @@ export const updateSession = async (
 
   // Update existing session
   await sessionRepository.update(existingSession.id, {
-    sessionData: JSON.stringify(sessionData),
+    sessionData: JSON.stringify(sessionData), // Store raw Playwright format
     username,
     expiresAt: expiresAt || getDefaultExpiryTime(),
   });
@@ -165,13 +168,19 @@ export const deleteSession = async (userId?: string): Promise<boolean> => {
   const db = await getDatabase();
   const sessionRepository = db.getRepository(RedditSession);
 
-  if (userId) {
-    const result = await sessionRepository.delete({ userId });
-    return result.affected ? result.affected > 0 : false;
-  } else {
-    // Delete all sessions if no userId specified
-    const result = await sessionRepository.delete({});
-    return result.affected ? result.affected > 0 : false;
+  try {
+    if (userId) {
+      const result = await sessionRepository.delete({ userId });
+      return result.affected ? result.affected > 0 : false;
+    } else {
+      // Use clear() instead of delete({}) for deleting all records
+      // TypeORM doesn't allow delete({}) with empty criteria as safety measure
+      await sessionRepository.clear();
+      return true;
+    }
+  } catch (error) {
+    console.error(`❌ Database delete error:`, error);
+    throw error;
   }
 };
 

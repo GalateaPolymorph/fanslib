@@ -10,7 +10,7 @@ import {
 } from "./api-client";
 import { syncStatusFromServer, getServerJobs } from "./queue-sync";
 import {
-  transferElectronSessionToServer,
+  storeSessionToServer,
   getServerSessionStatus,
   clearServerSession,
   syncSessionWithServer,
@@ -25,7 +25,7 @@ export const handlers: ServerCommunicationHandlers = {
   sync: (_) => syncStatusFromServer(),
   isServerAvailable: (_) => isServerAvailable(),
   getServerJobs: (_) => getServerJobs(),
-  transferSession: (_, username) => transferElectronSessionToServer(username),
+  transferSession: (_, { sessionData, username }) => storeSessionToServer(sessionData, username),
   getSessionStatus: (_, username) => getServerSessionStatus(username),
   clearSession: (_, username) => clearServerSession(username),
   syncSession: (_, username) => syncSessionWithServer(username),
