@@ -4,14 +4,15 @@ import * as React from "react";
 
 import { cn } from "@renderer/lib/utils";
 
-const buttonVariants = cva("btn", {
+const buttonVariants = cva("btn [&_svg]:pointer-events-none [&_svg]:shrink-0", {
   variants: {
     variant: {
       default: "btn-primary",
       destructive: "btn-error",
-      outline: "btn-outline",
+      outline:
+        "btn-outline border-base-300 hover:border-neutral hover:bg-neutral font-normal [&_svg]:size-3.5",
       secondary: "btn-secondary",
-      ghost: "btn-ghost",
+      ghost: "btn-ghost hover:border-neutral",
       link: "btn-link",
     },
     size: {

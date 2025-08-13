@@ -27,7 +27,7 @@ const meta: Meta<typeof Badge> = {
     },
     shape: {
       control: { type: "select" },
-      options: ["default", "tag", "iconOnly"],
+      options: ["default", "iconOnly"],
     },
   },
   args: {
@@ -100,13 +100,6 @@ export const Large: Story = {
   },
 };
 
-export const TagShape: Story = {
-  args: {
-    shape: "tag",
-    children: "Tag",
-  },
-};
-
 export const IconOnly: Story = {
   args: {
     shape: "iconOnly",
@@ -142,7 +135,6 @@ export const AllShapes: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2 items-center">
       <Badge shape="default">Default</Badge>
-      <Badge shape="tag">Tag</Badge>
       <Badge shape="iconOnly">★</Badge>
     </div>
   ),

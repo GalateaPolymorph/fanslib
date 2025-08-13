@@ -14,7 +14,7 @@ export const ShootDetailEditButton: FC<ShootDetailEditButtonProps> = ({
   onCancel,
 }) => {
   return (
-    <Button variant={"outline"} onClick={isEditing ? onCancel : onEdit} className="text-sm">
+    <Button variant={"outline"} onClick={isEditing ? onCancel : onEdit}>
       {isEditing ? <X /> : <PenLine />}
       {isEditing ? "Cancel" : "Edit"}
     </Button>

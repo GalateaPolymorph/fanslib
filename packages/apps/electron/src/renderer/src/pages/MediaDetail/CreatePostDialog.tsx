@@ -1,9 +1,9 @@
 import { ChannelBadge } from "@renderer/components/ChannelBadge";
 import { ChannelSelect } from "@renderer/components/ChannelSelect";
 import { HashtagButton } from "@renderer/components/HashtagButton";
-import { SnippetSelector } from "@renderer/components/SnippetSelector";
 import { MediaSelection } from "@renderer/components/MediaSelection";
 import { MediaTile } from "@renderer/components/MediaTile";
+import { SnippetSelector } from "@renderer/components/SnippetSelector";
 import { StatusSelect } from "@renderer/components/StatusSelect";
 import { SubredditSelect } from "@renderer/components/SubredditSelect";
 import { TimePicker } from "@renderer/components/TimePicker";
@@ -287,7 +287,7 @@ export const CreatePostDialog = ({
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
                       placeholder="Write your post caption..."
-                      className="min-h-[50px] pr-10"
+                      className="min-h-[150px] pr-10"
                     />
                     {channelCaptionMaxLength && channelCaptionMaxLength !== Infinity && (
                       <p
@@ -426,7 +426,7 @@ export const CreatePostDialog = ({
             </label>
           </div>
 
-          <DialogFooter className="flex gap-2">
+          <DialogFooter className="flex flex-col gap-2">
             <CreatePostAndPostponeButton
               selectedChannel={channels.find((c) => c.id === selectedChannel[0])}
               selectedDate={selectedDate}
