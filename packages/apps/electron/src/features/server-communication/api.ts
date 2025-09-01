@@ -1,18 +1,20 @@
 import { prefixNamespaceObject } from "../../lib/namespace";
-import { namespace, ServerCommunicationHandlers } from "./api-type";
 import {
+  checkServerAvailability,
   createQueueJob,
-  getQueueJobs,
   getQueueJob,
-  deleteQueueJob,
+  getQueueJobs,
   getQueueStatus,
   isServerAvailable,
+  schedulePostsToServer,
 } from "./api-client";
-import { syncStatusFromServer, getServerJobs } from "./queue-sync";
+import { namespace, ServerCommunicationHandlers } from "./api-type";
+import { getServerJobs, removeServerJob, syncStatusFromServer } from "./queue-sync";
+import { syncCompletedJobs } from "./post-sync";
 import {
-  storeSessionToServer,
-  getServerSessionStatus,
   clearServerSession,
+  getServerSessionStatus,
+  storeSessionToServer,
   syncSessionWithServer,
 } from "./session-manager";
 
@@ -20,7 +22,7 @@ export const handlers: ServerCommunicationHandlers = {
   createJob: (_, jobData) => createQueueJob(jobData),
   getJobs: (_, since) => getQueueJobs(since),
   getJobById: (_, id) => getQueueJob(id),
-  deleteJob: (_, id) => deleteQueueJob(id),
+  deleteJob: (_, id) => removeServerJob(id),
   getStatus: (_, since) => getQueueStatus(since),
   sync: (_) => syncStatusFromServer(),
   isServerAvailable: (_) => isServerAvailable(),
@@ -29,6 +31,9 @@ export const handlers: ServerCommunicationHandlers = {
   getSessionStatus: (_, username) => getServerSessionStatus(username),
   clearSession: (_, username) => clearServerSession(username),
   syncSession: (_, username) => syncSessionWithServer(username),
+  schedulePostsToServer: (_, posts) => schedulePostsToServer(posts),
+  checkServerAvailability: (_) => checkServerAvailability(),
+  syncCompletedJobs: (_) => syncCompletedJobs(),
 };
 
 export const serverCommunicationHandlers = prefixNamespaceObject(namespace, handlers);

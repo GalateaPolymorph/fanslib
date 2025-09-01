@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { createJob, getJobs, getJobById, deleteJob, getJobLogs } from "../services/queue-service";
+import { createJob, getJobs, getJobById, deleteJob, getJobLogs, getCompletedJobsForElectron, markJobAsProcessedByElectron } from "../services/queue-service";
 import { CreateQueueJobSchema } from "../types";
 
 export const redditQueueRoutes = new Elysia({ prefix: "/api/reddit" })
@@ -124,4 +124,31 @@ export const redditQueueRoutes = new Elysia({ prefix: "/api/reddit" })
         since: t.Optional(t.String()),
       }),
     }
-  );
+  )
+
+  .get("/queue/completed-for-electron", async ({ set }) => {
+    try {
+      const jobs = await getCompletedJobsForElectron();
+      return { jobs };
+    } catch (error) {
+      set.status = 500;
+      return {
+        error: "Failed to fetch completed jobs",
+        details: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  })
+
+  .post("/queue/:id/mark-processed", async ({ params, set }) => {
+    try {
+      await markJobAsProcessedByElectron(params.id);
+      set.status = 204;
+      return null;
+    } catch (error) {
+      set.status = 500;
+      return {
+        error: "Failed to mark job as processed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  });

@@ -1,8 +1,9 @@
+import type { GeneratedPost } from "../reddit-poster/api-type";
 import type {
-  QueueJobResponse,
-  CreateQueueJobRequest,
-  QueueListResponse,
   ApiError,
+  CreateQueueJobRequest,
+  QueueJobResponse,
+  QueueListResponse,
   SessionResponse,
 } from "./types";
 
@@ -100,6 +101,87 @@ export const isServerAvailable = async (): Promise<boolean> => {
   }
 };
 
+export const checkServerAvailability = async (): Promise<boolean> => {
+  try {
+    const health = await healthCheck();
+    // Check if both server and scheduler are running
+    return health.status === "healthy" && health.scheduler === "running";
+  } catch (error) {
+    console.warn("Server availability check failed:", error);
+    return false;
+  }
+};
+
+export const schedulePostsToServer = async (
+  posts: GeneratedPost[]
+): Promise<QueueJobResponse[]> => {
+  const results: QueueJobResponse[] = [];
+  const errors: Array<{ postId: string; error: string }> = [];
+
+  // Import serverQueueJobs for local cache updates
+  const { addToServerJobsCache } = await import("./queue-sync");
+
+  for (const post of posts) {
+    try {
+      let redgifsUrl = post.media.redgifsUrl;
+
+      // If no RedGifs URL and this is a video, try fetching it via Postpone API
+      if (!redgifsUrl && post.media.type === "video") {
+        console.log(`⚠️ No RedGifs URL for media ${post.media.id}, attempting to fetch via Postpone API...`);
+        
+        try {
+          const { findRedgifsURL } = await import("../api-postpone/operations");
+          const response = await findRedgifsURL({ mediaId: post.media.id });
+          
+          if (response?.url) {
+            redgifsUrl = response.url;
+            
+            // Save the URL to the media record for future use
+            const { updateMedia } = await import("../library/operations");
+            await updateMedia(post.media.id, { redgifsUrl });
+            console.log(`✅ Fetched and saved RedGifs URL for media ${post.media.id}`);
+          }
+        } catch (fetchError) {
+          console.warn(`Failed to fetch RedGifs URL for media ${post.media.id}:`, fetchError);
+        }
+      }
+
+      // Final validation - we must have a URL to proceed
+      if (!redgifsUrl) {
+        throw new Error(`No RedGifs URL available for media ${post.media.id}. Unable to fetch from Postpone API.`);
+      }
+
+      const jobData: CreateQueueJobRequest = {
+        subreddit: post.subreddit.name,
+        caption: post.caption,
+        url: redgifsUrl,
+        mediaId: post.media.id,
+        scheduledTime: post.date.toISOString(),
+      };
+
+      const result = await createQueueJob(jobData);
+      
+      // Add to local cache for immediate UI updates
+      addToServerJobsCache(result);
+      
+      results.push(result);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      errors.push({ postId: post.id, error: errorMessage });
+    }
+  }
+
+  // If there were any errors, throw an error with details
+  if (errors.length > 0) {
+    const errorDetails = errors.map((e) => `Post ${e.postId}: ${e.error}`).join("; ");
+    throw new Error(
+      `Failed to schedule ${errors.length} of ${posts.length} posts: ${errorDetails}`
+    );
+  }
+
+  return results;
+};
+
 // Simplified Reddit Session API functions - no more conversion needed!
 export const createSession = async (
   sessionData: CreateSessionRequest
@@ -157,9 +239,11 @@ export const getSession = async (userId?: string): Promise<SessionResponse | nul
 export const getSessionData = async (userId?: string): Promise<PlaywrightSessionData | null> => {
   try {
     const params = userId ? `?userId=${encodeURIComponent(userId)}` : "";
-    const response = await request<{ success: boolean; sessionData?: PlaywrightSessionData; error?: string }>(
-      `/api/reddit/session/data${params}`
-    );
+    const response = await request<{
+      success: boolean;
+      sessionData?: PlaywrightSessionData;
+      error?: string;
+    }>(`/api/reddit/session/data${params}`);
 
     if (!response.success) {
       return null;

@@ -1,37 +1,40 @@
-export * from "./api-type";
 export { serverCommunicationHandlers } from "./api";
 export {
+  checkServerAvailability,
   createQueueJob,
-  getQueueJobs,
-  getQueueJob,
   deleteQueueJob,
+  getQueueJob,
+  getQueueJobs,
   getQueueStatus,
   healthCheck,
   isServerAvailable,
+  schedulePostsToServer,
 } from "./api-client";
+export * from "./api-type";
 export {
-  syncStatusFromServer,
-  getServerJobs,
-  getServerJobById,
-  removeServerJob,
-  createServerJob,
-  setSessionExpirationCallback,
   clearSessionExpirationCallback,
+  createServerJob,
+  getServerJobById,
+  getServerJobs,
   hasFailedSessionJobs,
+  removeServerJob,
+  setSessionExpirationCallback,
+  syncStatusFromServer,
 } from "./queue-sync";
+export type { ServerStatus, ServerStatusCallback, ServerStatusInfo } from "./server-status-types";
 export {
-  storeSessionToServer,
-  getServerSessionStatus,
   clearServerSession,
+  getServerSessionStatus,
+  storeSessionToServer,
   syncSessionWithServer,
 } from "./session-manager";
 export type {
-  QueueStatus,
-  QueueJobResponse,
-  CreateQueueJobRequest,
-  QueueListResponse,
   ApiError,
-  RedditSessionData,
+  CreateQueueJobRequest,
   CreateSessionRequest,
+  QueueJobResponse,
+  QueueListResponse,
+  QueueStatus,
+  RedditSessionData,
   SessionResponse,
 } from "./types";

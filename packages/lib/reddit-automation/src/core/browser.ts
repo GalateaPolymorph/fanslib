@@ -24,13 +24,23 @@ export const initializeBrowser = async (
 ): Promise<RedditPostingContext> => {
   const { headless = false, timeout = 180000, userDataDir } = browserConfig;
 
-  let storageState: string | undefined;
+  let storageState: string | any | undefined;
 
   try {
     if (sessionStorage && (await sessionStorage.exists())) {
       const sessionPath = sessionStorage.getPath();
-      storageState = sessionPath;
-      console.log(`[Reddit Automation] Loading session from: ${sessionPath}`);
+      
+      // Check if this is a database URI or a file path
+      if (sessionPath.startsWith('database://')) {
+        // For database storage, read the session data directly and parse as JSON
+        const sessionData = await sessionStorage.read();
+        storageState = JSON.parse(sessionData) as any; // Type assertion for Playwright storage state
+        console.log(`[Reddit Automation] Loading session from database: ${sessionPath}`);
+      } else {
+        // For file storage, use the path directly
+        storageState = sessionPath;
+        console.log(`[Reddit Automation] Loading session from: ${sessionPath}`);
+      }
     }
   } catch (error) {
     console.warn(`[Reddit Automation] Failed to load session:`, error);

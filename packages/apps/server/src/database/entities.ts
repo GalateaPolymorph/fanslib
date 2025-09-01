@@ -51,6 +51,9 @@ export class RedditQueueJob {
   @Column("text", { nullable: true })
   errorMessage?: string;
 
+  @Column("boolean", { default: false })
+  processedByElectron!: boolean; // Flag to track if Electron has created a Post for this job
+
   @CreateDateColumn()
   createdAt!: Date;
 

@@ -43,6 +43,10 @@ export const getServerJobs = (): QueueJobResponse[] => {
   return Array.from(serverQueueJobs.values());
 };
 
+export const addToServerJobsCache = (job: QueueJobResponse): void => {
+  serverQueueJobs.set(job.id, job);
+};
+
 export const getServerJobById = (jobId: string): QueueJobResponse | null => {
   return serverQueueJobs.get(jobId) || null;
 };

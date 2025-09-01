@@ -1,5 +1,5 @@
-import { RedditPoster } from "@fanslib/reddit-automation";
 import type { SessionStorage } from "@fanslib/reddit-automation";
+import { RedditPoster } from "@fanslib/reddit-automation";
 import type { QueueJobResponse } from "../types";
 import { addLog, getJobsDue, updateJobStatus } from "./queue-service";
 import { getSessionData } from "./session-service";
@@ -46,7 +46,7 @@ const createDatabaseSessionStorage = (userId?: string): SessionStorage => {
 
 const getRedditPoster = async (jobId: string, userId?: string): Promise<RedditPoster> => {
   const sessionStorage = createDatabaseSessionStorage(userId);
-  
+
   // No initialization needed - reads directly from database!
 
   return new RedditPoster({
@@ -70,6 +70,9 @@ const getRedditPoster = async (jobId: string, userId?: string): Promise<RedditPo
       } else if (progress.stage === "failed") {
         await addLog(jobId, "milestone", `Reddit submission failed: ${progress.message}`);
       }
+    },
+    browserOptions: {
+      headless: true,
     },
   });
 };

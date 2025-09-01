@@ -1,9 +1,10 @@
 import { LessThan } from "typeorm";
 import { db } from "../../lib/db";
+import { CHANNEL_TYPES } from "../channels/channelTypes";
 import { sendNotification } from "../notifications/api";
 import { syncStatusFromServer } from "../server-communication";
+import { syncCompletedJobs } from "../server-communication/post-sync";
 import { Post } from "./entity";
-import { CHANNEL_TYPES } from "../channels/channelTypes";
 
 export const updateScheduledNonRedditPosts = async () => {
   const dataSource = await db();
@@ -42,15 +43,20 @@ export const updateScheduledNonRedditPosts = async () => {
   });
 };
 
-export const syncRedditQueueStatus = async () => {
-  // Sync status updates from server for any existing jobs
-  await syncStatusFromServer();
-};
-
 export const updateScheduledPosts = async () => {
-  // Handle non-Reddit posts by marking them as posted
   await updateScheduledNonRedditPosts();
-
-  // Sync Reddit queue status from server
-  await syncRedditQueueStatus();
+  await syncStatusFromServer();
+  
+  // Sync completed Reddit jobs from server and create local posts
+  try {
+    const createdCount = await syncCompletedJobs();
+    if (createdCount > 0) {
+      sendNotification({
+        title: "Reddit Posts Synced",
+        body: `${createdCount} Reddit post${createdCount === 1 ? "" : "s"} synced from server`,
+      });
+    }
+  } catch (error) {
+    console.error("❌ Failed to sync completed Reddit jobs:", error);
+  }
 };

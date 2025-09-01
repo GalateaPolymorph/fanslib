@@ -16,14 +16,16 @@ export const useRedditAuth = (
       async () => {
         setIsCheckingLogin(true);
         const loginResult = await window.api["reddit-poster:checkLoginStatus"]();
-        const sessionStatus = await window.api["server-communication:getSessionStatus"](loginResult.username);
+        const sessionStatus = await window.api["server-communication:getSessionStatus"](
+          loginResult.username
+        );
         updateCache(sessionStatus, loginResult);
-        
+
         toast({
           title: "Status Refreshed",
           description: "Reddit authentication status has been updated",
         });
-        
+
         return { loginResult, sessionStatus };
       },
       "Failed to refresh status",
@@ -35,7 +37,7 @@ export const useRedditAuth = (
         });
       }
     );
-    
+
     setIsCheckingLogin(false);
     return result;
   }, [toast, updateCache]);
@@ -44,24 +46,26 @@ export const useRedditAuth = (
     const result = await withErrorHandling(
       async () => {
         setIsLoggingIn(true);
-        
+
         // First check if user is already logged in
         const currentLoginStatus = await window.api["reddit-poster:checkLoginStatus"]();
-        
+
         if (currentLoginStatus.isLoggedIn && currentLoginStatus.username) {
           toast({
             title: "Already Logged In",
             description: `You are already logged in as u/${currentLoginStatus.username}`,
           });
-          
+
           // Check if session exists on server, if not, sync it
           try {
             const serverSessionStatus = await loadSessionStatus(currentLoginStatus.username);
-            
+
             if (!serverSessionStatus?.hasSession) {
               // Session not on server, need to sync from local session
-              const syncResult = await window.api["server-communication:syncSession"](currentLoginStatus.username);
-              
+              const syncResult = await window.api["server-communication:syncSession"](
+                currentLoginStatus.username
+              );
+
               if (syncResult) {
                 toast({
                   title: "Session Synced",
@@ -71,21 +75,20 @@ export const useRedditAuth = (
                 console.warn("Failed to sync local session to server");
               }
             }
-            
+
             // Update UI with latest status
             const finalSessionStatus = await loadSessionStatus(currentLoginStatus.username);
             updateCache(finalSessionStatus, currentLoginStatus);
-            
           } catch (syncError) {
             console.warn("Session sync process failed:", syncError);
             // Still update UI with current login status
             const basicSessionStatus = await loadSessionStatus(currentLoginStatus.username);
             updateCache(basicSessionStatus, currentLoginStatus);
           }
-          
+
           return true;
         }
-        
+
         // If not logged in, perform fresh login
         const loginResult = await window.api["reddit-poster:loginToReddit"]();
 
@@ -110,7 +113,7 @@ export const useRedditAuth = (
             // Just need to update the UI
             const newSessionStatus = await loadSessionStatus(loginStatusResult.username);
             updateCache(newSessionStatus, loginStatusResult);
-            
+
             toast({
               title: "Session Ready",
               description: `Login completed for u/${loginStatusResult.username}`,
@@ -123,9 +126,10 @@ export const useRedditAuth = (
           toast({
             variant: "default",
             title: "Status Update Issue",
-            description: "Login successful, but there was an issue updating the status. Try refreshing.",
+            description:
+              "Login successful, but there was an issue updating the status. Try refreshing.",
           });
-          
+
           // Still try to update with basic status
           try {
             const loginStatusResult = await window.api["reddit-poster:checkLoginStatus"]();
@@ -135,7 +139,7 @@ export const useRedditAuth = (
             console.warn("Failed fallback status update:", fallbackError);
           }
         }
-        
+
         return true;
       },
       "Failed to login to Reddit",
@@ -147,7 +151,7 @@ export const useRedditAuth = (
         });
       }
     );
-    
+
     setIsLoggingIn(false);
     return result;
   }, [toast, loadSessionStatus, updateCache]);

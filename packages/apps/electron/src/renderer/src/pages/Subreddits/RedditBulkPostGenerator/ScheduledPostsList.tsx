@@ -1,6 +1,15 @@
 import { MediaTile } from "@renderer/components/MediaTile";
 import { Button } from "@renderer/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@renderer/components/ui/Dialog";
 import { ScrollArea } from "@renderer/components/ui/ScrollArea";
+import { Status } from "@renderer/components/ui/Status";
 import {
   Tooltip,
   TooltipContent,
@@ -12,7 +21,11 @@ import { useDeletePost } from "@renderer/hooks/api/usePost";
 import { cn } from "@renderer/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Trash2Icon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  ChevronRightIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useState } from "react";
 import { ScheduledPost } from "../../../../../features/reddit-poster/api-type";
 
@@ -23,8 +36,8 @@ type ScheduledPostsListProps = {
 export const ScheduledPostsList = ({ channelId }: ScheduledPostsListProps) => {
   const { data: scheduledPosts = [], isLoading } = useQuery({
     queryKey: ["reddit-poster", "scheduled-posts", channelId],
-    queryFn: () => window.api["reddit-poster:getScheduledPosts"](channelId),
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryFn: () => window.api["reddit-poster:getScheduledPosts"](),
+    refetchInterval: 10000, // Refresh every 10 seconds for real-time updates
   });
 
   if (isLoading) {
@@ -37,7 +50,11 @@ export const ScheduledPostsList = ({ channelId }: ScheduledPostsListProps) => {
 
   const groupedPosts = scheduledPosts.reduce(
     (acc, post) => {
-      const dayKey = format(new Date(post.scheduledDate), "yyyy-MM-dd");
+      // Handle UTC dates properly - if no timezone info, assume UTC
+      const postDate = post.scheduledDate.includes('T') || post.scheduledDate.includes('Z') 
+        ? new Date(post.scheduledDate)
+        : new Date(post.scheduledDate + 'Z'); // Add 'Z' to indicate UTC
+      const dayKey = format(postDate, "yyyy-MM-dd");
       return {
         ...acc,
         [dayKey]: [...(acc[dayKey] ?? []), post],
@@ -94,32 +111,117 @@ const DayGroup = ({ dayKey, posts, channelId }: DayGroupProps) => {
   );
 };
 
+type QueueStatusBadgeProps = {
+  status?: "queued" | "processing" | "posted" | "failed";
+  isServerJob: boolean;
+  errorMessage?: string;
+};
+
+const QueueStatusBadge = ({ status, isServerJob, errorMessage }: QueueStatusBadgeProps) => {
+  if (!isServerJob) {
+    return (
+      <Status variant="neutral" size="sm">
+        <span className="text-xs text-gray-600">Local</span>
+      </Status>
+    );
+  }
+
+  const statusConfig = {
+    queued: { variant: "info" as const, label: "Queued", textColor: "text-blue-700" },
+    processing: { variant: "warning" as const, label: "Processing", textColor: "text-orange-700" },
+    posted: { variant: "success" as const, label: "Posted", textColor: "text-green-700" },
+    failed: { variant: "error" as const, label: "Failed", textColor: "text-red-700" },
+  };
+
+  const config = statusConfig[status || "queued"];
+
+  // If it's a failed status with an error message, make it clickable and show modal
+  if (status === "failed" && errorMessage) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+            <Status variant={config.variant} size="sm">
+              <span className={`text-xs ${config.textColor} cursor-pointer`}>{config.label}</span>
+            </Status>
+            <ChevronRightIcon size={12} className={`${config.textColor} opacity-60`} />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertCircleIcon size={20} />
+              Post Failed
+            </DialogTitle>
+            <DialogDescription>
+              This post failed to be published. Here are the details:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <pre className="text-sm text-red-800 whitespace-pre-wrap break-words font-mono">
+                {errorMessage}
+              </pre>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // For other statuses, show regular non-clickable status
+  return (
+    <Status variant={config.variant} size="sm">
+      <span className={`text-xs ${config.textColor}`}>{config.label}</span>
+    </Status>
+  );
+};
+
 type ScheduledPostCardProps = {
   post: ScheduledPost;
   channelId: string;
 };
 
 const ScheduledPostCard = ({ post, channelId }: ScheduledPostCardProps) => {
-  const scheduledDate = new Date(post.scheduledDate);
+  // Handle UTC dates properly - if no timezone info, assume UTC
+  const scheduledDate = post.scheduledDate.includes('T') || post.scheduledDate.includes('Z') 
+    ? new Date(post.scheduledDate)
+    : new Date(post.scheduledDate + 'Z'); // Add 'Z' to indicate UTC
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
+  const [isDeletingServerJob, setIsDeletingServerJob] = useState(false);
   const deletePostMutation = useDeletePost();
   const queryClient = useQueryClient();
+  const isServerJob = !!post.serverJobId;
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     if (confirmingDelete === post.id) {
-      deletePostMutation.mutate(post.id, {
-        onSuccess: () => {
-          // Invalidate the scheduled posts query to refresh the list
-          queryClient.invalidateQueries({
-            queryKey: ["reddit-poster", "scheduled-posts", channelId],
+      try {
+        if (isServerJob && post.serverJobId) {
+          // Delete server job
+          setIsDeletingServerJob(true);
+          await window.api["server-communication:deleteJob"](post.serverJobId);
+        } else {
+          // Delete local post
+          await new Promise((resolve, reject) => {
+            deletePostMutation.mutate(post.id, {
+              onSuccess: resolve,
+              onError: reject,
+            });
           });
-          setConfirmingDelete(null);
-        },
-        onError: (error) => {
-          console.error("Failed to delete scheduled post:", error);
-          setConfirmingDelete(null);
-        },
-      });
+        }
+
+        // Invalidate the scheduled posts query to refresh the list
+        queryClient.invalidateQueries({
+          queryKey: ["reddit-poster", "scheduled-posts", channelId],
+        });
+        setConfirmingDelete(null);
+      } catch (error) {
+        console.error("Failed to delete scheduled post:", error);
+        // TODO: Show error toast to user
+        setConfirmingDelete(null);
+      } finally {
+        setIsDeletingServerJob(false);
+      }
     } else {
       setConfirmingDelete(post.id);
     }
@@ -130,14 +232,39 @@ const ScheduledPostCard = ({ post, channelId }: ScheduledPostCardProps) => {
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <div
-            className={`bg-base-100 shadow-sm rounded-lg p-3 space-y-2 grid grid-cols-[auto_2fr_auto] gap-4`}
+            className={cn(
+              "bg-base-100 shadow-sm rounded-lg p-3 space-y-2 grid grid-cols-[auto_2fr_auto] gap-4",
+              isServerJob && "border-l-4",
+              post.status === "queued" && "border-l-blue-400",
+              post.status === "processing" && "border-l-orange-400",
+              post.status === "posted" && "border-l-green-400",
+              post.status === "failed" && "border-l-red-400"
+            )}
           >
             <div className="flex flex-col gap-2">
-              <p className={`text-2xl font-bold`}>{format(scheduledDate, "hh:mm")}</p>
+              <p className={`text-2xl font-bold`}>{format(scheduledDate, "HH:mm")}</p>
+              <QueueStatusBadge 
+                status={post.status} 
+                isServerJob={isServerJob} 
+                errorMessage={post.errorMessage}
+              />
             </div>
 
             <div className="flex flex-col gap-1">
-              <h4 className="font-semibold">r/{post.subreddit.name}</h4>
+              <div className="flex items-center gap-2">
+                <h4 className="font-semibold">r/{post.subreddit.name}</h4>
+                {post.postUrl && (
+                  <a
+                    href={post.postUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Post
+                  </a>
+                )}
+              </div>
               {post.caption && <p className="text-xs text-gray-600 line-clamp-3">{post.caption}</p>}
             </div>
             {post.media && (
@@ -159,27 +286,38 @@ const ScheduledPostCard = ({ post, channelId }: ScheduledPostCardProps) => {
           side="right"
           className="flex gap-1 p-1.5 bg-background border border-border"
         >
-          <Button
-            variant="ghost"
-            size={confirmingDelete === post.id ? "default" : "icon"}
-            className={cn(
-              "h-7 text-muted-foreground hover:text-destructive transition-all duration-100",
-              confirmingDelete === post.id ? "w-[72px] px-2" : "w-7"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick();
-            }}
-            onMouseLeave={() => setConfirmingDelete(null)}
-            disabled={deletePostMutation.isPending}
-          >
-            <div className="flex items-center gap-1.5">
-              <Trash2Icon size={14} />
-              {confirmingDelete === post.id && (
-                <span className="text-xs">{deletePostMutation.isPending ? "..." : "Sure?"}</span>
+          {/* Only show delete button for queued jobs or local posts */}
+          {(!isServerJob || post.status === "queued" || post.status === "failed") && (
+            <Button
+              variant="ghost"
+              size={confirmingDelete === post.id ? "default" : "icon"}
+              className={cn(
+                "h-7 text-muted-foreground hover:text-destructive transition-all duration-100",
+                confirmingDelete === post.id ? "w-[72px] px-2" : "w-7"
               )}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick();
+              }}
+              onMouseLeave={() => setConfirmingDelete(null)}
+              disabled={deletePostMutation.isPending || isDeletingServerJob}
+            >
+              <div className="flex items-center gap-1.5">
+                <Trash2Icon size={14} />
+                {confirmingDelete === post.id && (
+                  <span className="text-xs">
+                    {deletePostMutation.isPending || isDeletingServerJob ? "..." : "Sure?"}
+                  </span>
+                )}
+              </div>
+            </Button>
+          )}
+          {/* Show disabled state for processing/posted jobs */}
+          {isServerJob && (post.status === "processing" || post.status === "posted") && (
+            <div className="h-7 w-7 flex items-center justify-center text-muted-foreground/50">
+              <Trash2Icon size={14} />
             </div>
-          </Button>
+          )}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

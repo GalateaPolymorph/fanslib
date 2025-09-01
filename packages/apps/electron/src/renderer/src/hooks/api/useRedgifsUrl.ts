@@ -25,10 +25,28 @@ export const useRedgifsUrl = (media: Media | null): RedgifsUrlResult => {
         return { url: null };
       }
 
+      // If URL is already cached in media, return it
+      if (media.redgifsUrl) {
+        return { url: media.redgifsUrl };
+      }
+
       try {
         const response = await window.api["api-postpone:findRedgifsURL"]({
           mediaId: media.id,
         });
+        
+        // If we got a URL, save it to the media record for future use
+        if (response?.url) {
+          try {
+            await window.api["library:update"](media.id, {
+              redgifsUrl: response.url,
+            });
+            console.log(`✅ Saved RedGifs URL for media ${media.id}`);
+          } catch (updateError) {
+            console.warn(`Failed to save RedGifs URL for media ${media.id}:`, updateError);
+          }
+        }
+        
         return response;
       } catch (err) {
         // If the API call fails, return null URL instead of throwing

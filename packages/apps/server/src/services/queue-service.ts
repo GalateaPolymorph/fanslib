@@ -195,3 +195,25 @@ export const getJobLogs = async (jobId: string) => {
     order: { timestamp: "DESC" },
   });
 };
+
+export const getCompletedJobsForElectron = async (): Promise<RedditQueueJob[]> => {
+  const db = await getDatabase();
+  const jobRepository = db.getRepository(RedditQueueJob);
+
+  return await jobRepository.find({
+    where: {
+      status: "posted",
+      processedByElectron: false,
+    },
+    order: { updatedAt: "ASC" }, // Process oldest first
+  });
+};
+
+export const markJobAsProcessedByElectron = async (jobId: string): Promise<void> => {
+  const db = await getDatabase();
+  const jobRepository = db.getRepository(RedditQueueJob);
+
+  await jobRepository.update(jobId, {
+    processedByElectron: true,
+  });
+};

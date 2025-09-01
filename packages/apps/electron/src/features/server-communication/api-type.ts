@@ -1,7 +1,8 @@
 import { prefixNamespace, PrefixNamespace, StripNamespace } from "../../lib/namespace";
+import type { GeneratedPost } from "../reddit-poster/api-type";
 import type {
-  QueueJobResponse,
   CreateQueueJobRequest,
+  QueueJobResponse,
   QueueListResponse,
   SessionResponse,
 } from "./types";
@@ -19,6 +20,9 @@ export const methods = [
   "getSessionStatus",
   "clearSession",
   "syncSession",
+  "schedulePostsToServer",
+  "checkServerAvailability",
+  "syncCompletedJobs",
 ] as const;
 
 export type ServerCommunicationHandlers = {
@@ -30,7 +34,10 @@ export type ServerCommunicationHandlers = {
   sync: (_: any) => Promise<void>;
   isServerAvailable: (_: any) => Promise<boolean>;
   getServerJobs: (_: any) => QueueJobResponse[];
-  transferSession: (_: any, params: { sessionData: any; username?: string }) => Promise<SessionResponse | null>;
+  transferSession: (
+    _: any,
+    params: { sessionData: any; username?: string }
+  ) => Promise<SessionResponse | null>;
   getSessionStatus: (
     _: any,
     username?: string
@@ -41,6 +48,9 @@ export type ServerCommunicationHandlers = {
   }>;
   clearSession: (_: any, username?: string) => Promise<boolean>;
   syncSession: (_: any, username?: string) => Promise<boolean>;
+  schedulePostsToServer: (_: any, posts: GeneratedPost[]) => Promise<QueueJobResponse[]>;
+  checkServerAvailability: (_: any) => Promise<boolean>;
+  syncCompletedJobs: (_: any) => Promise<number>; // Returns number of posts created
 };
 
 export const namespace = "server-communication" as const;

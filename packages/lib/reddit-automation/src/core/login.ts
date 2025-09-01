@@ -9,7 +9,6 @@ export const checkLoginStatus = async (page: Page): Promise<boolean> => {
   await page.waitForSelector("shreddit-app", { timeout: 5000, state: "attached" });
   const isLoggedIn = await page.locator("shreddit-app").getAttribute("user-logged-in");
   if (isLoggedIn === "true") {
-    console.log("Login detected via user-logged-in attribute");
     return true;
   }
   return false;
@@ -38,9 +37,7 @@ export const waitForLoginCompletion = async (
       const isLoggedIn = await checkLoginStatus(page);
 
       if (isLoggedIn) {
-        // Double-check by trying to extract username
         const username = await extractUsernameFromPage(page);
-
         if (username) {
           onProgress?.({
             stage: "logging_in",

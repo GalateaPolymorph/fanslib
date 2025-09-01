@@ -1,9 +1,9 @@
-import { RedditPostingContext } from "./types/context";
-import { BrowserConfig, SessionStorage } from "./types/config";
-import { RedditPostProgress } from "./types/progress";
 import { closeBrowserIfOpened, initializeBrowser, saveSession } from "./core/browser";
 import { checkLoginStatus, extractUsernameFromPage, waitForLoginCompletion } from "./core/login";
 import { waitForAppLoad } from "./core/navigation";
+import { BrowserConfig, SessionStorage } from "./types/config";
+import { RedditPostingContext } from "./types/context";
+import { RedditPostProgress } from "./types/progress";
 
 export type RedditLoginResult = {
   success: boolean;
@@ -56,7 +56,7 @@ export class RedditLoginHandler {
       await closeBrowserIfOpened(this.context);
       this.context = await initializeBrowser(this.config.sessionStorage, {
         ...this.config.browserOptions,
-        headless: false,
+        headless: false, // TODO Change back
       });
 
       if (!this.context) {
@@ -153,7 +153,7 @@ export class RedditLoginHandler {
       });
 
       await this.context.page.goto("https://www.reddit.com/", {
-        waitUntil: "networkidle",
+        waitUntil: "domcontentloaded",
         timeout: 30000,
       });
 

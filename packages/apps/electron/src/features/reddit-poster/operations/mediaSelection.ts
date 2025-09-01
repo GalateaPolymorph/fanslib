@@ -3,9 +3,47 @@ import { Media } from "../../library/entity";
 import { buildFilterGroupQuery } from "../../library/filter-helpers";
 import { Channel } from "../../channels/entity";
 import { Subreddit } from "../../channels/subreddit";
+import { PostMedia } from "../../posts/entity";
+
+const MEDIA_REUSE_RESTRICTION_DAYS = 30;
+
+export const getUsedMediaForSubreddit = async (
+  subredditId: string,
+  channelId: string,
+  restrictionDays: number = MEDIA_REUSE_RESTRICTION_DAYS
+): Promise<string[]> => {
+  const dataSource = await db();
+  
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - restrictionDays);
+  const cutoffDateString = cutoffDate.toISOString();
+  
+  const usedMediaResults = await dataSource
+    .getRepository(PostMedia)
+    .createQueryBuilder("postMedia")
+    .innerJoin("postMedia.post", "post")
+    .innerJoin("postMedia.media", "media")
+    .select("media.id")
+    .where("post.subredditId = :subredditId", { subredditId })
+    .andWhere("post.channelId = :channelId", { channelId })
+    .andWhere("post.date >= :cutoffDate", { cutoffDate: cutoffDateString })
+    .getRawMany();
+  
+  return usedMediaResults.map(result => result.media_id);
+};
+
+const excludeUsedMediaFromQuery = (
+  query: any,
+  usedMediaIds: string[]
+): void => {
+  if (usedMediaIds.length > 0) {
+    query.andWhere("media.id NOT IN (:...usedMediaIds)", { usedMediaIds });
+  }
+};
 
 export const selectRandomMedia = async (
-  filters?: any
+  filters?: any,
+  excludeMediaIds?: string[]
 ): Promise<{ media: Media | null; totalAvailable: number }> => {
   const dataSource = await db();
   const mediaRepo = dataSource.getRepository(Media);
@@ -16,6 +54,11 @@ export const selectRandomMedia = async (
 
     if (filters) {
       buildFilterGroupQuery(filters, query);
+    }
+
+    // Exclude used media if provided
+    if (excludeMediaIds) {
+      excludeUsedMediaFromQuery(query, excludeMediaIds);
     }
 
     // Get total count
@@ -55,4 +98,24 @@ export const getMediaFilterForSubreddit = async (
     subreddit.eligibleMediaFilter.length > 0;
 
   return hasSubredditFilter ? subreddit.eligibleMediaFilter : channel?.eligibleMediaFilter;
+};
+
+export const selectRandomMediaWithConflictChecking = async (
+  subreddit: Subreddit,
+  channelId: string,
+  restrictionDays: number = MEDIA_REUSE_RESTRICTION_DAYS
+): Promise<{ media: Media | null; totalAvailable: number; usedMediaCount: number }> => {
+  // Get media filter for subreddit
+  const filters = await getMediaFilterForSubreddit(subreddit, channelId);
+  
+  // Get used media for this subreddit
+  const usedMediaIds = await getUsedMediaForSubreddit(subreddit.id, channelId, restrictionDays);
+  
+  // Select random media excluding used ones
+  const result = await selectRandomMedia(filters, usedMediaIds);
+  
+  return {
+    ...result,
+    usedMediaCount: usedMediaIds.length
+  };
 };
