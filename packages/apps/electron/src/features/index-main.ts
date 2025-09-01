@@ -14,6 +14,7 @@ import { shootHandlers } from "./shoots/api";
 import { snippetHandlers } from "./snippets/api";
 import { tagHandlers } from "./tags/api";
 import { automationHandlers } from "./automation/api";
+import { serverCommunicationHandlers } from "./server-communication/api";
 export * from "./index-renderer";
 
 export const handlers = {
@@ -33,4 +34,5 @@ export const handlers = {
   ...tagHandlers,
   ...snippetHandlers,
   ...automationHandlers,
+  ...serverCommunicationHandlers,
 };

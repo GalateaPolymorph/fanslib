@@ -1,10 +1,16 @@
 import { Button } from "@renderer/components/ui/Button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@renderer/components/ui/Tooltip";
 import { useToast } from "@renderer/components/ui/Toast/use-toast";
 import { useSettings } from "@renderer/contexts/SettingsContext";
 import { useRedgifsUrl } from "@renderer/hooks/api/useRedgifsUrl";
 import { useClipboard } from "@renderer/hooks/ui/useClipboard";
 import { cn } from "@renderer/lib/utils";
-import { ExternalLink, Loader, RefreshCw } from "lucide-react";
+import { AlertTriangle, CheckCircle, ExternalLink, Loader, RefreshCw } from "lucide-react";
 import { Media } from "../../../features/library/entity";
 
 type RedgifsURLIndicatorProps = {
@@ -45,20 +51,37 @@ export const RedgifsURLIndicator = ({ media, className }: RedgifsURLIndicatorPro
   }
 
   if (url) {
-    return <p className={cn("text-sm text-green-600", className)}>✓ RedGIFs URL found</p>;
+    return (
+      <div className={cn("flex items-center gap-1", className)}>
+        <CheckCircle className="h-3 w-3 text-green-600" />
+        <p className="text-xs text-green-600">RedGIFs URL found</p>
+      </div>
+    );
   }
 
   return (
-    <div className={cn("group flex items-center gap-3", className)}>
-      <p className="text-sm text-orange-600">⚠ No RedGIFs URL found</p>
+    <div className={cn("flex items-center gap-2", className)}>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <AlertTriangle className="h-3 w-3 text-orange-600" />
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <div className="space-y-2">
+              <p className="font-medium">No RedGIFs URL found</p>
+              <p className="text-xs text-muted-foreground">
+                This video needs a RedGIFs URL to be posted to Reddit
+              </p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <Button
         onClick={refresh}
         variant="ghost"
         size="sm"
-        className={cn(
-          "opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 px-2 text-orange-600 hover:text-orange-800",
-          isLoading && "opacity-100"
-        )}
+        className="h-4 w-4 p-0 text-orange-600 hover:text-orange-800"
         title="Refresh RedGIFs URL"
       >
         {isLoading ? (
@@ -67,16 +90,17 @@ export const RedgifsURLIndicator = ({ media, className }: RedgifsURLIndicatorPro
           <RefreshCw className="h-3 w-3" />
         )}
       </Button>
+
       {hasPostponeCredentials && (
         <Button
           onClick={openPostponeContentLibrary}
           variant="ghost"
           size="sm"
-          className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-800"
+          className="h-4 px-2 text-xs text-purple-600 hover:text-purple-800"
           title="Open Postpone content library and copy media name"
         >
-          <ExternalLink className="h-3 w-3" />
-          Open in Postpone
+          <ExternalLink className="h-3 w-3 mr-1" />
+          Postpone
         </Button>
       )}
     </div>

@@ -24,39 +24,73 @@ export const initializeBrowser = async (
 ): Promise<RedditPostingContext> => {
   const { headless = false, timeout = 180000, userDataDir } = browserConfig;
 
-  const browser = await chromium.launch({
-    headless,
-    timeout,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-blink-features=AutomationControlled",
-      ...(userDataDir ? [`--user-data-dir=${userDataDir}`] : []),
-    ],
-  });
-
-  let storageState: string | undefined;
+  let storageState: string | any | undefined;
 
   try {
     if (sessionStorage && (await sessionStorage.exists())) {
       const sessionPath = sessionStorage.getPath();
-      storageState = sessionPath;
-      console.log(`[Reddit Automation] Loading session from: ${sessionPath}`);
+      
+      // Check if this is a database URI or a file path
+      if (sessionPath.startsWith('database://')) {
+        // For database storage, read the session data directly and parse as JSON
+        const sessionData = await sessionStorage.read();
+        storageState = JSON.parse(sessionData) as any; // Type assertion for Playwright storage state
+        console.log(`[Reddit Automation] Loading session from database: ${sessionPath}`);
+      } else {
+        // For file storage, use the path directly
+        storageState = sessionPath;
+        console.log(`[Reddit Automation] Loading session from: ${sessionPath}`);
+      }
     }
   } catch (error) {
     console.warn(`[Reddit Automation] Failed to load session:`, error);
   }
 
-  const browserContext = await browser.newContext({
-    userAgent:
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    viewport: { width: 1920, height: 1080 },
-    locale: "de-DE",
-    timezoneId: "Europe/Berlin",
-    storageState,
-    javaScriptEnabled: true,
-  });
+  let browser;
+  let browserContext;
+
+  if (userDataDir) {
+    // Use launchPersistentContext when userDataDir is specified
+    // Note: storageState is not needed here as persistence is handled by userDataDir
+    browserContext = await chromium.launchPersistentContext(userDataDir, {
+      headless,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-blink-features=AutomationControlled",
+      ],
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      viewport: { width: 1920, height: 1080 },
+      locale: "de-DE",
+      timezoneId: "Europe/Berlin",
+      javaScriptEnabled: true,
+    });
+    browser = null; // Not available with persistent context
+  } else {
+    // Use regular launch when no userDataDir is specified
+    browser = await chromium.launch({
+      headless,
+      timeout,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-blink-features=AutomationControlled",
+      ],
+    });
+
+    browserContext = await browser.newContext({
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      viewport: { width: 1920, height: 1080 },
+      locale: "de-DE",
+      timezoneId: "Europe/Berlin",
+      storageState,
+      javaScriptEnabled: true,
+    });
+  }
 
   await browserContext.route("**/*", (route) => {
     const resourceType = route.request().resourceType();

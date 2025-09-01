@@ -61,5 +61,5 @@ tasks/
 
 .shrimp-tasks/wireframes/
 wireframes
-
 *.sqlite
+*.tsbuildinfo

@@ -104,43 +104,43 @@ export const BackgroundJobsSettings = () => {
       </div>
 
       <div className="space-y-4">
-      <SettingRow
-        title="Server URL"
-        description="URL of the background jobs server for automated Reddit posting and other tasks"
-      >
-        <div className="space-y-3 w-full max-w-lg">
-          <Input
-            type="url"
-            id="background-jobs-server-url"
-            placeholder="http://localhost:3000"
-            value={settings?.backgroundJobsServerUrl ?? ""}
-            onChange={(e) => updateServerUrl(e.target.value)}
-            className="w-full"
-          />
+        <SettingRow
+          title="Server URL"
+          description="URL of the background jobs server for automated Reddit posting and other tasks"
+        >
+          <div className="space-y-3 w-full max-w-lg">
+            <Input
+              type="url"
+              id="background-jobs-server-url"
+              placeholder="http://localhost:3000"
+              value={settings?.backgroundJobsServerUrl ?? ""}
+              onChange={(e) => updateServerUrl(e.target.value)}
+              className="w-full"
+            />
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Status variant={getStatusVariant()}>
-                <span className="text-sm">{getStatusText()}</span>
-              </Status>
-              {healthMessage && (
-                <span className="text-xs text-muted-foreground">{healthMessage}</span>
-              )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Status variant={getStatusVariant()}>
+                  <span className="text-sm">{getStatusText()}</span>
+                </Status>
+                {healthMessage && (
+                  <span className="text-xs text-muted-foreground">{healthMessage}</span>
+                )}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={performHealthCheck}
+                disabled={isChecking || !settings?.backgroundJobsServerUrl?.trim()}
+                className="ml-auto"
+              >
+                <RefreshCw className={`h-3 w-3 ${isChecking ? "animate-spin" : ""}`} />
+                Check
+              </Button>
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={performHealthCheck}
-              disabled={isChecking || !settings?.backgroundJobsServerUrl?.trim()}
-              className="ml-auto"
-            >
-              <RefreshCw className={`h-3 w-3 ${isChecking ? "animate-spin" : ""}`} />
-              Check
-            </Button>
           </div>
-        </div>
-      </SettingRow>
+        </SettingRow>
       </div>
     </div>
   );

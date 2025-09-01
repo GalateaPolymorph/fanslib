@@ -13,6 +13,10 @@ FansLib is a monorepo containing applications for managing adult content creator
 - Focus on functional programming principles
 - Break down complex logic into smaller, single-responsibility functions
 
+## Anti-Patterns
+
+- Avoid using singleton-classes, use module scope state instead
+
 ## Monorepo Structure
 
 ```

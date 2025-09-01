@@ -6,7 +6,6 @@ import {
   FLAIRS_REQUIRED_SELECTOR,
   FLAIR_BUTTON_SELECTOR,
   FLAIR_MODAL_SUBMIT_BUTTON_SELECTOR,
-  FLAIR_RADIO_SELECTOR,
   FLAIR_VIEW_ALL_SELECTOR,
   FORM_SELECTOR,
   LINK_TAB_SELECTOR,
@@ -89,7 +88,7 @@ const selectFlair = async (page: Page, draft: RedditPostDraft): Promise<void> =>
   console.log("[Reddit Automation] View all flairs button found, clicking...");
   await viewAllFlairsButton.click();
 
-  const flairSelector = await page.locator(FLAIR_RADIO_SELECTOR).filter({ hasText: draft.flair });
+  const flairSelector = page.getByRole("radio").filter({ hasText: draft.flair });
 
   console.log("[Reddit Automation] Flair selector:", await flairSelector.textContent());
 

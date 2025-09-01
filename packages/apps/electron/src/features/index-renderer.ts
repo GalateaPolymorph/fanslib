@@ -38,6 +38,11 @@ import {
 import { SettingsIpcChannel, SettingsIpcHandlers, settingsMethods } from "./settings/api-type";
 import { ShootIpcChannel, ShootIpcHandlers, shootMethods } from "./shoots/api-type";
 import { TagIpcChannel, TagIpcHandlers, tagMethods } from "./tags/api-type";
+import {
+  ServerCommunicationIpcChannel,
+  ServerCommunicationIpcHandlers,
+  serverCommunicationMethods,
+} from "./server-communication/api-type";
 
 export type IpcHandlers = ChannelIpcHandlers &
   ContentScheduleIpcHandlers &
@@ -54,7 +59,8 @@ export type IpcHandlers = ChannelIpcHandlers &
   AnalyticsIpcHandlers &
   TagIpcHandlers &
   SnippetIpcHandlers &
-  AutomationIpcHandlers;
+  AutomationIpcHandlers &
+  ServerCommunicationIpcHandlers;
 
 export const ipcMethods = [
   ...channelMethods,
@@ -73,6 +79,7 @@ export const ipcMethods = [
   ...tagMethods,
   ...snippetMethods,
   ...automationMethods,
+  ...serverCommunicationMethods,
 ];
 
 export type IpcChannel =
@@ -91,4 +98,5 @@ export type IpcChannel =
   | AnalyticsIpcChannel
   | TagIpcChannel
   | SnippetIpcChannel
-  | AutomationIpcChannel;
+  | AutomationIpcChannel
+  | ServerCommunicationIpcChannel;

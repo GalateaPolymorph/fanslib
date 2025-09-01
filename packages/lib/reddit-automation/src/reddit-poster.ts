@@ -1,12 +1,12 @@
-import { RedditPostingContext } from "./types/context";
-import { RedditPosterConfig } from "./types/config";
-import { RedditPostDraft, RedditPostResult } from "./types/post";
+import { handleRateLimiting } from "./core/bot-detection";
 import { closeBrowserIfOpened, initializeBrowser } from "./core/browser";
 import { handleLogin } from "./core/login";
 import { navigateToSubreddit } from "./core/navigation";
 import { submitPost } from "./core/submit";
 import { validateRedditPostDraft } from "./core/validate";
-import { detectCaptcha, handleRateLimiting } from "./core/bot-detection";
+import { RedditPosterConfig } from "./types/config";
+import { RedditPostingContext } from "./types/context";
+import { RedditPostDraft, RedditPostResult } from "./types/post";
 
 export class RedditPoster {
   private context: RedditPostingContext | null = null;
@@ -52,15 +52,7 @@ export class RedditPoster {
       }
 
       await navigateToSubreddit(this.context.page, draft.subreddit, this.config.onProgress);
-
-      // Check for CAPTCHA and rate limiting
-      const captchaDetected = await detectCaptcha(this.context.page);
-      if (captchaDetected) {
-        throw new Error("CAPTCHA detected. Please solve it manually and try again.");
-      }
-
       await handleRateLimiting(this.context.page);
-
       await handleLogin(this.context, this.config.sessionStorage, this.config.onProgress);
 
       const postUrl = await submitPost(this.context.page, draft, this.config.onProgress);

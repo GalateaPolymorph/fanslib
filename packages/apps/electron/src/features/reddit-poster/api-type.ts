@@ -3,15 +3,9 @@ import { Subreddit } from "../channels/subreddit";
 import { Media } from "../library/entity";
 
 export type GeneratedPost = {
+  id: string;
   subreddit: Subreddit;
   media: Media;
-  caption: string;
-  date: Date;
-};
-
-export type PostToSchedule = {
-  subredditId: string;
-  mediaId: string;
   caption: string;
   date: Date;
 };
@@ -23,6 +17,10 @@ export type ScheduledPost = {
   caption: string;
   scheduledDate: string;
   createdAt: string;
+  serverJobId?: string;
+  status?: "queued" | "processing" | "posted" | "failed";
+  errorMessage?: string;
+  postUrl?: string;
 };
 
 export type RegenerateMediaResult = {
@@ -36,6 +34,8 @@ export const methods = [
   "regenerateMedia",
   "scheduleAllPosts",
   "getScheduledPosts",
+  "loginToReddit",
+  "checkLoginStatus",
 ] as const;
 
 export type RedditPosterHandlers = {
@@ -55,8 +55,13 @@ export type RedditPosterHandlers = {
     subredditId: string,
     channelId: string
   ) => Promise<RegenerateMediaResult>;
-  scheduleAllPosts: (_: any, posts: PostToSchedule[], channelId: string) => Promise<string[]>;
-  getScheduledPosts: (_: any, channelId: string) => Promise<ScheduledPost[]>;
+  scheduleAllPosts: (_: any, posts: GeneratedPost[]) => Promise<string[]>;
+  getScheduledPosts: (_: any) => Promise<ScheduledPost[]>;
+  loginToReddit: (_: any, userId?: string) => Promise<boolean>;
+  checkLoginStatus: (
+    _: any,
+    userId?: string
+  ) => Promise<{ isLoggedIn: boolean; username?: string }>;
 };
 
 export const namespace = "reddit-poster" as const;

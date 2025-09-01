@@ -23,17 +23,17 @@ export const FilterPresetSettings = () => {
         </div>
 
         <div className="space-y-4">
-        <div>
-          <Button
-            variant="outline"
-            onClick={() => setShowManager(true)}
-            className="flex items-center gap-2"
-          >
-            <SettingsIcon className="h-4 w-4" />
-            Manage Filter Presets
-          </Button>
-        </div>
-        <FilterPresetManager open={showManager} onOpenChange={setShowManager} />
+          <div>
+            <Button
+              variant="outline"
+              onClick={() => setShowManager(true)}
+              className="flex items-center gap-2"
+            >
+              <SettingsIcon className="h-4 w-4" />
+              Manage Filter Presets
+            </Button>
+          </div>
+          <FilterPresetManager open={showManager} onOpenChange={setShowManager} />
         </div>
       </div>
     </FilterPresetProvider>

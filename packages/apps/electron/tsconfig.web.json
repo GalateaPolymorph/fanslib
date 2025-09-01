@@ -11,6 +11,7 @@
     "src/features/categories/colors.ts",
     "src/features/channels/channelTypes.ts",
     "src/features/library/filter-helpers.ts",
+    "src/features/server-communication/server-status-types.ts",
     "src/lib/namespace.ts",
     "src/lib/tail.ts",
     "src/lib/fansly-analytics/**/*"

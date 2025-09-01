@@ -2,6 +2,7 @@ import { Tabs } from "@renderer/components/ui/Tabs";
 import { Zap } from "lucide-react";
 import { FanslySettings } from "./FanslySettings";
 import { PostponeSettings } from "./PostponeSettings";
+import { RedditSettings } from "./RedditSettings";
 
 export const IntegrationsSettings = () => {
   return (
@@ -17,13 +18,18 @@ export const IntegrationsSettings = () => {
         items={[
           {
             id: "fansly",
-            label: "Fansly Analytics",
+            label: "Fansly",
             content: <FanslySettings />,
           },
           {
             id: "postpone",
             label: "Postpone",
             content: <PostponeSettings />,
+          },
+          {
+            id: "reddit",
+            label: "Reddit",
+            content: <RedditSettings />,
           },
         ]}
       />
