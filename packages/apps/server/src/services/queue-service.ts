@@ -1,4 +1,4 @@
-import { LessThanOrEqual } from "typeorm";
+import { LessThanOrEqual, In } from "typeorm";
 import { getDatabase } from "../database/config";
 import {
   RedditQueueJob,
@@ -16,6 +16,21 @@ import type {
 const generateId = () => crypto.randomUUID();
 
 const getCurrentTimestamp = () => new Date().toISOString();
+
+const mapJobToResponse = (job: RedditQueueJob, overrideStatus?: QueueStatus): QueueJobResponse => ({
+  id: job.id,
+  subreddit: job.subreddit,
+  caption: job.caption,
+  url: job.url || null,
+  flair: job.flair || null,
+  mediaId: job.mediaId || null,
+  scheduledTime: job.scheduledTime,
+  status: (overrideStatus || job.status) as QueueStatus,
+  postUrl: job.postUrl || null,
+  errorMessage: job.errorMessage || null,
+  createdAt: job.createdAt.toISOString(),
+  updatedAt: job.updatedAt.toISOString(),
+});
 
 export const createJob = async (jobData: CreateQueueJobRequest): Promise<QueueJobResponse> => {
   const db = await getDatabase();
@@ -39,20 +54,7 @@ export const createJob = async (jobData: CreateQueueJobRequest): Promise<QueueJo
   await jobRepository.save(job);
   await addLog(id, "queued", "Job added to queue");
 
-  return {
-    id: job.id,
-    subreddit: job.subreddit,
-    caption: job.caption,
-    url: job.url || null,
-    flair: job.flair || null,
-    mediaId: job.mediaId || null,
-    scheduledTime: job.scheduledTime,
-    status: job.status as QueueStatus,
-    postUrl: job.postUrl || null,
-    errorMessage: job.errorMessage || null,
-    createdAt: job.createdAt.toISOString(),
-    updatedAt: job.updatedAt.toISOString(),
-  };
+  return mapJobToResponse(job);
 };
 
 export const getJobs = async (_since?: string): Promise<QueueListResponse> => {
@@ -64,20 +66,7 @@ export const getJobs = async (_since?: string): Promise<QueueListResponse> => {
   });
 
   return {
-    jobs: jobs.map((job) => ({
-      id: job.id,
-      subreddit: job.subreddit,
-      caption: job.caption,
-      url: job.url || null,
-      flair: job.flair || null,
-      mediaId: job.mediaId || null,
-      scheduledTime: job.scheduledTime,
-      status: job.status as QueueStatus,
-      postUrl: job.postUrl || null,
-      errorMessage: job.errorMessage || null,
-      createdAt: job.createdAt.toISOString(),
-      updatedAt: job.updatedAt.toISOString(),
-    })),
+    jobs: jobs.map((job) => mapJobToResponse(job)),
     lastUpdated: getCurrentTimestamp(),
   };
 };
@@ -90,49 +79,46 @@ export const getJobById = async (id: string): Promise<QueueJobResponse | null> =
 
   if (!job) return null;
 
-  return {
-    id: job.id,
-    subreddit: job.subreddit,
-    caption: job.caption,
-    url: job.url || null,
-    flair: job.flair || null,
-    mediaId: job.mediaId || null,
-    scheduledTime: job.scheduledTime,
-    status: job.status as QueueStatus,
-    postUrl: job.postUrl || null,
-    errorMessage: job.errorMessage || null,
-    createdAt: job.createdAt.toISOString(),
-    updatedAt: job.updatedAt.toISOString(),
-  };
+  return mapJobToResponse(job);
 };
 
-export const getJobsDue = async (): Promise<QueueJobResponse[]> => {
+export const getAndLockJobsDue = async (): Promise<QueueJobResponse[]> => {
   const db = await getDatabase();
-  const jobRepository = db.getRepository(RedditQueueJob);
   const now = getCurrentTimestamp();
 
-  const jobs = await jobRepository.find({
-    where: {
-      status: "queued",
-      scheduledTime: LessThanOrEqual(now),
-    },
-    order: { scheduledTime: "ASC" },
+  console.log(`🔍 Checking for jobs due at or before: ${now}`);
+
+  const jobs = await db.transaction(async (manager) => {
+    const dueJobs = await manager.find(RedditQueueJob, {
+      where: {
+        status: "queued",
+        scheduledTime: LessThanOrEqual(now),
+      },
+      order: { scheduledTime: "ASC" },
+    });
+
+    if (dueJobs.length === 0) {
+      return [];
+    }
+
+    const jobIds = dueJobs.map((job) => job.id);
+    await manager.update(
+      RedditQueueJob,
+      { id: In(jobIds), status: "queued" },
+      { status: "processing" }
+    );
+
+    return dueJobs;
   });
 
-  return jobs.map((job) => ({
-    id: job.id,
-    subreddit: job.subreddit,
-    caption: job.caption,
-    url: job.url || null,
-    flair: job.flair || null,
-    mediaId: job.mediaId || null,
-    scheduledTime: job.scheduledTime,
-    status: job.status as QueueStatus,
-    postUrl: job.postUrl || null,
-    errorMessage: job.errorMessage || null,
-    createdAt: job.createdAt.toISOString(),
-    updatedAt: job.updatedAt.toISOString(),
-  }));
+  console.log(`🔒 Atomically locked ${jobs.length} jobs for processing`);
+
+  if (jobs.length > 0) {
+    const jobIds = jobs.map((job) => job.id).join(", ");
+    console.log(`📋 Processing job IDs: ${jobIds}`);
+  }
+
+  return jobs.map((job) => mapJobToResponse(job, "processing"));
 };
 
 export const updateJobStatus = async (

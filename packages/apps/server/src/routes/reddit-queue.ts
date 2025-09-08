@@ -1,5 +1,13 @@
 import { Elysia, t } from "elysia";
-import { createJob, getJobs, getJobById, deleteJob, getJobLogs, getCompletedJobsForElectron, markJobAsProcessedByElectron } from "../services/queue-service";
+import {
+  createJob,
+  getJobs,
+  getJobById,
+  deleteJob,
+  getJobLogs,
+  getCompletedJobsForElectron,
+  markJobAsProcessedByElectron,
+} from "../services/queue-service";
 import { CreateQueueJobSchema } from "../types";
 
 export const redditQueueRoutes = new Elysia({ prefix: "/api/reddit" })

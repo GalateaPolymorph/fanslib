@@ -1,7 +1,7 @@
 import type { SessionStorage } from "@fanslib/reddit-automation";
 import { RedditPoster } from "@fanslib/reddit-automation";
 import type { QueueJobResponse } from "../types";
-import { addLog, getJobsDue, updateJobStatus } from "./queue-service";
+import { addLog, getAndLockJobsDue, updateJobStatus } from "./queue-service";
 import { getSessionData } from "./session-service";
 
 // Direct database SessionStorage implementation (no files!)
@@ -30,7 +30,7 @@ const createDatabaseSessionStorage = (userId?: string): SessionStorage => {
       }
     },
 
-    write: async (data: string): Promise<void> => {
+    write: async (_data: string): Promise<void> => {
       // Writing not needed for server-only approach
       // Session data is managed through the session API endpoints
       console.warn("⚠️ Direct session write attempted - sessions should be managed via API");
@@ -46,8 +46,6 @@ const createDatabaseSessionStorage = (userId?: string): SessionStorage => {
 
 const getRedditPoster = async (jobId: string, userId?: string): Promise<RedditPoster> => {
   const sessionStorage = createDatabaseSessionStorage(userId);
-
-  // No initialization needed - reads directly from database!
 
   return new RedditPoster({
     sessionStorage,
@@ -79,11 +77,9 @@ const getRedditPoster = async (jobId: string, userId?: string): Promise<RedditPo
 
 export const processJob = async (job: QueueJobResponse): Promise<void> => {
   console.log(`🚀 Processing Reddit queue job ${job.id} for r/${job.subreddit}`);
+  await addLog(job.id, "processing", `Started processing job for r/${job.subreddit}`);
 
   try {
-    // Update job status to processing
-    await updateJobStatus(job.id, "processing");
-
     // Skip if job doesn't have a URL (required for Reddit Link posts)
     if (!job.url) {
       console.log(`⚠️ Skipping job ${job.id} - no URL provided for Reddit Link post`);
@@ -109,12 +105,14 @@ export const processJob = async (job: QueueJobResponse): Promise<void> => {
 
     if (result.success) {
       console.log(`✅ Successfully posted job ${job.id} to Reddit: ${result.url}`);
+      await addLog(job.id, "posted", `Successfully posted to Reddit: ${result.url}`);
 
       await updateJobStatus(job.id, "posted", {
         postUrl: result.url,
       });
     } else {
       console.log(`❌ Failed to post job ${job.id}:`, result.error);
+      await addLog(job.id, "failed", `Reddit posting failed: ${result.error}`);
 
       // Check if error is session-related
       const errorMessage = result.error || "Unknown error occurred";
@@ -130,6 +128,7 @@ export const processJob = async (job: QueueJobResponse): Promise<void> => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     console.log(`💥 Exception processing job ${job.id}:`, errorMessage);
+    await addLog(job.id, "failed", `Critical error during processing: ${errorMessage}`);
 
     await updateJobStatus(job.id, "failed", {
       errorMessage,
@@ -138,7 +137,7 @@ export const processJob = async (job: QueueJobResponse): Promise<void> => {
 };
 
 export const processAllDueJobs = async (): Promise<void> => {
-  const jobs = await getJobsDue();
+  const jobs = await getAndLockJobsDue();
 
   if (jobs.length === 0) {
     return;
