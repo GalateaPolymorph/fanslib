@@ -1,0 +1,15 @@
+meta {
+  name: Server Health
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://localhost:8000/health
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

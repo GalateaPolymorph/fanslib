@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Fanslib Web",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

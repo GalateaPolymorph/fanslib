@@ -1,0 +1,8 @@
+{
+  "extends": "@fanslib/typescript/react.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "noEmit": true
+  },
+  "include": ["src", "tests", "stories", ".storybook", "vite.config.ts"]
+}

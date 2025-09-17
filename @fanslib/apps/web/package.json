@@ -1,0 +1,49 @@
+{
+  "name": "@fanslib/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist storybook-static",
+    "format": "prettier --write src stories",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@tanstack/react-query": "^5.87.4",
+    "@tanstack/react-query-devtools": "^5.87.4",
+    "jotai": "^2.14.0",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@fanslib/typescript": "workspace:*",
+    "@fanslib/eslint": "workspace:*",
+    "@fanslib/prettier": "workspace:*",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.2",
+    "vite": "^6.0.8",
+    "vitest": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.9.2",
+    "tailwindcss": "^4.1.13",
+    "@tailwindcss/postcss": "^4.1.13",
+    "postcss": "^8.4.49",
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^5.1.10",
+    "storybook": "^9.1.5",
+    "@storybook/react-vite": "^9.1.5",
+    "@storybook/addon-docs": "^9.1.5"
+  }
+}

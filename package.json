@@ -1,0 +1,29 @@
+{
+  "name": "@fanslib/root",
+  "private": true,
+  "workspaces": [
+    "@fanslib/apps/*",
+    "@fanslib/libraries/*",
+    "@fanslib/configs/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "test": "turbo run test --filter=!@fanslib/e2e",
+    "test:e2e": "turbo run test --filter=@fanslib/e2e",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "storybook": "turbo run storybook",
+    "clean": "turbo run clean",
+    "format": "turbo run format"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.6",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "packageManager": "bun@1.0.0"
+}

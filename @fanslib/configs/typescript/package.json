@@ -1,0 +1,9 @@
+{
+  "name": "@fanslib/typescript",
+  "version": "1.0.0",
+  "private": true,
+  "main": "base.json",
+  "files": [
+    "*.json"
+  ]
+}
