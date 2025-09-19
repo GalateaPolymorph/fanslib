@@ -16,11 +16,13 @@ These standards are **MANDATORY for AI agents** and directly control AI develope
 | Functions   | camelCase with descriptive verbs  | `scanContentLibrary`, `calculateRunway`   |
 | Variables   | camelCase with auxiliary verbs    | `isLoading`, `hasError`, `canSchedule`    |
 | Types       | PascalCase with descriptive names | `MediaItem`, `PostEntity`, `TagDimension` |
-| Files       | kebab-case                        | `content-browser.tsx`, `media-scanner.ts` |
+| Files (components)       | PascalCase                        | `ContentBrowser.tsx` |
+| Files (non-components)       | kebab-case                        |  `media-scanning.ts` |
 | Directories | kebab-case                        | `components/content-management`           |
 
 ## Critical Rules
 
+- **NEVER revert to Tailwind 3 syntax** - MANDATORY: Always use Tailwind 4 CSS-only format with @import and @theme directives. Never use JavaScript config files for Tailwind
 - **Console.log usage restrictions** - Never use console.log in frontend packages (web, storybook). Backend packages (server) may use console.log for development and debugging purposes
 - **All API responses must use standardized wrapper types** - Implement consistent error handling and response formatting
 - **Database queries must use Prisma ORM only** - Never write raw SQL, leverage type-safe database access
@@ -42,6 +44,7 @@ These standards are **MANDATORY for AI agents** and directly control AI develope
 - **Prefer types over interfaces** - Use `type` for union types and complex compositions
 - **Avoid enums, use maps instead** - Better type safety and flexibility for configuration values
 - **All mutations must be optimistic with rollback** - Provide immediate UI feedback with error recovery through Tanstack DB
+- **UI components must follow folder structure pattern** - Each UI component gets its own folder containing: Component.tsx, index.ts for exports, and Component.stories.ts for Storybook
 
 ## Language-Specific Guidelines
 

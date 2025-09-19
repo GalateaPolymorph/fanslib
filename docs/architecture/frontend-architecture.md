@@ -36,6 +36,25 @@ apps/web/src/
 
 ## Component Template Pattern
 
+**UI Component Folder Structure:**
+
+**MANDATORY Pattern:** Each UI component must follow this exact folder structure:
+
+```
+src/components/ui/ComponentName/
+├── ComponentName.tsx          # Main component implementation
+├── index.ts                   # Export declarations
+└── ComponentName.stories.ts   # Storybook stories
+```
+
+**Example Structure:**
+```
+src/components/ui/Button/
+├── Button.tsx
+├── index.ts
+└── Button.stories.ts
+```
+
 **Standard Component Structure:**
 
 ```typescript
