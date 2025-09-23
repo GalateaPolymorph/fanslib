@@ -33,7 +33,7 @@ tests/
 
 ```
 tests/
-├── modules/             # Business logic tests (media operations, post creation, etc.)
+├── modules/             # Business logic tests (media operations, etc.)
 ├── utils/               # Utility function tests
 └── setup.ts             # Test setup and configuration
 ```

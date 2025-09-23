@@ -13,6 +13,11 @@ export default [
     },
   },
   {
-    ignores: ['dist', 'node_modules', 'vite.config.ts'],
+    ignores: [
+      'dist',
+      'node_modules',
+      'vite.config.ts',
+      'src/vite-plugin-caddy.ts',
+    ],
   },
 ];

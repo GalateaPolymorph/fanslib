@@ -8,10 +8,10 @@
 
 **Frontend Deployment:**
 
-- **Platform:** Docker container served by Bun server
+- **Platform:** Docker container serves Tanstack Start app
 - **Build Command:** `bun run build --filter=@fanslib/web`
-- **Output Directory:** `@fanslib/apps/web/dist`
-- **Serving Strategy:** Static files served by integrated Bun server
+- **Output Directory:** `@fanslib/apps/web/.output`
+- **Serving Strategy:** Bun server running Tanstack Start app
 
 **Backend Deployment:**
 
@@ -22,7 +22,7 @@
 
 ## Production Docker Configuration
 
-**docker/docker-compose.prod.yml:**
+**docker/docker-compose.prod.yml: EXAMPLE**
 
 ```yaml
 version: "3.8"
@@ -108,7 +108,7 @@ networks:
     name: fanslib-network
 ```
 
-**Production Dockerfile (docker/Dockerfile.prod):**
+**Production Dockerfile (docker/Dockerfile.prod) EXAMPLE:**
 
 ```dockerfile
 # Multi-stage build for production
@@ -144,7 +144,6 @@ RUN apt-get update && apt-get install -y \
 COPY --from=build /app/@fanslib/apps/server/dist ./server
 COPY --from=build /app/@fanslib/apps/web/dist ./public
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/@fanslib/apps/server/prisma ./prisma
 
 # Create non-root user
 RUN groupadd -r fanslib && useradd -r -g fanslib fanslib

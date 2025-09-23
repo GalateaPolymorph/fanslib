@@ -3,99 +3,71 @@
 **Monorepo Structure:** TurboRepo with Bun workspaces for optimal development and deployment
 
 ```
-fanslib/                        # Project root
-├── .github/                    # CI/CD workflows
+fanslib-web/                    # Project root
+├── .github/                    # CI/CD workflows (if present)
 │   └── workflows/
-│       ├── ci.yaml             # Continuous integration
-│       ├── deploy.yaml         # Deployment pipeline
-│       └── storybook.yaml      # Storybook deployment
-├── docker/                     # Docker configurations
-│   ├── Dockerfile.web          # Frontend container
-│   ├── Dockerfile.server       # Backend container
-│   ├── docker-compose.yml      # Development compose
-│   └── docker-compose.prod.yml # Production compose
-├── scripts/                    # Build and deployment scripts
-│   ├── build.sh                # Build all packages
-│   ├── deploy.sh               # Deployment script
-│   ├── dev.sh                  # Development startup
-│   └── test.sh                 # Test runner
 ├── docs/                       # Documentation
-│   ├── prd.md                  # Product requirements
-│   ├── front-end-spec.md       # Frontend specification
-│   ├── architecture.md         # This document
-│   └── deployment.md           # Deployment guide
+│   └── architecture/           # Architecture documentation
 ├── @fanslib/                   # Monorepo packages directory
 │   ├── apps/                   # Application packages
-│   │   ├── web/                # React frontend application with integrated UI library and Storybook
+│   │   ├── web/                # TanStack Start React frontend application
 │   │   │   ├── src/
 │   │   │   │   ├── components/ # Feature-based components
-│   │   │   │   ├── hooks/      # Custom React hooks
-│   │   │   │   ├── stores/     # Jotai state atoms
-│   │   │   │   ├── api/        # API functions
-│   │   │   │   ├── utils/      # Frontend utilities
-│   │   │   │   ├── ui/         # Design system components (integrated)
-│   │   │   │   │   ├── components/
-│   │   │   │   │   │   ├── ui/     # Design system components (integrated)
-│   │   │   │   │   │   │   ├── hooks/     # UI-specific hooks
-│   │   │   │   │   │   │   ├── types/     # UI component types
-│   │   │   │   │   │   │   ├── utils/     # UI utilities
-│   │   │   │   │   │   │   ├── styles.css # Component styles
-│   │   │   │   │   │   │   └── index.ts   # UI exports
-│   │   │   │   │   └── main.tsx    # Application entry point
-│   │   │   ├── stories/        # Storybook stories (integrated)
-│   │   │   ├── .storybook/     # Storybook configuration (integrated)
+│   │   │   │   │   ├── ui/         # Design system components (integrated)
+│   │   │   │   ├── db/         # Database schema and connection
+│   │   │   │   │   ├── schema.ts   # Drizzle schema definition
+│   │   │   │   │   └── connection.ts
+│   │   │   │   ├── lib/        # Frontend utilities
+│   │   │   │   │   ├── trpc/       # tRPC client and server setup
+│   │   │   │   │   │   ├── client.ts
+│   │   │   │   │   │   ├── server.ts
+│   │   │   │   │   │   └── routes/
+│   │   │   │   │   │       ├── index.ts
+│   │   │   │   │   │       ├── media.ts
+│   │   │   │   │   │       └── shoots.ts
+│   │   │   │   │   ├── collections.ts  # TanStack DB collections
+│   │   │   │   │   ├── electric-proxy.ts
+│   │   │   │   │   └── seo.ts
+│   │   │   │   ├── routes/     # TanStack Start routes
+│   │   │   │   │   ├── api/        # API routes
+│   │   │   │   │   │   ├── trpc/  # tRPC endpoint
+│   │   │   │   │   │   ├── (api routes)
+│   │   │   │   │   └── (app pages)
+│   │   │   │   ├── state/      # Jotai state atoms
+│   │   │   │   ├── router.tsx  # TanStack Router configuration
+│   │   │   │   ├── routeTree.gen.ts # Generated route tree
+│   │   │   │   ├── styles.css  # Global styles
+│   │   │   │   └── vite-plugin-caddy.ts
+│   │   │   ├── .storybook/     # Storybook configuration
+│   │   │   ├── .tanstack/      # TanStack build artifacts
 │   │   │   ├── public/         # Static assets
-│   │   │   ├── index.html      # HTML template
+│   │   │   ├── tests/          # Test files
+│   │   │   ├── Caddyfile       # Caddy server configuration
+│   │   │   ├── drizzle.config.ts # Drizzle configuration
 │   │   │   ├── vite.config.ts  # Vite configuration
-│   │   │   ├── tailwind.config.js # Tailwind CSS config
+│   │   │   ├── vitest.config.ts # Vitest configuration
 │   │   │   └── package.json
-│   │   ├── server/             # Bun backend application
+│   │   ├── server/             # Background Job server
 │   │   │   ├── src/
 │   │   │   │   ├── routes/     # Elysia.js route handlers
-│   │   │   │   ├── modules/    # Business logic functions
-│   │   │   │   ├── background/ # Background processes
-│   │   │   │   ├── database/   # Database access layer
-│   │   │   │   ├── utils/      # Backend utilities
-│   │   │   │   └── server.ts   # Server entry point
-│   │   │   ├── prisma/         # Prisma schema and migrations
-│   │   │   │   ├── schema.prisma # Database schema
-│   │   │   │   └── migrations/ # Database migrations
+│   │   │   │   │   ├── docs.ts
+│   │   │   │   │   └── health.ts
+│   │   │   │   └── index.ts    # Server entry point
+│   │   │   ├── tests/          # Server tests
 │   │   │   └── package.json
-│   ├── libraries/              # Domain-specific shared libraries
-│   │       ├── src/
-│   │       │   ├── types/      # TypeScript interfaces
-│   │       │   │   ├── media.ts    # Media-related types
-│   │       │   │   ├── posts.ts    # Post-related types
-│   │       │   │   ├── channels.ts # Channel-related types
-│   │       │   │   └── index.ts    # Type exports
-│   │       │   ├── constants/  # Shared constants
-│   │       │   ├── utils/      # Cross-platform utilities
-│   │       │   └── index.ts    # Advanced entry point
+│   │   └── e2e/               # End-to-end testing with Playwright
+│   │       ├── tests/          # E2E test files
+│   │       ├── playwright.config.ts
+│   │       ├── run-tests.sh
 │   │       └── package.json
+│   ├── libraries/              # Domain-specific shared libraries (currently empty)
 │   └── configs/                # Shared configuration packages
 │       ├── eslint/             # ESLint configurations
-│       │   ├── base.js         # Base ESLint config
-│       │   ├── react.js        # React-specific config
-│       │   ├── node.js         # Node.js-specific config
 │       │   └── package.json
 │       ├── typescript/         # TypeScript configurations
-│       │   ├── base.json       # Base TypeScript config
-│       │   ├── react.json      # React-specific config
-│       │   ├── node.json       # Node.js-specific config
 │       │   └── package.json
 │       └── prettier/           # Prettier configurations
-│           ├── index.js        # Prettier config
 │           └── package.json
-├── scripts/                    # Build and deployment scripts
-│   ├── build.sh                # Build all packages
-│   ├── deploy.sh               # Deployment script
-│   ├── dev.sh                  # Development startup
-│   └── test.sh                 # Test runner
-├── docs/                       # Documentation
-│   ├── prd.md                  # Product requirements
-│   ├── front-end-spec.md       # Frontend specification
-│   ├── architecture.md         # This document
-│   └── deployment.md           # Deployment guide
 ├── .env.example                # Environment template
 ├── .gitignore                  # Git ignore rules
 ├── package.json                # Root package.json with workspaces
@@ -103,6 +75,15 @@ fanslib/                        # Project root
 ├── bun.lockb                   # Bun lockfile
 └── README.md                   # Project documentation
 ```
+
+## Current Architecture Overview
+
+- **TanStack Start**: Full-stack React framework with file-based routing and server-side rendering
+- **Integrated Frontend + Backend**: The `web` app contains both frontend and backend (via TanStack Start)
+- **Drizzle ORM**: Type-safe database schema and queries instead of Prisma
+- **tRPC Integration**: Type-safe API layer with TanStack Start
+- **TanStack DB Collections**: Live queries with ElectricSQL integration
+- **Minimal External Server**: Separate `server` app for auxiliary services only
 
 ## Workspace Configuration
 
@@ -120,16 +101,23 @@ fanslib/                        # Project root
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "test": "turbo run test",
+    "test": "turbo run test --filter=!@fanslib/e2e",
+    "test:e2e": "turbo run test --filter=@fanslib/e2e",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "storybook": "turbo run storybook",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean",
+    "format": "turbo run format"
   },
   "devDependencies": {
-    "turbo": "latest",
-    "@fanslib/eslint": "workspace:*"
-  }
+    "turbo": "^2.5.6",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "packageManager": "bun@1.0.0"
 }
 ```
 
@@ -137,120 +125,172 @@ fanslib/                        # Project root
 
 ```json
 {
-  "pipeline": {
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "storybook-static/**"]
+      "outputs": ["dist/**", "build/**", "storybook-static/**", ".tanstack/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "test": {
-      "dependsOn": ["build"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
+      "outputs": []
+    },
+    "test:headed": {
+      "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "test:ui": {
+      "cache": false,
+      "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "outputs": []
     },
-    "typecheck": {},
+    "typecheck": {
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    },
+    "format": {
+      "outputs": []
+    },
     "storybook": {
       "cache": false,
       "persistent": true
     }
+  },
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["NODE_ENV"]
+}
+```
+
+## App Structure Details
+
+### Web Application (@fanslib/web)
+
+**Key Technologies:**
+- **TanStack Start**: Full-stack React framework
+- **TanStack Router**: File-based routing with type safety
+- **TanStack DB**: Live queries with ElectricSQL
+- **Drizzle ORM**: Database schema and type-safe queries
+- **tRPC**: Type-safe API layer
+- **Tailwind CSS + DaisyUI**: Styling framework
+- **Jotai**: State management
+- **Storybook**: Component development
+
+**Package.json highlights:**
+
+```json
+{
+  "name": "@fanslib/web",
+  "scripts": {
+    "dev": "docker compose up -d && vite dev",
+    "build": "vite build && tsc --noEmit",
+    "migrate": "drizzle-kit migrate",
+    "migrate:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@tanstack/react-start": "^1.131.50",
+    "@tanstack/electric-db-collection": "^0.1.23",
+    "@tanstack/react-db": "^0.1.21",
+    "@trpc/client": "^11.5.1",
+    "@trpc/server": "^11.5.1",
+    "drizzle-orm": "^0.44.5",
+    "drizzle-zod": "^0.8.3"
   }
 }
 ```
 
-## Advanced Library Entry Points
+### Server Application (@fanslib/server)
 
-**apps/web/src/components/ui with local entry points:**
+**Purpose:** Auxiliary services and health checks
+- Minimal Elysia.js server for non-web services
+- Health monitoring endpoints
+- Documentation endpoints
+- Currently lightweight - most functionality integrated into web app
 
-```ts
-// Expose UI via app-local barrel files rather than a separate package
-// Example file: apps/web/src/components/ui/index.ts
-export * from "./Button";
-export * from "./Form";
-export * from "./Media";
+### E2E Testing (@fanslib/e2e)
+
+**Purpose:** End-to-end testing with Playwright
+- Cross-browser testing
+- Integration testing
+- User workflow validation
+- Separate from unit tests for isolation
+
+## Library Strategy
+
+**Current State:** No domain libraries yet (libraries/ is empty)
+
+**Future Plans:**
+- Domain-specific libraries for shared business logic
+- No build steps - pure TypeScript consumption
+- Type-safe imports with workspace protocol
+- Focus on domain models and utilities
+
+## Development Workflow
+
+**Common Commands:**
+
+```bash
+# Start development environment
+bun dev
+
+# Build all packages
+bun build
+
+# Generate database migrations
+cd @fanslib/apps/web && bun migrate:generate
+
+# Apply migrations
+cd @fanslib/apps/web && bun migrate
+
+# Run tests (excluding E2E)
+bun test
+
+# Run E2E tests
+bun test:e2e
+
+# Run Storybook
+bun storybook
+
+# Format code
+bun format
+
+# Type checking
+bun typecheck
 ```
 
-**Domain-specific library example (libraries/media-lib/package.json):**
+## Configuration Packages
+
+**Shared configurations across the monorepo:**
+
+- **@fanslib/eslint**: ESLint configurations for different environments
+- **@fanslib/typescript**: TypeScript configurations (base, react, node)
+- **@fanslib/prettier**: Prettier formatting configuration
+
+**Usage in applications:**
 
 ```json
 {
-  "name": "@fanslib/media",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts",
-    "./constants": "./src/constants/index.ts",
-    "./api": "./src/api/index.ts",
-    "./hooks": "./src/hooks/index.ts"
-  },
-  "dependencies": {},
   "devDependencies": {
     "@fanslib/eslint": "workspace:*",
     "@fanslib/typescript": "workspace:*",
-    "typescript": "latest"
+    "@fanslib/prettier": "workspace:*"
   }
 }
 ```
 
-## Library Build Strategy
+## Key Architectural Decisions
 
-**Critical Architectural Rule:** The UI lives inside `apps/web/src/components/ui` and is consumed via local imports. Libraries in `libraries/` remain domain-only and should **NOT** have their own build steps.
+1. **TanStack Start Integration**: Full-stack framework eliminates need for separate backend API
+2. **Drizzle**: Better TypeScript integration and performance
+3. **tRPC Integration**: Type-safe API layer with automatic serialization
+4. **TanStack DB Collections**: Real-time data synchronization with ElectricSQL
+5. **Minimal External Dependencies**: Self-contained applications with shared configuration only
+6. **Docker Integration**: Database services managed via Docker Compose
+7. **Playwright E2E Testing**: Comprehensive testing strategy with separate E2E package
 
-**Rationale:**
-
-- **Faster Development:** No build step means instant changes during development
-- **Better Tree Shaking:** Bundlers can optimize better with source TypeScript
-- **Simplified Dependencies:** No need for separate build tooling in libraries
-- **Type Safety:** Direct TypeScript consumption maintains full type information
-- **Reduced Complexity:** Fewer build configurations to maintain
-
-**Implementation:**
-
-- UI is exported via app-local barrel files under `src/components/ui`
-- Applications handle transpilation during their own build process
-- TurboRepo pipeline excludes domain libraries from build dependencies
-- Domain libraries focus on pure TypeScript/React code without bundling concerns
-
-**Example library package.json (no build script):**
-
-```ts
-{
-  "name": "@fanslib/ui",
-  "exports": {
-    ".": "./src/index.ts",
-    "./components": "./src/components/index.ts"
-  },
-  "scripts": {
-    "lint": "eslint src",
-    "typecheck": "tsc --noEmit"
-    // Note: No "build" script
-  }
-}
-```
-
-**Configuration package example (configs/eslint/package.json):**
-
-```json
-{
-  "name": "@fanslib/eslint",
-  "version": "0.0.0",
-  "main": "base.js",
-  "exports": {
-    ".": "./base.js",
-    "./base": "./base.js",
-    "./react": "./react.js",
-    "./node": "./node.js"
-  },
-  "dependencies": {
-    "eslint": "^8.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0"
-  }
-}
-```
+This structure provides a modern, type-safe, and efficient development experience while maintaining clear separation of concerns and excellent developer experience.

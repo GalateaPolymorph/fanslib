@@ -12,8 +12,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@fanslib/ui': path.resolve(__dirname, '../../libraries/ui/src'),
+      '~': path.resolve(__dirname, './src'),
     },
   },
 });

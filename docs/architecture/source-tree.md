@@ -86,7 +86,6 @@ When implementation begins, the structure will follow the unified architecture:
 ### Current Phase
 
 1. **Documentation Complete:** Architecture and requirements defined
-2. **Next:** Project infrastructure setup (Story 1.1)
 3. **Implementation:** Following unified architecture plan
 
 ### File Creation Rules
@@ -95,7 +94,6 @@ When implementation begins, the structure will follow the unified architecture:
 - Use tech-stack.md for technology selections
 - Reference unified-project-structure.md for monorepo organization
 - Never use default exports, always named exports
-- Use functional programming patterns with ts-belt
 
 ## Critical References
 

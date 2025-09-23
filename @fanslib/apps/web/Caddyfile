@@ -1,0 +1,14 @@
+fanslib.localhost {
+  reverse_proxy localhost:5173
+  encode {
+    gzip
+  }
+}
+
+# Network access
+192.168.69.103 {
+  reverse_proxy localhost:5173
+  encode {
+    gzip
+  }
+}

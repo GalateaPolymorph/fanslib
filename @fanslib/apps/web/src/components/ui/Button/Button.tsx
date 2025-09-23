@@ -31,7 +31,12 @@ export const Button = ({
     lg: 'btn-lg',
   };
 
-  const classes = [baseClasses, variantClasses[variant], sizeClasses[size], className]
+  const classes = [
+    baseClasses,
+    variantClasses[variant],
+    sizeClasses[size],
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 

@@ -28,32 +28,20 @@ This document outlines the external service integrations required for the FansLi
 
 **Integration Notes:**
 
-- GraphQL API requires structured queries with proper error handling using Result types
+- GraphQL API requires structured queries with proper error handling
 - Implement caching for subreddit analytics to avoid repeated API calls
 - RedGIFs URL discovery should be integrated into post composition workflow
 - Handle cases where no RedGIFs URL is found for a media item
-- All API operations must return `Result<T, PostponeApiError>` types
-- Use ts-belt functional utilities for data transformation and error handling
+- Use simple error handling with try/catch blocks
 
 ## Error Handling Patterns
 
-### API Error Types
+### Error Handling
 
-```typescript
-type PostponeApiError =
-  | { type: "NetworkError"; message: string; correlationId: string }
-  | { type: "AuthenticationError"; correlationId: string }
-  | { type: "RateLimitError"; retryAfter: number; correlationId: string }
-  | { type: "NotFoundError"; resource: string; correlationId: string }
-  | { type: "GraphQLError"; errors: string[]; correlationId: string };
-```
-
-### Retry Logic
-
-- **Network Errors:** Exponential backoff with jitter (1s, 2s, 4s, 8s max)
-- **Rate Limits:** Respect `retryAfter` header, implement queue for pending requests
-- **Authentication Errors:** Immediate failure, require manual intervention
-- **GraphQL Errors:** Parse error details, map to appropriate business errors
+- **Network Errors:** Simple retry with basic backoff
+- **Rate Limits:** Respect API rate limits and queue requests
+- **Authentication Errors:** Log error and require manual intervention
+- **GraphQL Errors:** Parse error details and provide user-friendly messages
 
 ### Caching Strategy
 
@@ -61,4 +49,4 @@ type PostponeApiError =
 - **RedGIFs URLs:** Cache permanently once found, invalidate only on manual request
 - **Failed Lookups:** Cache negative results for 1 hour to avoid repeated API calls
 
-This minimal external API integration strategy ensures reliable operation while maintaining functional programming principles and comprehensive error handling.
+This minimal external API integration strategy ensures reliable operation with simple error handling.

@@ -31,21 +31,7 @@ _As a content creator, I want a functional web application with basic navigation
 6. Basic routing structure for main application sections
 7. Application successfully builds and runs in development mode
 
-## Story 1.3: AI Development Agent Integration
-
-_As a developer, I want AI development agents to access the running application through Playwright MCP server, so that agents can interact with the application for testing and development assistance._
-
-### Acceptance Criteria
-
-1. Playwright MCP server configured and accessible to AI development agents
-2. Application startup scripts that enable agent access to running instance
-3. Basic Playwright test configuration for application interaction
-4. MCP server endpoints properly exposed for agent communication
-5. Documentation for AI agents on how to access and interact with the application
-6. Integration with development workflow for seamless agent assistance
-7. Proper security configuration for development environment access
-
-## Story 1.4: Content Library File System Scanning
+## Story 1.3: Content Library File System Scanning
 
 _As a content creator, I want the system to automatically discover and catalog my existing content library with shoot-based organization, so that I can immediately browse and work with my organized media files in FansLib._
 
@@ -63,7 +49,7 @@ _As a content creator, I want the system to automatically discover and catalog m
 10. Initial full scan on application startup
 11. Scan progress indicators and success/error feedback in UI
 
-## Story 1.5: File System Change Monitoring
+## Story 1.4: File System Change Monitoring
 
 _As a content creator, I want the system to automatically detect when I rename, move, or delete files in my content library, so that FansLib stays synchronized with my file system changes._
 
@@ -78,7 +64,7 @@ _As a content creator, I want the system to automatically detect when I rename, 
 7. Real-time UI updates reflecting file system changes
 8. Error handling for file system monitoring failures
 
-## Story 1.6: Visual Content Browser
+## Story 1.5: Visual Content Browser
 
 _As a content creator, I want to browse my content using thumbnails, so that I can quickly identify and select specific media items._
 
@@ -94,7 +80,7 @@ _As a content creator, I want to browse my content using thumbnails, so that I c
 8. Responsive grid layout adapting to screen size
 9. Action bar that appears when items are selected
 
-## Story 1.7: Manual Shoot Management via Action Bar
+## Story 1.6: Manual Shoot Management via Action Bar
 
 _As a content creator, I want to manage shoots through the visual browser's action bar, so that I can organize content that wasn't automatically assigned and refine my shoot organization._
 
@@ -109,7 +95,7 @@ _As a content creator, I want to manage shoots through the visual browser's acti
 7. Basic shoot filtering and selection capabilities for browsing organized content
 8. Reassignment workflow for moving content between existing shoots
 
-## Story 1.8: Content Search and Filtering
+## Story 1.7: Content Search and Filtering
 
 _As a content creator, I want to search and filter my content using sophisticated filter logic, so that I can find specific items within 30 seconds and have a foundation for complex future filtering._
 

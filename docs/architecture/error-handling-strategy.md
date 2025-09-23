@@ -1,144 +1,12 @@
 # Error Handling Strategy
 
-This document defines the comprehensive error handling approach for the FansLib Content Management Platform, ensuring consistent error management across frontend and backend systems.
+This document defines a simplified error handling approach for the FansLib Content Management Platform using Result types for consistent error management.
 
 ## General Approach
 
-- **Error Model:** Result types from ts-belt (`Result<T, E>`) with structured error discriminated unions containing correlation IDs, error codes, and contextual information
-- **Error Type System:** Domain-specific error types as discriminated unions, never throw exceptions or use Error classes
-- **Error Propagation:** Functional composition using Result.map, Result.flatMap, and Result.mapError for graceful error handling
-
-## Logging Standards
-
-- **Library:** Built-in Bun logging with structured JSON format for backend, browser console with correlation IDs for frontend
-- **Format:** JSON structured logs with timestamp, level, correlation ID, service context, and error details
-- **Levels:** ERROR (system failures), WARN (recoverable issues), INFO (business events), DEBUG (development only)
-- **Required Context:**
-  - Correlation ID: `UUID v4 format (req-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)`
-  - Service Context: `service name, version, environment`
-  - User Context: `session ID only (no PII as this is single-user system)`
-
-## Error Handling Patterns
-
-### External API Errors
-
-**Retry Policy:** Exponential backoff with jitter (1s, 2s, 4s, 8s max) for transient failures, immediate failure for 4xx client errors
-
-**Circuit Breaker:** Open circuit after 5 consecutive failures, half-open after 30 seconds, close after 3 successful requests
-
-**Timeout Configuration:**
-
-- Content platform APIs: 30 seconds
-- File system operations: 10 seconds
-- Database operations: 5 seconds
-
-**Error Translation:** Map platform-specific errors to standardized internal error codes with user-friendly messages
-
-### Business Logic Errors
-
-**Error Types (Discriminated Unions):**
-
-```typescript
-type AppError =
-  | { type: "ContentNotFound"; mediaId: string; correlationId: string }
-  | {
-      type: "DuplicatePost";
-      postId: string;
-      platform: string;
-      correlationId: string;
-    }
-  | {
-      type: "InvalidSchedule";
-      reason: string;
-      timestamp: Date;
-      correlationId: string;
-    }
-  | {
-      type: "TagDimension";
-      dimensionId: string;
-      value: string;
-      correlationId: string;
-    }
-  | {
-      type: "FileSystem";
-      path: string;
-      operation: string;
-      correlationId: string;
-    }
-  | {
-      type: "Validation";
-      field: string;
-      message: string;
-      correlationId: string;
-    };
-```
-
-**User-Facing Errors:** Clear, actionable messages without technical jargon, with suggested resolution steps
-
-**Error Codes:** Hierarchical system (CONTENT_001, SCHEDULE_002, etc.) for categorization and tracking
-
-### Data Consistency
-
-**Transaction Strategy:** Use Prisma transactions returning `Result<T, TransactionError>` for multi-table operations, ElectricSQL optimistic updates with conflict resolution
-
-**Compensation Logic:** Implement saga pattern for complex workflows (content import, batch scheduling) using Result composition for rollback capabilities
-
-**Idempotency:** All mutations must be idempotent with operation keys, returning `Result<T, IdempotencyError>` for duplicate operations
-
-## Frontend Error Handling
-
-### React Error Boundaries
-
-```typescript
-// Component-level error boundaries for each major feature area
-// These handle exceptions from third-party libraries that don't use Result types
-- ContentBrowserErrorBoundary (media scanning, display failures)
-- PostCompositionErrorBoundary (form validation, save failures)
-- SchedulingErrorBoundary (calendar operations, batch scheduling)
-- TaggingErrorBoundary (tag operations, dimension management)
-
-// All application logic should use Result types and handle errors functionally
-```
-
-### State Management Errors
-
-**TanStack Query:** Functions return `Result<T, E>`, automatic retry with exponential backoff, error state management using Result types
-
-**ElectricSQL Sync:** Handle sync failures using Result composition, queue mutations returning `Result<T, SyncError>` for retry
-
-**Jotai State:** Error atoms store Result types for component-level error state, reset mechanisms for error recovery
-
-### User Experience
-
-**Loading States:** Skeleton screens for content loading, progress indicators for batch operations
-
-**Error Messages:** Toast notifications for transient errors, inline validation for forms, modal dialogs for critical failures
-
-**Sync Handling:** ElectricSQL is always available - focus on conflict resolution and optimistic updates
-
-## Backend Error Handling
-
-### Elysia.js Middleware
-
-**Global Error Handler:** Catch all unhandled exceptions, log with correlation ID, return sanitized error responses
-
-**Validation Middleware:** Zod schema validation with detailed field-level error messages
-
-**Request Logging:** Log all requests with correlation ID, duration, and outcome
-
-### Database Error Handling
-
-**Prisma Errors:** Map database constraints to business errors, handle connection failures with retry logic
-
-**ElectricSQL Proxy:** Handle schema migrations gracefully, maintain sync consistency
-
-### File System Operations
-
-**Content Scanning:** Robust error handling for corrupted files, permission issues, network drive failures
-
-**Media Processing:** Validate file types, handle corrupted media gracefully, provide fallback thumbnails
-
-**Watch Service:** Restart file watchers on failure, handle rapid file system changes without overwhelming the system
+- **Error Model:** Result types from ts-belt (`Result<T, E>`) for all operations that can fail
+- **Error Propagation:** Functional composition using `Result.map`, `Result.flatMap`, and `Result.mapError`
+- **No Exceptions:** Never throw exceptions or use Error classes - always return Result types
 
 ## Result Type Patterns
 
@@ -152,8 +20,13 @@ import { Result, Ok, Error } from "ts-belt";
 // Good: Returns Result type
 const scanContentLibrary = (
   path: string
-): Result<MediaItem[], FileSystemError> => {
-  // Implementation using Result.map, Result.flatMap
+): Result<MediaItem[], string> => {
+  try {
+    const items = performScan(path);
+    return Ok(items);
+  } catch (err) {
+    return Error(`Failed to scan path: ${path}`);
+  }
 };
 
 // Bad: Throws exceptions
@@ -167,40 +40,200 @@ const scanContentLibrary = (path: string): MediaItem[] => {
 Use Result composition for complex operations:
 
 ```typescript
-import { pipe } from "ts-belt";
+import { R, pipe } from "ts-belt";
 
-const processContent = (mediaId: string): Result<ProcessedMedia, AppError> =>
+const processContent = (mediaId: string): Result<ProcessedMedia, string> =>
   pipe(
     findMediaById(mediaId),
-    Result.flatMap(validateMedia),
-    Result.flatMap(processMediaFile),
-    Result.flatMap(saveProcessedMedia)
+    R.flatMap(validateMedia),
+    R.flatMap(processMediaFile),
+    R.flatMap(saveProcessedMedia)
   );
 ```
 
 ### Error Pattern Matching
 
-Handle errors using pattern matching:
+Handle errors using simple pattern matching:
 
 ```typescript
-const handleResult = (result: Result<MediaItem, AppError>) => {
-  if (Result.isOk(result)) {
-    // Handle success case
-    const mediaItem = result.value;
-  } else {
-    // Handle error cases
-    const error = result.error;
-    switch (error.type) {
-      case "ContentNotFound":
-        showNotFoundMessage(error.mediaId);
-        break;
-      case "FileSystem":
-        showFileSystemError(error.path, error.operation);
-        break;
-      // ... other error cases
+const handleResult = (result: Result<MediaItem, string>) => {
+  R.match(result,
+    (successResult) => {
+      console.log('Success:', successResult);
+    },
+    (error) => {
+      console.error('Error:', error);
     }
+  )
+};
+```
+
+## Frontend Error Handling
+
+### Component Level
+
+```typescript
+const MediaGallery = () => {
+  const { data: mediaItems, isLoading, isError, error } = useLiveQuery((q) =>
+    q.from({ media: mediaCollection })
+  );
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading media: {error?.message}</div>;
+
+  return (
+    <div>
+      {mediaItems?.map(item => (
+        <img key={item.id} src={item.thumbnailPath} />
+      ))}
+    </div>
+  );
+};
+```
+
+### tRPC Mutations
+
+```typescript
+const useMediaOperations = () => {
+  const createMediaMutation = trpc.media.create.useMutation();
+  
+  const createMedia = async (data: CreateMedia) => {
+    try {
+      const result = await createMediaMutation.mutateAsync(data);
+      return result.item;
+    } catch (error) {
+      // Error is automatically handled by tRPC
+      console.error('Failed to create media:', error.message);
+      throw error; // Re-throw to let UI handle it
+    }
+  };
+
+  return { 
+    createMedia,
+    isLoading: createMediaMutation.isPending,
+    error: createMediaMutation.error,
+  };
+};
+```
+
+## Backend Error Handling
+
+### tRPC Procedures
+
+```typescript
+export const mediaRouter = router({
+  create: procedure
+    .input(createMediaSchema)
+    .mutation(async ({ ctx, input }) => {
+      const result = await pipe(
+        validateMediaInput(input),
+        Result.flatMap(data => createMediaRecord(ctx.db, data)),
+        Result.map(item => ({ item, txid: generateTxId() }))
+      );
+
+      if (Result.isError(result)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: result.error,
+        });
+      }
+
+      return result.value;
+    }),
+});
+```
+
+### Database Operations
+
+```typescript
+const createMediaRecord = async (
+  db: Database,
+  data: CreateMedia
+): Promise<Result<Media, string>> => {
+  try {
+    const [newItem] = await db
+      .insert(mediaTable)
+      .values(data)
+      .returning();
+
+    return Ok(newItem);
+  } catch (error) {
+    return Error(`Database error: ${error.message}`);
   }
 };
 ```
 
-This error handling strategy ensures robust operation of the FansLib platform with comprehensive error recovery, detailed logging for debugging, and excellent user experience even when failures occur, all while maintaining functional programming principles.
+### File System Operations
+
+```typescript
+const scanDirectory = async (path: string): Promise<Result<string[], string>> => {
+  try {
+    const files = await readdir(path);
+    return Ok(files);
+  } catch (error) {
+    return Error(`Cannot read directory: ${path}`);
+  }
+};
+```
+
+## Integration with External Systems
+
+### ElectricSQL Collections
+
+```typescript
+const mediaCollection = createCollection(
+  electricCollectionOptions({
+    id: 'media',
+    // ... other options
+    onUpdate: async ({ transaction }) => {
+      try {
+        const result = await trpc.media.update.mutate({
+          id: transaction.mutations[0].modified.id,
+          data: transaction.mutations[0].modified,
+        });
+        return { txid: result.txid };
+      } catch (error) {
+        // Let collection handle the error
+        console.error('Update failed:', error.message);
+        throw error; // Collection will handle retry/rollback
+      }
+    },
+  })
+);
+```
+
+## Error Recovery
+
+Keep error recovery simple and predictable:
+
+```typescript
+const withRetry = async <T>(
+  operation: () => Promise<Result<T, string>>,
+  maxAttempts: number = 3
+): Promise<Result<T, string>> => {
+  const attempts = Array.from({ length: maxAttempts }, (_, i) => i + 1);
+
+  for (const attempt of attempts) {
+    const result = await operation();
+
+    if (Result.isOk(result) || attempt === maxAttempts) {
+      return result;
+    }
+
+    // Simple delay between retries
+    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+  }
+
+  return Error('Max retry attempts exceeded');
+};
+```
+
+## Key Principles
+
+1. **Always Return Results**: Every operation that can fail returns `Result<T, E>`
+2. **Compose Functionally**: Use `pipe`, `Result.map`, and `Result.flatMap` for error propagation
+3. **Simple Error Messages**: Use plain strings for error descriptions
+4. **Handle at Boundaries**: Convert Results to appropriate responses at API/UI boundaries
+5. **No Silent Failures**: Always handle both success and error cases explicitly
+
+This simplified approach ensures consistent error handling while maintaining code readability and functional programming principles without the complexity of extensive logging, retry logic, or error classification systems.

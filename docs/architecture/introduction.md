@@ -12,7 +12,9 @@ Based on your PRD and technical preferences, this is a greenfield project with s
 
 - **Monorepo structure** using Bun workspace management and TurboRepo
 - **TypeScript, React, Bun, TurboRepo** as mandatory technical preferences
-- **PostgreSQL + Prisma** for database and ORM layer
+- **Tanstack Start** for routing
+- **Tanstack DB** for data layer
+- **PostgreSQL + Drizzle** for database and migrations/schema layer
 - **Tailwind CSS and Daisy UI** for styling and components
 - **Storybook integration** for isolated component development and documentation
 - **Functional programming principles** with pure functions
@@ -21,14 +23,12 @@ Based on your PRD and technical preferences, this is a greenfield project with s
 
 **Rationale for building from scratch:**
 
-- Your technical stack preferences (Bun, functional programming, specific testing requirements) don't align with common fullstack starters
 - Adult content management workflows require specialized features not found in generic templates
 - Self-hosted deployment with Docker on Unraid needs custom configuration
 - Complete control over architecture decisions ensures optimal performance for media-heavy operations
 
 ## Database & Development Tooling Decisions
 
-- **PostgreSQL + Prisma:** Robust relational database with type-safe ORM perfect for complex content relationships, tagging systems, and multi-dimensional filtering
 - **Storybook:** Component development environment enabling isolated UI component development and comprehensive documentation, essential for maintaining design system consistency across the monorepo
 
 ## Change Log

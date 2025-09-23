@@ -22,26 +22,26 @@ These standards are **MANDATORY for AI agents** and directly control AI develope
 
 ## Critical Rules
 
+- **KEEP IT SIMPLE** - Avoid unnecessary complexity and over-engineering, only use what is strictly and exactly necessary to fulfill the requirements. Don't prepare for possible future requirements. YAGNI.
+- **Prefer types over interfaces** - Use `type` for union types and complex compositions
 - **NEVER revert to Tailwind 3 syntax** - MANDATORY: Always use Tailwind 4 CSS-only format with @import and @theme directives. Never use JavaScript config files for Tailwind
 - **Console.log usage restrictions** - Never use console.log in frontend packages (web, storybook). Backend packages (server) may use console.log for development and debugging purposes
+- **Only use comments when explaining complex logic** or non-obvious code, NEVER use comments for simple explanations or to describe obvious code. When it comes to comments: **Avoid excessive commenting**, keep code self-explanatory and concise. WHY, not HOW and WHAT.
 - **All API responses must use standardized wrapper types** - Implement consistent error handling and response formatting
-- **Database queries must use Prisma ORM only** - Never write raw SQL, leverage type-safe database access
+- **Database queries must use Drizzle ORM only** - Never write raw SQL, leverage type-safe database access
 - **No default exports** - Always use named exports for better refactoring and IDE support
 - **Never use for loops** - Always use `.map()`, `.reduce()`, `.forEach()` with helper functions for functional programming
 - **Use early returns over nested if/else** - Improve code readability and reduce complexity
 - **All external API calls must implement retry logic** - Handle network failures gracefully with exponential backoff
 - **Use Result types from ts-belt for error handling** - Never throw exceptions, always return `Result<T, E>` for operations that can fail
-- **Use functional utilities from ts-belt wherever possible** - Leverage `pipe`, `Option`, `Array`, `Dict`, and other utilities for functional composition
+- **Use functional utilities from remeda wherever possible**
 - **Favor abstraction and modularization** - Follow DRY principles, create reusable utility functions
 - **Use descriptive variable names with auxiliary verbs** - `isLoading`, `hasError`, `canSchedule` over generic names
 - **Event handlers should not use "handle" prefix** - Name functions after the action they perform, not the event they handle
 - **Always use arrow functions over function keyword** - Prevent hoisting issues and benefit from lexical scoping
 - **Organize files systematically** - Each file should contain only related content (components, helpers, types)
 - **All forms must use Zod validation** - Runtime type safety and consistent validation patterns
-- **ElectricSQL shapes must be defined with proper error boundaries** - Handle sync failures gracefully
 - **File system operations must return Result types** - Content scanning can fail, use `Result<T, E>` for proper error recovery
-- **Use TypeScript strict mode** - Enable all strict type checking options for better code quality
-- **Prefer types over interfaces** - Use `type` for union types and complex compositions
 - **Avoid enums, use maps instead** - Better type safety and flexibility for configuration values
 - **All mutations must be optimistic with rollback** - Provide immediate UI feedback with error recovery through Tanstack DB
 - **UI components must follow folder structure pattern** - Each UI component gets its own folder containing: Component.tsx, index.ts for exports, and Component.stories.ts for Storybook
@@ -56,12 +56,12 @@ These standards are **MANDATORY for AI agents** and directly control AI develope
 - **Use utility types effectively** - `Partial<T>`, `Pick<T>`, `Omit<T>` for type transformations
 - **Define branded types for IDs** - Prevent mixing different ID types (MediaId, PostId, etc.)
 
-### Functional Programming with ts-belt
+### Functional Programming with ts-belt and remeda
 
-- **Use pipe for data transformations** - `pipe(data, Array.map(fn), Array.filter(fn))` instead of chaining
-- **Use Option for nullable values** - `Option<T>` instead of `T | null | undefined`
-- **Use Dict utilities for object operations** - `Dict.map`, `Dict.filter` instead of Object methods
-- **Use Array utilities for collections** - `Array.groupBy`, `Array.partition`, `Array.zip` for complex operations
+- **Use pipe from ts-belt for data transformations** - `pipe(data, Array.map(fn), Array.filter(fn))` instead of chaining
+- **Use Option from ts-belt for nullable values** - `Option<T>` instead of `T | null | undefined`
+- **Use Object utilities from remeda for object operations** - `map`, `filter` instead of Object methods
+- **Use Array utilities from remedafor collections** - `groupBy`, `partition`, `zip` for complex operations
 - **Compose functions with pipe** - Build complex operations from simple, testable functions
 
 ### React Specifics

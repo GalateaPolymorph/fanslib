@@ -1,277 +1,379 @@
 # API Specification
 
-Based on the chosen hybrid API approach (REST for mutations + ElectricSQL for real-time data sync), FansLib uses a **dual-channel architecture**:
+Based on the chosen hybrid API approach (tRPC for mutations + TanStack DB live queries for real-time data sync), FansLib uses a **dual-channel architecture**:
 
-1. **ElectricSQL Shapes** - Real-time data synchronization for queries and live updates
-2. **REST API Endpoints** - Server-authoritative mutations and file operations
+1. **TanStack DB Collections with ElectricSQL** - Real-time data synchronization for queries and live updates
+2. **tRPC Endpoints** - Type-safe server-authoritative mutations with automatic transaction handling
 
-## ElectricSQL Shape Configuration
+## TanStack DB Live Query Configuration
 
-ElectricSQL handles all **read operations** and **real-time synchronization** through shape subscriptions. The Bun server acts as an ElectricSQL proxy with authentication and filtering.
+TanStack DB Collections handle all **read operations** and **real-time synchronization** through ElectricSQL shape subscriptions. The TanStack Start server acts as an ElectricSQL proxy with authentication and filtering.
 
-### Media Shape
-
-```typescript
-// Electric proxy endpoint: GET /api/shapes/media
-const mediaShape = {
-  table: "media",
-  columns: [
-    "id",
-    "filepath",
-    "filesize",
-    "contentHash",
-    "dimensions",
-    "duration",
-    "mimeType",
-    "fileCreatedAt",
-    "fileModifiedAt",
-    "createdAt",
-    "updatedAt",
-    "shootId",
-    "thumbnailPath",
-  ],
-  // Optional filters can be applied via query params
-  // where: 'shootId IS NOT NULL' (for filtered views)
-};
-```
-
-### Posts Shape
+### Media Collection
 
 ```typescript
-// Electric proxy endpoint: GET /api/shapes/posts
-const postsShape = {
-  table: "posts",
-  columns: [
-    "id",
-    "title",
-    "caption",
-    "status",
-    "date",
-    "channelId",
-    "subreddit",
-    "url",
-    "hashtags",
-    "createdAt",
-    "updatedAt",
-  ],
-};
-```
-
-### Channels Shape
-
-```typescript
-// Electric proxy endpoint: GET /api/shapes/channels
-const channelsShape = {
-  table: "channels",
-  columns: [
-    "id",
-    "name",
-    "type",
-    "description",
-    "defaultHashtags",
-    "isActive",
-    "createdAt",
-    "updatedAt",
-  ],
-};
-```
-
-### Tags & Dimensions Shape
-
-```typescript
-// Electric proxy endpoint: GET /api/shapes/tags
-const tagsShape = {
-  table: "tag_dimensions",
-  columns: ["id", "name", "isExclusive", "createdAt", "updatedAt"],
-};
-
-const tagValuesShape = {
-  table: "tag_values",
-  columns: ["id", "value", "dimensionId"],
-};
-
-const mediaTagsShape = {
-  table: "media_tags",
-  columns: ["mediaId", "tagValueId"],
-};
-```
-
-## REST API Endpoints (Mutations)
-
-All **write operations** go through REST endpoints to ensure server authority and proper validation. These endpoints return transaction IDs for ElectricSQL sync confirmation.
-
-### Media Management
-
-```typescript
-// POST /api/media/scan
-// Trigger file system scan
-type ScanRequest = {
-  path?: string; // Optional specific path, defaults to full scan
-};
-type ScanResponse = {
-  success: boolean;
-  scannedCount: number;
-  addedCount: number;
-  updatedCount: number;
-  errors: string[];
-  txid: number;
-};
-
-// PUT /api/media/:id/shoot
-// Assign media to shoot
-type AssignShootRequest = {
-  shootId: string | null;
-};
-type AssignShootResponse = {
-  success: boolean;
-  txid: number;
-};
-
-// DELETE /api/media/:id
-// Remove media from database (not file system)
-type DeleteMediaResponse = {
-  success: boolean;
-  txid: number;
-};
-```
-
-### Post Management
-
-```typescript
-// POST /api/posts
-// Create new post
-type CreatePostRequest = {
-  title?: string;
-  caption: string;
-  channelId: string;
-  subreddit?: string;
-  mediaIds: string[];
-  date?: Date;
-};
-type CreatePostResponse = {
-  postId: string;
-  txid: number;
-};
-
-// PUT /api/posts/:id
-// Update existing post
-type UpdatePostRequest = {
-  title?: string;
-  caption?: string;
-  status?: PostStatus;
-  date?: Date;
-  subreddit?: string;
-  url?: string;
-};
-type UpdatePostResponse = {
-  success: boolean;
-  txid: number;
-};
-
-// DELETE /api/posts/:id
-type DeletePostResponse = {
-  success: boolean;
-  txid: number;
-};
-```
-
-### Tagging Operations
-
-```typescript
-// POST /api/media/:id/tags
-// Apply tags to media item
-type ApplyTagsRequest = {
-  tagValueIds: string[];
-};
-type ApplyTagsResponse = {
-  success: boolean;
-  txid: number;
-};
-
-// POST /api/tags/dimensions
-// Create new tag dimension
-type CreateTagDimensionRequest = {
-  name: string;
-  isExclusive: boolean;
-};
-type CreateTagDimensionResponse = {
-  dimensionId: string;
-  txid: number;
-};
-
-// POST /api/tags/dimensions/:id/values
-// Add value to tag dimension
-type AddTagValueRequest = {
-  value: string;
-};
-type AddTagValueResponse = {
-  valueId: string;
-  txid: number;
-};
-```
-
-## TanStack DB Integration
-
-The frontend uses **TanStack DB Collections** with ElectricSQL integration for seamless real-time data management:
-
-```typescript
-// Media collection with optimistic updates
+// Electric proxy endpoint: GET /api/media
 const mediaCollection = createCollection(
   electricCollectionOptions({
-    id: "media",
-    getKey: (item) => item.id,
+    id: 'media',
     shapeOptions: {
-      url: "/api/shapes/media",
+      url: '/api/media',
+      parser: {
+        timestamptz: (date: string) => new Date(date),
+      },
+    },
+    schema: selectMediaSchema,
+    getKey: (item) => item.id,
+    // Mutations handled via tRPC
+    onUpdate: async ({ transaction }) => {
+      const { modified: updatedMedia } = transaction.mutations[0];
+      const result = await trpc.media.update.mutate({
+        id: updatedMedia.id,
+        data: updatedMedia,
+      });
+      return { txid: result.txid };
+    },
+    onDelete: async ({ transaction }) => {
+      const { original: deletedMedia } = transaction.mutations[0];
+      const result = await trpc.media.delete.mutate({
+        id: deletedMedia.id,
+      });
+      return { txid: result.txid };
+    },
+  })
+);
+```
+
+### Shoots Collection
+
+```typescript
+// Electric proxy endpoint: GET /api/shoots
+const shootCollection = createCollection(
+  electricCollectionOptions({
+    id: 'shoots',
+    shapeOptions: {
+      url: '/api/shoots',
+      parser: {
+        timestamptz: (date: string) => new Date(date),
+      },
+    },
+    schema: selectShootSchema,
+    getKey: (item) => item.id,
+    onInsert: async ({ transaction }) => {
+      const { modified: newShoot } = transaction.mutations[0];
+      const result = await trpc.shoots.create.mutate(newShoot);
+      return { txid: result.txid };
     },
     onUpdate: async ({ transaction }) => {
-      const updatedItem = transaction.mutations[0].modified;
-      const response = await fetch(`/api/media/${updatedItem.id}`, {
-        method: "PUT",
-        body: JSON.stringify(updatedItem),
+      const { modified: updatedShoot } = transaction.mutations[0];
+      const result = await trpc.shoots.update.mutate({
+        id: updatedShoot.id,
+        data: omit(updatedShoot, ['id']),
       });
-      const result = await response.json();
+      return { txid: result.txid };
+    },
+    onDelete: async ({ transaction }) => {
+      const { original: deletedShoot } = transaction.mutations[0];
+      const result = await trpc.shoots.delete.mutate({
+        id: deletedShoot.id,
+      });
       return { txid: result.txid };
     },
   })
 );
+```
 
-// Posts collection with post creation
-const postsCollection = createCollection(
-  electricCollectionOptions({
-    id: "posts",
-    getKey: (item) => item.id,
-    shapeOptions: {
-      url: "/api/shapes/posts",
-    },
-    onInsert: async ({ transaction }) => {
-      const newPost = transaction.mutations[0].modified;
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        body: JSON.stringify(newPost),
+## tRPC API Endpoints (Mutations)
+
+All **write operations** go through tRPC endpoints to ensure type safety, server authority, and proper validation. These endpoints return transaction IDs for ElectricSQL sync confirmation.
+
+### Media Management Router
+
+```typescript
+// /api/trpc/media.*
+export const mediaRouter = router({
+  // Create new media record
+  create: procedure
+    .input(createMediaSchema)
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.transaction(async (tx) => {
+        const txid = await generateTxId(tx);
+        const [newItem] = await tx.insert(mediaTable).values(input).returning();
+        return { item: newItem, txid };
       });
-      const result = await response.json();
-      return { txid: result.txid };
-    },
-  })
-);
+      return result;
+    }),
+
+  // Update existing media
+  update: procedure
+    .input(z.object({
+      id: z.number(),
+      data: updateMediaSchema,
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.transaction(async (tx) => {
+        const txid = await generateTxId(tx);
+        const [updatedItem] = await tx
+          .update(mediaTable)
+          .set(input.data)
+          .where(eq(mediaTable.id, input.id))
+          .returning();
+
+        if (!updatedItem) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Media not found',
+          });
+        }
+
+        return { item: updatedItem, txid };
+      });
+      return result;
+    }),
+
+  // Delete media record
+  delete: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.transaction(async (tx) => {
+        const txid = await generateTxId(tx);
+        const [deletedItem] = await tx
+          .delete(mediaTable)
+          .where(eq(mediaTable.id, input.id))
+          .returning();
+
+        if (!deletedItem) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Media not found',
+          });
+        }
+
+        return { item: deletedItem, txid };
+      });
+      return result;
+    }),
+});
+```
+
+### Shoots Management Router
+
+```typescript
+// /api/trpc/shoots.*
+export const shootsRouter = router({
+  // Create new shoot
+  create: procedure
+    .input(createShootSchema)
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.transaction(async (tx) => {
+        const txid = await generateTxId(tx);
+        const [newItem] = await tx
+          .insert(shootsTable)
+          .values(input)
+          .returning();
+        return { item: newItem, txid };
+      });
+      return result;
+    }),
+
+  // Update existing shoot
+  update: procedure
+    .input(z.object({
+      id: z.number(),
+      data: updateShootSchema,
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.transaction(async (tx) => {
+        const txid = await generateTxId(tx);
+        const [updatedItem] = await tx
+          .update(shootsTable)
+          .set(input.data)
+          .where(eq(shootsTable.id, input.id))
+          .returning();
+
+        if (!updatedItem) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Shoot not found',
+          });
+        }
+
+        return { item: updatedItem, txid };
+      });
+      return result;
+    }),
+
+  // Delete shoot
+  delete: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.transaction(async (tx) => {
+        const txid = await generateTxId(tx);
+        const [deletedItem] = await tx
+          .delete(shootsTable)
+          .where(eq(shootsTable.id, input.id))
+          .returning();
+
+        if (!deletedItem) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Shoot not found',
+          });
+        }
+
+        return { item: deletedItem, txid };
+      });
+      return result;
+    }),
+});
+```
+
+## Type Safety & Schema Validation
+
+The system leverages **Drizzle-Zod** integration for automatic schema generation and validation:
+
+```typescript
+// Auto-generated from Drizzle schema
+export const selectMediaSchema = createSelectSchema(mediaTable);
+export const createMediaSchema = createInsertSchema(mediaTable).omit({
+  createdAt: true,
+});
+export const updateMediaSchema = createUpdateSchema(mediaTable);
+
+export const selectShootSchema = createSelectSchema(shootsTable);
+export const createShootSchema = createInsertSchema(shootsTable).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+export const updateShootSchema = createUpdateSchema(shootsTable);
+
+// Inferred TypeScript types
+export type Media = z.infer<typeof selectMediaSchema>;
+export type UpdateMedia = z.infer<typeof updateMediaSchema>;
+export type Shoot = z.infer<typeof selectShootSchema>;
+export type UpdateShoot = z.infer<typeof updateShootSchema>;
+```
+
+## Database Schema
+
+Current tables managed by the system:
+
+### Media Table
+```typescript
+export const mediaTable = pgTable('media', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  filepath: varchar('filepath').notNull().unique(),
+  filesize: bigint('filesize', { mode: 'bigint' }).notNull(),
+  contentHash: varchar('contentHash').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  duration: integer('duration'), // Duration in seconds for videos, null for images
+  mimeType: varchar('mime_type').notNull(),
+  fileCreatedAt: timestamp('file_created_at').notNull(),
+  fileModifiedAt: timestamp('file_modified_at').notNull(),
+  shootId: integer('shoot_id').references(() => shootsTable.id, {
+    onDelete: 'set null',
+  }),
+  thumbnailPath: varchar('thumbnail_path').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+```
+
+### Shoots Table
+```typescript
+export const shootsTable = pgTable('shoots', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar('name').notNull(),
+  date: timestamp('date').notNull(),
+  description: text('description'),
+  folderpath: varchar('folderpath').unique(), // Path to the source folder for auto-detected shoots
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+```
+
+## Client Usage Examples
+
+### Frontend Collection Integration
+
+```typescript
+import { mediaCollection, shootCollection } from '~/lib/collections';
+import { trpc } from '~/lib/trpc/client';
+
+// Reading data (automatically synced via ElectricSQL)
+const MediaGallery = () => {
+  const { data: mediaItems, isLoading, isError, status } = useLiveQuery((q) =>
+    q.from({ media: mediaCollection })
+  );
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading media</div>;
+  
+  return (
+    <div>
+      {mediaItems?.map(item => (
+        <img key={item.id} src={item.thumbnailPath} />
+      ))}
+    </div>
+  );
+};
+
+// Mutations via tRPC (with optimistic updates)
+const CreateShootForm = () => {
+  const handleSubmit = async (formData) => {
+    // Optimistic update via collection
+    shootCollection.insertItem({
+      id: tempId,
+      ...formData,
+    });
+    
+    // Server mutation will sync back with proper ID and txid
+  };
+};
+```
+
+### Direct tRPC Usage
+
+```typescript
+// For operations not handled by collections
+const useMediaOperations = () => {
+  const createMediaMutation = trpc.media.create.useMutation();
+  const updateMediaMutation = trpc.media.update.useMutation();
+  const deleteMediaMutation = trpc.media.delete.useMutation();
+  
+  return {
+    createMedia: createMediaMutation.mutate,
+    updateMedia: updateMediaMutation.mutate,
+    deleteMedia: deleteMediaMutation.mutate,
+  };
+};
 ```
 
 ## Architecture Benefits
 
-**Real-time Synchronization:**
+**Type Safety:**
+- End-to-end type safety from database to frontend
+- Automatic schema validation via Drizzle-Zod
+- tRPC ensures API contract consistency
 
+**Real-time Synchronization:**
 - File system changes instantly appear in UI via ElectricSQL
 - Multi-device synchronization without complex state management
 - Optimistic updates with automatic rollback on conflicts
 
-**Server Authority:**
-
-- All mutations validated and processed server-side
-- Transaction IDs ensure proper sync confirmation
-- File system operations remain server-controlled
+**Developer Experience:**
+- Auto-completion for all API calls
+- Compile-time error checking
+- Automatic code generation from schema changes
 
 **Performance:**
-
-- No traditional API queries - data flows directly from PostgreSQL
+- No traditional API queries for reads - data flows directly from PostgreSQL
 - Efficient change detection via ElectricSQL shapes
 - Local-first experience with TanStack DB caching
+- Automatic request deduplication and caching via tRPC
+
+**Server Authority:**
+- All mutations validated and processed server-side
+- Transaction IDs ensure proper sync confirmation
+- Proper error handling with typed responses

@@ -6,13 +6,11 @@
 
 **Frontend Security:**
 
-- **CSP Headers:** `Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'`
-- **XSS Prevention:** Input sanitization via DOMPurify, React's built-in XSS protection
 - **Secure Storage:** No sensitive data in localStorage, session-only state management
 
 **Backend Security:**
 
-- **Input Validation:** Zod schema validation for all API endpoints
+- **Input Validation:** Zod schema validation
 
 **Content Security:**
 
@@ -32,14 +30,10 @@
 
 **Frontend Performance:**
 
-- **Bundle Size Target:** < 500KB initial bundle (gzipped)
-- **Loading Strategy:** Code splitting by route, lazy loading for media components
-- **Caching Strategy:** ElectricSQL client-side caching, React Query for API responses
+- **Loading and Caching Strategy:** Handled by Tanstack Router
 
 **Backend Performance:**
 
-- **Response Time Target:** < 200ms for API responses
-- **Database Optimization:** Strategic indexing on frequently queried columns
 - **Caching Strategy:** In-memory caching for metadata, thumbnail generation queue
 
 **Media Handling Optimization:**
@@ -50,6 +44,5 @@
 
 **Real-time Performance:**
 
-- **ElectricSQL Sync:** Optimized shape subscriptions, minimal data transfer
-- **WebSocket Efficiency:** Connection pooling, automatic reconnection
-- **UI Responsiveness:** Optimistic updates, skeleton loading states
+- **ElectricSQL Sync:** Broad shape subscriptions favoring ease of use before optimization
+- **UI Responsiveness:** Optimistic updates, no loading states as it's local-first

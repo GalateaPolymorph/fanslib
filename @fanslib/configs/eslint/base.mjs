@@ -2,9 +2,12 @@ import js from "@eslint/js";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
+import functional from "eslint-plugin-functional";
+import preferArrowFunctions from "eslint-plugin-prefer-arrow-functions";
 
 export default [
   js.configs.recommended,
+  functional.configs.externalTypeScriptRecommended,
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
@@ -25,6 +28,7 @@ export default [
     },
     plugins: {
       "@typescript-eslint": tseslint,
+      "prefer-arrow-functions": preferArrowFunctions,
       import: importPlugin,
     },
     rules: {
@@ -35,7 +39,7 @@ export default [
       // TypeScript specific rules
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
@@ -43,32 +47,36 @@ export default [
       "@typescript-eslint/no-non-null-assertion": "error",
       "@typescript-eslint/prefer-nullish-coalescing": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
+      "@typescript-eslint/prefer-readonly": "off",
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { prefer: "type-imports" },
       ],
 
       // General rules
-      "no-console": "warn",
+      "no-console": "off",
       "prefer-const": "error",
       "no-var": "error",
 
-      // Import rules
-      "import/order": [
+      // Functional rules
+      "functional/no-loop-statements": "error",
+      "functional/no-classes": "error",
+      "functional/no-this-expressions": "error",
+      "functional/no-let": "error",
+      "prefer-arrow-functions/prefer-arrow-functions": [
         "error",
         {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index",
-          ],
-          "newlines-between": "always",
-          alphabetize: { order: "asc", caseInsensitive: true },
+          allowedNames: [],
+          allowNamedFunctions: false,
+          allowObjectProperties: false,
+          classPropertiesAllowed: false,
+          disallowPrototype: false,
+          returnStyle: "implicit",
+          singleReturnOnly: false,
         },
       ],
+
+      // Import rules
       "import/no-duplicates": "error",
     },
   },
