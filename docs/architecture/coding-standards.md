@@ -23,16 +23,14 @@ These standards are **MANDATORY for AI agents** and directly control AI develope
 ## Critical Rules
 
 - **KEEP IT SIMPLE** - Avoid unnecessary complexity and over-engineering, only use what is strictly and exactly necessary to fulfill the requirements. Don't prepare for possible future requirements. YAGNI.
-- **Prefer types over interfaces** - Use `type` for union types and complex compositions
-- **NEVER revert to Tailwind 3 syntax** - MANDATORY: Always use Tailwind 4 CSS-only format with @import and @theme directives. Never use JavaScript config files for Tailwind
-- **Console.log usage restrictions** - Never use console.log in frontend packages (web, storybook). Backend packages (server) may use console.log for development and debugging purposes
 - **Only use comments when explaining complex logic** or non-obvious code, NEVER use comments for simple explanations or to describe obvious code. When it comes to comments: **Avoid excessive commenting**, keep code self-explanatory and concise. WHY, not HOW and WHAT.
+- **Prefer types over interfaces** - Use `type` for union types and complex compositions
+- **Console.log usage restrictions** - Never use console.log in frontend packages (web, storybook). Backend packages (server) may use console.log for development and debugging purposes
 - **All API responses must use standardized wrapper types** - Implement consistent error handling and response formatting
 - **Database queries must use Drizzle ORM only** - Never write raw SQL, leverage type-safe database access
 - **No default exports** - Always use named exports for better refactoring and IDE support
 - **Never use for loops** - Always use `.map()`, `.reduce()`, `.forEach()` with helper functions for functional programming
 - **Use early returns over nested if/else** - Improve code readability and reduce complexity
-- **All external API calls must implement retry logic** - Handle network failures gracefully with exponential backoff
 - **Use Result types from ts-belt for error handling** - Never throw exceptions, always return `Result<T, E>` for operations that can fail
 - **Use functional utilities from remeda wherever possible**
 - **Favor abstraction and modularization** - Follow DRY principles, create reusable utility functions
@@ -41,7 +39,6 @@ These standards are **MANDATORY for AI agents** and directly control AI develope
 - **Always use arrow functions over function keyword** - Prevent hoisting issues and benefit from lexical scoping
 - **Organize files systematically** - Each file should contain only related content (components, helpers, types)
 - **All forms must use Zod validation** - Runtime type safety and consistent validation patterns
-- **File system operations must return Result types** - Content scanning can fail, use `Result<T, E>` for proper error recovery
 - **Avoid enums, use maps instead** - Better type safety and flexibility for configuration values
 - **All mutations must be optimistic with rollback** - Provide immediate UI feedback with error recovery through Tanstack DB
 - **UI components must follow folder structure pattern** - Each UI component gets its own folder containing: Component.tsx, index.ts for exports, and Component.stories.ts for Storybook
