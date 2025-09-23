@@ -4,6 +4,8 @@
 
 ```
 fanslib-web/                    # Project root
+├── .bmad-core/                 # BMAD core configuration
+│   └── core-config.yaml
 ├── .github/                    # CI/CD workflows (if present)
 │   └── workflows/
 ├── docs/                       # Documentation
@@ -15,7 +17,6 @@ fanslib-web/                    # Project root
 │   │   │   │   ├── components/ # Feature-based components
 │   │   │   │   │   ├── ui/         # Design system components (integrated)
 │   │   │   │   ├── db/         # Database schema and connection
-│   │   │   │   │   ├── schema.ts   # Drizzle schema definition
 │   │   │   │   │   └── connection.ts
 │   │   │   │   ├── lib/        # Frontend utilities
 │   │   │   │   │   ├── trpc/       # tRPC client and server setup
@@ -47,20 +48,50 @@ fanslib-web/                    # Project root
 │   │   │   ├── vite.config.ts  # Vite configuration
 │   │   │   ├── vitest.config.ts # Vitest configuration
 │   │   │   └── package.json
-│   │   ├── server/             # Background Job server
+│   │   ├── server/             # Media processing and background job server
 │   │   │   ├── src/
+│   │   │   │   ├── db/         # Database connection utilities
+│   │   │   │   │   └── connection.ts
+│   │   │   │   ├── modules/    # Domain-specific modules
+│   │   │   │   │   ├── filesystem/ # File system operations
+│   │   │   │   │   │   ├── fileScanner.ts
+│   │   │   │   │   │   ├── fileScanner.test.ts
+│   │   │   │   │   │   └── hash.ts
+│   │   │   │   │   └── media/      # Media processing modules
+│   │   │   │   │       ├── mediaProcessing.ts
+│   │   │   │   │       ├── mediaProcessing.test.ts
+│   │   │   │   │       ├── shootDetection.ts
+│   │   │   │   │       ├── shootDetection.test.ts
+│   │   │   │   │       ├── syncMedia.ts
+│   │   │   │   │       ├── syncShoot.ts
+│   │   │   │   │       ├── upsertMedia.ts
+│   │   │   │   │       └── upsertShoot.ts
 │   │   │   │   ├── routes/     # Elysia.js route handlers
 │   │   │   │   │   ├── docs.ts
 │   │   │   │   │   └── health.ts
+│   │   │   │   ├── types/      # TypeScript type definitions
+│   │   │   │   │   └── ffprobe.d.ts
 │   │   │   │   └── index.ts    # Server entry point
 │   │   │   ├── tests/          # Server tests
+│   │   │   │   └── fixtures/   # Test fixtures
 │   │   │   └── package.json
 │   │   └── e2e/               # End-to-end testing with Playwright
 │   │       ├── tests/          # E2E test files
 │   │       ├── playwright.config.ts
 │   │       ├── run-tests.sh
 │   │       └── package.json
-│   ├── libraries/              # Domain-specific shared libraries (currently empty)
+│   ├── libraries/              # Domain-specific shared libraries
+│   │   ├── db/                 # Shared database schema and utilities
+│   │   │   ├── src/
+│   │   │   │   └── schema.ts   # Centralized Drizzle schema
+│   │   │   ├── drizzle.config.ts
+│   │   │   ├── index.ts        # Library entry point
+│   │   │   └── package.json
+│   │   └── utils/              # Shared utility functions
+│   │       ├── src/
+│   │       │   └── task.ts     # Task utilities
+│   │       ├── index.ts        # Library entry point
+│   │       └── package.json
 │   └── configs/                # Shared configuration packages
 │       ├── eslint/             # ESLint configurations
 │       │   └── package.json
@@ -80,10 +111,11 @@ fanslib-web/                    # Project root
 
 - **TanStack Start**: Full-stack React framework with file-based routing and server-side rendering
 - **Integrated Frontend + Backend**: The `web` app contains both frontend and backend (via TanStack Start)
-- **Drizzle ORM**: Type-safe database schema and queries instead of Prisma
+- **Shared Database Library**: Centralized Drizzle ORM schema in `@fanslib/db`
+- **Enhanced Server**: Dedicated media processing with filesystem scanning and metadata extraction
 - **tRPC Integration**: Type-safe API layer with TanStack Start
 - **TanStack DB Collections**: Live queries with ElectricSQL integration
-- **Minimal External Server**: Separate `server` app for auxiliary services only
+- **Domain Libraries**: Shared utilities and database schemas across applications
 
 ## Workspace Configuration
 
@@ -121,52 +153,6 @@ fanslib-web/                    # Project root
 }
 ```
 
-**TurboRepo configuration (turbo.json):**
-
-```json
-{
-  "$schema": "https://turbo.build/schema.json",
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**", "storybook-static/**", ".tanstack/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "test": {
-      "outputs": []
-    },
-    "test:headed": {
-      "outputs": ["playwright-report/**", "test-results/**"]
-    },
-    "test:ui": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "outputs": []
-    },
-    "typecheck": {
-      "outputs": []
-    },
-    "clean": {
-      "cache": false
-    },
-    "format": {
-      "outputs": []
-    },
-    "storybook": {
-      "cache": false,
-      "persistent": true
-    }
-  },
-  "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV"]
-}
-```
-
 ## App Structure Details
 
 ### Web Application (@fanslib/web)
@@ -175,42 +161,29 @@ fanslib-web/                    # Project root
 - **TanStack Start**: Full-stack React framework
 - **TanStack Router**: File-based routing with type safety
 - **TanStack DB**: Live queries with ElectricSQL
-- **Drizzle ORM**: Database schema and type-safe queries
+- **Drizzle ORM**: Database schema and type-safe queries (via `@fanslib/db`)
 - **tRPC**: Type-safe API layer
 - **Tailwind CSS + DaisyUI**: Styling framework
 - **Jotai**: State management
 - **Storybook**: Component development
 
-**Package.json highlights:**
-
-```json
-{
-  "name": "@fanslib/web",
-  "scripts": {
-    "dev": "docker compose up -d && vite dev",
-    "build": "vite build && tsc --noEmit",
-    "migrate": "drizzle-kit migrate",
-    "migrate:generate": "drizzle-kit generate"
-  },
-  "dependencies": {
-    "@tanstack/react-start": "^1.131.50",
-    "@tanstack/electric-db-collection": "^0.1.23",
-    "@tanstack/react-db": "^0.1.21",
-    "@trpc/client": "^11.5.1",
-    "@trpc/server": "^11.5.1",
-    "drizzle-orm": "^0.44.5",
-    "drizzle-zod": "^0.8.3"
-  }
-}
-```
-
 ### Server Application (@fanslib/server)
 
-**Purpose:** Auxiliary services and health checks
-- Minimal Elysia.js server for non-web services
-- Health monitoring endpoints
-- Documentation endpoints
-- Currently lightweight - most functionality integrated into web app
+**Purpose:** Media processing, file system scanning, and background services
+- **Media Processing**: Image and video metadata extraction using Sharp and FFprobe
+- **File System Scanning**: Directory traversal and file discovery
+- **Shoot Detection**: Automatic photo shoot grouping algorithms
+- **Database Synchronization**: Media and shoot data persistence
+- **Health Monitoring**: Service health endpoints
+- **API Documentation**: Swagger/OpenAPI integration
+
+**Key Dependencies:**
+- **Elysia.js**: Fast web framework for APIs
+- **Sharp**: High-performance image processing
+- **FFprobe**: Video/audio metadata extraction
+- **Glob**: File pattern matching
+- **@fanslib/db**: Shared database schema
+- **Zod**: Runtime type validation
 
 ### E2E Testing (@fanslib/e2e)
 
@@ -222,46 +195,20 @@ fanslib-web/                    # Project root
 
 ## Library Strategy
 
-**Current State:** No domain libraries yet (libraries/ is empty)
+**Current Libraries:**
 
-**Future Plans:**
-- Domain-specific libraries for shared business logic
-- No build steps - pure TypeScript consumption
-- Type-safe imports with workspace protocol
-- Focus on domain models and utilities
+### @fanslib/db
+**Purpose:** Centralized database schema and configuration
+- **Drizzle ORM Schema**: Shared table definitions
+- **Type-safe Database Operations**: Consistent across applications
+- **Migration Management**: Centralized schema evolution
+- **Zod Integration**: Runtime validation for database models
 
-## Development Workflow
-
-**Common Commands:**
-
-```bash
-# Start development environment
-bun dev
-
-# Build all packages
-bun build
-
-# Generate database migrations
-cd @fanslib/apps/web && bun migrate:generate
-
-# Apply migrations
-cd @fanslib/apps/web && bun migrate
-
-# Run tests (excluding E2E)
-bun test
-
-# Run E2E tests
-bun test:e2e
-
-# Run Storybook
-bun storybook
-
-# Format code
-bun format
-
-# Type checking
-bun typecheck
-```
+### @fanslib/utils
+**Purpose:** Shared utility functions
+- **Task Utilities**: Common task management functions
+- **Type-safe Utilities**: Reusable helper functions
+- **No Build Steps**: Pure TypeScript consumption
 
 ## Configuration Packages
 
@@ -286,11 +233,13 @@ bun typecheck
 ## Key Architectural Decisions
 
 1. **TanStack Start Integration**: Full-stack framework eliminates need for separate backend API
-2. **Drizzle**: Better TypeScript integration and performance
-3. **tRPC Integration**: Type-safe API layer with automatic serialization
-4. **TanStack DB Collections**: Real-time data synchronization with ElectricSQL
-5. **Minimal External Dependencies**: Self-contained applications with shared configuration only
-6. **Docker Integration**: Database services managed via Docker Compose
-7. **Playwright E2E Testing**: Comprehensive testing strategy with separate E2E package
+2. **Centralized Database Schema**: `@fanslib/db` provides shared Drizzle schema across applications
+3. **Enhanced Server Capabilities**: Dedicated media processing with filesystem operations
+4. **tRPC Integration**: Type-safe API layer with automatic serialization
+5. **TanStack DB Collections**: Real-time data synchronization with ElectricSQL
+6. **Domain Libraries**: Shared business logic and utilities via workspace packages
+7. **Docker Integration**: Database services managed via Docker Compose
+8. **Playwright E2E Testing**: Comprehensive testing strategy with separate E2E package
+9. **Media Processing Pipeline**: Automated file scanning, metadata extraction, and shoot detection
 
-This structure provides a modern, type-safe, and efficient development experience while maintaining clear separation of concerns and excellent developer experience.
+This structure provides a modern, type-safe, and efficient development experience while maintaining clear separation of concerns, shared libraries for common functionality, and excellent developer experience with enhanced media processing capabilities.

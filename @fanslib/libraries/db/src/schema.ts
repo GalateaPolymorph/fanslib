@@ -58,5 +58,7 @@ export const updateShootSchema = createUpdateSchema(shootsTable);
 
 export type Media = z.infer<typeof selectMediaSchema>;
 export type UpdateMedia = z.infer<typeof updateMediaSchema>;
+export type CreateMedia = z.infer<typeof createMediaSchema>;
 export type Shoot = z.infer<typeof selectShootSchema>;
 export type UpdateShoot = z.infer<typeof updateShootSchema>;
+export type CreateShoot = z.infer<typeof createShootSchema>;

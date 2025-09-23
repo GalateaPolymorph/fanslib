@@ -1,0 +1,16 @@
+{
+  "name": "@fanslib/utils",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc",
+    "format": "prettier --write . --config .prettierrc.cjs"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -1,40 +1,8 @@
 # Development Workflow
 
-## Local Development Setup
-
-**Prerequisites:**
-
-```bash
-# Install Bun (required)
-curl -fsSL https://bun.sh/install | bash
-
-# Install Docker and Docker Compose (for database and services)
-# Follow platform-specific instructions
-
-# Clone repository
-git clone <repository-url>
-cd fanslib
-```
-
-**Initial Setup:**
-
-```bash
-# Install all dependencies using Bun workspaces
-bun install
-
-# Setup environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# Start PostgreSQL and ElectricSQL via Docker
-docker-compose up -d
-
-# Run database migrations
-cd @fanslib/apps/web
-bun run migrate
-```
-
 **Development Commands:**
+
+Development commands are intended to be run from the root directory of the project.
 
 ```bash
 # Start all services in parallel (recommended)

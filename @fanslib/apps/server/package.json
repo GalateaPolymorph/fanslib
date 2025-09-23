@@ -13,18 +13,23 @@
     "format": "prettier --write src"
   },
   "dependencies": {
+    "@fanslib/db": "workspace:*",
     "@elysiajs/cors": "^1.4.0",
     "@elysiajs/swagger": "^1.3.1",
     "@mobily/ts-belt": "^3.13.1",
     "@types/glob": "^9.0.0",
+    "drizzle-orm": "^0.44.5",
     "elysia": "^1.4.4",
+    "ffprobe": "^1.1.2",
     "glob": "^11.0.3",
+    "sharp": "^0.33.5",
     "zod": "^4.1.8"
   },
   "devDependencies": {
     "@fanslib/typescript": "workspace:*",
     "@fanslib/eslint": "workspace:*",
     "@fanslib/prettier": "workspace:*",
+    "@types/sharp": "^0.32.0",
     "bun-types": "^1.2.22",
     "typescript": "^5.9.2"
   }
