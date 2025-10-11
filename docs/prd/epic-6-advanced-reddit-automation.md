@@ -24,7 +24,7 @@ _As a content creator, I want to import existing RedGIFs URLs for my media conte
 
 1. "Import RedGIFs URLs" button in settings interface with bulk import operation
 2. Media scanning to identify items without existing RedGIFs posts, creating processing pool
-3. Postpone API integration using media filename for URL discovery with Result type error handling
+3. Postpone API integration using media filename for URL discovery with Effect type error handling
 4. Automatic post entity creation when URLs found (media reference, RedGIFs URL, RedGIFs channel, timestamp)
 5. Real-time progress tracking with pause/resume, success/failure counters, and detailed error logging
 6. Integration with existing systems: channel management, post history tracking, and Reddit automation support

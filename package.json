@@ -1,11 +1,15 @@
 {
   "name": "@fanslib/root",
+  "devDependencies": {
+    "turbo": "^2.5.6",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "packageManager": "bun@1.0.0",
   "private": true,
-  "workspaces": [
-    "@fanslib/apps/*",
-    "@fanslib/libraries/*",
-    "@fanslib/configs/*"
-  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
@@ -20,13 +24,13 @@
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate"
   },
-  "devDependencies": {
-    "turbo": "^2.5.6",
-    "@types/node": "^22.10.5",
-    "typescript": "^5.9.2"
-  },
-  "engines": {
-    "bun": ">=1.0.0"
-  },
-  "packageManager": "bun@1.0.0"
+  "workspaces": [
+    "@fanslib/apps/*",
+    "!@fanslib/apps/electron-legacy",
+    "@fanslib/libraries/*",
+    "@fanslib/configs/*"
+  ],
+  "dependencies": {
+    "vite-plugin-node-polyfills": "^0.24.0"
+  }
 }

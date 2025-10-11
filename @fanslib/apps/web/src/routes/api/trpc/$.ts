@@ -1,6 +1,5 @@
 import { createServerFileRoute } from '@tanstack/react-start/server';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { db } from '~/db/connection';
 import { trpcRouter } from '~/lib/trpc/routes';
 
 export type AppRouter = typeof trpcRouter;

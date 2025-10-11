@@ -311,3 +311,5 @@ yarn.lock
 .tanstack
 
 *storybook.log
+
+.appdata

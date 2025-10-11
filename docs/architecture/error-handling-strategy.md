@@ -1,32 +1,32 @@
 # Error Handling Strategy
 
-This document defines a simplified error handling approach for the FansLib Content Management Platform using Result types for consistent error management.
+This document defines a simplified error handling approach for the FansLib Content Management Platform using Effect types for consistent error management.
 
 ## General Approach
 
-- **Error Model:** Result types from ts-belt (`Result<T, E>`) for all operations that can fail
-- **Error Propagation:** Functional composition using `Result.map`, `Result.flatMap`, and `Result.mapError`
-- **No Exceptions:** Never throw exceptions or use Error classes - always return Result types
+- **Error Model:** Effect types from Effect.ts (`Effect<A, E, R>`) for all operations that can fail
+- **Error Propagation:** Functional composition using `Effect.map`, `Effect.flatMap`, and `Effect.mapError`
+- **No Exceptions:** Never throw exceptions or use Error classes - always return Effect types
 
-## Result Type Patterns
+## Effect Type Patterns
 
 ### Function Signatures
 
-All functions that can fail must return `Result<T, E>` types:
+All functions that can fail must return `Effect<A, E, R>` types:
 
 ```typescript
-import { Result, Ok, Error } from "ts-belt";
+import { Effect } from "effect";
 
-// Good: Returns Result type
+// Good: Returns Effect type
+class ScanError extends Data.TaggedError("ScanError")<{}> {}
+
 const scanContentLibrary = (
   path: string
-): Result<MediaItem[], string> => {
-  try {
-    const items = performScan(path);
-    return Ok(items);
-  } catch (err) {
-    return Error(`Failed to scan path: ${path}`);
-  }
+): Effect.Effect<MediaItem[], string> => {
+  return Effect.tryPromise({
+    try: () => performScan(path),
+    catch: () => new ScanError(),
+  });
 };
 
 // Bad: Throws exceptions
@@ -37,34 +37,34 @@ const scanContentLibrary = (path: string): MediaItem[] => {
 
 ### Error Composition
 
-Use Result composition for complex operations:
+Use Effect composition for complex operations:
 
 ```typescript
-import { R, pipe } from "ts-belt";
+import { Effect, pipe } from "effect";
 
-const processContent = (mediaId: string): Result<ProcessedMedia, string> =>
+const processContent = (mediaId: string) =>
   pipe(
     findMediaById(mediaId),
-    R.flatMap(validateMedia),
-    R.flatMap(processMediaFile),
-    R.flatMap(saveProcessedMedia)
+    Effect.flatMap(validateMedia),
+    Effect.flatMap(processMediaFile),
+    Effect.flatMap(saveProcessedMedia)
   );
 ```
 
 ### Error Pattern Matching
 
-Handle errors using simple pattern matching:
+Handle errors using Effect pattern matching:
 
 ```typescript
-const handleResult = (result: Result<MediaItem, string>) => {
-  R.match(result,
-    (successResult) => {
-      console.log('Success:', successResult);
-    },
-    (error) => {
-      console.error('Error:', error);
-    }
-  )
+import { Effect, Exit } from "effect";
+
+const handleResult = (effect: Effect.Effect<MediaItem, string>) => {
+  Effect.runPromiseExit(effect).then((exit) => {
+    Exit.match(exit, {
+      onSuccess: (result) => console.log('Success:', result),
+      onFailure: (cause) => console.error('Error:', cause),
+    });
+  });
 };
 ```
 
@@ -96,7 +96,7 @@ const MediaGallery = () => {
 ```typescript
 const useMediaOperations = () => {
   const createMediaMutation = trpc.media.create.useMutation();
-  
+
   const createMedia = async (data: CreateMedia) => {
     try {
       const result = await createMediaMutation.mutateAsync(data);
@@ -108,7 +108,7 @@ const useMediaOperations = () => {
     }
   };
 
-  return { 
+  return {
     createMedia,
     isLoading: createMediaMutation.isPending,
     error: createMediaMutation.error,
@@ -146,33 +146,37 @@ export const mediaRouter = router({
 ### Database Operations
 
 ```typescript
-const createMediaRecord = async (
+const createMediaRecord = (
   db: Database,
   data: CreateMedia
-): Promise<Result<Media, string>> => {
-  try {
-    const [newItem] = await db
-      .insert(mediaTable)
-      .values(data)
-      .returning();
-
-    return Ok(newItem);
-  } catch (error) {
-    return Error(`Database error: ${error.message}`);
-  }
+): Effect.Effect<Media, string> => {
+  return Effect.tryPromise({
+    try: async () => {
+      const [newItem] = await db
+        .insert(mediaTable)
+        .values(data)
+        .returning();
+      return newItem;
+    },
+    catch: (error) => `Database error: ${error.message}`,
+  });
 };
 ```
 
 ### File System Operations
 
 ```typescript
-const scanDirectory = async (path: string): Promise<Result<string[], string>> => {
-  try {
-    const files = await readdir(path);
-    return Ok(files);
-  } catch (error) {
-    return Error(`Cannot read directory: ${path}`);
+class ScanError extends Data.TaggedError('ScanError')<{ path: string }> {
+  constructor(path: string) {
+    super({ path });
   }
+}
+
+const scanDirectory = (path: string): Effect.Effect<string[], ScanError> => {
+  return Effect.tryPromise({
+    try: () => readdir(path),
+    catch: (error) => new ScanError(path),
+  });
 };
 ```
 
@@ -207,33 +211,23 @@ const mediaCollection = createCollection(
 Keep error recovery simple and predictable:
 
 ```typescript
-const withRetry = async <T>(
-  operation: () => Promise<Result<T, string>>,
+const withRetry = <A, E>(
+  effect: Effect.Effect<A, E>,
   maxAttempts: number = 3
-): Promise<Result<T, string>> => {
-  const attempts = Array.from({ length: maxAttempts }, (_, i) => i + 1);
-
-  for (const attempt of attempts) {
-    const result = await operation();
-
-    if (Result.isOk(result) || attempt === maxAttempts) {
-      return result;
-    }
-
-    // Simple delay between retries
-    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-  }
-
-  return Error('Max retry attempts exceeded');
+): Effect.Effect<A, E> => {
+  return Effect.retry(effect, {
+    times: maxAttempts - 1,
+    schedule: Schedule.exponential("1 seconds"),
+  });
 };
 ```
 
 ## Key Principles
 
-1. **Always Return Results**: Every operation that can fail returns `Result<T, E>`
-2. **Compose Functionally**: Use `pipe`, `Result.map`, and `Result.flatMap` for error propagation
+1. **Always Return Effects**: Every operation that can fail returns `Effect<A, E, R>`
+2. **Compose Functionally**: Use `pipe`, `Effect.map`, and `Effect.flatMap` for error propagation
 3. **Simple Error Messages**: Use plain strings for error descriptions
-4. **Handle at Boundaries**: Convert Results to appropriate responses at API/UI boundaries
+4. **Handle at Boundaries**: Convert Effects to appropriate responses at API/UI boundaries using `Effect.runPromise`
 5. **No Silent Failures**: Always handle both success and error cases explicitly
 
 This simplified approach ensures consistent error handling while maintaining code readability and functional programming principles without the complexity of extensive logging, retry logic, or error classification systems.

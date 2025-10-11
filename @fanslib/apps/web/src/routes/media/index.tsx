@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { MediaGrid, ScanProgress } from '../../components/media';
 
 const MediaPage = () => (
   <div className='container mx-auto max-w-7xl'>
@@ -7,8 +8,12 @@ const MediaPage = () => (
     </h1>
 
     <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
-      {/* Sidebar for filters */}
-      <div className='lg:col-span-1'>
+      {/* Sidebar for filters and scan controls */}
+      <div className='lg:col-span-1 space-y-6'>
+        {/* Scan Progress Component */}
+        <ScanProgress />
+
+        {/* Filters */}
         <div className='bg-base-200 p-4 rounded-lg'>
           <h2 className='font-semibold mb-4'>Filters</h2>
           <div className='space-y-3'>
@@ -45,25 +50,7 @@ const MediaPage = () => (
 
       {/* Main content area */}
       <div className='lg:col-span-3'>
-        <div className='flex justify-between items-center mb-4'>
-          <p className='text-base-content/70'>
-            No media files found. Content scanning will be implemented in future
-            stories.
-          </p>
-          <button className='btn btn-primary btn-sm'>Scan Library</button>
-        </div>
-
-        {/* Placeholder grid */}
-        <div className='grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-4'>
-          {Array.from({ length: 8 }, (_, i) => (
-            <div
-              key={i}
-              className='aspect-square bg-base-300 rounded-lg flex items-center justify-center'
-            >
-              <span className='text-4xl'>🎬</span>
-            </div>
-          ))}
-        </div>
+        <MediaGrid />
       </div>
     </div>
   </div>

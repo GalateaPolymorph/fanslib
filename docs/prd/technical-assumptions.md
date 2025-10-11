@@ -29,7 +29,7 @@
 - **Component Library**: Daisy UI as primary component system, with Radix UI or React-Aria for accessible unstyled components when needed
 - **Code Organization**: Functional programming principles with pure functions, const over let, map/reduce/filter over loops, no classes
 - **Type System**: TypeScript types preferred over interfaces
-- **Error Handling**: Result types instead of exceptions (using ts-belt library Result type, avoid try-catch patterns)
+- **Error Handling**: Effect types instead of exceptions (using Effect.ts library Effect type, avoid try-catch patterns)
 - **Code Quality**: ESLint for code quality enforcement and linting
 - **Code Formatting**: Prettier for consistent code formatting across all packages
 - **CI/CD**: GitHub Actions for automated testing and deployment
